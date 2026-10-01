@@ -1,0 +1,63 @@
+@use "../../styles/mixins" as *;
+
+.button {
+  @include touch-target;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) ease;
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.primary {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    color: var(--color-primary-contrast);
+  }
+}
+
+.secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+
+  &:hover:not(:disabled) {
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+  }
+}
+
+.danger {
+  background: var(--color-danger);
+  color: var(--color-primary-contrast);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.large {
+  min-height: var(--touch-primary);
+  font-size: var(--font-size-lg);
+}
+
+.block {
+  width: 100%;
+}

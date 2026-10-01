@@ -1,0 +1,39 @@
+@use "../../styles/mixins" as *;
+
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: var(--space-3) var(--space-4);
+}
+
+.brand {
+  font-weight: 800;
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding: var(--space-4);
+
+  @include from($bp-md) {
+    padding: var(--space-6) var(--space-4);
+  }
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: center;
+  padding: var(--space-4);
+  font-size: var(--font-size-sm);
+}

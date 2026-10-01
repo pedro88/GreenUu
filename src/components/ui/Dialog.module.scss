@@ -1,0 +1,38 @@
+@use "../../styles/mixins" as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+}
+
+.content {
+  position: fixed;
+  inset: auto 0 0;
+  max-height: 90dvh;
+  overflow: auto;
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-md);
+
+  @include from($bp-md) {
+    inset: 50% auto auto 50%;
+    width: min(32rem, calc(100vw - 2rem));
+    transform: translate(-50%, -50%);
+    border-radius: var(--radius-lg);
+  }
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}

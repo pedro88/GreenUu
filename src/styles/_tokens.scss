@@ -1,0 +1,89 @@
+// Design tokens — seule source autorisée des couleurs, espacements, rayons et polices (règle Stylelint).
+// Exposés en propriétés CSS pour être lus à l'exécution (thèmes, vue gamifiée).
+
+:root {
+  // Palette chaude « jardin »
+  --color-bg: #fbf7ef;
+  --color-surface: #fff;
+  --color-surface-muted: #f3ecdf;
+  --color-border: #ddd2bf;
+  --color-text: #2e222f;
+  --color-text-muted: #6b5b5e;
+  --color-primary: #3c8848;
+  --color-primary-hover: #2f6f3a;
+  --color-primary-contrast: #fff;
+  --color-accent: #d6403a;
+  --color-warning-bg: #fdf1d6;
+  --color-warning-text: #7a4b00;
+  --color-danger: #b42318;
+  --color-danger-bg: #fde8e7;
+  --color-success-bg: #e5f3e1;
+  --color-success-text: #245c2c;
+  --color-info-bg: #e6f0fa;
+  --color-info-text: #1d4f7a;
+  --color-focus: #1d6fd6;
+  --color-overlay: rgb(46 34 47 / 45%);
+
+  // Espacements (échelle 4 px)
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  // Rayons et ombres
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-full: 999px;
+  --shadow-sm: 0 1px 2px rgb(46 34 47 / 8%);
+  --shadow-md: 0 4px 16px rgb(46 34 47 / 12%);
+
+  // Typographie
+  --font-body: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --line-height: 1.5;
+
+  // Cibles tactiles (NFR-01)
+  --touch-min: 48px;
+  --touch-primary: 56px;
+  --content-max: 72rem;
+  --duration-fast: 120ms;
+}
+
+@mixin dark-tokens {
+  --color-bg: #1d1a17;
+  --color-surface: #27231f;
+  --color-surface-muted: #322d27;
+  --color-border: #4a4239;
+  --color-text: #f4ede2;
+  --color-text-muted: #bcae9c;
+  --color-primary: #6dbb6e;
+  --color-primary-hover: #86cc85;
+  --color-primary-contrast: #102213;
+  --color-warning-bg: #3d2f12;
+  --color-warning-text: #f5cf7a;
+  --color-danger: #ff8a80;
+  --color-danger-bg: #3e1d1b;
+  --color-success-bg: #1f3520;
+  --color-success-text: #a8dca5;
+  --color-info-bg: #19293a;
+  --color-info-text: #9cc7f0;
+  --color-focus: #7db4ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark-tokens;
+  }
+}
+
+:root[data-theme="dark"] {
+  @include dark-tokens;
+}
