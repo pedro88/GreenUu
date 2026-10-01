@@ -1,0 +1,76 @@
+{
+  "name": "greenu",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "concurrently -n next,worker -c green,blue \"next dev\" \"tsx watch --env-file=.env src/server/jobs/worker.ts\"",
+    "build": "next build",
+    "start": "next start",
+    "worker": "tsx --env-file=.env src/server/jobs/worker.ts",
+    "lint": "eslint . && stylelint \"src/**/*.scss\"",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx --env-file=.env scripts/migrate.ts",
+    "db:seed": "tsx --env-file=.env scripts/seed.ts",
+    "db:reset": "tsx --env-file=.env scripts/reset.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:spec": "tsx scripts/spec-coverage.ts"
+  },
+  "pnpm": {
+    "overrides": {
+      "baseline-browser-mapping": "2.11.26"
+    }
+  },
+  "dependencies": {
+    "@date-fns/tz": "^1.5.0",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-dropdown-menu": "^2.1.24",
+    "@radix-ui/react-label": "^2.1.15",
+    "@radix-ui/react-select": "^2.3.7",
+    "@radix-ui/react-slot": "^1.3.3",
+    "@radix-ui/react-tabs": "^1.1.21",
+    "better-auth": "^1.7.7",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "drizzle-orm": "0.45.3",
+    "drizzle-zod": "^0.8.3",
+    "lucide-react": "^1.49.0",
+    "next": "16.3.8",
+    "next-intl": "^4.14.8",
+    "nodemailer": "^10.0.13",
+    "nuqs": "^2.10.1",
+    "pg-boss": "^12.35.1",
+    "postgres": "^3.4.9",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
+    "zod": "4"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "24",
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "concurrently": "^10.0.5",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "9",
+    "eslint-config-next": "16.3.8",
+    "prettier": "^3.9.9",
+    "sass": "^1.105.1",
+    "stylelint": "^17.16.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.3"
+  }
+}

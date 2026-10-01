@@ -1,0 +1,17 @@
+{
+  "extends": ["stylelint-config-standard-scss"],
+  "rules": {
+    "color-no-hex": [true, { "message": "Couleur en dur : utilise un token de src/styles/_tokens.scss" }],
+    "color-named": ["never", { "message": "Couleur en dur : utilise un token" }],
+    "function-disallowed-list": [["rgb", "rgba", "hsl", "hsla"], { "message": "Couleur en dur : utilise un token" }],
+    "selector-class-pattern": null,
+    "scss/at-mixin-pattern": null,
+    "scss/dollar-variable-pattern": null
+  },
+  "overrides": [
+    {
+      "files": ["src/styles/_tokens.scss"],
+      "rules": { "color-no-hex": null, "color-named": null, "function-disallowed-list": null }
+    }
+  ]
+}

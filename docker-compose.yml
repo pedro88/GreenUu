@@ -1,0 +1,34 @@
+# Projet nommé explicitement : un autre projet Compose « greenu » existe sur cette machine.
+name: greenu-app
+
+services:
+  postgres:
+    image: postgres:18
+    container_name: greenu-app-db
+    environment:
+      POSTGRES_USER: greenu
+      POSTGRES_PASSWORD: greenu
+      POSTGRES_DB: greenu
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U greenu -d greenu"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: greenu-app-mailpit
+    ports:
+      - "1026:1025"   # SMTP
+      - "8026:8025"   # UI + API HTTP
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+volumes:
+  pgdata:
