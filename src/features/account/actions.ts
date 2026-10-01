@@ -122,13 +122,28 @@ export async function resetPassword(raw: unknown): Promise<ActionResult<{ redire
 export async function verifyEmail(raw: unknown): Promise<ActionResult<{ status: 'verified' | 'alreadyUsed' }>> {
   const parsed = verifySchema.safeParse(raw);
   if (!parsed.success) return fail('NOT_FOUND', 'linkInvalid');
+  // Better Auth renvoie toujours `user: null` : on regarde si l'adresse était déjà vérifiée avant l'appel.
+  const email = emailFromVerificationToken(parsed.data.token);
+  const [before] = email ? await db().select({ verified: user.emailVerified }).from(user).where(eq(user.email, email)).limit(1) : [];
   try {
-    const res = await auth().api.verifyEmail({ query: { token: parsed.data.token }, headers: await headers() });
+    await auth().api.verifyEmail({ query: { token: parsed.data.token }, headers: await headers() });
     revalidatePath('/', 'layout');
-    return { ok: true, data: { status: res && 'user' in res && res.user ? 'verified' : 'alreadyUsed' } };
+    return { ok: true, data: { status: before?.verified ? 'alreadyUsed' : 'verified' } };
   } catch (err) {
     if (err instanceof APIError) return fail('NOT_FOUND', err.message.includes('expired') ? 'linkExpired' : 'linkInvalid');
     throw err;
+  }
+}
+
+/** Lit (sans le vérifier : Better Auth s'en charge) l'e-mail du jeton JWT de vérification. */
+function emailFromVerificationToken(token: string): string | null {
+  const payload = token.split('.')[1];
+  if (!payload) return null;
+  try {
+    const parsedPayload: unknown = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    return typeof parsedPayload === 'object' && parsedPayload !== null && 'email' in parsedPayload && typeof parsedPayload.email === 'string' ? parsedPayload.email : null;
+  } catch {
+    return null;
   }
 }
 

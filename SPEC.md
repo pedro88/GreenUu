@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.2 — validée le 2026-10-01. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.3 — validée le 2026-10-01, mise à jour en fin de lot 1. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -135,7 +135,7 @@ Le code utilise les termes anglais entre parenthèses (identifiants techniques).
 | Récurrence | `rrule` | Implémentation éprouvée de la RFC 5545 : inutile d'écrire notre propre moteur de récurrence. |
 | i18n | `next-intl` | Compatible avec les Server Components, messages typés, formatage `Intl`. Routes en français sans préfixe de locale en V1 (§17 Q-19). |
 | Dates et fuseaux | `date-fns` + `@date-fns/tz` | Calcul de « aujourd'hui dans le fuseau du jardin » et des bornes de jour pour les plafonds d'XP. |
-| Styles | **SCSS** (`sass`), en CSS Modules (`*.module.scss`) par composant, plus une couche globale `src/styles/` : `_tokens.scss` (design tokens exposés en propriétés CSS personnalisées `--color-*`, `--space-*`, `--radius-*`, `--font-*`, pour le thème clair, le thème sombre et le mode contraste), `_mixins.scss` (points de rupture mobile-first, focus visible, `reduced-motion`, cibles tactiles), `_reset.scss`. Pas de Tailwind. | Choix de l'équipe. Next.js gère SCSS et CSS Modules nativement : il suffit d'ajouter `sass`. Les tokens en propriétés CSS sont lisibles à l'exécution, notamment par la vue gamifiée pour harmoniser ses couleurs d'interface. Une règle Stylelint (`stylelint-config-standard-scss`) interdit les couleurs et espacements en dur hors de `_tokens.scss`. |
+| Styles | **SCSS** (`sass`), en CSS Modules (`*.module.scss`) par composant, plus une couche globale `src/styles/` : `_tokens.scss` (design tokens exposés en propriétés CSS personnalisées `--color-*`, `--space-*`, `--radius-*`, `--font-*`, pour le thème clair, le thème sombre et le mode contraste), `_mixins.scss` (points de rupture mobile-first, focus visible, `reduced-motion`, cibles tactiles), `_reset.scss`. Pas de Tailwind. | Choix de l'équipe. Next.js gère SCSS et CSS Modules nativement : il suffit d'ajouter `sass`. Les tokens en propriétés CSS sont lisibles à l'exécution, notamment par la vue gamifiée pour harmoniser ses couleurs d'interface. Une règle Stylelint (`stylelint-config-standard-scss`) interdit les couleurs en dur hors de `_tokens.scss`. |
 | Composants UI | Primitives **Radix UI** (`@radix-ui/react-*` : Dialog, DropdownMenu, Tabs, Popover, Select, Toast…), sans styles, habillées en SCSS dans `src/components/ui/` | Accessibilité (focus, clavier, ARIA) sans librairie de composants stylée. shadcn/ui est écarté parce qu'il repose sur Tailwind. Icônes de la vue classique : `lucide-react`. |
 | État URL | `nuqs` | Imposé : filtres, onglets, mode liste / kanban / calendrier. |
 | État client riche | `zustand`, réservé à la vue jardin, à l'éditeur de plan et à l'éditeur d'avatar | Imposé : ces stores sont lus hors de React par la boucle de rendu (`getState`, `subscribe`). |
@@ -181,7 +181,7 @@ src/
   i18n/                     # messages fr (en préparé)
 ```
 
-**Règle de dépendance** : `app` → `features/*/actions|ui` → `features/*/service` → `features/*/repo` → `server/db`. Un service n'importe jamais `next/*`. Il reçoit l'horloge et les dépôts en paramètres, ce qui permet de le tester sans Next. `eslint-plugin-boundaries` vérifie ces sens de dépendance.
+**Règle de dépendance** : `app` → `features/*/actions|ui` → `features/*/service` → `features/*/repo` → `server/db`. Un service n'importe jamais `next/*`. Il reçoit l'horloge et un exécuteur (base ou transaction) en paramètres, ce qui permet de le tester sans Next. La règle ESLint native `no-restricted-imports` vérifie ces sens de dépendance : la couche service / dépôt / lib n'importe ni Next ni React ; l'UI n'importe ni le schéma Drizzle, ni les dépôts, ni `drizzle-orm`. Les Server Components peuvent importer le client `db()` uniquement pour le passer aux fonctions de lecture des services (D-23). Les gardes de page dépendantes de Next vivent dans `src/server/page-guards.ts`.
 
 ### 3.3 Autorisation centralisée (anti-IDOR)
 
@@ -278,20 +278,21 @@ Catalogue V1. Le payload est minimal : des IDs et les valeurs utiles au barème,
 
 ### 3.8 Environnement local
 
-- `docker-compose.yml` : `postgres:18` (port 5432, volume nommé ; les bases `greenu` et `greenu_test` sont créées par un script d'initialisation) et `axllent/mailpit` (SMTP sur 1025, UI et API sur 8025).
+- `docker-compose.yml`, projet nommé `greenu-app` (un autre projet Compose « greenu » existe sur la machine de dev) : `postgres:18` (port hôte **5434**, volume nommé ; les bases `greenu` et `greenu_test` et les extensions sont créées par un script d'initialisation) et `axllent/mailpit` (SMTP sur **1026**, UI et API sur **8026**).
 - `.env.example` est documenté. Les variables sont validées au démarrage par `server/env.ts` (Zod) : si une variable manque, le processus s'arrête avec un message clair.
 
 | Variable | Exemple | Rôle |
 |---|---|---|
-| `DATABASE_URL` | `postgres://greenu:greenu@localhost:5432/greenu` | Base principale |
+| `DATABASE_URL` | `postgres://greenu:greenu@localhost:5434/greenu` | Base principale |
+| `DATABASE_URL_TEST` | `postgres://greenu:greenu@localhost:5434/greenu_test` | Base des tests (Vitest, Playwright) |
 | `APP_URL` | `http://localhost:3000` | Liens dans les e-mails |
 | `BETTER_AUTH_SECRET` | 32 octets aléatoires | Signature des sessions |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_SECURE` | `localhost` / `1025` / vide / vide / `false` | Envoi d'e-mails |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_SECURE` | `localhost` / `1026` / vide / vide / `false` | Envoi d'e-mails |
 | `MAIL_FROM` | `GreenU <no-reply@greenu.local>` | Expéditeur |
 | `STORAGE_DRIVER` | `local` | `local` ou `s3` |
 | `STORAGE_LOCAL_DIR` | `./var/uploads` | Pilote local |
 | `S3_ENDPOINT` / `S3_BUCKET` / `S3_ACCESS_KEY` / `S3_SECRET_KEY` | — | Pilote S3 (prod) |
-| `MAILPIT_API_URL` | `http://localhost:8025` | Tests e2e uniquement |
+| `MAILPIT_API_URL` | `http://localhost:8026` | Tests e2e uniquement |
 | `APP_NOW` | `2026-06-15T09:00:00+02:00` | Tests uniquement : horloge figée |
 | `FEATURE_WEATHER` | `false` | Module météo (hors MVP) |
 
@@ -311,7 +312,7 @@ Liste blanche, reprise de §3.1.
 
 | Production | Développement |
 |---|---|
-| `next`, `react`, `react-dom`, `drizzle-orm`, `postgres`, `zod`, `drizzle-zod`, `better-auth`, `nodemailer`, `pg-boss`, `rrule`, `next-intl`, `date-fns`, `@date-fns/tz`, `nuqs`, `zustand`, `pixi.js`, `react-markdown`, `remark-gfm`, `rehype-sanitize`, `diff`, `lucide-react`, primitives `@radix-ui/react-*`, `clsx` (composition de classes CSS Modules) | `typescript`, `sass`, `stylelint` + `stylelint-config-standard-scss`, `drizzle-kit`, `vitest`, `@playwright/test`, `eslint`, `typescript-eslint`, `eslint-plugin-boundaries`, `prettier`, `tsx` (scripts de seed et worker) |
+| `next`, `react`, `react-dom`, `drizzle-orm`, `postgres`, `zod`, `drizzle-zod`, `better-auth`, `nodemailer`, `pg-boss`, `rrule`, `next-intl`, `date-fns`, `@date-fns/tz`, `nuqs`, `zustand`, `pixi.js`, `react-markdown`, `remark-gfm`, `rehype-sanitize`, `diff`, `lucide-react`, primitives `@radix-ui/react-*`, `clsx` (composition de classes CSS Modules), `server-only` (empêche l'import de modules serveur côté client) | `typescript`, `sass`, `stylelint` + `stylelint-config-standard-scss`, `drizzle-kit`, `vitest`, `@playwright/test`, `eslint` 9, `eslint-config-next`, `typescript-eslint`, `prettier`, `tsx` (scripts de seed et worker), `concurrently` (Next et worker en parallèle), `@axe-core/playwright` (A11Y-01) |
 
 Sont **implémentés en interne**, sans dépendance : le geohash, le calcul du lever et du coucher du soleil (approximation NOAA), la compression des photos (canvas, qui supprime au passage les métadonnées EXIF dont le GPS) et la recoloration par palette de l'avatar. Ce sont de petites fonctions pures, testées.
 
@@ -348,8 +349,8 @@ erDiagram
   user ||--o{ consent : "donne"
   garden ||--o{ garden_member : "a"
   garden ||--o{ garden_invitation : "a"
-  garden ||--o{ group : "a"
-  group ||--o{ group_member : "a"
+  garden ||--o{ garden_group : "a"
+  garden_group ||--o{ group_member : "a"
   garden_member ||--o{ group_member : "appartient"
   garden ||--o{ garden_environment : "a"
   garden ||--o{ zone : "contient"
@@ -357,7 +358,7 @@ erDiagram
   zone_type ||--o{ zone : "type"
   garden ||--o{ zone_type : "types perso"
   zone ||--o{ zone_group_permission : "restreinte à"
-  group ||--o{ zone_group_permission : "autorisé"
+  garden_group ||--o{ zone_group_permission : "autorisé"
   practice ||--o{ practice_declaration : "déclarée"
   garden ||--o{ practice_declaration : "porte"
   zone ||--o{ practice_declaration : "porte"
@@ -439,7 +440,7 @@ erDiagram
     timestamptz accepted_at
     timestamptz revoked_at
   }
-  group {
+  garden_group {
     uuid id PK
     uuid garden_id FK
     text name
@@ -711,7 +712,7 @@ erDiagram
   ticket_series ||--o{ ticket : "génère"
   ticket ||--o{ ticket_assignee : "a"
   garden_member ||--o{ ticket_assignee : "assigné"
-  group ||--o{ ticket_assignee : "assigné"
+  garden_group ||--o{ ticket_assignee : "assigné"
   ticket ||--o{ ticket_checklist_item : "a"
   ticket ||--o{ ticket_comment : "a"
   ticket ||--o{ ticket_event : "historique"
@@ -900,7 +901,7 @@ erDiagram
   user ||--o{ user_achievement : "obtient"
   user ||--o{ quest : "a"
   garden ||--o{ garden_goal : "a"
-  group ||--o{ garden_goal : "cible"
+  garden_group ||--o{ garden_goal : "cible"
 
   domain_event {
     uuid id PK
@@ -1748,8 +1749,6 @@ Chaque ID doit apparaître dans le titre d'au moins un test, par exemple `it('[T
 | ZON-06 | une zone avec une géométrie de 250 × 120 cm | on lit sa surface | 3,00 m², source « plan » | U |
 | ZON-07 | un admin | il crée le type personnalisé « Butte lasagne » et l'utilise | le type est proposé dans ce jardin uniquement | I |
 | ZON-08 | une zone qui a des cultures passées et un enfant | on l'archive | la zone et son enfant sont archivés, l'historique reste consultable avec le filtre « archivées », et elles disparaissent du plan | I |
-| ZON-09 | une zone qui a une culture `active` | on demande son archivage | une confirmation propose de terminer la culture ; sans confirmation, rien ne change | E |
-| ZON-10 | une zone de type composteur | on tente d'y créer une culture | `VALIDATION` ; un ticket peut en revanche y être créé | I |
 | ZON-11 | deux zones sœurs avec une géométrie | on redimensionne l'une pour qu'elle chevauche l'autre | `VALIDATION` | U |
 
 #### Membres, invitations, groupes
@@ -1764,7 +1763,7 @@ Chaque ID doit apparaître dans le titre d'au moins un test, par exemple `it('[T
 | INV-06 | un membre actif | on l'invite à nouveau | `CONFLICT` | I |
 | INV-07 | un admin | il tente d'inviter quelqu'un comme `admin` | `FORBIDDEN` ; seul l'owner peut inviter un admin | I |
 | INV-08 | une invitation avec les groupes [Équipe serre] | elle est acceptée | le nouveau membre fait partie d'Équipe serre | I |
-| MBR-01 | un membre qui a des contributions et un ticket ouvert qui lui est assigné directement | il quitte le jardin | `left_at` est renseigné, ses contributions restent avec « (ancien membre) », son assignation est retirée et les admins reçoivent une notification | I |
+| MBR-01 | un membre qui a des contributions et un ticket ouvert qui lui est assigné directement | il quitte le jardin | `left_at` est renseigné, ses contributions restent avec « (ancien membre) », son assignation est retirée et les admins reçoivent une notification (par e-mail au lot 1, aussi in-app à partir du lot 3) | I |
 | MBR-02 | l'owner | il tente de quitter le jardin | `FORBIDDEN`, avec le message « transfère d'abord la propriété » | I |
 | MBR-03 | l'owner et un admin | l'owner transfère la propriété à l'admin | l'admin devient `owner`, l'ancien owner devient `admin`, et il n'y a toujours qu'un seul owner actif | I |
 | MBR-04 | un admin | il tente de retirer un autre admin ou de changer son rôle | `FORBIDDEN` | I |
@@ -1785,14 +1784,18 @@ Chaque ID doit apparaître dans le titre d'au moins un test, par exemple `it('[T
 | AUTHZ-05 | une zone restreinte au groupe G en `contribute` | un `member` hors de G tente d'y créer une culture | `FORBIDDEN` ; il peut lire et commenter | I |
 | AUTHZ-06 | une zone restreinte au groupe G en `contribute`, avec une sous-zone sans restriction propre | un membre de G crée une culture dans la sous-zone | succès (restriction héritée et satisfaite) | I |
 | AUTHZ-07 | un observateur | il tente de terminer un ticket, de créer une entrée de journal ou de voter dans le jardin | `FORBIDDEN` pour chaque action ; l'UI ne propose pas ces actions | I |
-| AUTHZ-08 | une photo d'un jardin privé | un non-membre ouvre `/api/files/<id>` | 404 | I |
 | AUTHZ-09 | un `moderator` plateforme non membre de J | il tente de lire une culture de J | `FORBIDDEN` | I |
 | AUTHZ-10 | un jardin `collective` avec `plan_edit_min_role = admin` | un `member` tente de créer une zone | `FORBIDDEN` ; un admin réussit | I |
 
 ### 12.2 Lot 2 — Cultures
 
+Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent des cultures et des photos : ils sont testés au lot 2.
+
 | ID | Étant donné | Quand | Alors | Test |
 |---|---|---|---|---|
+| ZON-09 | une zone qui a une culture `active` | on demande son archivage | une confirmation propose de terminer la culture ; sans confirmation, rien ne change | E |
+| ZON-10 | une zone de type composteur | on tente d'y créer une culture | `VALIDATION` ; un ticket peut en revanche y être créé | I |
+| AUTHZ-08 | une photo d'un jardin privé | un non-membre ouvre `/api/files/<id>` | 404 | I |
 | PLT-01 | le référentiel seedé | on cherche « tomatte » ou « cœur de boeuf » | la tomate et la variété Cœur de bœuf apparaissent en tête | I |
 | PLT-02 | un utilisateur vérifié | il propose la variété « Tomate de Marmande locale » | elle est `pending`, utilisable dans son jardin avec la mention « en attente », absente du référentiel public et visible dans `/admin/varietes` | E |
 | PLT-03 | une variété `pending` utilisée dans 2 cultures | un modérateur la fusionne avec une variété existante | les 2 cultures pointent vers la cible et la variété est `merged` | I |
@@ -2116,6 +2119,10 @@ Contenu :
 | D-20 | Tickets générés par les étapes et les guides créés tout de suite avec `visible_from`, plutôt que par un job différé | Table de tâches planifiées et job de matérialisation |
 | D-21 | Licence des contenus publics (guides, tips) : CC BY-SA 4.0, mentionnée à la publication | Tous droits réservés, ou au choix de l'auteur (§17 Q-13) |
 | D-22 | SCSS en CSS Modules + design tokens en propriétés CSS ; primitives Radix habillées maison | Tailwind + shadcn/ui (écarté par décision de l'équipe) |
+| D-23 | Les Server Components lisent via les fonctions des services en leur passant `db()` ; ni schéma ni dépôt dans l'UI | Une couche « queries » supplémentaire qui masque l'exécuteur |
+| D-24 | Localisation du jardin au lot 1 : géolocalisation du navigateur ou saisie latitude / longitude, sans carte ni géocodage | Carte interactive (Leaflet) et géocodage d'adresse (service externe) — §17 Q-24 |
+| D-25 | Marque affichée : **GreenU** (les maquettes portent « Bouture », elles servent de référence de style) | Bouture |
+| D-26 | Table SQL `garden_group` pour l'entité « groupe » (`group` est un mot réservé SQL) | Table `"group"` entre guillemets |
 
 ---
 
@@ -2148,6 +2155,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Q-21 | Unités : faut-il prévoir des unités impériales (lb, ft) ? | i18n | Non ; système métrique seulement en V1, conversion d'affichage possible plus tard |
 | Q-22 | Les jardins pédagogiques ont-ils besoin de comptes élèves sans e-mail (gérés par l'enseignant) ? | Lot 1, auth, RGPD des mineurs | Hors V1 ; à confirmer, car cela change l'auth et le consentement (mineurs) |
 | Q-23 | Faut-il garder la page d'accueil publique `/` avec un aperçu de la vue jardin dès le lot 1, alors que la vue n'arrive qu'au lot 7 ? | Lot 1 | Accueil simple au lot 1, aperçu animé au lot 7 |
+| Q-24 | Localisation : faut-il une carte et un géocodage d'adresse (service externe comme Nominatim, ou base de communes embarquée) pour remplacer la saisie latitude / longitude ? | Onboarding, UX | Base de communes embarquée (sans appel externe) au lot 2 ou 9 |
 
 ---
 
@@ -2156,4 +2164,5 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.3 | 2026-10-01 | Fin du lot 1 : ports et nom du projet Compose, `no-restricted-imports` au lieu d'`eslint-plugin-boundaries`, Stylelint limité aux couleurs, dépendances ajoutées (`concurrently`, `@axe-core/playwright`, `server-only`), table `garden_group`, ZON-09 / ZON-10 / AUTHZ-08 déplacés au lot 2, choix D-23 à D-26, question Q-24. |
 | 0.2 | 2026-10-01 | Validation. Tailwind et shadcn/ui remplacés par SCSS (CSS Modules, tokens) et des primitives Radix habillées en SCSS (§3.1, §3.9, D-22). Ajout de Stylelint. Propositions du §17 retenues comme décisions provisoires. |

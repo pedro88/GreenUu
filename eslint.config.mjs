@@ -14,6 +14,7 @@ export default tseslint.config(
   ...nextVitals,
   ...nextTs,
   {
+    files: ['**/*.ts', '**/*.tsx'],
     plugins: { greenu: local },
     languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname } },
     rules: {
@@ -28,6 +29,7 @@ export default tseslint.config(
   },
   {
     files: ['src/app/**/*.tsx', 'src/features/*/ui/**/*.tsx', 'src/components/**/*.tsx'],
+    plugins: { greenu: local },
     rules: { 'greenu/no-literal-jsx-text': 'error' },
   },
   {
@@ -37,7 +39,7 @@ export default tseslint.config(
   {
     files: ['src/app/**', 'src/features/*/ui/**', 'src/components/**'],
     rules: {
-      'no-restricted-imports': ['error', { patterns: [{ group: ['@/server/db', '@/server/db/*', '@/features/*/repo'], message: "L'UI passe par les services ou les actions, jamais par l'accès données (SPEC §3.2)." }] }],
+      'no-restricted-imports': ['error', { patterns: [{ group: ['@/server/db/schema', '@/server/db/schema/*', '@/features/*/repo', 'drizzle-orm', 'drizzle-orm/*'], message: "L'UI passe par les services ou les actions, jamais par le schéma ni les dépôts (SPEC §3.2)." }] }],
     },
   },
 );

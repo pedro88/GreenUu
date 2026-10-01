@@ -28,6 +28,6 @@ export default defineConfig({
         },
       },
     ],
-    reporters: ['default', ['json', { outputFile: 'test-results/vitest.json' }]],
+    reporters: ['default', ['json', { outputFile: 'reports/vitest.json' }]],
   },
 });
