@@ -276,3 +276,8 @@ export function canCreateRootZone(scope: Scope): boolean {
 function slugify(s: string): string {
   return s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 40) || 'type';
 }
+
+/** Liste plate des zones actives (sélecteurs de parent, déplacement). */
+export function listZoneRows(tx: Executor, scope: Scope) {
+  return repo.listZones(tx, scope, { includeArchived: false });
+}

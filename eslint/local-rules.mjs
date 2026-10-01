@@ -41,4 +41,6 @@ const noLiteralJsxText = {
   },
 };
 
-export default { rules: { 'justified-as': justifiedAs, 'no-literal-jsx-text': noLiteralJsxText } };
+const plugin = { rules: { 'justified-as': justifiedAs, 'no-literal-jsx-text': noLiteralJsxText } };
+
+export default plugin;

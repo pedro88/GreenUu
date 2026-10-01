@@ -1,12 +1,12 @@
 import { and, asc, count, eq, inArray, isNull } from 'drizzle-orm';
-import { conflict, DomainError, forbidden, notFound, validation } from '@/lib/errors';
+import { DomainError, notFound, validation } from '@/lib/errors';
 import { encodeGeohash } from '@/lib/geohash';
 import { localDate, addDays } from '@/lib/dates';
 import type { ScopedCtx, ServiceCtx } from '@/server/action-core';
 import { assertCan, can, type Scope } from '@/server/authz/scope';
 import { defaultPlanEditMinRole } from '@/server/authz/permissions';
 import type { Executor } from '@/server/db/client';
-import { garden, gardenEnvironment, gardenMember, user, userProfile } from '@/server/db/schema';
+import { garden, gardenEnvironment, gardenMember, user } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import { gardenDeletedMail } from '@/server/mail/templates';
 import { ensureSeason } from '../season/service';

@@ -1,4 +1,4 @@
-import { and, eq, ne } from 'drizzle-orm';
+import { and, desc, eq, ne } from 'drizzle-orm';
 import { conflict, validation } from '@/lib/errors';
 import type { Executor } from '@/server/db/client';
 import { consent, userProfile } from '@/server/db/schema';
@@ -22,4 +22,13 @@ export async function createProfile(tx: Executor, input: { userId: string; pseud
 export async function updateProfile(tx: Executor, userId: string, input: { pseudo: string; timezone: string; locale: 'fr' | 'en' }) {
   if (await isPseudoTaken(tx, input.pseudo, userId)) throw validation({ pseudo: ['pseudoTaken'] });
   await tx.update(userProfile).set(input).where(eq(userProfile.userId, userId));
+}
+
+export async function getProfile(tx: Executor, userId: string) {
+  const [p] = await tx.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+  return p ?? null;
+}
+
+export async function listConsents(tx: Executor, userId: string) {
+  return tx.select().from(consent).where(eq(consent.userId, userId)).orderBy(desc(consent.grantedAt));
 }

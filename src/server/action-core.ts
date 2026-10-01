@@ -1,7 +1,7 @@
 import type { z } from 'zod';
 import { DomainError, type ActionResult, type FieldErrors } from '@/lib/errors';
 import type { Clock } from './clock';
-import type { Db, Tx } from './db/client';
+import type { Executor, Tx } from './db/client';
 import type { JobQueue } from './jobs/queues';
 import { resolveScope, type Scope } from './authz/scope';
 import type { Permission } from './authz/permissions';
@@ -27,7 +27,8 @@ export type ServiceCtx = {
 export type ScopedCtx = ServiceCtx & { scope: Scope };
 
 export type ActionDeps = {
-  db: Db;
+  /** Base (ou transaction en test : l'action s'exécute alors dans un savepoint). */
+  db: Executor;
   clock: Clock;
   appUrl: string;
   jobs: (tx: Tx) => JobQueue;

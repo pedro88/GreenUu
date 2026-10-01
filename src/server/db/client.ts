@@ -13,7 +13,7 @@ export type Executor = Db | Tx;
 const globalForDb = globalThis as unknown as { __greenuSql?: ReturnType<typeof postgres> }; // as: singleton survivant au HMR de Next
 
 export function createSql(url: string) {
-  return postgres(url, { max: 10, prepare: true });
+  return postgres(url, { max: 10, prepare: true, onnotice: () => undefined });
 }
 
 export function createDb(sql: ReturnType<typeof postgres>): Db {

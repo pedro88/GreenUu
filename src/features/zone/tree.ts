@@ -27,24 +27,9 @@ export function subtreeHeight(zone: { id: string; path: string }, descendants: {
   return descendants.reduce((max, d) => Math.max(max, depthOf(d.path) - base + 1), 0);
 }
 
-export type Environment =
-  | 'open_air'
-  | 'greenhouse'
-  | 'tunnel'
-  | 'indoor'
-  | 'soilless'
-  | 'hydroponic'
-  | 'balcony_roof';
+import type { Environment } from '@/lib/enums';
 
-export const ENVIRONMENTS: readonly Environment[] = [
-  'open_air',
-  'greenhouse',
-  'tunnel',
-  'indoor',
-  'soilless',
-  'hydroponic',
-  'balcony_roof',
-];
+export type { Environment };
 
 /**
  * Environnement effectif : propre, sinon celui de l'ancêtre le plus proche, sinon le premier du jardin.

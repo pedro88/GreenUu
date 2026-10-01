@@ -1,0 +1,75 @@
+@use "../../../styles/mixins" as *;
+
+.tabs {
+  display: flex;
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+
+  a {
+    @include touch-target;
+
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+  }
+
+  a[aria-current="page"] {
+    border-bottom-color: var(--color-honey);
+  }
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-primary);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  background: var(--color-honey-soft);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.who {
+  font-weight: 700;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.groupGrid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+}
+
+.inviteBar {
+  position: sticky;
+  bottom: calc(var(--nav-height) + var(--space-2));
+
+  @include from($bp-md) {
+    bottom: var(--space-4);
+  }
+}

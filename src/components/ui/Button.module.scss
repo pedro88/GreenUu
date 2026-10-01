@@ -10,7 +10,8 @@
   padding: var(--space-2) var(--space-4);
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
   transition: background-color var(--duration-fast) ease;
@@ -33,13 +34,33 @@
 }
 
 .secondary {
-  background: var(--color-surface);
+  background: transparent;
   color: var(--color-text);
-  border-color: var(--color-border);
+  border: 2px solid var(--color-earth);
 
   &:hover:not(:disabled) {
     background: var(--color-surface-muted);
     color: var(--color-text);
+  }
+}
+
+.honey {
+  background: var(--color-honey);
+  color: var(--color-honey-contrast);
+
+  &:hover:not(:disabled) {
+    background: var(--color-honey-soft);
+    color: var(--color-honey-contrast);
+  }
+}
+
+.earth {
+  background: var(--color-earth);
+  color: var(--color-earth-contrast);
+
+  &:hover:not(:disabled) {
+    background: var(--color-earth-hover);
+    color: var(--color-earth-contrast);
   }
 }
 

@@ -10,11 +10,12 @@ body {
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-link);
+  font-weight: 600;
   text-underline-offset: 0.15em;
 
   &:hover {
-    color: var(--color-primary-hover);
+    color: var(--color-text);
   }
 }
 
@@ -23,6 +24,7 @@ a {
 }
 
 h1 {
+  font-weight: 800;
   font-size: var(--font-size-xl);
   line-height: 1.2;
 

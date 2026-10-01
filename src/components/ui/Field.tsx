@@ -1,5 +1,6 @@
 'use client';
 
+import { tDynamic } from '@/i18n/dynamic';
 import { useTranslations } from 'next-intl';
 import { useId, type ComponentProps, type ReactNode } from 'react';
 import styles from './Field.module.scss';
@@ -10,7 +11,7 @@ export function useValidationMessage() {
   return (raw: string): string => {
     const [key = 'invalid', query = ''] = raw.split('?');
     const params = Object.fromEntries(new URLSearchParams(query));
-    return t.has(key) ? t(key, params) : t('invalid');
+    return tDynamic(t, key, t('invalid'), params);
   };
 }
 

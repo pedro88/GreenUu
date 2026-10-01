@@ -21,7 +21,7 @@ const contextFields = {
     (v) => (v === '' ? undefined : v),
     z.string().regex(/^(1[0-3]|[1-9])[ab]?$/, 'invalidHardiness').optional(),
   ),
-  soilType: z.enum(SOIL_TYPES).default('unknown'),
+  soilType: z.preprocess((v) => (v === '' ? undefined : v), z.enum(SOIL_TYPES).default('unknown')),
   soilPh: optionalNumber(z.number().min(3).max(10)),
   exposure: z.preprocess((v) => (v === '' ? undefined : v), z.enum(EXPOSURES).optional()),
   waterAccess: z.preprocess((v) => (v === '' ? undefined : v), z.enum(WATER_ACCESS).optional()),

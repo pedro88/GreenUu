@@ -13,7 +13,7 @@
     "start": "next start",
     "worker": "tsx --env-file=.env src/server/jobs/worker.ts",
     "lint": "eslint . && stylelint \"src/**/*.scss\"",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file=.env scripts/migrate.ts",
     "db:seed": "tsx --env-file=.env scripts/seed.ts",
