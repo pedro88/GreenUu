@@ -21,7 +21,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:spec": "tsx scripts/spec-coverage.ts"
+    "test:spec": "tsx scripts/spec-coverage.ts",
+    "db:reference": "tsx --env-file=.env scripts/reference.ts"
   },
   "pnpm": {
     "overrides": {

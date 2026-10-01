@@ -41,6 +41,7 @@ export const zoneMoveSchema = z.object({
 });
 
 export const zoneRefSchema = z.object({ gardenId: uuidSchema, zoneId: uuidSchema });
+export const zoneArchiveSchema = zoneRefSchema.extend({ finishActiveCultures: z.boolean().default(false) });
 
 export const zoneTypeCreateSchema = z.object({
   gardenId: uuidSchema,

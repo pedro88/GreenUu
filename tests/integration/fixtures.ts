@@ -33,3 +33,22 @@ export async function makeGroup(tx: Tx, gardenId: string, name: string, memberId
   if (memberIds.length) await tx.insert(groupMember).values(memberIds.map((memberId) => ({ gardenId, groupId: g.id, memberId })));
   return g.id;
 }
+
+import { zoneType } from '../../src/server/db/schema';
+import { createZone } from '../../src/features/zone/service';
+import { speciesRefId, varietyRefId } from '../../src/features/plant/reference/load';
+import { scopedCtx } from './helpers';
+
+export { speciesRefId, varietyRefId };
+
+export async function zoneTypeId(tx: Tx, code: string) {
+  const [t] = await tx.select().from(zoneType).where(and(eq(zoneType.code, code), isNull(zoneType.gardenId))).limit(1);
+  if (!t) throw new Error(code);
+  return t.id;
+}
+
+export async function makeZone(tx: Tx, owner: Actor, gardenId: string, name: string, code = 'bed', parentId: string | null = null, geometry: { v: 1; kind: 'rect'; x: number; y: number; w: number; h: number } | null = null) {
+  const ctx = await scopedCtx(tx, owner, gardenId);
+  const { zoneId } = await createZone(ctx, { gardenId, parentId, name, zoneTypeId: await zoneTypeId(tx, code), environment: null, geometry, hasInterior: false });
+  return zoneId;
+}

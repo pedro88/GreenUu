@@ -15,6 +15,20 @@
       "when": 1790883598694,
       "tag": "0001_triggers_and_reference_data",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790887604396,
+      "tag": "0002_cultures",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790887616672,
+      "tag": "0003_updated_at_triggers_lot2",
+      "breakpoints": true
     }
   ]
 }

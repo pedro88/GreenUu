@@ -4,7 +4,8 @@ import type { ScopedCtx } from '@/server/action-core';
 import { can, type Scope } from '@/server/authz/scope';
 import { effectiveRestriction, zoneAllows, zoneGrantsEdit } from '@/server/authz/zone-access';
 import type { Executor } from '@/server/db/client';
-import { gardenEnvironment, gardenGroup, zone, zoneGroupPermission, zoneType } from '@/server/db/schema';
+import { culture, cultureStage, garden, gardenEnvironment, gardenGroup, zone, zoneGroupPermission, zoneType } from '@/server/db/schema';
+import { localDate } from '@/lib/dates';
 import { emit } from '@/server/events/emit';
 import * as repo from './repo';
 import type { ZoneCreateInput, ZoneUpdateInput } from './schema';
@@ -38,7 +39,20 @@ async function assertZoneEdit(tx: Executor, scope: Scope, permission: ZonePermis
   if (!zoneAllows(scope.role, scope.groupIds, restriction, 'edit')) throw forbidden('zoneRestricted');
 }
 
-function chainOf(z: { id: string; path: string }): string[] {
+/**
+ * Droit de « cultiver » une zone (cultures, journal, récoltes) : permission de rôle, puis restriction
+ * de zone de niveau `contribute` au moins (SPEC §5.3). Renvoie la zone.
+ */
+export async function assertZoneContribute(tx: Executor, scope: Scope, permission: 'culture:create' | 'culture:update' | 'culture:delete' | 'journal:create', zoneId: string, facts?: { isOwn?: boolean }) {
+  if (scope.archived) throw forbidden('gardenArchived');
+  const z = await repo.findZone(tx, scope, zoneId);
+  if (!can(scope, permission, facts)) throw forbidden();
+  const restriction = effectiveRestriction(await repo.restrictionChain(tx, scope, chainOf(z)));
+  if (!zoneAllows(scope.role, scope.groupIds, restriction, 'contribute')) throw forbidden('zoneRestricted');
+  return z;
+}
+
+export function chainOf(z: { id: string; path: string }): string[] {
   return [...(z.path ? z.path.split('/') : []), z.id];
 }
 
@@ -147,7 +161,7 @@ export async function moveZone(ctx: ScopedCtx, input: { zoneId: string; parentId
 }
 
 /** RG-ZON-06 : l'archivage s'applique à tout le sous-arbre ; l'historique est conservé. */
-export async function setZoneArchived(ctx: ScopedCtx, zoneId: string, archived: boolean) {
+export async function setZoneArchived(ctx: ScopedCtx, zoneId: string, archived: boolean, opts: { finishActiveCultures?: boolean } = {}) {
   const { tx, scope, actor, clock } = ctx;
   const current = await repo.findZone(tx, scope, zoneId);
   await assertZoneEdit(tx, scope, 'zone:archive', chainOf(current));
@@ -156,6 +170,20 @@ export async function setZoneArchived(ctx: ScopedCtx, zoneId: string, archived: 
     if (parent.archivedAt) throw validation({ zoneId: ['parentArchived'] });
   }
   const ids = [current.id, ...(await repo.findDescendants(tx, scope, current)).map((d) => d.id)];
+  if (archived) {
+    // RG-ZON-06 / ZON-09 : des cultures en cours bloquent l'archivage, sauf confirmation explicite.
+    const running = await tx.select({ id: culture.id, status: culture.status }).from(culture)
+      .where(and(eq(culture.gardenId, scope.gardenId), inArray(culture.zoneId, ids), isNull(culture.deletedAt), inArray(culture.status, ['planned', 'active'])));
+    if (running.length > 0 && !opts.finishActiveCultures) throw new DomainError('CONFLICT', 'zoneHasActiveCultures');
+    const [g] = await tx.select({ timezone: garden.timezone }).from(garden).where(eq(garden.id, scope.gardenId)).limit(1);
+    const today = localDate(clock.now(), g?.timezone ?? 'Europe/Paris');
+    for (const c of running) {
+      // Une culture en cours est terminée aujourd'hui ; une culture seulement prévue est abandonnée.
+      await tx.insert(cultureStage).values({ gardenId: scope.gardenId, cultureId: c.id, stage: 'end', actualOn: today, recordedBy: actor.id })
+        .onConflictDoUpdate({ target: [cultureStage.cultureId, cultureStage.stage], set: { actualOn: today, recordedBy: actor.id } });
+      await tx.update(culture).set({ status: c.status === 'active' ? 'finished' : 'abandoned', occupiedTo: today }).where(eq(culture.id, c.id));
+    }
+  }
   await tx.update(zone).set({ archivedAt: archived ? clock.now() : null })
     .where(and(eq(zone.gardenId, scope.gardenId), inArray(zone.id, ids)));
   if (archived) {

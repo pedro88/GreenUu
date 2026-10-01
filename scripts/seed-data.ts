@@ -9,6 +9,7 @@ import {
   season, user, userProfile, zone, zoneGroupPermission, zoneType,
 } from '../src/server/db/schema';
 import type { Environment, GardenRole, OrgType } from '../src/lib/enums';
+import { loadReferenceData } from '../src/features/plant/reference/load';
 
 export const SEED_PASSWORD = 'jardin-seed-2026';
 
@@ -88,6 +89,7 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
   const passwordHash = await hashPassword(SEED_PASSWORD);
   const year = referenceDate.getFullYear();
   await db.transaction(async (tx) => {
+    await loadReferenceData(tx);
     for (const u of SEED_USERS) {
       const id = userId(u.key);
       await tx.insert(user).values({ id, name: u.name, email: seedEmail(u.key), emailVerified: u.verified ?? true, platformRole: u.platformRole ?? 'user' }).onConflictDoNothing();

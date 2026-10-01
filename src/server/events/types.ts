@@ -29,6 +29,19 @@ export type DomainEvent =
   | E<'zone.moved', 'zone', { fromParentId: string | null; toParentId: string | null }>
   | E<'zone.archived', 'zone', { archivedIds: string[] }>
   | E<'zone.geometry_changed', 'zone', Record<string, never>>
-  | E<'user.registered', 'user', Record<string, never>>;
+  | E<'user.registered', 'user', Record<string, never>>
+  | E<'variety.proposed', 'variety', Record<string, never>>
+  | E<'variety.approved' | 'variety.rejected' | 'variety.merged', 'variety', { proposedBy: string | null }>
+  | E<'culture.created', 'culture', { speciesId: string; method: string; rotationOverride: boolean }>
+  | E<'culture.updated', 'culture', { fields: string[] }>
+  | E<'culture.deleted' | 'culture.restored', 'culture', Record<string, never>>
+  | E<'culture.ended', 'culture', { status: string }>
+  | E<'culture.moved', 'culture', { fromZoneId: string; toZoneId: string }>
+  | E<'culture.stage_recorded', 'culture', { stage: string; actualOn: string | null; plannedOn: string | null }>
+  | E<'journal.entry_created', 'journal_entry', { kind: string; hasPhoto: boolean; structured: boolean; cultureId: string | null }>
+  | E<'journal.entry_deleted', 'journal_entry', Record<string, never>>
+  | E<'harvest.recorded', 'harvest', { cultureId: string; quantityKg: number | null; unit: string; seedSaving: boolean }>
+  | E<'harvest.deleted', 'harvest', { cultureId: string }>
+  | E<'season.closed' | 'season.reopened', 'season', { year: number }>;
 
 export type DomainEventType = DomainEvent['type'];

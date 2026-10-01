@@ -7,6 +7,10 @@ import '../../src/features/group/actions';
 import '../../src/features/member/actions';
 import '../../src/features/practice/actions';
 import '../../src/features/zone/actions';
+import '../../src/features/culture/actions';
+import '../../src/features/journal/actions';
+import '../../src/features/harvest/actions';
+import '../../src/features/plant/actions';
 import { actionRegistry, runAction, type ActionDeps } from '../../src/server/action-core';
 import { loadScope } from '../../src/server/authz/scope';
 import type { Tx } from '../../src/server/db/client';
@@ -46,6 +50,19 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'group.update': { gardenId, groupId: id, name: 'Groupe' },
     'group.archive': { gardenId, groupId: id },
     'practice.set': { gardenId, zoneId: null, declared: [] },
+    'culture.preview': { gardenId, zoneId: id, speciesId: id, method: 'direct_sowing', anchorDate: '2026-04-01' },
+    'culture.create': { gardenId, zoneId: id, speciesId: id, method: 'direct_sowing', anchorDate: '2026-04-01' },
+    'culture.recordStage': { gardenId, cultureId: id, stage: 'sowing', actualOn: '2026-04-01' },
+    'culture.update': { gardenId, cultureId: id, varietyId: null },
+    'culture.outcome': { gardenId, cultureId: id, outcome: 'failed' },
+    'culture.delete': { gardenId, cultureId: id },
+    'culture.restore': { gardenId, cultureId: id },
+    'season.setClosed': { gardenId, year: 2026, closed: true },
+    'journal.create': { gardenId, zoneId: id, kind: 'note', body: 'x' },
+    'journal.delete': { gardenId, entryId: id },
+    'journal.resolve': { gardenId, entryId: id },
+    'harvest.record': { gardenId, cultureId: id, quantity: 1, unit: 'kg' },
+    'harvest.delete': { gardenId, harvestId: id },
   };
 }
 

@@ -1,7 +1,7 @@
 'use server';
 
 import { defineAction } from '@/server/action';
-import { zoneCreateSchema, zoneMoveSchema, zoneRefSchema, zoneRestrictSchema, zoneTypeArchiveSchema, zoneTypeCreateSchema, zoneUpdateSchema } from './schema';
+import { zoneArchiveSchema, zoneCreateSchema, zoneMoveSchema, zoneRefSchema, zoneRestrictSchema, zoneTypeArchiveSchema, zoneTypeCreateSchema, zoneUpdateSchema } from './schema';
 import * as service from './service';
 
 /* Les permissions de zone dépendent du réglage du jardin et des restrictions par groupe :
@@ -33,10 +33,10 @@ export const moveZoneAction = defineAction({
 
 export const archiveZoneAction = defineAction({
   name: 'zone.archive',
-  input: zoneRefSchema,
+  input: zoneArchiveSchema,
   permission: 'garden:read',
   gardenId: (i) => i.gardenId,
-  handler: (ctx, input) => service.setZoneArchived(ctx, input.zoneId, true),
+  handler: (ctx, input) => service.setZoneArchived(ctx, input.zoneId, true, { finishActiveCultures: input.finishActiveCultures }),
 });
 
 export const unarchiveZoneAction = defineAction({
