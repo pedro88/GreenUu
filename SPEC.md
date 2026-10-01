@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.3 — validée le 2026-10-01, mise à jour en fin de lot 1. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.4 — validée le 2026-10-01, mise à jour en fin de lot 2. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -304,7 +304,9 @@ Scripts `pnpm` :
 - `test` : Vitest ;
 - `test:e2e` : Playwright, après remise à zéro et seed de `greenu_test` ;
 - `test:spec` : couverture des IDs de critères (§13.3) ;
-- `xp:recompute`.
+- `xp:recompute` ;
+- `db:reference` : charge ou met à jour le référentiel végétal commun (idempotent, aussi en production) ;
+- `assets:sync` : copie les assets livrés par la session sprites (`out/`) vers `public/sprites` et génère `src/generated/sprites.ts` (vignettes disponibles, repli espèce → famille → générique).
 
 ### 3.9 Dépendances
 
@@ -637,7 +639,7 @@ erDiagram
     text body
     uuid problem_id FK
     int severity "1..3"
-    text intervention "watering|fertilizing|treatment|pruning|weeding|mulching|other"
+    text intervention "watering|fertilizing|treatment|pruning|weeding|mulching|transplant|other"
     jsonb weather
     bool resolved
     uuid author_id FK
@@ -1235,7 +1237,7 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 - **RG-ZON-03** Environnement effectif = environnement propre, sinon celui de l'ancêtre le plus proche qui en a un, sinon le premier environnement du jardin. Pratiques effectives = déclarations du jardin + déclarations de chaque ancêtre et de la zone elle-même, moins les exclusions, pour la saison concernée.
 - **RG-ZON-04** Surface effective : si la zone a une géométrie, `w × h / 10 000` m² (la géométrie prime ; une surface manuelle différente déclenche un avertissement dans le formulaire) ; sinon `surface_m2_manual` ; sinon `length_cm × width_cm` ; sinon inconnue. La surface d'un parent n'est **jamais** la somme de ses enfants (il peut exister des allées entre eux).
 - **RG-ZON-05** La géométrie d'une zone enfant doit être entièrement contenue dans celle de son parent quand les deux sont dans la même scène. Deux zones sœurs ne peuvent pas se chevaucher (`VALIDATION`). Les enfants d'une zone « avec intérieur » sont dessinés dans la scène intérieure de cette zone.
-- **RG-ZON-06** Archiver une zone archive tout son sous-arbre. Une zone archivée garde son historique (cultures, journal, tickets, résultats). Elle disparaît du plan et des listes par défaut, mais reste dans l'historique des saisons et dans les filtres « archivées ». Archiver une zone qui porte des cultures `active` demande confirmation et propose de les terminer.
+- **RG-ZON-06** Archiver une zone archive tout son sous-arbre. Une zone archivée garde son historique (cultures, journal, tickets, résultats). Elle disparaît du plan et des listes par défaut, mais reste dans l'historique des saisons et dans les filtres « archivées ». Archiver une zone qui porte des cultures `planned` ou `active` demande confirmation et propose de les terminer : une culture en cours reçoit une date de fin au jour même (`finished`), une culture seulement prévue est `abandoned`.
 - **RG-ZON-07** Une zone peut être recréée à l'identique ; aucune contrainte d'unicité ne porte sur le nom.
 - **RG-ZON-08** Une zone dont le type a `can_host_cultures = false` (allée, composteur) ne peut pas recevoir de culture. Elle peut recevoir des tickets et des entrées de journal.
 
@@ -1267,7 +1269,7 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 ### 6.6 Saisons, cultures, étapes, journal (SEA, CUL, JRN)
 
 - **RG-SEA-01** Une saison couvre par défaut l'année civile. Pour un jardin de l'hémisphère sud, `season_start_month = 7` est proposé. Les saisons d'un même jardin ne se chevauchent pas.
-- **RG-SEA-02** Une saison `closed` est en lecture seule pour les cultures, sauf la saisie ou la correction des bilans, possible pendant 12 mois après sa clôture.
+- **RG-SEA-02** Une saison `closed` est en lecture seule pour les cultures, sauf la saisie ou la correction des bilans, possible pendant 12 mois après sa clôture. La clôture est **manuelle** et réversible (owner ou admin, `garden:update`) : une saison passée reste modifiable tant qu'elle n'est pas close, ce qui permet de saisir un historique.
 - **RG-CUL-01** Une culture exige une espèce, une zone qui peut accueillir des cultures (RG-ZON-08), une saison et une méthode. La variété est optionnelle ; si elle est renseignée, elle doit appartenir à l'espèce.
 - **RG-CUL-02** La culture est rattachée à la saison qui contient sa première date d'étape (prévue ou réelle). Une culture qui déborde sur la saison suivante, comme de l'ail planté en novembre, reste rattachée à sa saison de départ. Elle apparaît aussi dans l'historique de la saison suivante, par recouvrement de sa période d'occupation `[occupied_from, occupied_to]`.
 - **RG-CUL-03** Période d'occupation de la zone : de la date de semis direct ou de plantation (la date réelle prime sur la prévue) jusqu'à la date de fin. Un semis en plaque n'occupe pas la zone finale avant le repiquage ou la plantation. Si le semis en plaque est rattaché à une zone de pépinière, il occupe cette zone ; la culture change alors de zone au repiquage (`zone_id` mis à jour, et changement tracé dans le journal sous forme d'entrée `intervention`).
@@ -1278,14 +1280,14 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 - **RG-CUL-08** Semences maison : `seed_source = own_saved` permet de choisir une culture d'origine (`seed_parent_culture_id`), dans le même jardin ou dans un jardin dont l'utilisateur est membre, ayant au moins une récolte `seed_saving` de la même espèce.
 - **RG-JRN-01** Une entrée de journal est rattachée soit à une culture, soit à une zone. `observed_at` vaut maintenant par défaut et peut être antidaté de 30 jours au plus.
 - **RG-JRN-02** Les entrées `disease` et `pest` exigent un `problem_id` du catalogue (avec « autre » + texte libre) et une sévérité de 1 à 3. Elles restent « non résolues » jusqu'à ce qu'on les marque résolues.
-- **RG-JRN-03** Photos : au plus 6 par entrée et 10 Mo chacune avant compression. Formats acceptés : JPEG, PNG, WebP, HEIC (converti côté client si le navigateur le permet). Côté client : redimensionnement à 1600 px et ré-encodage en WebP ou JPEG, ce qui **supprime les métadonnées EXIF (dont le GPS)**. Côté serveur : vérification du type réel par les octets d'en-tête.
+- **RG-JRN-03** Photos : au plus 6 par entrée et 10 Mo chacune avant compression. Formats acceptés : JPEG, PNG, WebP, HEIC (converti côté client si le navigateur le permet). Côté client : redimensionnement à 1600 px et ré-encodage en WebP ou JPEG, ce qui **supprime les métadonnées EXIF (dont le GPS)**. Côté serveur : vérification du type réel par les octets d'en-tête, **suppression des segments de métadonnées JPEG** (défense en profondeur si le client n'a pas ré-encodé), côté maximal de 4096 px. Une photo est d'abord téléversée « en attente » (`POST /api/files`, pièce jointe sans cible), puis rattachée à l'entrée de journal par l'action de création ; les pièces jointes en attente depuis plus de 24 h sont purgées.
 - **RG-JRN-04** Arrosage rapide : l'action « Arroser » crée une entrée `intervention = watering` sur la culture ou la zone **et** termine les tickets ouverts avec `action_tag = watering` échus aujourd'hui ou avant, rattachés à cette culture, à sa zone ou à un ancêtre de sa zone.
 - **RG-JRN-05** Récolte : quantité > 0 et unité obligatoires. Conversion en kg : `g` et `kg` directement ; `unit` à l'aide de `species.avg_unit_weight_g` quand il est connu ; sinon `quantity_kg = null`, et la récolte est exclue du rendement au m² mais comptée dans le nombre de récoltes.
 
 ### 6.7 Rotations et associations (ROT)
 
 - **RG-ROT-01** À la création ou au déplacement d'une culture annuelle de famille F sur une zone Z, le service cherche les cultures de la même famille F (non supprimées, quel que soit leur statut sauf `abandoned` sans plantation) dont la période d'occupation touche une saison de `année(culture) − (rotation_return_years(F) − 1)` à `année(culture) − 1`, sur Z, **un ancêtre de Z ou un descendant de Z**.
-- **RG-ROT-02** Le résultat est un **avertissement non bloquant**, du type : « Solanacées cultivées ici en 2025 (Tomate Cœur de bœuf, Planche 2). Retour conseillé : 4 ans, soit à partir de 2029. » L'utilisateur peut passer outre ; ce choix est tracé (`rotation_override = true` sur la culture) et pris en compte par le succès « rotation respectée ».
+- **RG-ROT-02** Le résultat est un **avertissement non bloquant**, du type : « Solanacées cultivées ici en 2025 (Tomate Cœur de bœuf, Planche 2). Retour conseillé : 4 ans, soit à partir de 2029. » L'utilisateur peut passer outre en le **confirmant explicitement** (sans confirmation, la création renvoie `CONFLICT` `rotationNotAcknowledged`) ; ce choix est tracé (`rotation_override = true` sur la culture) et pris en compte par le succès « rotation respectée ».
 - **RG-ROT-03** Délais par défaut (`rotation_return_years`, modifiable par la modération) : solanacées 4, brassicacées 4, alliacées / amaryllidacées 4, cucurbitacées 3, apiacées 3, fabacées 3, amaranthacées (betterave, épinard, blette) 3, astéracées 2, poacées 2, autres 2. Les vivaces et les engrais verts ne déclenchent pas d'alerte.
 - **RG-ROT-04** Associations : à la création d'une culture, le service liste les cultures actives sur la même zone et sur les **zones voisines** pendant la période d'occupation. Zones voisines = zones sœurs dont la géométrie partage un bord ou se trouve à moins d'une tuile ; à défaut de géométrie, toutes les zones sœurs. Il signale les associations favorables (information) et défavorables (avertissement).
 - **RG-ROT-05** La vue `/saisons` affiche, pour chaque zone, une frise des 5 dernières saisons avec la famille de chaque culture, et met en évidence les retours trop précoces.
@@ -1789,7 +1791,7 @@ Chaque ID doit apparaître dans le titre d'au moins un test, par exemple `it('[T
 
 ### 12.2 Lot 2 — Cultures
 
-Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent des cultures et des photos : ils sont testés au lot 2.
+Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent des cultures et des photos : ils sont testés au lot 2. Les parties « tickets » de CUL-07 (tickets ouverts annulés) et de ZON-10 (ticket créé sur un composteur) sont vérifiées au lot 3, avec JRN-05, déplacé en 12.3.
 
 | ID | Étant donné | Quand | Alors | Test |
 |---|---|---|---|---|
@@ -1817,7 +1819,6 @@ Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent de
 | JRN-02 | une photo JPEG contenant des coordonnées GPS en EXIF | elle passe par la compression client | le fichier envoyé ne contient plus d'EXIF | U |
 | JRN-03 | un fichier `.exe` renommé en `.jpg` | on le téléverse | il est refusé (contrôle des octets d'en-tête) | I |
 | JRN-04 | une entrée `pest` sans problème du catalogue | on la soumet | `VALIDATION` | I |
-| JRN-05 | une culture avec un ticket « Arroser » échu, rattaché à sa zone parente | on touche « Arroser » sur la culture | une entrée `watering` est créée et le ticket est terminé | I |
 | JRN-06 | une récolte de 12 `unit` de courgette (300 g par unité au référentiel) | on l'enregistre | `quantity_kg = 3,6` | U |
 | JRN-07 | une récolte de 3 `bunch` d'une espèce sans poids unitaire | on l'enregistre | `quantity_kg = null` ; elle est comptée dans les récoltes mais pas dans le rendement au m² | U |
 | JRN-08 | la saisie rapide d'une récolte depuis la fiche culture | l'utilisateur ouvre la saisie | au plus 2 taps et 3 champs obligatoires (quantité, unité, date pré-remplie) | E |
@@ -1832,6 +1833,7 @@ Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent de
 
 | ID | Étant donné | Quand | Alors | Test |
 |---|---|---|---|---|
+| JRN-05 | une culture avec un ticket « Arroser » échu, rattaché à sa zone parente | on touche « Arroser » sur la culture | une entrée `watering` est créée et le ticket est terminé | I |
 | TCK-01 ★ | un jardin collectif avec le groupe « Équipe serre » (2 membres) | un admin crée un ticket `task` sur la zone Serre et l'assigne au groupe | le ticket apparaît dans « mes tâches » des 2 membres, un e-mail d'assignation est reçu par chacun dans Mailpit, et le ticket est listé avec le niveau « zone » | E |
 | TCK-02 | un ticket | on tente de le rattacher à la fois à une zone et à une culture | `VALIDATION`, et la contrainte `CHECK` le refuse aussi en base | I |
 | TCK-03 | un ticket rattaché à une culture | on filtre la liste par la zone parente « avec sous-zones » | le ticket apparaît | I |
@@ -2164,5 +2166,6 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.4 | 2026-10-01 | Fin du lot 2 : clôture manuelle des saisons (RG-SEA-02), confirmation explicite des alertes de rotation (RG-ROT-02), archivage d'une zone avec cultures en cours (RG-ZON-06), photos « en attente » et EXIF retiré côté serveur (RG-JRN-03), intervention `transplant`, scripts `db:reference` et `assets:sync`, dossier de build e2e séparé (`NEXT_DIST_DIR`). JRN-05 et les parties « tickets » de CUL-07 / ZON-10 passent au lot 3. |
 | 0.3 | 2026-10-01 | Fin du lot 1 : ports et nom du projet Compose, `no-restricted-imports` au lieu d'`eslint-plugin-boundaries`, Stylelint limité aux couleurs, dépendances ajoutées (`concurrently`, `@axe-core/playwright`, `server-only`), table `garden_group`, ZON-09 / ZON-10 / AUTHZ-08 déplacés au lot 2, choix D-23 à D-26, question Q-24. |
 | 0.2 | 2026-10-01 | Validation. Tailwind et shadcn/ui remplacés par SCSS (CSS Modules, tokens) et des primitives Radix habillées en SCSS (§3.1, §3.9, D-22). Ajout de Stylelint. Propositions du §17 retenues comme décisions provisoires. |

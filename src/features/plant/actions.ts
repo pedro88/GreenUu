@@ -1,6 +1,7 @@
 'use server';
 
 import { defineAction } from '@/server/action';
+import { uuidSchema, z } from '@/lib/zod';
 import { varietyModerateSchema, varietyProposeSchema } from './schema';
 import * as service from './service';
 
@@ -16,4 +17,18 @@ export const moderateVarietyAction = defineAction({
   name: 'variety.moderate',
   input: varietyModerateSchema,
   handler: (ctx, input) => service.moderateVariety(ctx, input),
+});
+
+export const searchPlantsAction = defineAction({
+  name: 'plant.search',
+  input: z.object({ q: z.string().max(80) }),
+  handler: (ctx, input) => service.searchPlants(ctx.tx, ctx.actor.id, input.q, 12),
+});
+
+export const gardenVarietiesAction = defineAction({
+  name: 'plant.gardenVarieties',
+  input: z.object({ gardenId: uuidSchema, speciesId: uuidSchema }),
+  permission: 'garden:read',
+  gardenId: (i) => i.gardenId,
+  handler: (ctx, input) => service.varietiesForGarden(ctx.tx, input.speciesId, ctx.scope.gardenId),
 });

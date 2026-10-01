@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogActions, DialogClose } from '@/components/ui/Dialog';
 import { Field, NativeSelect } from '@/components/ui/Field';
@@ -55,12 +56,18 @@ export function ZoneActions({ gardenId, zoneId, archived, types, initial, moveTa
           </Stack>
         </form>
       </Dialog>
-      <Dialog open={archiveOpen} onOpenChange={setArchiveOpen} title={t('archiveTitle')} description={t('archiveDescription')}
+      <Dialog open={archiveOpen} onOpenChange={(o) => { setArchiveOpen(o); if (!o) archive.reset(); }} title={t('archiveTitle')} description={t('archiveDescription')}
         trigger={<Button variant="secondary" data-testid="zone-archive">{t('archive')}</Button>}>
-        <FormError error={archive.error} />
+        {archive.error?.message === 'zoneHasActiveCultures' ? (
+          <Alert tone="warning"><span data-testid="zone-has-cultures">{t('archiveHasCultures')}</span></Alert>
+        ) : <FormError error={archive.error} />}
         <DialogActions>
           <DialogClose asChild><Button variant="secondary">{t('cancel')}</Button></DialogClose>
-          <Button variant="danger" onClick={() => void archive.run({ gardenId, zoneId })} disabled={archive.pending} data-testid="zone-archive-confirm">{t('archiveConfirm')}</Button>
+          {archive.error?.message === 'zoneHasActiveCultures' ? (
+            <Button variant="danger" onClick={() => void archive.run({ gardenId, zoneId, finishActiveCultures: true })} disabled={archive.pending} data-testid="zone-archive-finish">{t('archiveFinishCultures')}</Button>
+          ) : (
+            <Button variant="danger" onClick={() => void archive.run({ gardenId, zoneId, finishActiveCultures: false })} disabled={archive.pending} data-testid="zone-archive-confirm">{t('archiveConfirm')}</Button>
+          )}
         </DialogActions>
       </Dialog>
     </Row>

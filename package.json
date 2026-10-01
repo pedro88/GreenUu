@@ -22,7 +22,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:spec": "tsx scripts/spec-coverage.ts",
-    "db:reference": "tsx --env-file=.env scripts/reference.ts"
+    "db:reference": "tsx --env-file=.env scripts/reference.ts",
+    "assets:sync": "tsx scripts/sync-assets.ts"
   },
   "pnpm": {
     "overrides": {

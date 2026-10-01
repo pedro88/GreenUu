@@ -10,7 +10,7 @@ const noNextInDomain = {
 };
 
 export default tseslint.config(
-  { ignores: ['.next/**', 'node_modules/**', 'var/**', 'drizzle/**', 'playwright-report/**', 'test-results/**', 'next-env.d.ts'] },
+  { ignores: ['.next/**', '.next-e2e/**', 'node_modules/**', 'var/**', 'drizzle/**', 'playwright-report/**', 'test-results/**', 'next-env.d.ts'] },
   ...nextVitals,
   ...nextTs,
   {
@@ -25,6 +25,9 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'as', objectLiteralTypeAssertions: 'never' }],
       'greenu/justified-as': 'error',
+      // <img> volontaire : photos privées servies après contrôle d'accès (pas de cache d'optimisation partagé)
+      // et pixel art affiché à l'échelle entière sans lissage.
+      '@next/next/no-img-element': 'off',
     },
   },
   {

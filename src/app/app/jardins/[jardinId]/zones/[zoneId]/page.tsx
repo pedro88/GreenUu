@@ -2,7 +2,9 @@ import { tDynamic } from '@/i18n/dynamic';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { LinkButton } from '@/components/ui/Button';
 import { Badge, Card, Muted, PageHeader, Row, Stack } from '@/components/ui/Layout';
+import { activeCulturesOfZone, zoneHistory } from '@/features/culture/service';
 import { listGroups } from '@/features/group/service';
 import { listPracticeCatalog, practicesForZone } from '@/features/practice/service';
 import { PracticesEditor } from '@/features/practice/ui/PracticesEditor';
@@ -47,6 +49,8 @@ export default async function ZoneDetailPage({ params }: PageProps<'/app/jardins
   const parentPractices = await practicesForZone(db(), scope, chain.slice(0, -1), year);
   const catalog = (await listPracticeCatalog(db())).map((p) => p.code);
   const groups = can(scope, 'zone:restrict') ? await listGroups(db(), scope) : [];
+  const [active, history] = await Promise.all([activeCulturesOfZone(db(), scope, z.id), zoneHistory(db(), scope, z.id)]);
+  const canPlant = !z.archivedAt && (detail.type?.canHostCultures ?? false) && can(scope, 'culture:create');
   const typeLabel = detail.type ? (detail.type.gardenId ? detail.type.label : tDynamic(tt, detail.type.code, detail.type.label)) : '';
   const surfaceText = detail.surface.m2 === null ? t('surfaceUnknown') : t(`surfaceFrom.${detail.surface.source}`, { m2: f.number(detail.surface.m2, { maximumFractionDigits: 2 }) });
   return (
@@ -86,6 +90,27 @@ export default async function ZoneDetailPage({ params }: PageProps<'/app/jardins
       </Card>
       <Card>
         <Stack>
+          <Row>
+            <h2>{t('culturesTitle')}</h2>
+            {canPlant ? <LinkButton href={`/app/jardins/${scope.gardenId}/cultures/nouvelle?zone=${z.id}`} variant="secondary" data-testid="plant-here">{t('plantHere')}</LinkButton> : null}
+          </Row>
+          {active.length === 0 ? <Muted>{t('noActiveCultures')}</Muted> : (
+            <ul>{active.map((c) => <li key={c.id}><Link href={`/app/jardins/${scope.gardenId}/cultures/${c.id}`}>{c.label}</Link></li>)}</ul>
+          )}
+          {history.length > 0 ? (
+            <>
+              <h3>{t('historyTitle')}</h3>
+              <ul data-testid="zone-history">
+                {history.map((h) => (
+                  <li key={h.year}><strong>{h.year}</strong> : {h.cultures.map((c, i) => <span key={c.id}>{i > 0 ? ', ' : ''}<Link href={`/app/jardins/${scope.gardenId}/cultures/${c.id}`}>{c.label}</Link>{c.zoneName !== z.name ? ` (${c.zoneName})` : ''}</span>)}</li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </Stack>
+      </Card>
+      <Card>
+        <Stack>
           <h2>{t('practicesTitle')}</h2>
           <PracticesEditor gardenId={scope.gardenId} zoneId={z.id} catalog={catalog} declared={practices.ownDeclared} excluded={practices.ownExcluded}
             inherited={parentPractices.effective} readOnly={!detail.canEdit || z.archivedAt !== null} />
@@ -100,7 +125,6 @@ export default async function ZoneDetailPage({ params }: PageProps<'/app/jardins
           </Stack>
         </Card>
       ) : null}
-      <Muted>{t('historyComing')}</Muted>
     </Stack>
   );
 }

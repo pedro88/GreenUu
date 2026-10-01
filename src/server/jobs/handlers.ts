@@ -1,6 +1,7 @@
 import { and, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 import type { Db } from '../db/client';
-import { domainEvent, gardenInvitation, session } from '../db/schema';
+import { attachment, domainEvent, gardenInvitation, session } from '../db/schema';
+import { storage } from '../storage/storage';
 import { sendMailNow } from '../mail/transport';
 import type { Mail } from '../mail/templates';
 
@@ -40,4 +41,9 @@ export async function housekeeping(db: Db, now: Date): Promise<void> {
     or(lt(gardenInvitation.expiresAt, cutoff), lt(gardenInvitation.revokedAt, cutoff)),
     isNull(gardenInvitation.acceptedAt),
   ));
+  // Photos téléversées mais jamais rattachées à une entrée de journal (RG-JRN-03).
+  const stale = await db.delete(attachment)
+    .where(and(isNull(attachment.journalEntryId), lt(attachment.createdAt, new Date(now.getTime() - 86_400_000))))
+    .returning({ key: attachment.storageKey });
+  for (const s of stale) await storage().remove(s.key);
 }

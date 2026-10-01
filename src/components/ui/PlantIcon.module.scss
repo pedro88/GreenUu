@@ -1,0 +1,14 @@
+.icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-leaf);
+
+  img {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+  }
+}

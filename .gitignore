@@ -10,3 +10,4 @@ playwright-report/
 tests/e2e/.auth/
 *.tsbuildinfo
 reports/
+.next-e2e/

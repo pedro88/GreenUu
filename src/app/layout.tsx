@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { getLocale, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import '@/styles/globals.scss';
@@ -16,7 +17,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

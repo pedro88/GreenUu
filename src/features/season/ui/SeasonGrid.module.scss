@@ -1,0 +1,79 @@
+.wrap {
+  overflow-x: auto;
+}
+
+.grid {
+  border-collapse: separate;
+  border-spacing: var(--space-1);
+  min-width: 40rem;
+
+  th {
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  thead th {
+    text-align: center;
+  }
+}
+
+.current {
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.cell {
+  min-width: 8rem;
+  vertical-align: top;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-bottom: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.early {
+  border: 2px solid var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.gantt {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.track {
+  position: relative;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+}
+
+.bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-leaf);
+}
+
+.months {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

@@ -309,3 +309,19 @@ function slugify(s: string): string {
 export function listZoneRows(tx: Executor, scope: Scope) {
   return repo.listZones(tx, scope, { includeArchived: false });
 }
+
+/** Zones actives pouvant accueillir des cultures (sélecteurs), avec indentation par profondeur. */
+export async function cultivableZones(tx: Executor, scope: Scope) {
+  const rows = await repo.listZones(tx, scope, { includeArchived: false });
+  const byParent = new Map<string | null, typeof rows>();
+  for (const r of rows) byParent.set(r.parentId, [...(byParent.get(r.parentId) ?? []), r]);
+  const out: { id: string; label: string }[] = [];
+  const walk = (parent: string | null) => {
+    for (const r of (byParent.get(parent) ?? []).sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'fr'))) {
+      if (r.canHostCultures) out.push({ id: r.id, label: `${'— '.repeat(r.depth)}${r.name}` });
+      walk(r.id);
+    }
+  };
+  walk(null);
+  return out;
+}

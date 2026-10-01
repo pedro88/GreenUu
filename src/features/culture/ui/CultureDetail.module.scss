@@ -1,0 +1,125 @@
+@use "../../../styles/mixins" as *;
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.timeline {
+  list-style: none;
+  padding: 0 0 var(--space-2);
+  margin: 0;
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 5rem;
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.dot {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.done .dot {
+  border: 0;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.current .dot {
+  border: 0;
+  background: var(--color-honey);
+  color: var(--color-honey-contrast);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  overflow-x: auto;
+
+  a {
+    @include touch-target;
+
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-full);
+    color: var(--color-text);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  a[aria-current="page"] {
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+}
+
+.entries {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.entry {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+
+  img {
+    width: 5.5rem;
+    height: 5.5rem;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+}
+
+.fab {
+  position: fixed;
+  right: var(--space-4);
+  bottom: calc(var(--nav-height) + var(--space-4) + env(safe-area-inset-bottom));
+  z-index: 4;
+
+  @include from($bp-md) {
+    bottom: var(--space-5);
+  }
+}

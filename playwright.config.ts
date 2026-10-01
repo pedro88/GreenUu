@@ -29,6 +29,7 @@ export default defineConfig({
       SMTP_HOST: 'localhost',
       SMTP_PORT: '1026',
       MAIL_FROM: 'GreenU <no-reply@greenu.test>',
+      NEXT_DIST_DIR: '.next-e2e',
     },
   },
 });

@@ -1,0 +1,77 @@
+@use "../../../styles/mixins" as *;
+
+.grid {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--color-leaf);
+    color: var(--color-text);
+  }
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.needs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+
+  @include from($bp-sm) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.need {
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  font-weight: 600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.bad {
+  border-color: var(--color-danger);
+}

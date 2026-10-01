@@ -10,6 +10,7 @@ import {
 } from '../src/server/db/schema';
 import type { Environment, GardenRole, OrgType } from '../src/lib/enums';
 import { loadReferenceData } from '../src/features/plant/reference/load';
+import { closeOldSeasons, seedCultures } from './seed-cultures';
 
 export const SEED_PASSWORD = 'jardin-seed-2026';
 
@@ -112,7 +113,7 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
         await tx.insert(gardenMember).values({ id: seedId(`member:${g.key}:${m.user}`), gardenId: gid, userId: userId(m.user), role: m.role }).onConflictDoNothing();
       }
       for (const y of [year - 2, year - 1, year]) {
-        await tx.insert(season).values({ id: seedId(`season:${g.key}:${y}`), gardenId: gid, year: y, ...seasonBounds(y, 1), status: y === year ? 'active' : 'closed' }).onConflictDoNothing();
+        await tx.insert(season).values({ id: seedId(`season:${g.key}:${y}`), gardenId: gid, year: y, ...seasonBounds(y, 1), status: 'active' }).onConflictDoNothing();
       }
       const insertZones = async (specs: ZoneSpec[], parent: { id: string; path: string; depth: number; scene: string | null; interior: boolean } | null) => {
         for (const [i, z] of specs.entries()) {
@@ -142,6 +143,9 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
         if (pid) await tx.insert(practiceDeclaration).values({ id: seedId(`practice:${g.key}:${code}`), gardenId: gid, practiceId: pid }).onConflictDoNothing();
       }
     }
+    await seedCultures(tx, referenceDate, { gardenId, zoneId, userId });
+    // La saison N−2 est close : lecture seule (RG-SEA-02).
+    for (const g of SEED_GARDENS) await closeOldSeasons(tx, gardenId(g.key), year - 1);
     // Vérification d'intégrité minimale : un owner par jardin.
     for (const g of SEED_GARDENS) {
       const owners = await tx.select().from(gardenMember).where(eq(gardenMember.id, seedId(`member:${g.key}:${g.owner}`)));

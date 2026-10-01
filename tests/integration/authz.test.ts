@@ -63,6 +63,7 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'journal.resolve': { gardenId, entryId: id },
     'harvest.record': { gardenId, cultureId: id, quantity: 1, unit: 'kg' },
     'harvest.delete': { gardenId, harvestId: id },
+    'plant.gardenVarieties': { gardenId, speciesId: id },
   };
 }
 

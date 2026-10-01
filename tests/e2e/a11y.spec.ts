@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { seedId } from '../../src/lib/uuid5';
 import { gardenId, zoneId } from './ids';
 import { login } from './helpers';
 
@@ -9,6 +10,8 @@ const APP = [
   `/app/jardins/${gardenId('canal')}`, `/app/jardins/${gardenId('canal')}/zones`,
   `/app/jardins/${gardenId('canal')}/zones/${zoneId('canal', 'serre')}`,
   `/app/jardins/${gardenId('canal')}/membres`, `/app/jardins/${gardenId('canal')}/parametres`,
+  `/app/jardins/${gardenId('canal')}/cultures`, `/app/jardins/${gardenId('canal')}/cultures/nouvelle`, `/app/jardins/${gardenId('canal')}/saisons`,
+  '/app/plantes', '/app/plantes/proposer', `/app/plantes/${seedId('species:tomate')}`,
 ];
 
 async function audit(page: Page, path: string) {
