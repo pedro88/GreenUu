@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.10 — validée le 2026-10-01, mise à jour en fin de lot 6. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.11 — validée le 2026-10-01, mise à jour en fin de lot 7. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -243,7 +243,8 @@ Catalogue V1. Le payload est minimal : des IDs et les valeurs utiles au barème,
 | `garden.created`, `garden.archived` | jardin | progression collective |
 | `member.joined`, `member.left`, `member.role_changed` | membres | notifications |
 | `invitation.sent`, `invitation.accepted` | invitations | e-mail |
-| `zone.created`, `zone.archived`, `zone.geometry_changed` | zones, plan | revalidation de la vue jardin |
+| `zone.created`, `zone.archived`, `zone.updated` (`fields`, dont `geometry`) | zones, plan | revalidation de la vue jardin |
+| `garden.plan_saved` (`commands`, `planVersion`) | éditeur de plan | traçabilité des enregistrements |
 | `culture.created`, `culture.deleted`, `culture.ended` | cultures | XP, succès, quêtes |
 | `culture.stage_recorded` (`stage`, `actualOn`) | étapes | XP, succès |
 | `journal.entry_created`, `journal.entry_deleted` (`kind`, `hasPhoto`, `structured`) | journal | XP, états visuels |
@@ -1583,10 +1584,10 @@ Bulles affichées au-dessus de la culture, calculées côté serveur dans l'inst
 
 ### 9.5 Interactions
 
-- Toucher une culture ouvre une **feuille inférieure** : nom, étape, bulles expliquées en texte, actions rapides (Observer, Photo, Arroser, Récolter, Ticket), liens vers la fiche et vers les tickets. Une action rapide ouvre la modale de saisie rapide (NFR-03) via une intercepting route.
+- Toucher une culture ouvre une **feuille inférieure** : nom, étape, bulles expliquées en texte, actions rapides (Observer, Photo, Arroser, Récolter, Ticket), liens vers la fiche et vers les tickets. Une action rapide ouvre la modale de saisie rapide (NFR-03) directement dans son mode, sans quitter la vue (la même modale que la fiche culture ; pas d'intercepting route).
 - Toucher une zone ouvre sa feuille : cultures en cours, tickets, « Planter ici » (assistant de nouvelle culture pré-rempli).
 - Gestes : glisser un doigt pour déplacer, pincer pour zoomer, double-tap pour zoomer sur une zone. Boutons + / − / recentrer toujours visibles.
-- Les cultures sans géométrie, et les zones non placées, apparaissent dans un tiroir « À placer » (éditeur de plan).
+- Les cultures n'ont pas de géométrie propre en V1 : elles sont réparties automatiquement dans le rectangle de leur zone, ou de son ancêtre placé le plus proche. Les cultures dont aucune zone ancêtre n'est placée, et les zones non placées, apparaissent dans un tiroir « À placer » ; l'éditeur de plan permet de dessiner l'emplacement d'une zone non placée.
 - **Avatars** (jardins collectifs) : les membres actifs dans les 24 dernières heures apparaissent près de la dernière zone où ils ont agi. Ils sont statiques en animations réduites, avec une marche lente sinon. Ce ne sont pas des personnages contrôlables.
 
 ### 9.6 Couche DOM accessible
@@ -1606,11 +1607,12 @@ Dans l'éditeur de plan, la couche expose :
 
 ### 9.7 Éditeur de plan
 
-- **Outils** : sélectionner, dessiner une zone (rectangle aligné sur la grille, avec choix du type et du parent ; le parent est déduit de la zone qui contient le rectangle), redimensionner (poignées), déplacer, élément de terrain, déco, gomme, échelle (`tile_size_cm` : 10, 25, 50 ou 100), annuler / rétablir (50 niveaux).
+- **Outils** : sélectionner, dessiner une zone (rectangle aligné sur la grille, avec choix du type et du parent ; le parent est déduit de la zone qui contient le rectangle), redimensionner (tuile du coin bas-droit de la zone sélectionnée), déplacer, élément de terrain, déco (lot 8), gomme, échelle (`tile_size_cm` : 10, 25, 50 ou 100), annuler / rétablir (50 niveaux, sur les gestes non encore enregistrés : un enregistrement fixe une nouvelle base). Une zone dessinée reçoit un nom par défaut (« Planche 5 »), modifiable ensuite dans sa fiche.
 - **Modèle de commandes** : chaque geste produit une `PlanCommand` (`createZone`, `resizeZone`, `moveZone`, `archiveZone`, `addTerrain`, `removeTerrain`, `placeDecor`, `moveDecor`, `removeDecor`, `setScale`), appliquée de façon optimiste au store local. Les commandes sont envoyées par lots à la Server Action `applyPlanCommands({ gardenId, sceneZoneId, baseVersion, commands })`, avec un enregistrement automatique 1,5 s après le dernier geste et un bouton « Enregistrer ».
 - **Côté serveur** : validation Zod de chaque commande, permission `plan:edit` (ou `decor:place`, ou restriction de zone `edit`), contrôle des invariants (RG-ZON-05), puis application **transactionnelle tout-ou-rien** et incrément de `garden.plan_version`. Si `baseVersion ≠ plan_version` → `CONFLICT` : le client recharge l'instantané, rejoue ses commandes non confirmées et signale les conflits.
 - La création d'une zone par dessin crée une vraie ligne `zone` (type, parent, géométrie, surface dérivée) et émet `zone.created`. Elle apparaît aussitôt dans la vue classique.
-- Les zones et cultures ne sont jamais supprimées depuis l'éditeur : la gomme **archive**, après confirmation si la zone a un historique.
+- Les zones et cultures ne sont jamais supprimées depuis l'éditeur : la gomme **archive**, toujours après confirmation (les cultures en cours de la zone sont alors terminées, RG-ZON-06). Un élément de terrain, sans historique, est supprimé.
+- Chaque enregistrement émet `garden.plan_saved` (nombre de commandes, nouvelle version) ; les zones émettent leurs propres événements (`zone.created`, `zone.updated`, `zone.archived`).
 
 ---
 
@@ -2160,7 +2162,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Q-14 | Anti-abus « création puis suppression » : la ligne `reversal` peut faire baisser le total d'XP (le niveau, lui, ne baisse jamais). Est-ce acceptable au regard du principe « pas de perte d'XP », ou préfères-tu une XP « en attente » 24 h avant confirmation ? | Lot 6 | `reversal` + niveau maximum historique |
 | Q-15 | Le classement compétitif, quand un admin l'active : sur l'XP totale ou sur les contributions de la période ? | Lot 6 | Sur l'XP de la période en cours (mois) |
 | Q-16 | Table de correspondance localisation → Köppen et zone de rusticité : faut-il embarquer un jeu de données ouvert (par exemple une grille Köppen-Geiger à 0,5°, environ 200 ko) pour proposer automatiquement les valeurs ? | Lot 1, qualité du contexte | Oui, une grille embarquée et une saisie manuelle possible |
-| Q-17 | Le livrable des assets (session séparée) suivra-t-il le contrat du §9.2 (manifeste JSON, clés, phases génériques) ? Quel format de manifeste : un format maison, ou un format d'atlas existant (par exemple le JSON TexturePacker, lu nativement par PixiJS) ? | Lots 7 et 8 | JSON au format TexturePacker plus un fichier `phases.json` pour la correspondance espèce / phase |
+| Q-17 | Le livrable des assets (session séparée) suivra-t-il le contrat du §9.2 (manifeste JSON, clés, phases génériques) ? Quel format de manifeste : un format maison, ou un format d'atlas existant (par exemple le JSON TexturePacker, lu nativement par PixiJS) ? | Lots 7 et 8 | Retenu au lot 7 : JSON au format TexturePacker ; la correspondance espèce / phase est déduite des noms de frames (`cultures/<clé>-<n>-<étape>.png`, SPRITES.md), sans `phases.json` |
 | Q-18 | Faut-il des notifications push (PWA) au lot 9 ? | Lot 9 | À décider après le MVP |
 | Q-19 | Prévoir un préfixe de locale dans les URL (`/fr/…`) dès maintenant, pour le SEO des guides publics multilingues ? | Lot 1, routes | Non ; locale en préférence et cookie ; préfixe seulement pour `/guides-publics` le jour où l'anglais arrive |
 | Q-20 | Faut-il ajouter le RLS PostgreSQL en plus du scope applicatif (exigence de conformité éventuelle) ? | Architecture | Non en V1 |
@@ -2176,6 +2178,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.11 | 2026-10-02 | Fin du lot 7 : vue jardin PixiJS (instantané de scène, phase visuelle, états, couche accessible, scène intérieure, cycle jour / nuit par élévation solaire) et éditeur de plan (commandes tout ou rien, `CONFLICT` et rejeu, formulaire par dimensions), table `terrain_element`, page `/app/parametres/affichage`. Décisions : la vue par défaut d'un profil devient `garden`, et les profils existants sont repris (le choix n'existait pas avant) ; atlas au format TexturePacker, phases déduites des noms de frames de SPRITES.md (pas de `phases.json`, §17 Q-17), copié par `pnpm assets:sync` ; cultures réparties automatiquement dans leur zone (§9.5) ; saisie rapide ouverte sur place (§9.5) ; annuler / rétablir limité aux gestes non enregistrés (§9.7) ; événement `garden.plan_saved`. Écarts reportés : avatars dans la vue et commandes de déco (lot 8), terrain précalculé par blocs de 16 × 16 et culling (§9.1, rendu par élément en V1), animations ambiantes limitées à l'ondulation des plantes, thème de l'interface (suit l'appareil). MAP-08 est testé sans base (moteur et ordonnanceur factices) ; le refus de PLN-06 côté action est prouvé en intégration. |
 | 0.10 | 2026-10-02 | Fin du lot 6 : colonnes `subject_id` et `culture_id` du journal d'XP, table `xp_flag`, `user_profile.leaderboard_opt_out` (§4.2.5) ; texte et avancement des quêtes (`title_key`, `title_params`, `target`, `progress`) ; recalcul par lignes de correction `#recompute`, sans recalcul ciblé par événement (RG-XP-08) ; succès évalués de façon synchrone (§8.5) ; contributions et classement dans l'onglet « Contributions » des membres (§8.7). Le seed vérifie l'éligibilité des votes (RG-XP-04) comme en production. |
 | 0.9 | 2026-10-02 | Fin du lot 5 : complétude plafonnée sans revue des problèmes (RG-RES-03) ; démarrage à froid sous 5 jardins seulement, redistribution des poids inconnus et filtre de l'hémisphère opposé (§7.2, §7.3) ; contenu précisé de `shared_result_fact` (§11.3) ; transfert de propriété à la purge (§11.4). Écarts : cache des recommandations et pré-remplissage du taux de réussite reportés ; journal d'XP de l'export vide jusqu'au lot 6. |
 | 0.8 | 2026-10-02 | Corrections de l'audit du lot 4 : instant de référence unique des e2e et horloge des jetons tiers (§3.7) ; plafonds horaires des contenus communautaires (§6.9). |
