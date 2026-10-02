@@ -9,3 +9,8 @@ export function normalizeSearch(s: string): string {
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
 }
+
+/** Slug d'URL : normalisé, mots séparés par des tirets, borné (tags, guides publics). */
+export function slugify(s: string, max = 60): string {
+  return normalizeSearch(s).replace(/ /g, '-').slice(0, max).replace(/-+$/, '');
+}
