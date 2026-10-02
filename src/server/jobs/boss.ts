@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { fromDrizzle, PgBoss } from 'pg-boss';
 import type { Executor } from '../db/client';
 import { env } from '../env';
-import type { JobName, JobPayloads, JobQueue } from './queues';
+import type { EnqueueOptions, JobName, JobPayloads, JobQueue } from './queues';
 
 export const BOSS_SCHEMA = 'pgboss';
 
@@ -30,9 +30,9 @@ function getProducer(): Promise<PgBoss> {
 /** File de jobs liée à une transaction : le job n'existe que si la transaction est validée. */
 export function transactionalQueue(tx: Executor): JobQueue {
   return {
-    async enqueue<N extends JobName>(name: N, data: JobPayloads[N]) {
+    async enqueue<N extends JobName>(name: N, data: JobPayloads[N], opts: EnqueueOptions = {}) {
       const boss = await getProducer();
-      await boss.send(name, data, { db: fromDrizzle(tx, sql) });
+      await boss.send(name, data, { db: fromDrizzle(tx, sql), ...opts });
     },
   };
 }

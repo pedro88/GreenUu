@@ -22,12 +22,13 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   const s = await auth().api.getSession({ headers: await headers() });
   if (!s) return null;
   const [row] = await db()
-    .select({ platformRole: user.platformRole, pseudo: userProfile.pseudo, timezone: userProfile.timezone })
+    .select({ platformRole: user.platformRole, pseudo: userProfile.pseudo, timezone: userProfile.timezone, deletionRequestedAt: userProfile.deletionRequestedAt })
     .from(user)
     .leftJoin(userProfile, eq(userProfile.userId, user.id))
     .where(eq(user.id, s.user.id))
     .limit(1);
-  if (!row) return null;
+  // Compte en cours de suppression : désactivé, même si un cookie survit (§11.4 point 2).
+  if (!row || row.deletionRequestedAt) return null;
   return {
     id: s.user.id,
     email: s.user.email,

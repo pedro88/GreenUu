@@ -2,9 +2,14 @@ import { PgBoss } from 'pg-boss';
 import { createDb, createSql } from '../db/client';
 import { env } from '../env';
 import type { Mail } from '../mail/templates';
+import type { JobQueue } from './queues';
 import { BOSS_SCHEMA } from './boss';
 import { dispatchOutbox, housekeeping, sendMail } from './handlers';
 import { dailyDigest, dueReminders, materializeAllSeries } from '../../features/ticket/jobs';
+import { refreshSharedFacts } from '../../features/reco/facts';
+import { buildExport, purgeDeletedAccounts } from '../../features/privacy/service';
+import { storage } from '../storage/storage';
+import { appClock } from '../clock';
 import { fromDrizzle } from 'pg-boss';
 import { sql as dsql } from 'drizzle-orm';
 
@@ -23,9 +28,12 @@ async function main() {
   await boss.createQueue('tickets.materialize-recurrences', { policy: 'singleton' });
   await boss.createQueue('tickets.due-reminders', { policy: 'singleton' });
   await boss.createQueue('notifications.daily-digest', { policy: 'singleton' });
+  await boss.createQueue('reco.refresh-facts', { policy: 'singleton' });
+  await boss.createQueue('privacy.export', { retryLimit: 3, retryBackoff: true });
+  await boss.createQueue('privacy.purge', { policy: 'singleton' });
   // Les e-mails de notification sont mis en file dans la transaction du job (pas d'envoi si elle échoue).
-  const txQueue = (tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) => ({
-    enqueue: async (name: 'mail.send', data: Mail) => { await boss.send(name, data, { db: fromDrizzle(tx, dsql) }); },
+  const txQueue = (tx: Parameters<Parameters<typeof db.transaction>[0]>[0]): JobQueue => ({
+    enqueue: async (name, data, opts = {}) => { await boss.send(name, data, { db: fromDrizzle(tx, dsql), ...opts }); },
   });
 
   await boss.work<Mail>('mail.send', async (jobs) => {
@@ -41,7 +49,15 @@ async function main() {
   await boss.work('tickets.due-reminders', async () => { await db.transaction((tx) => dueReminders(tx, txQueue(tx), e.APP_URL, new Date())); });
   await boss.work('notifications.daily-digest', async () => { await db.transaction((tx) => dailyDigest(tx, txQueue(tx), e.APP_URL, new Date())); });
 
+  await boss.work('reco.refresh-facts', async () => { await refreshSharedFacts(db); });
+  await boss.work<{ exportId: string }>('privacy.export', async (jobs) => {
+    for (const job of jobs) await db.transaction((tx) => buildExport({ tx, clock: appClock(), jobs: txQueue(tx), appUrl: e.APP_URL }, job.data.exportId, storage()));
+  });
+  await boss.work('privacy.purge', async () => { await db.transaction((tx) => purgeDeletedAccounts(tx, storage(), appClock().now())); });
+
   await boss.schedule('outbox.dispatch', '* * * * *');
+  await boss.schedule('reco.refresh-facts', '10 * * * *');
+  await boss.schedule('privacy.purge', '45 3 * * *', undefined, { tz: 'Europe/Paris' });
   await boss.schedule('housekeeping', '30 3 * * *', undefined, { tz: 'Europe/Paris' });
   await boss.schedule('tickets.materialize-recurrences', '5 * * * *');
   await boss.schedule('tickets.due-reminders', '*/15 * * * *');

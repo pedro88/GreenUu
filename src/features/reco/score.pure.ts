@@ -1,5 +1,6 @@
 import { contextDistance, excluded, SIMILARITY_THRESHOLD_V1, type Context } from './context.pure';
 import { decodeGeohash } from '@/lib/geohash';
+import type { Method } from '@/lib/enums';
 
 /** Moteur de recommandation V1 (SPEC §7.3 à 7.5) : fonctions pures, testées sans base. */
 export const ENGINE_VERSION = 'reco-v1';
@@ -13,7 +14,7 @@ export type Fact = Context & {
   gardenPseudo: string;
   speciesId: string;
   varietyId: string | null;
-  method: string;
+  method: Method;
   successPct: number | null;
   rating: number | null;
   yieldKgM2: number | null;

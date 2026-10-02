@@ -169,7 +169,12 @@
     "privateNeedsGarden": "Un guide privé doit être rattaché à un jardin.",
     "guideOtherSpecies": "Ce guide concerne une autre espèce.",
     "noOpenReport": "Aucun signalement ouvert pour ce contenu.",
-    "contentRateLimited": "Tu as beaucoup publié ces derniers temps : réessaie dans une heure."
+    "contentRateLimited": "Tu as beaucoup publié ces derniers temps : réessaie dans une heure.",
+    "accountDeactivated": "Ce compte est en cours de suppression. Utilise le lien reçu par e-mail pour le rétablir.",
+    "exportOncePerDay": "Un export par jour au plus : réessaie demain.",
+    "confirmTransferToMember": "Confirme le transfert de propriété au membre le plus ancien.",
+    "restoreInvalid": "Ce lien de rétablissement n'est plus valable.",
+    "resultTooEarly": "Le bilan est proposé une fois la culture terminée ou après la première récolte."
   },
   "nav": {
     "label": "Navigation principale",

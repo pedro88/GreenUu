@@ -4,7 +4,8 @@ import { loadScope } from '../../src/server/authz/scope';
 import { fixedClock, type Clock } from '../../src/server/clock';
 import { createDb, createSql, type Db, type Tx } from '../../src/server/db/client';
 import { user, userProfile } from '../../src/server/db/schema';
-import type { JobName, JobPayloads, JobQueue } from '../../src/server/jobs/queues';
+import type { JobName, JobQueue } from '../../src/server/jobs/queues';
+import type { Mail } from '../../src/server/mail/templates';
 import { testEnv } from './env';
 
 const sql = createSql(testEnv().DATABASE_URL ?? '');
@@ -27,14 +28,18 @@ export async function inTx(fn: (tx: Tx) => Promise<void>): Promise<void> {
   }
 }
 
-export type RecordedJob = { name: JobName; data: JobPayloads[JobName] };
+/** E-mails mis en file (les tests lisent `to`, `subject`, `text`) ; les autres jobs vont dans `others`. */
+export type RecordedJob = { name: 'mail.send'; data: Mail };
 
-export function recordingQueue(): JobQueue & { jobs: RecordedJob[] } {
+export function recordingQueue(): JobQueue & { jobs: RecordedJob[]; others: { name: JobName; data: unknown }[] } {
   const jobs: RecordedJob[] = [];
+  const others: { name: JobName; data: unknown }[] = [];
   return {
     jobs,
+    others,
     async enqueue(name, data) {
-      jobs.push({ name, data });
+      if (name === 'mail.send') jobs.push({ name, data: data as Mail }); // as: le nom de file discrimine la charge utile
+      else others.push({ name, data });
     },
   };
 }

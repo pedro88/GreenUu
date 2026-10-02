@@ -54,6 +54,8 @@ export type DomainEvent =
   | E<'tip.created', 'tip', { tags: string[] }>
   | E<'tip.voted', 'tip', { value: number; previous: number; voterId: string; authorId: string }>
   | E<'content.reported', 'guide' | 'tip' | 'user', { reason: string; openReports: number; autoHidden: boolean }>
+  | E<'result.submitted' | 'result.updated', 'result', { cultureId: string; completeness: number }>
+  | E<'privacy.export_requested' | 'privacy.deletion_requested' | 'privacy.deletion_cancelled' | 'privacy.purged', 'user', Record<string, unknown>>
   | E<'moderation.decided', 'guide' | 'tip' | 'user', { decision: 'dismissed' | 'actioned'; reports: number }>;
 
 export type DomainEventType = DomainEvent['type'];

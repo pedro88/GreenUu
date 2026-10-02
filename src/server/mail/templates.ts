@@ -99,3 +99,21 @@ export function notificationMail(p: { to: string; type: string; gardenName: stri
     text: `${subject}\n\n${p.excerpt ? `« ${p.excerpt} »\n\n` : ''}${p.url}\n\nNe plus recevoir ce type d'e-mail : ${p.unsubscribeUrl}\n`,
   };
 }
+
+export function dataExportMail(p: { to: string; url: string }): Mail {
+  return {
+    to: p.to,
+    subject: 'Ton export de données est prêt — GreenU',
+    html: layout('Ton export est prêt', '<p>Le lien est valable 7 jours et ne fonctionne que connecté·e à ton compte.</p>', { label: "Télécharger l'archive", url: p.url }),
+    text: `Ton export de données est prêt (lien valable 7 jours, connecté·e à ton compte) : ${p.url}\n`,
+  };
+}
+
+export function accountDeletionMail(p: { to: string; url: string; purgeOn: string }): Mail {
+  return {
+    to: p.to,
+    subject: 'Ton compte sera supprimé — GreenU',
+    html: layout('Suppression de ton compte', `<p>Ton compte est désactivé. Il sera supprimé définitivement le ${esc(p.purgeOn)}. Tu peux le rétablir d'ici là.</p>`, { label: 'Rétablir mon compte', url: p.url }),
+    text: `Ton compte est désactivé et sera supprimé le ${p.purgeOn}. Pour le rétablir : ${p.url}\n`,
+  };
+}

@@ -69,3 +69,12 @@ describe('i18n', () => {
     expect(en).toEqual(fr);
   });
 });
+
+describe('archive ZIP interne', () => {
+  it('[PRV-07] CRC32 de référence et noms relus depuis l\'archive', async () => {
+    const { crc32, zip, zipEntryNames } = await import('@/lib/zip');
+    expect(crc32(new TextEncoder().encode('123456789'))).toBe(0xcbf43926);
+    const archive = zip([{ name: 'profil.json', data: new TextEncoder().encode('{}') }, { name: 'photos/é.jpg', data: new Uint8Array([1, 2, 3]) }]);
+    expect(zipEntryNames(archive)).toEqual(['profil.json', 'photos/é.jpg']);
+  });
+});
