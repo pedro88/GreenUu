@@ -10,7 +10,8 @@ async function myTasks(page: Page) {
   return page.getByTestId('my-tasks');
 }
 
-test.describe.serial('ticketing', () => {
+// Chaque test crée ses données ou ne lit que le seed : aucun ne dépend d'un autre (audit e2e M4).
+test.describe('ticketing', () => {
   test('[TCK-01] ticket assigné à un groupe : tâches des membres, e-mails Mailpit, niveau zone', async ({ page, browser }) => {
     await login(page, 'chloe');
     await page.goto(`/app/jardins/${CANAL}/tickets/nouveau`);
@@ -61,23 +62,39 @@ test.describe.serial('ticketing', () => {
     await page.getByTestId('status-done').click();
     await page.getByTestId('stage-prompt-confirm').click();
     await expect(page.getByTestId('stage-recorded')).toBeVisible();
+    // Le ticket est terminé et la date réelle est enregistrée sur la culture.
+    await page.reload();
+    await expect(page.getByTestId('ticket-status')).toHaveText('Terminé');
+    await page.goto(`/app/jardins/${CANAL}/cultures`);
+    await page.getByTestId('culture-list').getByRole('link', { name: /Carotte Touchon/ }).click();
+    await expect(page.getByTestId('stage-harvest_start')).toHaveAttribute('data-done', 'true');
   });
 
   test('[NTF-04] le lien de désinscription ne change rien à l\'ouverture, désactive le type à la confirmation, refuse un jeton altéré', async ({ browser, page }) => {
-    const link = linkFrom((await waitForMail('david@greenu.test', unique)).text, '/desinscription/');
+    // Destinataire dédiée : gaelle n'est assignée dans aucun autre test, sa préférence peut changer.
+    const title = `Rentrer les tuteurs ${Date.now().toString(36)}`;
+    await login(page, 'chloe');
+    await page.goto(`/app/jardins/${CANAL}/tickets/nouveau`);
+    await page.getByLabel('Titre').fill(title);
+    await page.getByTestId('ticket-form').getByText('gaelle', { exact: true }).click();
+    await page.getByTestId('ticket-submit').click();
+    await expect(page.getByTestId('ticket-title')).toHaveText(title);
+    const link = linkFrom((await waitForMail('gaelle@greenu.test', title)).text, '/desinscription/');
+
     const anonymous = await (await browser.newContext()).newPage();
     await anonymous.goto(link);
     await expect(anonymous.getByTestId('unsubscribe-confirm')).toContainText('Tâche assignée');
-    await login(page, 'david');
-    await page.goto('/app/parametres/notifications');
-    await expect(page.getByTestId('pref-assigned-email')).toBeChecked();
+    const gaelle = await (await browser.newContext()).newPage();
+    await login(gaelle, 'gaelle');
+    await gaelle.goto('/app/parametres/notifications');
+    await expect(gaelle.getByTestId('pref-assigned-email')).toBeChecked();
     await anonymous.getByTestId('unsubscribe-submit').click();
     await expect(anonymous.getByTestId('unsubscribed')).toContainText('Tâche assignée');
-    await page.reload();
-    await expect(page.getByTestId('pref-assigned-email')).not.toBeChecked();
-    await expect(page.getByTestId('pref-assigned-in_app')).toBeChecked();
+    await gaelle.reload();
+    await expect(gaelle.getByTestId('pref-assigned-email')).not.toBeChecked();
+    await expect(gaelle.getByTestId('pref-assigned-in_app')).toBeChecked();
     // Jeton altéré : la signature ne correspond plus.
-    await anonymous.goto(`${link.slice(0, -2)}${link.endsWith('A') ? 'B' : 'A'}${link.slice(-1)}`);
+    await anonymous.goto(`${link.slice(0, -2)}${link.at(-2) === 'A' ? 'B' : 'A'}${link.slice(-1)}`);
     await expect(anonymous.getByTestId('unsubscribe-confirm')).toHaveCount(0);
     await expect(anonymous.getByText("Ce lien de désinscription n'est pas valide.")).toBeVisible();
   });
