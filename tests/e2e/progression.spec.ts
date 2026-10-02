@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { gardenId } from './ids';
+import { ticketIdByTitle } from './db';
 import { login } from './helpers';
 
 const TILLEULS = gardenId('tilleuls');
@@ -23,6 +24,29 @@ test.describe('progression', () => {
     await expect(page.getByTestId('profile-xp')).toHaveText(`${(before + 8).toLocaleString('fr-FR')} XP`.replace(/ /g, ' '));
     await page.goto('/app/profil/xp');
     await expect(page.getByTestId('xp-ledger').locator('li[data-code="harvest.recorded"]').first()).toContainText('+8');
+  });
+
+  test('[QST-02] une quête du jour tirée d\'une vraie tâche se termine avec le ticket et rapporte 5 XP', async ({ page }) => {
+    // gaelle a exactement 3 tâches dues au 14 octobre dans le seed (E2E_NOW) : ses 3 quêtes du jour sont déterministes.
+    await login(page, 'gaelle');
+    await page.goto('/app/profil');
+    const xp = async () => Number((await page.getByTestId('profile-xp').innerText()).replace(/\D/g, ''));
+    const before = await xp();
+    await page.goto('/app/profil/quetes');
+    const daily = page.getByTestId('quests').locator('li', { hasText: 'Aujourd\'hui' });
+    await expect(daily).toHaveCount(3);
+    await expect(daily.filter({ hasText: 'Faire : Récolter les courgettes' })).toHaveCount(1);
+    await page.goto(`/app/jardins/${CANAL}/tickets/${await ticketIdByTitle(CANAL, 'Récolter les courgettes')}`);
+    await page.getByTestId('status-done').click();
+    await expect(page.getByTestId('ticket-status')).toHaveText('Terminé');
+    await page.goto('/app/profil/quetes');
+    await expect(daily).toHaveCount(2);
+    await expect(page.getByTestId('quests')).not.toContainText('Récolter les courgettes');
+    await page.goto('/app/profil');
+    // Barème §8.2 : ticket terminé (5), aide collective (3 : jardin collectif, ticket créé par un autre membre), quête du jour (5).
+    await expect.poll(xp).toBe(before + 13);
+    await page.goto('/app/profil/xp');
+    await expect(page.getByTestId('xp-ledger').locator('li[data-code="quest.daily"]').first()).toContainText('+5');
   });
 
   test('[ACH-05] la page des succès date les succès obtenus et montre l\'avancement des verrouillés', async ({ page }) => {
