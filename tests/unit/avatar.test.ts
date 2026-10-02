@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { AVATAR_ITEMS, PALETTES } from '@/features/avatar/catalog';
 import { canonicalJson, checkConfig, codeCatalogView, defaultAvatar, mulberry32, normalizeConfig, randomAvatar } from '@/features/avatar/config.pure';
 import { hexToRgb, recolorPixels, RESERVED_GREYS } from '@/features/avatar/recolor.pure';
+import { startPreview } from '@/features/avatar/ui/preview';
 import { isUnlocked, NO_PROGRESS } from '@/features/progression/unlock.pure';
 import { AVATAR_LAYERS, REQUIRED_AVATAR_LAYERS } from '@/lib/enums';
 
@@ -98,5 +99,43 @@ describe('tirages (§10.3, §10.4)', () => {
 
   it('le catalogue propose au moins 12 teintes de peau', () => {
     expect(PALETTES.filter((p) => p.slot === 'skin').length).toBeGreaterThanOrEqual(12);
+  });
+});
+
+describe('aperçu de l\'éditeur (§10.4, audit lot 8 M2)', () => {
+  const fakeTimers = () => {
+    const ticks: (() => void)[] = [];
+    let cleared = 0;
+    return { ticks, cleared: () => cleared, timers: { setInterval: (fn: () => void) => { ticks.push(fn); return ticks.length; }, clearInterval: () => { cleared += 1; } } };
+  };
+  const storeOf = () => {
+    const subs = new Set<() => void>();
+    let state = { draft: base(), dir: 'bas' as const };
+    return { getState: () => state, subscribe: (fn: () => void) => { subs.add(fn); return () => subs.delete(fn); }, set: (d: ReturnType<typeof base>) => { state = { ...state, draft: d }; subs.forEach((f) => f()); }, subs };
+  };
+
+  it('à l\'arrêt, aucun minuteur : un dessin initial puis un par changement du brouillon', () => {
+    const t = fakeTimers();
+    const s = storeOf();
+    const draws: string[] = [];
+    const stop = startPreview({ getState: s.getState, subscribe: s.subscribe, walking: false, timers: t.timers, draw: (_d, _dir, pose) => draws.push(pose) });
+    expect(t.ticks).toHaveLength(0);
+    expect(draws).toEqual(['arret']);
+    s.set(normalizeConfig({ ...base(), layers: { ...base().layers, hair_front: { item: 'hair_long', palettes: ['hair_blond'] } } }));
+    expect(draws).toEqual(['arret', 'arret']);
+    stop();
+    expect(s.subs.size).toBe(0);
+  });
+
+  it('en marche, le minuteur fait défiler les 4 frames, et il est arrêté au démontage', () => {
+    const t = fakeTimers();
+    const s = storeOf();
+    const draws: string[] = [];
+    const stop = startPreview({ getState: s.getState, subscribe: s.subscribe, walking: true, timers: t.timers, draw: (_d, _dir, pose) => draws.push(pose) });
+    expect(t.ticks).toHaveLength(1);
+    for (let i = 0; i < 4; i += 1) t.ticks[0]?.();
+    expect(draws).toEqual(['marche-f1', 'marche-f2', 'marche-f3', 'marche-f4', 'marche-f1']);
+    stop();
+    expect(t.cleared()).toBe(1);
   });
 });

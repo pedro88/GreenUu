@@ -12,10 +12,11 @@ import type { AvatarLayer } from '@/lib/enums';
 import { useUnlockLabel } from '../../progression/ui/unlockLabel';
 import { saveAvatarAction } from '../actions';
 import { AVATAR_TABS } from '../catalog';
-import { drawAvatar, SPRITE, WALK, type Pose } from '../compose';
+import { drawAvatar, SPRITE } from '../compose';
 import type { AvatarConfigV1 } from '../config.pure';
 import type { AvatarCatalog, AvatarView } from '../service';
 import { createAvatarEditorStore, type AvatarEditorStore } from './editorStore';
+import { startPreview } from './preview';
 import styles from './AvatarEditor.module.scss';
 
 type Item = AvatarCatalog['items'][number];
@@ -130,20 +131,8 @@ function Preview({ store, walking }: { store: AvatarEditorStore; walking: boolea
   useEffect(() => {
     const ctx = ref.current?.getContext('2d');
     if (!ctx) return undefined;
-    let raf = 0;
-    let frame = 0;
-    let last = 0;
-    let drawn = '';
-    const tick = (now: number) => {
-      const s = store.getState();
-      if (walking && now - last > 160) { frame = (frame + 1) % WALK.length; last = now; }
-      const pose: Pose = walking ? WALK[frame] ?? 'arret' : 'arret';
-      const key = `${JSON.stringify(s.draft)}|${s.dir}|${pose}`;
-      if (key !== drawn) { drawn = key; void drawAvatar(ctx, s.draft, s.dir, pose); }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    // Redessin sur changement du brouillon ou de la direction, minuteur seulement en marche (audit lot 8, M2).
+    return startPreview({ getState: store.getState, subscribe: store.subscribe, walking, draw: (draft, dir, pose) => { void drawAvatar(ctx, draft, dir, pose); } });
   }, [store, walking]);
   const dir = useStore(store, (s) => s.dir);
   return (
