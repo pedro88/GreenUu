@@ -2,6 +2,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { createCulture, deleteCulture, recordStage } from '../../src/features/culture/service';
 import { recordHarvest } from '../../src/features/harvest/service';
+import { exportEntries } from '../../src/features/privacy/service';
 import { createGoal, goalsOf, leaderboard, setLeaderboard, setLeaderboardOptOut } from '../../src/features/progression/collective';
 import { generateQuests } from '../../src/features/progression/quests';
 import { progressOf, recomputeXp, xpForSubject } from '../../src/features/progression/service';
@@ -11,6 +12,7 @@ import type { Tx } from '../../src/server/db/client';
 import { domainEvent, notification, quest, userAchievement, xpLedgerEntry } from '../../src/server/db/schema';
 import type { Actor } from '../../src/server/action-core';
 import { addMember, makeGarden, makeGroup, makeZone, speciesRefId } from './fixtures';
+import { memoryStorage } from './files';
 import { inTx, makeUser, NOW, scopedCtx } from './helpers';
 
 async function gardenWithCulture(tx: Tx, owner: Actor, opts: { seedSource?: 'own_saved'; seedParentCultureId?: string; method?: 'bought_plants' | 'direct_sowing' } = {}) {
@@ -32,6 +34,16 @@ describe('journal d\'XP', () => {
       const { harvestId } = await recordHarvest(ctx, { gardenId, cultureId, quantity: 2, unit: 'kg', seedSaving: false });
       expect(await xpForSubject(tx, alice.id, harvestId)).toBe(8);
       expect((await progressOf(tx, alice.id)).totalXp).toBeGreaterThanOrEqual(8);
+    }));
+
+  it('[PRV-07] l\'archive d\'export contient le journal d\'XP de l\'utilisateur', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const { gardenId, cultureId, ctx } = await gardenWithCulture(tx, alice);
+      await recordHarvest(ctx, { gardenId, cultureId, quantity: 2, unit: 'kg', seedSaving: false });
+      const entry = (await exportEntries(tx, alice.id, memoryStorage())).find((e) => e.name === 'xp.json');
+      const rows: unknown = JSON.parse(new TextDecoder().decode(entry?.data));
+      expect(rows).toEqual(expect.arrayContaining([expect.objectContaining({ code: 'harvest.recorded', amount: 8, reason: 'award' })]));
     }));
 
   it('[XP-15] le journal d\'XP refuse UPDATE et DELETE en base', () =>

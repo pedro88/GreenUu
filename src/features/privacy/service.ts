@@ -6,7 +6,7 @@ import type { ServiceCtx } from '@/server/action-core';
 import type { Executor } from '@/server/db/client';
 import {
   account, attachment, consent, culture, cultureResult, dataExport, garden, gardenMember, guide, guideVersion, harvest, journalEntry, session, tip,
-  tipVote, user, userProfile,
+  tipVote, user, userProfile, xpLedgerEntry,
 } from '@/server/db/schema';
 import { env } from '@/server/env';
 import { emit } from '@/server/events/emit';
@@ -53,6 +53,9 @@ export async function exportEntries(tx: Executor, userId: string, files: FileSto
   const versions = guides.length ? await tx.select().from(guideVersion).where(inArray(guideVersion.guideId, guides.map((g) => g.id))) : [];
   const tips = await tx.select({ id: tip.id, body: tip.body, createdAt: tip.createdAt }).from(tip).where(eq(tip.authorId, userId));
   const consents = await tx.select({ kind: consent.kind, version: consent.version, gardenId: consent.gardenId, grantedAt: consent.grantedAt, revokedAt: consent.revokedAt }).from(consent).where(eq(consent.userId, userId));
+  // Journal d'XP complet (portabilité, PRV-07) : gains, plafonds, annulations et corrections, dans l'ordre.
+  const xp = await tx.select({ code: xpLedgerEntry.actionCode, amount: xpLedgerEntry.amount, reason: xpLedgerEntry.reason, gardenId: xpLedgerEntry.gardenId, localDay: xpLedgerEntry.localDay, createdAt: xpLedgerEntry.createdAt })
+    .from(xpLedgerEntry).where(eq(xpLedgerEntry.userId, userId)).orderBy(asc(xpLedgerEntry.createdAt), asc(xpLedgerEntry.id));
   const photos = await tx.select({ id: attachment.id, key: attachment.storageKey, mime: attachment.mime }).from(attachment).where(and(eq(attachment.uploadedBy, userId), isNull(attachment.deletedAt)));
   const entries: ZipEntry[] = [
     { name: 'profil.json', data: json({ ...u, profile }) },
@@ -63,8 +66,7 @@ export async function exportEntries(tx: Executor, userId: string, files: FileSto
     { name: 'bilans.json', data: json(results) },
     { name: 'guides.json', data: json({ guides, versions }) },
     { name: 'tips.json', data: json(tips) },
-    // Le journal d'XP arrive au lot 6 : la clé est présente dès maintenant pour un format d'archive stable.
-    { name: 'xp.json', data: json([]) },
+    { name: 'xp.json', data: json(xp) },
     { name: 'consentements.json', data: json(consents) },
   ];
   for (const p of photos) {
