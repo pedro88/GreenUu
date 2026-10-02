@@ -12,6 +12,8 @@ import { applyRules, type Candidate, candidatesFor, type LedgerDraft, project, r
 
 const UNDER_COVER: Environment[] = ['greenhouse', 'tunnel', 'indoor'];
 const DAY = 86_400_000;
+/** Événements qui peuvent débloquer un succès de l'acteur sans lui rapporter d'XP (`ten_varieties`, `rotation_3_years`, `season_documented`, `first_guide` sous 300 mots). */
+const ACHIEVEMENT_TRIGGERS_WITHOUT_XP = new Set(['culture.created', 'season.closed', 'guide.published']);
 const REVERSIBLE: Record<string, 'culture' | 'subject'> = {
   'culture.deleted': 'culture', 'journal.entry_deleted': 'subject', 'harvest.deleted': 'subject', 'ticket.deleted': 'subject',
 };
@@ -45,6 +47,15 @@ async function shareGarden(tx: Executor, a: string, b: string) {
   const rows = await tx.execute<{ n: number }>(sql`select count(*)::int as n from garden_member m1 join garden_member m2 on m2.garden_id = m1.garden_id
     where m1.user_id = ${a} and m2.user_id = ${b} and m1.left_at is null and m2.left_at is null`);
   return ([...rows][0]?.n ?? 0) > 0;
+}
+
+/** Parmi `candidates`, ceux qui partagent un jardin actif avec `userId` (une requête, au lieu d'une par votant). */
+async function gardenMatesOf(tx: Executor, userId: string, candidates: string[]) {
+  if (!candidates.length) return new Set<string>();
+  const rows = await tx.selectDistinct({ id: gardenMember.userId }).from(gardenMember)
+    .where(and(inArray(gardenMember.userId, candidates), isNull(gardenMember.leftAt),
+      sql`exists (select 1 from garden_member m2 where m2.garden_id = ${gardenMember.gardenId} and m2.user_id = ${userId} and m2.left_at is null)`));
+  return new Set(rows.map((r) => r.id));
 }
 
 /** Événement de domaine → entrée du barème, avec le contexte lu en base (§8.2). */
@@ -113,14 +124,13 @@ async function historyFor(tx: Executor, recipientId: string, cands: Candidate[],
   const tipTotals = new Map<string, number>();
   const tipMateVotes = new Map<string, number>();
   for (const tipId of new Set(cands.flatMap((c) => (c.tipId ? [c.tipId] : [])))) {
-    const rows = await tx.select({ key: xpLedgerEntry.idempotencyKey, amount: xpLedgerEntry.amount }).from(xpLedgerEntry).where(like(xpLedgerEntry.idempotencyKey, `tip.useful_vote:${tipId}:%`));
+    // `subject_id` (indexé) restreint au tip ; le préfixe de clé écarte les annulations, comme avant.
+    const rows = await tx.select({ key: xpLedgerEntry.idempotencyKey, amount: xpLedgerEntry.amount }).from(xpLedgerEntry)
+      .where(and(eq(xpLedgerEntry.subjectId, tipId), eq(xpLedgerEntry.actionCode, 'tip.useful_vote'), like(xpLedgerEntry.idempotencyKey, `tip.useful_vote:${tipId}:%`)));
     tipTotals.set(tipId, rows.reduce((a, r) => a + r.amount, 0));
-    let mates = 0;
-    for (const r of rows) {
-      const voter = r.key.split(':')[2];
-      if (r.amount > 0 && voter && (await shareGarden(tx, voter, recipientId))) mates += 1;
-    }
-    tipMateVotes.set(tipId, mates);
+    const voterOf = (key: string) => key.split(':')[2]?.split('#')[0] ?? '';
+    const mates = await gardenMatesOf(tx, recipientId, [...new Set(rows.filter((r) => r.amount > 0).map((r) => voterOf(r.key)).filter(Boolean))]);
+    tipMateVotes.set(tipId, rows.filter((r) => r.amount > 0 && mates.has(voterOf(r.key))).length);
   }
   return {
     keys: new Set(used.map((u) => u.key)),
@@ -172,7 +182,9 @@ async function reverse(tx: Executor, where: ReturnType<typeof and>, e: EmittedEv
 
 /** Projection `user_progress` (§8.1) : recalculée depuis le journal ; le niveau ne baisse jamais (LVL-02). */
 export async function refreshProgress(tx: Executor, userId: string) {
-  const rows = await tx.select({ amount: xpLedgerEntry.amount, skillPrimary: xpLedgerEntry.skillPrimary, skillSecondary: xpLedgerEntry.skillSecondary }).from(xpLedgerEntry).where(eq(xpLedgerEntry.userId, userId));
+  // Somme par paire de compétences : la projection est linéaire, le résultat est celui d'une lecture ligne à ligne.
+  const rows = await tx.select({ amount: sql<number>`sum(${xpLedgerEntry.amount})::int`, skillPrimary: xpLedgerEntry.skillPrimary, skillSecondary: xpLedgerEntry.skillSecondary })
+    .from(xpLedgerEntry).where(eq(xpLedgerEntry.userId, userId)).groupBy(xpLedgerEntry.skillPrimary, xpLedgerEntry.skillSecondary);
   const [prev] = await tx.select({ level: userProgress.level }).from(userProgress).where(eq(userProgress.userId, userId)).limit(1);
   const p = project(rows.map((r) => ({ amount: r.amount, skillPrimary: r.skillPrimary as Skill | null, skillSecondary: r.skillSecondary as Skill | null })), prev?.level ?? 1); // as: colonnes typées par l'enum SKILL_DOMAINS
   await tx.insert(userProgress).values({ userId, totalXp: p.total, level: p.level, skills: p.skills })
@@ -190,6 +202,7 @@ export function onXpProcessed(h: NonNullable<ProcessHooks['afterXp']>) {
 /** Abonné synchrone de `emit` (§8.1) : gains, plafonds, annulations, projection des utilisateurs touchés. */
 export async function processEvent(tx: Executor, e: EmittedEvent) {
   const touched = new Set<string>();
+  const gained = new Set<string>();
   const kind = REVERSIBLE[e.type];
   if (kind) {
     for (const u of await reverse(tx, kind === 'culture' ? eq(xpLedgerEntry.cultureId, e.subjectId) : eq(xpLedgerEntry.subjectId, e.subjectId), e)) touched.add(u);
@@ -203,11 +216,16 @@ export async function processEvent(tx: Executor, e: EmittedEvent) {
     const day = localDate(e.occurredAt, await timezoneOf(tx, recipientId));
     const drafts = applyRules(mine, await historyFor(tx, recipientId, mine, day, e.occurredAt), e.occurredAt, day);
     await insertDrafts(tx, drafts, e.id, e.occurredAt);
-    if (drafts.length) touched.add(recipientId);
+    if (drafts.length) {
+      touched.add(recipientId);
+      gained.add(recipientId);
+    }
   }
   for (const u of touched) await refreshProgress(tx, u);
-  if (e.actorId) touched.add(e.actorId);
-  for (const h of after) await h(tx, touched, e);
+  // Succès (§8.5) : jamais retirés, donc inutiles à réévaluer après une annulation ; sans gain, seuls quelques
+  // événements peuvent en débloquer un.
+  if (e.actorId && ACHIEVEMENT_TRIGGERS_WITHOUT_XP.has(e.type)) gained.add(e.actorId);
+  for (const h of after) await h(tx, gained, e);
 }
 
 /** XP gagnée par un utilisateur sur un contenu (réponse d'une action : « +8 XP », XP-02). */

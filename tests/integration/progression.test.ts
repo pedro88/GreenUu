@@ -9,7 +9,7 @@ import { progressOf, recomputeXp, xpForSubject } from '../../src/features/progre
 import { createTicket, transitionTicket } from '../../src/features/ticket/commands';
 import { fixedClock } from '../../src/server/clock';
 import type { Tx } from '../../src/server/db/client';
-import { domainEvent, notification, quest, userAchievement, xpLedgerEntry } from '../../src/server/db/schema';
+import { domainEvent, notification, quest, species, userAchievement, xpLedgerEntry } from '../../src/server/db/schema';
 import type { Actor } from '../../src/server/action-core';
 import { addMember, makeGarden, makeGroup, makeZone, speciesRefId } from './fixtures';
 import { memoryStorage } from './files';
@@ -100,6 +100,22 @@ describe('succès', () => {
       });
       await recordStage(parent.ctx, { gardenId: parent.gardenId, cultureId, stage: 'emergence', actualOn: '2026-06-14' });
       expect(await tx.select().from(userAchievement).where(and(eq(userAchievement.userId, alice.id), eq(userAchievement.achievementCode, 'seed_saver')))).toHaveLength(1);
+    }));
+});
+
+describe('succès sans gain d\'XP', () => {
+  it('[ACH-01] dix espèces distinctes cultivées débloquent ten_varieties, alors que créer une culture ne rapporte rien', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const gardenId = await makeGarden(tx, alice);
+      const zoneId = await makeZone(tx, alice, gardenId, 'Planche 1');
+      const ctx = await scopedCtx(tx, alice, gardenId);
+      const ids = (await tx.select({ id: species.id }).from(species).limit(10)).map((r) => r.id);
+      for (const speciesId of ids) {
+        await createCulture(ctx, { gardenId, zoneId, speciesId, method: 'bought_plants', anchorDate: '2026-05-10', seedSource: 'bought', plannedDates: {}, acknowledgeRotation: true });
+      }
+      expect(await tx.select().from(xpLedgerEntry).where(eq(xpLedgerEntry.userId, alice.id))).toHaveLength(0);
+      expect(await tx.select().from(userAchievement).where(and(eq(userAchievement.userId, alice.id), eq(userAchievement.achievementCode, 'ten_varieties')))).toHaveLength(1);
     }));
 });
 
