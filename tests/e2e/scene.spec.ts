@@ -7,9 +7,13 @@ const TILLEULS = gardenId('tilleuls');
 const CANAL = gardenId('canal');
 const PIXI_SIGNATURE = '__PIXI_APP_INIT__';
 
-/** Le canvas a fini de s'initialiser (ou a basculé sur le rendu de repli sans WebGL). */
+/**
+ * Le canvas WebGL est prêt. Chromium fournit WebGL : le rendu de repli (`unavailable`) n'est pas un succès ici. C'est
+ * lui qui masquait le blocage de PixiJS par la CSP de production (E2E-MAP-01b, audit lot 7 M1).
+ */
 async function sceneReady(page: Page, testId = 'garden-view') {
-  await expect(page.getByTestId(testId)).toHaveAttribute('data-canvas', /^(ready|unavailable)$/);
+  await expect(page.getByTestId(testId)).toHaveAttribute('data-canvas', 'ready');
+  await expect(page.getByTestId(testId).locator('canvas')).toHaveCount(1);
 }
 
 test.describe('vue jardin', () => {
