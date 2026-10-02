@@ -197,6 +197,8 @@ test.describe('éditeur de plan', () => {
     await sceneReady(page, 'plan-editor');
     await page.getByTestId('tool-eraser').click();
     const grid = page.getByTestId('plan-grid');
+    // Comme dragTiles : un clic par coordonnées doit viser une case visible, pas sous la barre d'onglets.
+    await grid.scrollIntoViewIfNeeded();
     const box = await grid.boundingBox();
     const tile = Number(await grid.getAttribute('data-tile-px'));
     await page.mouse.click((box?.x ?? 0) + Number(await grid.getAttribute('data-origin-x')) + 3 * tile, (box?.y ?? 0) + Number(await grid.getAttribute('data-origin-y')) + 3 * tile);
