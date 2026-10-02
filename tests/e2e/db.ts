@@ -52,3 +52,24 @@ export async function tipContext(body: string): Promise<{ geohash4: string | nul
     await sql.end();
   }
 }
+
+export async function guideSlugByTitle(title: string): Promise<string> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ slug: string }[]>`select g.slug from guide g join guide_version v on v.id = g.current_version_id where v.title = ${title} limit 1`;
+    if (!row) throw new Error(`guide « ${title} » introuvable`);
+    return row.slug;
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Précondition de modération posée en base (le masquage automatique est testé en intégration, MOD-01). */
+export async function hideGuide(title: string): Promise<void> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    await sql`update guide set hidden_by_moderation = true where current_version_id in (select id from guide_version where title = ${title})`;
+  } finally {
+    await sql.end();
+  }
+}

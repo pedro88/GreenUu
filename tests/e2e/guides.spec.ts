@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { E2E_YEAR, guideIdByTitle, tipContext } from './db';
+import { E2E_YEAR, guideIdByTitle, guideSlugByTitle, hideGuide, tipContext } from './db';
 import { gardenId } from './ids';
 import { login } from './helpers';
 
@@ -81,12 +81,68 @@ test.describe('guides, tips, modération', () => {
     expect(ctx?.koppen).toBe('Cfb');
   });
 
-  test('[MOD-03] un utilisateur ordinaire voit la page 403 sur /admin et ses sous-pages', async ({ page }) => {
-    await login(page, 'alice');
-    for (const path of ['/admin', '/admin/signalements', '/admin/varietes']) {
-      await page.goto(path);
-      await expect(page.getByTestId('page-403'), path).toBeVisible();
-      await expect(page.getByTestId('report-queue'), path).toHaveCount(0);
+  test('[GUI-04] un tiers n\'ouvre pas l\'éditeur du guide d\'autrui et ne voit ni « Modifier » ni « Publier »', async ({ page }) => {
+    const id = await guideIdByTitle('Réussir ses fraisiers en climat océanique');
+    await login(page, 'chloe');
+    await page.goto(`/app/guides/${id}/edition`);
+    await expect(page.getByTestId('page-404')).toBeVisible();
+    await expect(page.getByTestId('guide-editor')).toHaveCount(0);
+    await page.goto(`/app/guides/${id}`);
+    await expect(page.getByTestId('guide-title')).toHaveText('Réussir ses fraisiers en climat océanique');
+    await expect(page.getByTestId('guide-edit')).toHaveCount(0);
+    await expect(page.getByTestId('guide-publish')).toHaveCount(0);
+    await expect(page.getByTestId('guide-fork')).toBeVisible();
+  });
+
+  test('[GUI-04] guides privés et masqués : introuvables par toutes les routes de lecture, y compris sans compte', async ({ page, browser }) => {
+    const privateTitle = 'Courgettes de la parcelle A';
+    const [privateId, privateSlug] = await Promise.all([guideIdByTitle(privateTitle), guideSlugByTitle(privateTitle)]);
+    await hideGuide('Carottes en bac sur le balcon');
+    const hiddenSlug = await guideSlugByTitle('Carottes en bac sur le balcon');
+    const anonymous = await (await browser.newContext()).newPage();
+    for (const slug of [privateSlug, hiddenSlug]) {
+      await anonymous.goto(`/guides-publics/${slug}`);
+      await expect(anonymous.getByTestId('page-404'), slug).toBeVisible();
+      await expect(anonymous.locator('body'), slug).not.toContainText(slug.startsWith('courgettes') ? privateTitle : 'Carottes en bac');
     }
+    for (const who of ['hugo', 'modo']) {
+      const p = await (await browser.newContext()).newPage();
+      await login(p, who);
+      await p.goto(`/app/guides/${privateId}`);
+      await expect(p.getByTestId('page-404'), who).toBeVisible();
+      await expect(p.locator('body'), who).not.toContainText(privateTitle);
+      if (who === 'hugo') {
+        await p.goto('/app/jardiniers/bruno');
+        await expect(p.locator('body')).not.toContainText(privateTitle);
+      }
+    }
+    // Témoin positif : le membre du jardin le lit.
+    await login(page, 'bruno');
+    await page.goto(`/app/guides/${privateId}`);
+    await expect(page.getByTestId('guide-title')).toHaveText(privateTitle);
+  });
+
+  test('[MOD-03] l\'administration est fermée à l\'anonyme et au membre, ouverte au modérateur qui rejette un signalement', async ({ page, browser }) => {
+    const anonymous = await (await browser.newContext()).newPage();
+    await anonymous.goto('/admin/signalements');
+    await expect(anonymous).toHaveURL(/\/connexion\?next=%2Fadmin%2Fsignalements/);
+    const alice = await (await browser.newContext()).newPage();
+    await login(alice, 'alice');
+    for (const path of ['/admin', '/admin/signalements', '/admin/varietes']) {
+      await alice.goto(path);
+      await expect(alice.getByTestId('page-403'), path).toBeVisible();
+      await expect(alice.getByTestId('report-queue'), path).toHaveCount(0);
+    }
+    const basil = await guideIdByTitle('Basilic en serre froide');
+    await login(page, 'modo');
+    await page.goto('/admin/signalements');
+    const item = page.getByTestId(`report-item-${basil}`);
+    await expect(item).toContainText('Basilic en serre froide');
+    await page.getByTestId(`dismiss-${basil}`).click();
+    await expect(item).toHaveCount(0);
+    await page.reload();
+    await expect(page.getByTestId(`report-item-${basil}`)).toHaveCount(0);
+    await anonymous.goto(`/guides-publics/${await guideSlugByTitle('Basilic en serre froide')}`);
+    await expect(anonymous.getByTestId('guide-title')).toHaveText('Basilic en serre froide');
   });
 });
