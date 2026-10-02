@@ -77,3 +77,47 @@ async function carrotId() {
   const { seedId } = await import('../../src/lib/uuid5');
   return seedId('species:carotte');
 }
+
+test.describe('suppression du compte', () => {
+  test('[PRV-09] supprimer son compte le désactive aussitôt (session et connexion), et le lien reçu le rétablit', async ({ page, browser }) => {
+    const { uniqueEmail, uniquePseudo } = await import('./helpers');
+    const email = uniqueEmail('depart');
+    const password = 'une-phrase-de-passe-solide';
+    await page.goto('/inscription');
+    await page.getByLabel('Adresse e-mail').fill(email);
+    await page.getByLabel('Pseudo').fill(uniquePseudo('depart'));
+    await page.getByLabel('Mot de passe').fill(password);
+    await page.getByLabel(/J'accepte les/).check();
+    await page.getByRole('button', { name: 'Créer mon compte' }).click();
+    await expect(page).toHaveURL(/\/bienvenue$/);
+    // Seconde session, ouverte AVANT la demande : elle ne doit plus servir.
+    const other = await (await browser.newContext()).newPage();
+    const signIn = async (p: typeof page) => {
+      await p.goto('/connexion');
+      await p.getByLabel('Adresse e-mail').fill(email);
+      await p.getByLabel('Mot de passe').fill(password);
+      await p.getByRole('button', { name: 'Se connecter' }).click();
+    };
+    await signIn(other);
+    await expect(other).toHaveURL(/\/app/);
+
+    await page.goto('/app/parametres/confidentialite');
+    await page.getByTestId('deletion-confirm').check();
+    await page.getByTestId('deletion-submit').click();
+    await expect(page.getByTestId('deletion-requested')).toBeVisible();
+
+    await other.goto('/app');
+    await expect(other).toHaveURL(/\/connexion/);
+    await signIn(other);
+    await expect(other.getByText('Ce compte est en cours de suppression', { exact: false })).toBeVisible();
+    await expect(other).toHaveURL(/\/connexion/);
+
+    const link = linkFrom((await waitForMail(email, 'Ton compte sera supprimé')).text, '/retablissement/');
+    const anonymous = await (await browser.newContext()).newPage();
+    await anonymous.goto(link);
+    await anonymous.getByTestId('restore-submit').click();
+    await expect(anonymous.getByTestId('restore-done')).toBeVisible();
+    await signIn(other);
+    await expect(other).toHaveURL(/\/app/);
+  });
+});
