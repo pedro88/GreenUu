@@ -1,4 +1,4 @@
-import { RRule, rrulestr } from 'rrule';
+import { RRule, rrulestr } from '@/lib/rrule';
 import type { Stage, TicketPriority, TicketStatus } from '@/lib/enums';
 
 /** Règles pures du ticketing (RG-TCK-02, 06, 07, 10, 14). */

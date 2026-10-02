@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm';
 import { signPayload } from '@/lib/tokens';
 import type { NotificationChannel, NotificationType } from '@/lib/enums';
 import type { Executor } from '@/server/db/client';
@@ -86,7 +86,8 @@ export async function listPreferences(tx: Executor, userId: string) {
 }
 
 export async function listNotifications(tx: Executor, userId: string, limit = 50) {
-  return tx.select().from(notification).where(and(eq(notification.userId, userId), sql`${notification.readAt} is null or ${notification.createdAt} > now() - interval '90 days'`))
+  // or() parenthèse la condition : sans lui, le « or » s'appliquerait à tout le where (notifications d'autrui).
+  return tx.select().from(notification).where(and(eq(notification.userId, userId), or(isNull(notification.readAt), sql`${notification.createdAt} > now() - interval '90 days'`)))
     .orderBy(desc(notification.createdAt)).limit(limit);
 }
 

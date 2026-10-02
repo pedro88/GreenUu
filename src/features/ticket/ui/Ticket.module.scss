@@ -1,0 +1,219 @@
+@use "../../../styles/mixins" as *;
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--color-leaf);
+    color: var(--color-text);
+  }
+}
+
+.late {
+  border-color: var(--color-danger);
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-weight: 700;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.place {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-leaf-soft);
+  color: var(--color-success-text);
+  font-weight: 600;
+}
+
+.avatars {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  background: var(--color-honey-soft);
+  color: var(--color-honey-contrast);
+  font-size: var(--font-size-sm);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.group {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted);
+  font-weight: 600;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.board {
+  // Conteneur des libellés masqués (position absolue) : sans lui, ils élargissent la page.
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(16rem, 1fr);
+  gap: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 12rem;
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-muted);
+
+  &[data-over="true"] {
+    outline: 3px dashed var(--color-leaf);
+  }
+}
+
+.columnTitle {
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  text-align: center;
+  font-weight: 700;
+}
+
+.views {
+  display: flex;
+  gap: var(--space-1);
+
+  a {
+    @include touch-target;
+
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  a[aria-current="page"] {
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.day {
+  min-height: 5.5rem;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+}
+
+.dayOther {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+}
+
+.dayToday {
+  outline: 2px solid var(--color-honey);
+}
+
+.event {
+  display: block;
+  margin-top: 2px;
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+  background: var(--color-leaf-soft);
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.virtual {
+  border: 1px dashed var(--color-leaf);
+  background: transparent;
+}
+
+.done {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-primary);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+
+  input[type="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    accent-color: var(--color-leaf);
+  }
+
+  a {
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+}

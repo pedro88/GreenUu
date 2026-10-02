@@ -11,6 +11,9 @@ import { QuickCapture } from '@/features/culture/ui/QuickCapture';
 import { StageEditor } from '@/features/culture/ui/StageEditor';
 import { StageTimeline } from '@/features/culture/ui/StageTimeline';
 import { getGarden } from '@/features/garden/service';
+import { ticketsOf } from '@/features/ticket/service';
+import { TicketCard } from '@/features/ticket/ui/TicketCard';
+import ticketStyles from '@/features/ticket/ui/Ticket.module.scss';
 import { listProblems } from '@/features/journal/queries';
 import { cultivableZones } from '@/features/zone/service';
 import { tDynamic } from '@/i18n/dynamic';
@@ -22,7 +25,7 @@ import { appClock } from '@/server/clock';
 import { db } from '@/server/db/client';
 import { requireGardenScope } from '@/server/page-guards';
 
-const TABS = ['journal', 'recoltes', 'etapes'] as const;
+const TABS = ['journal', 'recoltes', 'taches', 'etapes'] as const;
 
 export default async function CulturePage({ params, searchParams }: PageProps<'/app/jardins/[jardinId]/cultures/[cultureId]'>) {
   const { jardinId, cultureId } = await params;
@@ -50,6 +53,7 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
   const problems = await listProblems(db());
   const problemCode = new Map(problems.map((p) => [p.id, p.code]));
   const zones = canEdit ? await cultivableZones(db(), scope) : [];
+  const tickets = tab === 'taches' ? await ticketsOf(db(), scope, { cultureId }) : [];
   const fmtDay = (iso: string) => f.dateTime(new Date(`${iso}T12:00:00`), { day: 'numeric', month: 'short', year: 'numeric' });
   return (
     <Stack gap="lg">
@@ -100,6 +104,15 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
             </ul>
           </Card>
         )
+      ) : null}
+
+      {tab === 'taches' ? (
+        <Stack gap="sm">
+          {tickets.length === 0 ? <Muted>{t('noTickets')}</Muted> : (
+            <ul className={ticketStyles.list}>{tickets.map((r) => <li key={r.id}><TicketCard gardenId={scope.gardenId} row={r} today={today} /></li>)}</ul>
+          )}
+          {can(scope, 'ticket:create') && !deleted ? <Link href={`/app/jardins/${scope.gardenId}/tickets/nouveau?culture=${cultureId}`}>{t('newTicket')}</Link> : null}
+        </Stack>
       ) : null}
 
       {tab === 'etapes' ? (

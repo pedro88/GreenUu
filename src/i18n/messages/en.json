@@ -116,7 +116,11 @@
     "notAnImage": "Ce fichier n'est pas une image.",
     "imageTooLarge": "Image trop grande.",
     "metadataNotRemoved": "Métadonnées impossibles à retirer.",
-    "invalidMergeTarget": "Cible de fusion invalide."
+    "invalidMergeTarget": "Cible de fusion invalide.",
+    "invalidRrule": "Récurrence non prise en charge.",
+    "assigneeInvalid": "Personne non assignable (membre actif, non observateur).",
+    "invalidTransition": "Changement de statut impossible.",
+    "checklistFull": "50 éléments au maximum."
   },
   "errors": {
     "validation": "Certains champs sont à corriger.",
@@ -152,7 +156,8 @@
     "rotationNotAcknowledged": "Confirme d'abord l'alerte de rotation.",
     "zoneHasActiveCultures": "Cette zone porte des cultures en cours.",
     "restoreExpired": "Le délai de restauration (30 jours) est dépassé.",
-    "uploadFailed": "L'envoi de la photo a échoué."
+    "uploadFailed": "L'envoi de la photo a échoué.",
+    "ticketNotFound": "Tâche introuvable."
   },
   "nav": {
     "label": "Navigation principale",
@@ -161,7 +166,9 @@
     "home": "Accueil",
     "gardens": "Jardins",
     "profile": "Profil",
-    "knowledge": "Savoirs"
+    "knowledge": "Savoirs",
+    "tasks": "Tâches",
+    "notifications": "Notifications"
   },
   "roles": {
     "owner": "Propriétaire",
@@ -256,7 +263,8 @@
     "hello": "Bonjour {name}",
     "myGardens": "Mes jardins",
     "noGarden": "Tu n'as pas encore de jardin. Crée le premier en quelques étapes, ou accepte une invitation reçue par e-mail.",
-    "createFirst": "Créer mon premier jardin"
+    "createFirst": "Créer mon premier jardin",
+    "today": "Aujourd'hui"
   },
   "gardens": {
     "title": "Mes jardins",
@@ -315,7 +323,8 @@
     "members": "Membres",
     "settings": "Paramètres",
     "cultures": "Cultures",
-    "seasons": "Saisons"
+    "seasons": "Saisons",
+    "tickets": "Tâches"
   },
   "garden": {
     "season": {
@@ -397,7 +406,10 @@
     "noActiveCultures": "Aucune culture en cours.",
     "historyTitle": "Historique par saison",
     "archiveHasCultures": "Cette zone porte des cultures en cours. Les terminer aujourd'hui (ou les abandonner si elles ne sont pas commencées) puis archiver ?",
-    "archiveFinishCultures": "Terminer les cultures et archiver"
+    "archiveFinishCultures": "Terminer les cultures et archiver",
+    "ticketsTitle": "Tâches",
+    "newTicket": "Nouvelle tâche",
+    "noTickets": "Aucune tâche en cours."
   },
   "practicesEditor": {
     "declaredGarden": "Pratiques du jardin",
@@ -695,7 +707,10 @@
     "deleteTitle": "Supprimer cette culture ?",
     "deleteDescription": "Elle sera masquée avec son journal et ses récoltes. Restauration possible pendant 30 jours.",
     "deleteConfirm": "Supprimer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "tab_taches": "Tâches",
+    "noTickets": "Aucune tâche en cours.",
+    "newTicket": "Nouvelle tâche"
   },
   "quick": {
     "open": "Saisie rapide",
@@ -801,7 +816,16 @@
   "notifications": {
     "unsubscribeTitle": "Désinscription",
     "unsubscribeInvalid": "Ce lien de désinscription n'est pas valide.",
-    "unsubscribeDone": "Tu ne recevras plus d'e-mails « {type} ». Tu peux le réactiver dans tes préférences."
+    "unsubscribeDone": "Tu ne recevras plus d'e-mails « {type} ». Tu peux le réactiver dans tes préférences.",
+    "title": "Notifications",
+    "preferences": "Préférences de notification",
+    "preferencesIntro": "Choisis, pour chaque type, si tu veux être prévenu·e dans l'application et / ou par e-mail. Les succès et quêtes ne sont jamais envoyés par e-mail.",
+    "unread": "{count, plural, =0 {Tout est lu} one {# non lue} other {# non lues}}",
+    "markAllRead": "Tout marquer comme lu",
+    "empty": "Aucune notification.",
+    "type": "Type",
+    "inApp": "Dans l'application",
+    "email": "E-mail"
   },
   "notificationTypes": {
     "assigned": "Tâche assignée",
@@ -815,5 +839,150 @@
     "digest": "Récapitulatif quotidien",
     "achievement": "Succès",
     "quest": "Quête"
+  },
+  "ticketStatus": {
+    "todo": "À faire",
+    "in_progress": "En cours",
+    "blocked": "En attente",
+    "done": "Terminé",
+    "cancelled": "Annulé",
+    "skipped": "Sautée"
+  },
+  "ticketTypes": {
+    "task": "Tâche",
+    "problem": "Problème",
+    "check": "Observation à vérifier",
+    "harvest": "Récolte",
+    "purchase": "Achat",
+    "maintenance": "Entretien"
+  },
+  "ticketPriorities": {
+    "low": "Basse",
+    "normal": "Normale",
+    "high": "Haute",
+    "urgent": "Urgente"
+  },
+  "actionTags": {
+    "watering": "Arrosage",
+    "sowing": "Semis",
+    "planting": "Plantation",
+    "harvest": "Récolte",
+    "weeding": "Désherbage",
+    "treatment": "Traitement",
+    "pruning": "Taille",
+    "purchase": "Achat",
+    "repair": "Réparation"
+  },
+  "stageTicket": {
+    "sowing": "Semer : {culture} ({zone})",
+    "transplanting": "Repiquer : {culture} ({zone})",
+    "planting": "Planter : {culture} ({zone})",
+    "harvest_start": "Récolter : {culture} ({zone})",
+    "end": "Terminer : {culture} ({zone})"
+  },
+  "tickets": {
+    "title": "Tâches",
+    "new": "Nouvelle tâche",
+    "empty": "Aucune tâche ne correspond.",
+    "late": "en retard",
+    "recurring": "Récurrente",
+    "views": "Vues",
+    "view_liste": "Liste",
+    "view_kanban": "Kanban",
+    "view_calendrier": "Calendrier",
+    "filters": "Filtres",
+    "assignee": "Assigné à",
+    "me": "Moi",
+    "allAssignees": "Assigné à…",
+    "group": "Groupe",
+    "allGroups": "Groupe…",
+    "zone": "Zone",
+    "allZones": "Zone…",
+    "due": "Échéance",
+    "allDue": "Échéance…",
+    "due_retard": "En retard",
+    "due_aujourdhui": "Aujourd'hui",
+    "due_semaine": "7 prochains jours",
+    "due_avenir": "À venir (pas encore visibles)",
+    "due_sans": "Sans échéance",
+    "type": "Type",
+    "allTypes": "Type…",
+    "status": "Statut",
+    "statusOpen": "Ouvertes",
+    "statusDone": "Terminées",
+    "statusAll": "Toutes",
+    "transitionRefused": "Ce changement de statut n'est pas possible.",
+    "moveFailed": "Impossible de déplacer la tâche.",
+    "moveTo": "Déplacer",
+    "moveToStatus": "→ {status}",
+    "prevMonth": "‹ Mois précédent",
+    "nextMonth": "Mois suivant ›",
+    "virtual": "Occurrence prévue (pas encore créée)",
+    "titleLabel": "Titre",
+    "attachedTo": "Rattachée à",
+    "wholeGarden": "Tout le jardin",
+    "zones": "Zones",
+    "cultures": "Cultures",
+    "action": "Action",
+    "noAction": "Aucune",
+    "priority": "Priorité",
+    "dueOn": "Échéance",
+    "startsOn": "À partir du",
+    "assignPeople": "Personnes",
+    "assignGroups": "Groupes",
+    "description": "Description",
+    "checklist": "Liste de vérification",
+    "checklistHint": "Une ligne par élément.",
+    "repeat": "Répéter",
+    "repeatNone": "Jamais",
+    "repeatDaily": "Tous les N jours",
+    "repeatWeekly": "Chaque semaine",
+    "repeatMonthly": "Chaque mois",
+    "every": "Intervalle",
+    "onDays": "Les jours",
+    "day_MO": "lun",
+    "day_TU": "mar",
+    "day_WE": "mer",
+    "day_TH": "jeu",
+    "day_FR": "ven",
+    "day_SA": "sam",
+    "day_SU": "dim",
+    "onlyMonths": "Seulement en",
+    "until": "Jusqu'au",
+    "skipMissed": "Passer les occurrences manquées (pas de pile de retards)",
+    "create": "Créer la tâche",
+    "dueBadge": "Pour le {date}",
+    "createdBy": "créée par {name}",
+    "assignees": "Assignée à",
+    "unassigned": "Personne pour l'instant.",
+    "assign": "Assigner",
+    "assignTitle": "Assigner la tâche",
+    "save": "Enregistrer",
+    "comments": "Commentaires",
+    "noComments": "Aucun commentaire.",
+    "comment": "Ajouter un commentaire",
+    "mentionHint": "Mentionne un membre avec @pseudo.",
+    "send": "Envoyer",
+    "addCheck": "Nouvel élément",
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "editTitle": "Modifier la tâche",
+    "applyTo": "Appliquer à",
+    "applyThis": "Cette occurrence seulement",
+    "applyFollowing": "Cette occurrence et les suivantes",
+    "delete": "Supprimer",
+    "action_start": "Commencer",
+    "action_block": "En attente",
+    "action_complete": "Terminer",
+    "action_cancel": "Annuler",
+    "action_reopen": "Rouvrir",
+    "stagePromptTitle": "Étape réalisée ?",
+    "stagePromptText": "Renseigner « {stage} » à la date d'aujourd'hui ?",
+    "later": "Plus tard",
+    "recordToday": "Oui, aujourd'hui",
+    "stageRecorded": "Étape enregistrée.",
+    "markDone": "Marquer « {title} » comme fait",
+    "nothingToday": "Rien à faire aujourd'hui. Profite du jardin !",
+    "myTasksTitle": "Mes tâches du jour"
   }
 }

@@ -34,15 +34,16 @@ test.describe('authentification', () => {
     await expect(page.getByTestId('verify-status')).toHaveAttribute('data-state', 'alreadyUsed');
   });
 
+  // Compte dédié : le mot de passe change, aucun autre test ne doit s'en servir ensuite.
   test('[AUTH-07] réinitialisation : nouveau mot de passe, connexion, lien à usage unique', async ({ page, browser }) => {
     const other = await browser.newContext();
     const otherPage = await other.newPage();
-    await login(otherPage, 'david');
+    await login(otherPage, 'farid');
     await page.goto('/mot-de-passe-oublie');
-    await page.getByLabel('Adresse e-mail').fill('david@greenu.test');
+    await page.getByLabel('Adresse e-mail').fill('farid@greenu.test');
     await page.getByRole('button', { name: 'Envoyer le lien' }).click();
     await expect(page.getByText('un e-mail vient d\'être envoyé')).toBeVisible();
-    const link = linkFrom((await waitForMail('david@greenu.test', 'Réinitialise')).text, '/reinitialisation/');
+    const link = linkFrom((await waitForMail('farid@greenu.test', 'Réinitialise')).text, '/reinitialisation/');
     await page.goto(link);
     await page.getByLabel('Nouveau mot de passe').fill('nouvelle-phrase-de-passe');
     await page.getByRole('button', { name: 'Enregistrer et me connecter' }).click();

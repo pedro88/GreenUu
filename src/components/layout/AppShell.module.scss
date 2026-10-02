@@ -1,6 +1,7 @@
 @use "../../styles/mixins" as *;
 
 .shell {
+  position: relative;
   min-height: 100dvh;
   padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
 
@@ -105,5 +106,39 @@
     color: var(--color-text);
     font-weight: 800;
     border-top-color: var(--color-honey);
+  }
+}
+
+.bell {
+  @include touch-target;
+
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  color: var(--color-text);
+}
+
+.bellCount {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 1.25rem;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-earth-contrast);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.mobileBell {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 3;
+
+  @include from($bp-md) {
+    display: none;
   }
 }

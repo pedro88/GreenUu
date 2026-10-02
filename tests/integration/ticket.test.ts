@@ -232,7 +232,7 @@ describe('récurrence', () => {
       expect((await byDate('2026-07-05'))?.status).toBe('todo');
       const jobs = recordingQueue();
       await dueReminders(tx, jobs, 'http://x', new Date('2026-07-06T10:00:00Z'));
-      expect(await tx.select().from(notification).where(eq(notification.type, 'overdue'))).toEqual([]);
+      expect(await tx.select().from(notification).where(and(eq(notification.type, 'overdue'), eq(notification.gardenId, s.gardenId)))).toEqual([]);
     }));
 
   it('[RCR-04] « celle-ci et les suivantes » met à jour les occurrences futures non terminées', () =>
@@ -323,5 +323,19 @@ describe('notifications', () => {
       const rows = await tx.select().from(notification).where(and(eq(notification.userId, s.david.id), eq(notification.type, 'commented')));
       expect(rows).toHaveLength(1);
       expect(rows[0]?.count).toBe(4);
+    }));
+});
+
+describe('isolation des notifications', () => {
+  it('[NTF-07] le centre de notifications ne liste que les siennes, lues ou non', () =>
+    inTx(async (tx) => {
+      const s = await setup(tx);
+      const { notify, listNotifications } = await import('../../src/features/notification/service');
+      const send = (userId: string, title: string) => notify(tx, recordingQueue(), 'http://x', { userIds: [userId], type: 'quest', gardenId: null, groupKey: title, actorId: null, now: NOW, payload: { title, url: '/app' } });
+      await send(s.david.id, 'pour david');
+      await send(s.emma.id, 'pour emma');
+      const mine = await listNotifications(tx, s.emma.id);
+      expect(mine.map((n) => n.payload.title)).toEqual(['pour emma']);
+      expect(mine.every((n) => n.userId === s.emma.id)).toBe(true);
     }));
 });

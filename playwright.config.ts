@@ -14,8 +14,8 @@ export default defineConfig({
   reporter: [['list'], ['json', { outputFile: 'reports/playwright.json' }], ['html', { open: 'never' }]],
   use: { baseURL: `http://localhost:${PORT}`, trace: 'retain-on-failure', locale: 'fr-FR', timezoneId: 'Europe/Brussels' },
   projects: [
-    { name: 'mobile', use: { ...devices['Pixel 7'] } },
-    { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testMatch: /a11y\.spec\.ts/ },
+    { name: 'mobile', use: { ...devices['Pixel 7'] }, testIgnore: /kanban\.spec\.ts/ },
+    { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testMatch: /(a11y|kanban)\.spec\.ts/ },
   ],
   webServer: {
     command: `tsx scripts/reset.ts ${TEST_DB} && concurrently -k -n next,worker "next dev --port ${PORT}" "tsx src/server/jobs/worker.ts"`,

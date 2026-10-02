@@ -5,6 +5,9 @@ import { getFormatter, getTranslations } from 'next-intl/server';
 import { LinkButton } from '@/components/ui/Button';
 import { Badge, Card, Muted, PageHeader, Row, Stack } from '@/components/ui/Layout';
 import { activeCulturesOfZone, zoneHistory } from '@/features/culture/service';
+import { gardenToday, ticketsOf } from '@/features/ticket/service';
+import { TicketCard } from '@/features/ticket/ui/TicketCard';
+import ticketStyles from '@/features/ticket/ui/Ticket.module.scss';
 import { listGroups } from '@/features/group/service';
 import { listPracticeCatalog, practicesForZone } from '@/features/practice/service';
 import { PracticesEditor } from '@/features/practice/ui/PracticesEditor';
@@ -49,7 +52,8 @@ export default async function ZoneDetailPage({ params }: PageProps<'/app/jardins
   const parentPractices = await practicesForZone(db(), scope, chain.slice(0, -1), year);
   const catalog = (await listPracticeCatalog(db())).map((p) => p.code);
   const groups = can(scope, 'zone:restrict') ? await listGroups(db(), scope) : [];
-  const [active, history] = await Promise.all([activeCulturesOfZone(db(), scope, z.id), zoneHistory(db(), scope, z.id)]);
+  const [active, history, tickets] = await Promise.all([activeCulturesOfZone(db(), scope, z.id), zoneHistory(db(), scope, z.id), ticketsOf(db(), scope, { zoneId: z.id })]);
+  const today = await gardenToday(db(), scope.gardenId, appClock().now());
   const canPlant = !z.archivedAt && (detail.type?.canHostCultures ?? false) && can(scope, 'culture:create');
   const typeLabel = detail.type ? (detail.type.gardenId ? detail.type.label : tDynamic(tt, detail.type.code, detail.type.label)) : '';
   const surfaceText = detail.surface.m2 === null ? t('surfaceUnknown') : t(`surfaceFrom.${detail.surface.source}`, { m2: f.number(detail.surface.m2, { maximumFractionDigits: 2 }) });
@@ -107,6 +111,15 @@ export default async function ZoneDetailPage({ params }: PageProps<'/app/jardins
               </ul>
             </>
           ) : null}
+        </Stack>
+      </Card>
+      <Card>
+        <Stack>
+          <Row>
+            <h2>{t('ticketsTitle')}</h2>
+            {can(scope, 'ticket:create') && !z.archivedAt ? <LinkButton href={`/app/jardins/${scope.gardenId}/tickets/nouveau?zone=${z.id}`} variant="secondary">{t('newTicket')}</LinkButton> : null}
+          </Row>
+          {tickets.length === 0 ? <Muted>{t('noTickets')}</Muted> : <ul className={ticketStyles.list}>{tickets.map((r) => <li key={r.id}><TicketCard gardenId={scope.gardenId} row={r} today={today} /></li>)}</ul>}
         </Stack>
       </Card>
       <Card>
