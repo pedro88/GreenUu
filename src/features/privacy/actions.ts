@@ -10,7 +10,7 @@ import { requestDeletion, requestExport, restoreAccount } from './service';
 export const requestExportAction = defineAction({ name: 'privacy.export', input: z.object({}), handler: (ctx) => requestExport(ctx) });
 
 export const requestDeletionAction = defineAction({
-  name: 'privacy.delete', input: z.object({ confirmTransferToMember: z.boolean().default(false), confirm: z.literal(true) }),
+  name: 'privacy.delete', skipRevalidation: true, input: z.object({ confirmTransferToMember: z.boolean().default(false), confirm: z.literal(true) }),
   handler: (ctx, input) => requestDeletion(ctx, { confirmTransferToMember: input.confirmTransferToMember }),
 });
 

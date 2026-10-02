@@ -55,14 +55,16 @@ export type ActionDefinition<S extends z.ZodType, R> = {
   requireVerifiedEmail?: boolean;
   /** Lecture seule : aucune revalidation du cache après l'appel (recherche, aperçu…). */
   readOnly?: true;
+  /** Mutation après laquelle l'arbre /app ne doit pas être rerendu (la session vient d'être révoquée, par exemple). */
+  skipRevalidation?: true;
 } & (
   | (Omit<GardenBound<z.output<S>>, 'handler'> & { handler: (ctx: ScopedCtx, input: z.output<S>) => Promise<R> })
   | (Omit<Unbound<z.output<S>>, 'handler'> & { handler: (ctx: ServiceCtx, input: z.output<S>) => Promise<R> })
 );
 
 /** Une mutation réussie revalide les pages ; une lecture ne revalide jamais (audit M3). */
-export function shouldRevalidate(def: { readOnly?: true }, ok: boolean): boolean {
-  return ok && def.readOnly !== true;
+export function shouldRevalidate(def: { readOnly?: true; skipRevalidation?: true }, ok: boolean): boolean {
+  return ok && def.readOnly !== true && def.skipRevalidation !== true;
 }
 
 /** Registre de toutes les actions, utilisé par le test AUTHZ-02 (refus systématique aux non-membres). */

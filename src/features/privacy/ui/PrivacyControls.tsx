@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Alert } from '@/components/ui/Alert';
@@ -28,9 +29,9 @@ export function DeletionRequest() {
   const t = useTranslations('privacy');
   const [confirm, setConfirm] = useState(false);
   const [toMember, setToMember] = useState(false);
-  const [purgeOn, setPurgeOn] = useState<string | null>(null);
-  const action = useAction(requestDeletionAction, { refresh: false, onSuccess: (d) => setPurgeOn(d.purgeOn) });
-  if (purgeOn) return <Alert tone="warning" role="status"><span data-testid="deletion-requested">{t('deleteRequested', { date: purgeOn })}</span></Alert>;
+  const router = useRouter();
+  // La session est révoquée : on quitte /app pour une page publique qui confirme la date de suppression.
+  const action = useAction(requestDeletionAction, { refresh: false, onSuccess: (d) => router.replace(`/compte-desactive?le=${d.purgeOn}`) });
   return (
     <form onSubmit={(e) => { e.preventDefault(); if (confirm) void action.run({ confirm: true, confirmTransferToMember: toMember }); }}>
       <Stack gap="sm">

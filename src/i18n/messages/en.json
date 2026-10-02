@@ -549,8 +549,7 @@
     "deleteIntro": "Ton compte est désactivé tout de suite puis supprimé au bout de 30 jours, sauf si tu le rétablis avec le lien reçu par e-mail. Tes contributions aux jardins partagés restent, signées « Jardinier·e supprimé·e ». La propriété de tes jardins est transférée à l'admin le plus ancien.",
     "deleteConfirm": "Je confirme la suppression de mon compte",
     "deleteTransferMember": "Si un jardin n'a pas d'admin, je confirme le transfert de propriété au membre le plus ancien",
-    "deleteSubmit": "Supprimer mon compte",
-    "deleteRequested": "Suppression programmée le {date}. Un e-mail t'a été envoyé pour la rétablir."
+    "deleteSubmit": "Supprimer mon compte"
   },
   "system": {
     "notFoundTitle": "Rien n'a poussé ici…",
@@ -1275,6 +1274,8 @@
     "confirm": "Ton compte est en cours de suppression. Le rétablir annule la suppression.",
     "submit": "Rétablir mon compte",
     "done": "Ton compte est rétabli : tu peux te reconnecter.",
-    "invalid": "Ce lien de rétablissement n'est plus valable."
+    "invalid": "Ce lien de rétablissement n'est plus valable.",
+    "deactivatedTitle": "Compte désactivé",
+    "deactivatedText": "Ton compte sera supprimé définitivement le {date}. Un e-mail t'a été envoyé : son lien permet de le rétablir d'ici là."
   }
 }
