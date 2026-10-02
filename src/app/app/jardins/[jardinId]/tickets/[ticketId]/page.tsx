@@ -35,8 +35,8 @@ export default async function TicketPage({ params }: PageProps<'/app/jardins/[ja
   const today = await gardenToday(db(), scope.gardenId, appClock().now());
   const [groups, { active }] = await Promise.all([listGroups(db(), scope), listMembers(db(), scope, appClock().now())]);
   const full = d.full;
-  const canAct = !scope.archived && can(scope, 'ticket:transition', d.facts);
-  const canEdit = !scope.archived && can(scope, 'ticket:update', d.facts);
+  const canAct = !scope.archived && d.zoneWritable && can(scope, 'ticket:transition', d.facts);
+  const canEdit = !scope.archived && d.zoneWritable && can(scope, 'ticket:update', d.facts);
   const g = `/app/jardins/${scope.gardenId}`;
   return (
     <Stack gap="lg">
@@ -60,7 +60,7 @@ export default async function TicketPage({ params }: PageProps<'/app/jardins/[ja
       <TicketStatusBar gardenId={scope.gardenId} ticketId={d.id} status={d.status} today={today} canAct={canAct} />
       <Card>
         <Stack gap="sm">
-          <Row><h2>{tk('assignees')}</h2>{can(scope, 'ticket:assign') && !scope.archived ? (
+          <Row><h2>{tk('assignees')}</h2>{can(scope, 'ticket:assign') && !scope.archived && d.zoneWritable ? (
             <AssignDialog gardenId={scope.gardenId} ticketId={d.id} members={active.filter((m) => m.role !== 'observer').map((m) => ({ id: m.id, pseudo: m.pseudo ?? m.name }))}
               groups={groups.map((x) => ({ id: x.id, name: x.name }))} memberIds={d.assignees.filter((a) => a.kind === 'member').map((a) => a.id)} groupIds={d.assignees.filter((a) => a.kind === 'group').map((a) => a.id)} />
           ) : null}</Row>
@@ -82,7 +82,7 @@ export default async function TicketPage({ params }: PageProps<'/app/jardins/[ja
       <Card>
         <Stack gap="sm">
           <h2>{tk('checklist')}</h2>
-          <ChecklistEditor gardenId={scope.gardenId} ticketId={d.id} items={d.checklistItems} canToggle={!scope.archived && can(scope, 'checklist:toggle')} canAdd={canEdit} />
+          <ChecklistEditor gardenId={scope.gardenId} ticketId={d.id} items={d.checklistItems} canToggle={!scope.archived && d.zoneWritable && can(scope, 'checklist:toggle')} canAdd={canEdit} />
         </Stack>
       </Card>
       <Card>

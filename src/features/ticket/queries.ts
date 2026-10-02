@@ -12,7 +12,8 @@ import { addDaysIso } from '../culture/stages.pure';
 import { findDescendants, findZone } from '../zone/repo';
 import { compareTodayTasks, occurrencesBetween } from './rules.pure';
 import type { TicketFilters } from './schema';
-import { MATERIALIZE_HORIZON_DAYS, TICKET_LIST_LIMIT, factsFor } from './shared';
+import { MATERIALIZE_HORIZON_DAYS, TICKET_LIST_LIMIT, factsFor, targetZoneId } from './shared';
+import { zoneContributable } from '../zone/service';
 
 /* ---------- Lectures ---------- */
 
@@ -81,8 +82,11 @@ export async function ticketDetail(tx: Executor, scope: Scope, ticketId: string)
     .where(and(eq(ticketComment.ticketId, ticketId), isNull(ticketComment.deletedAt))).orderBy(asc(ticketComment.createdAt)).limit(200);
   const photos = await tx.select({ id: attachment.id, width: attachment.width, height: attachment.height }).from(attachment).where(and(eq(attachment.ticketId, ticketId), isNull(attachment.deletedAt)));
   const facts = full ? await factsFor(tx, scope, full) : { isOwn: false, isAssigned: false, isUnassigned: true };
+  // §5.3 : hors du groupe d'une zone restreinte, seuls les tickets assignés restent modifiables (même garde que les commandes).
+  const zoneId = full ? await targetZoneId(tx, scope, full) : null;
+  const zoneWritable = facts.isAssigned || zoneId === null || await zoneContributable(tx, scope, zoneId);
   const [creator] = full ? await tx.select({ pseudo: userProfile.pseudo }).from(userProfile).where(eq(userProfile.userId, full.createdBy)).limit(1) : [];
-  return { ...(decorated ?? { ...row, assignees: [], checklist: null }), full, checklistItems: checklist, comments, photos, facts, creatorPseudo: creator?.pseudo ?? '' };
+  return { ...(decorated ?? { ...row, assignees: [], checklist: null }), full, checklistItems: checklist, comments, photos, facts, zoneWritable, creatorPseudo: creator?.pseudo ?? '' };
 }
 
 export type TicketDetail = Awaited<ReturnType<typeof ticketDetail>>;

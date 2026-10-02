@@ -52,6 +52,12 @@ export async function assertZoneContribute(tx: Executor, scope: Scope, permissio
   return z;
 }
 
+/** Sans lever d'erreur : la zone (ou son ancêtre restreint) laisse-t-elle contribuer ce membre (§5.3) ? */
+export async function zoneContributable(tx: Executor, scope: Scope, zoneId: string): Promise<boolean> {
+  const z = await repo.findZone(tx, scope, zoneId);
+  return zoneAllows(scope.role, scope.groupIds, effectiveRestriction(await repo.restrictionChain(tx, scope, chainOf(z))), 'contribute');
+}
+
 export function chainOf(z: { id: string; path: string }): string[] {
   return [...(z.path ? z.path.split('/') : []), z.id];
 }
