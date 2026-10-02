@@ -9,6 +9,7 @@ import {
   season, terrainElement, user, userProfile, zone, zoneGroupPermission, zoneType,
 } from '../src/server/db/schema';
 import type { Environment, GardenRole, OrgType, TerrainKind } from '../src/lib/enums';
+import { assignDefaultAvatar } from '../src/features/avatar/service';
 import { loadReferenceData } from '../src/features/plant/reference/load';
 import { closeOldSeasons, seedCultures } from './seed-cultures';
 import { seedCommunity, seedOwnResults } from './seed-community';
@@ -139,6 +140,7 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
       await tx.insert(userProfile).values({ userId: id, pseudo: u.name, timezone: 'Europe/Brussels' }).onConflictDoNothing();
       await tx.insert(account).values({ id: seedId(`account:${u.key}`), userId: id, accountId: id, providerId: 'credential', password: passwordHash }).onConflictDoNothing();
       await tx.insert(consent).values({ id: seedId(`consent:${u.key}`), userId: id, kind: 'terms', version: 'cgu-2026-10' }).onConflictDoNothing();
+      await assignDefaultAvatar(tx, id);
     }
     const types = new Map((await tx.select({ id: zoneType.id, code: zoneType.code }).from(zoneType).where(sql`${zoneType.gardenId} is null`)).map((t) => [t.code, t.id]));
     const practices = new Map((await tx.select({ id: practice.id, code: practice.code }).from(practice)).map((p) => [p.code, p.id]));

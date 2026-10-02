@@ -6,7 +6,7 @@ import type { ServiceCtx } from '@/server/action-core';
 import type { Executor } from '@/server/db/client';
 import {
   account, attachment, consent, culture, cultureResult, dataExport, garden, gardenMember, guide, guideVersion, harvest, journalEntry, session, tip,
-  tipVote, user, userProfile, xpLedgerEntry,
+  tipVote, user, userAvatar, userProfile, xpLedgerEntry,
 } from '@/server/db/schema';
 import { env } from '@/server/env';
 import { emit } from '@/server/events/emit';
@@ -41,6 +41,7 @@ const json = (v: unknown) => new TextEncoder().encode(JSON.stringify(v, null, 2)
 export async function exportEntries(tx: Executor, userId: string, files: FileStorage): Promise<ZipEntry[]> {
   const [u] = await tx.select({ email: user.email, name: user.name, createdAt: user.createdAt }).from(user).where(eq(user.id, userId)).limit(1);
   const [profile] = await tx.select().from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+  const [avatar] = await tx.select({ config: userAvatar.config, configHash: userAvatar.configHash }).from(userAvatar).where(eq(userAvatar.userId, userId)).limit(1);
   const memberships = await tx.select({ gardenId: gardenMember.gardenId, garden: garden.name, role: gardenMember.role, joinedAt: gardenMember.joinedAt, leftAt: gardenMember.leftAt })
     .from(gardenMember).innerJoin(garden, eq(garden.id, gardenMember.gardenId)).where(eq(gardenMember.userId, userId));
   const owned = memberships.filter((m) => m.role === 'owner' && m.leftAt === null).map((m) => m.gardenId);
@@ -58,7 +59,7 @@ export async function exportEntries(tx: Executor, userId: string, files: FileSto
     .from(xpLedgerEntry).where(eq(xpLedgerEntry.userId, userId)).orderBy(asc(xpLedgerEntry.createdAt), asc(xpLedgerEntry.id));
   const photos = await tx.select({ id: attachment.id, key: attachment.storageKey, mime: attachment.mime }).from(attachment).where(and(eq(attachment.uploadedBy, userId), isNull(attachment.deletedAt)));
   const entries: ZipEntry[] = [
-    { name: 'profil.json', data: json({ ...u, profile }) },
+    { name: 'profil.json', data: json({ ...u, profile, avatar: avatar ?? null }) },
     { name: 'adhesions.json', data: json(memberships) },
     { name: 'cultures.json', data: json(cultures) },
     { name: 'journal.json', data: json(journal) },
@@ -181,6 +182,7 @@ export async function purgeDeletedAccounts(tx: Executor, files: FileStorage, now
     if (photos.length) await tx.update(attachment).set({ deletedAt: now }).where(inArray(attachment.id, photos.map((ph) => ph.id)));
     await eraseExports(tx, files, await tx.select({ id: dataExport.id, storageKey: dataExport.storageKey }).from(dataExport).where(eq(dataExport.userId, userId)));
     await tx.delete(tipVote).where(eq(tipVote.userId, userId));
+    await tx.delete(userAvatar).where(eq(userAvatar.userId, userId));
     await tx.update(tip).set({ deletedAt: now }).where(eq(tip.authorId, userId));
     await tx.update(guide).set({ deletedAt: now }).where(and(eq(guide.authorId, userId), isNull(guide.deletedAt)));
     const tag = userId.replace(/-/g, '').slice(0, 8);

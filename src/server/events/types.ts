@@ -59,6 +59,8 @@ export type DomainEvent =
   | E<'privacy.export_requested' | 'privacy.deletion_requested' | 'privacy.deletion_cancelled' | 'privacy.purged', 'user', Record<string, unknown>>
   | E<'achievement.earned', 'user', { code: string }>
   | E<'quest.completed', 'user', { questId: string; kind: string }>
-  | E<'moderation.decided', 'guide' | 'tip' | 'user', { decision: 'dismissed' | 'actioned'; reports: number }>;
+  | E<'moderation.decided', 'guide' | 'tip' | 'user', { decision: 'dismissed' | 'actioned'; reports: number }>
+  | E<'avatar.updated', 'user', { configHash: string }>
+  | E<'decor.placed' | 'decor.moved' | 'decor.removed', 'decor', { itemCode: string }>;
 
 export type DomainEventType = DomainEvent['type'];
