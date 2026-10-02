@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createCulture } from '../../src/features/culture/service';
 import { recordHarvest } from '../../src/features/harvest/service';
 import { createJournalEntry } from '../../src/features/journal/service';
-import { buildExport, purgeDeletedAccounts, purgeExpiredExports, readExport, requestDeletion, requestExport, restoreAccount } from '../../src/features/privacy/service';
+import { buildExport, isDeactivated, purgeDeletedAccounts, purgeExpiredExports, readExport, requestDeletion, requestExport, restoreAccount } from '../../src/features/privacy/service';
 import { createEngineV1 } from '../../src/features/reco/engine';
 import { gardenPseudo, refreshSharedFacts, speciesCommunityStats } from '../../src/features/reco/facts';
 import { resultForm, setResultSharing, submitResult } from '../../src/features/result/service';
@@ -12,7 +12,7 @@ import { signPayload } from '../../src/lib/tokens';
 import type { Actor } from '../../src/server/action-core';
 import { fixedClock } from '../../src/server/clock';
 import type { Tx } from '../../src/server/db/client';
-import { consent, cultureResult, domainEvent, garden, gardenMember, problem, sharedResultFact, userProfile } from '../../src/server/db/schema';
+import { consent, cultureResult, domainEvent, garden, gardenMember, problem, session, sharedResultFact, userProfile } from '../../src/server/db/schema';
 import { testEnv } from './env';
 import { addMember, makeGarden, makeZone, speciesRefId } from './fixtures';
 import { ctxFor, inTx, makeUser, NOW, recordingQueue, scopedCtx } from './helpers';
@@ -164,6 +164,20 @@ describe('suppression du compte', () => {
       expect(owner?.userId).toBe(oldAdmin.id);
       const [p] = await tx.select({ pseudo: userProfile.pseudo }).from(userProfile).where(eq(userProfile.userId, alice.id));
       expect(p?.pseudo.startsWith(DELETED_PSEUDO)).toBe(true);
+    }));
+
+  it('[PRV-09] la demande de suppression désactive le compte tout de suite : sessions révoquées, compte désactivé jusqu\'au rétablissement', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      await tx.insert(session).values({ id: crypto.randomUUID(), userId: alice.id, token: `t-${alice.id}`, expiresAt: new Date(NOW.getTime() + 86_400_000) });
+      expect(await isDeactivated(tx, alice.id)).toBe(false);
+      const jobs = recordingQueue();
+      await requestDeletion(ctxFor(tx, alice, { jobs }), { confirmTransferToMember: false });
+      expect(await tx.select().from(session).where(eq(session.userId, alice.id))).toHaveLength(0);
+      expect(await isDeactivated(tx, alice.id)).toBe(true);
+      const token = jobs.jobs[0]?.data.text.match(/\/retablissement\/(\S+)/)?.[1] ?? '';
+      await restoreAccount(tx, token, NOW);
+      expect(await isDeactivated(tx, alice.id)).toBe(false);
     }));
 
   it('[PRV-09] le lien de rétablissement reçu par e-mail rétablit le compte dans les 30 jours', () =>

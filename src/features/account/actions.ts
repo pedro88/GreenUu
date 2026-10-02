@@ -11,7 +11,8 @@ import { auth } from '@/server/auth/auth';
 import { hit, isLimited, loginLimit, reset, resetLimit } from '@/server/auth/rate-limit';
 import { appClock } from '@/server/clock';
 import { db } from '@/server/db/client';
-import { user, userProfile } from '@/server/db/schema';
+import { user } from '@/server/db/schema';
+import { isDeactivated } from '../privacy/service';
 import { env } from '@/server/env';
 import { transactionalQueue } from '@/server/jobs/boss';
 import { acceptInvitation, previewInvitation } from '../member/service';
@@ -67,8 +68,9 @@ export async function signIn(raw: unknown): Promise<ActionResult<{ redirectTo: s
   const nowMs = appClock().now().getTime();
   const limit = loginLimit(email);
   if (await isLimited(db(), limit, nowMs)) return fail('RATE_LIMITED', 'tooManyAttempts');
-  const [pending] = await db().select({ at: userProfile.deletionRequestedAt }).from(userProfile).innerJoin(user, eq(user.id, userProfile.userId)).where(eq(user.email, email)).limit(1);
-  if (pending?.at) return fail('FORBIDDEN', 'accountDeactivated');
+  // Compte en cours de suppression : connexion refusée, même avec le bon mot de passe (§11.4 point 2).
+  const [target] = await db().select({ id: user.id }).from(user).where(eq(user.email, email)).limit(1);
+  if (target && (await isDeactivated(db(), target.id))) return fail('FORBIDDEN', 'accountDeactivated');
   try {
     await auth().api.signInEmail({ body: { email, password }, headers: await headers() });
   } catch (err) {
