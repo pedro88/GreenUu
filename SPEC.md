@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.6 — validée le 2026-10-01, mise à jour après l'audit du lot 3. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.7 — validée le 2026-10-01, mise à jour en fin de lot 4. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -253,6 +253,7 @@ Catalogue V1. Le payload est minimal : des IDs et les valeurs utiles au barème,
 | `comment.created` (`mentions`) | tickets | notifications |
 | `guide.published`, `guide.applied`, `guide.forked` | guides | XP de l'auteur |
 | `tip.created`, `tip.voted` (`value`, `voterId`) | tips | XP de l'auteur |
+| `content.reported`, `moderation.decided` | modération | file `/admin/signalements`, traçabilité des décisions |
 | `variety.approved` | modération | XP du proposant |
 | `avatar.updated`, `decor.placed` | avatar, déco | invalidation des vignettes |
 | `quest.completed`, `achievement.earned` | progression | notifications in-app |
@@ -1097,9 +1098,8 @@ type GuideCalendarV1 = {
   v: 1;
   anchor: 'sowing' | 'planting';            // date choisie à l'application
   stages: { stage: Stage; offsetDays: number }[];
-  tasks: { titleKey?: string; title: string; type: TicketType; actionTag?: string;
-           relativeTo: Stage; offsetDays: number; leadDays?: number;
-           recurrence?: { rrule: string; durationDays: number } }[];
+  tasks: { title: string; type: TicketType; actionTag?: ActionTag;
+           relativeTo: Stage; offsetDays: number; leadDays?: number }[];   // V1 : pas de tâche récurrente (journal 0.7)
 };
 
 // conditions de déblocage (déco, avatar)
@@ -1309,7 +1309,7 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 - **RG-TCK-12** Vues : liste (filtres : statut, type, assigné, groupe, niveau, zone avec sous-zones, culture, échéance, priorité ; tri), kanban (colonnes `todo`, `in_progress`, `blocked`, `done` ; glisser-déposer = transition), calendrier (mois et semaine, par `due_on`, occurrences futures virtuelles affichées au-delà de l'horizon de 14 jours), « mes tâches du jour ». Filtres et vue sont dans l'URL (`nuqs`). Le kanban offre aussi, sur chaque carte, un menu « Déplacer vers » (clavier, tactile) équivalent au glisser-déposer.
 - **RG-TCK-13** Tickets cachés : les tickets avec `visible_from` dans le futur n'apparaissent pas dans la liste par défaut ni dans « mes tâches du jour ». Ils apparaissent dans le calendrier et avec le filtre « à venir ».
 - **RG-TCK-14** Mentions : `@pseudo` dans un commentaire, résolu uniquement parmi les membres actifs du jardin. Une mention inconnue reste du texte.
-- **RG-NTF-01** Types de notification : `assigned` (on m'assigne, directement ou via un groupe au moment de l'assignation), `due_soon` (veille de l'échéance, 8 h heure du jardin), `overdue` (une seule fois), `mentioned`, `commented` (ticket que j'ai créé ou qui m'est assigné), `invited`, `member_left_unassigned` (admins), `digest` (récapitulatif quotidien), `achievement` et `quest` (in-app seulement).
+- **RG-NTF-01** Types de notification : `assigned` (on m'assigne, directement ou via un groupe au moment de l'assignation), `due_soon` (veille de l'échéance, 8 h heure du jardin), `overdue` (une seule fois), `mentioned`, `commented` (ticket que j'ai créé ou qui m'est assigné), `invited`, `member_left_unassigned` (admins), `digest` (récapitulatif quotidien), `achievement` et `quest` (in-app seulement). Lot 4 : `content_hidden` (contenu masqué après 3 signalements, RG-MOD-02) et `moderation_decision` (contenu retiré, avec le motif, RG-MOD-03), in-app par défaut, e-mail désactivé par défaut.
 - **RG-NTF-02** Préférences par type × canal (`email`, `in_app`). Défauts e-mail : `assigned`, `mentioned`, `due_soon` et `invited` activés ; `commented`, `overdue` et `digest` désactivés. In-app : tout activé. `achievement` et `quest` **ne sont jamais envoyés par e-mail** (aucune notification d'incitation).
 - **RG-NTF-03** On n'est jamais notifié de ses propres actions. Les notifications identiques (même type, même ticket, même destinataire) sont regroupées sur une fenêtre de 10 minutes : la notification existante non lue voit son compteur incrémenté, sans nouvel e-mail. Les occurrences d'une série « à sauter » (RG-TCK-08) ne déclenchent pas d'alerte `overdue`. Un type `group_archived_unassigned` prévient le créateur d'un ticket désassigné par l'archivage d'un groupe (RG-GRP-02).
 - **RG-NTF-04** Chaque e-mail contient un lien de désinscription pour son type, qui fonctionne sans connexion (jeton signé). Ouvrir le lien affiche une confirmation sans rien modifier ; la préférence n'est désactivée qu'au clic sur « Me désinscrire » (POST), pour que les préchargements de liens et les scanners de messagerie ne désinscrivent personne.
@@ -1318,14 +1318,14 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 
 - **RG-GUI-01** Un guide a un auteur, une espèce (obligatoire) et éventuellement une variété, une visibilité, un contexte (§4.5) et un calendrier type optionnel. Le brouillon (`draft`) est privé à l'auteur.
 - **RG-GUI-02** Publier crée une `guide_version` immuable (numéro incrémenté, note de changement optionnelle) et met à jour `current_version_id`. On peut ensuite rééditer le brouillon. Une version n'est jamais modifiée ni supprimée, sauf suppression complète du guide.
-- **RG-GUI-03** Visibilité : `private` = membres du jardin rattaché ; `unlisted` = toute personne qui a le lien (non indexé, absent des recherches) ; `public` = listé, recherchable, indexable (`/guides-publics/[slug]`). Passer de `public` à `private` est autorisé et retire le guide des listes. Les forks existants restent valides, avec la mention « original devenu privé ».
+- **RG-GUI-03** Visibilité : `private` = membres du jardin rattaché ; `unlisted` = toute personne qui a le lien (non indexé, absent des recherches) ; `public` = listé, recherchable, indexable (`/guides-publics/[slug]`). Passer de `public` à `private` est autorisé et retire le guide des listes. Les forks existants restent valides, avec la mention « original devenu privé ». Un guide non listé se lit sans compte à `/guides-publics/[slug]`, avec `noindex`. Un guide masqué par la modération reste lisible de son auteur et des modérateurs (sauf s'il est privé : un rôle plateforme ne donne aucun accès aux données privées, §5.1). Un guide illisible renvoie 404, jamais 403.
 - **RG-GUI-04** Fork : crée un nouveau guide de l'utilisateur dont le brouillon est la copie de la version courante, avec `forked_from_version_id`. Le guide original affiche le nombre de forks publics. Le fork affiche « adapté de … (version n) ».
-- **RG-GUI-05** Appliquer un guide à une culture : l'utilisateur choisit la date d'ancrage. Les dates **prévues** des étapes vides sont calculées ; pour celles déjà renseignées, le service demande s'il faut les écraser. Les dates réelles ne sont jamais modifiées. Les tickets du modèle sont générés (RG-TCK-11) et `applied_guide_version_id` est enregistré.
+- **RG-GUI-05** Appliquer un guide à une culture : l'utilisateur choisit la date d'ancrage. Les dates **prévues** des étapes vides sont calculées ; pour celles déjà renseignées, le service demande s'il faut les écraser. Les dates réelles ne sont jamais modifiées. Les tickets du modèle sont générés (RG-TCK-11) et `applied_guide_version_id` est enregistré. Une tâche du calendrier part de la date **réelle** de son étape si elle existe, sinon de la date calculée, sinon de la date prévue de la culture ; sans aucune date, elle n'est pas créée. Réappliquer un guide (même version ou plus récente) annule d'abord les tickets de guide encore ouverts de la culture. Le guide doit concerner l'espèce de la culture ; un guide privé ne s'applique qu'aux cultures de son jardin.
 - **RG-GUI-06** La comparaison de versions affiche un diff ligne à ligne du Markdown et un diff du contexte et du calendrier.
 - **RG-TIP-01** Un tip compte 10 à 500 caractères et 1 à 5 tags. Ses tags sont normalisés en slugs ; un tag absent est créé, et 3 suggestions sont faites à partir des tags existants. Le contexte (geohash4, Köppen, environnement) est pris par défaut dans le jardin courant, et peut être retiré.
 - **RG-TIP-02** Vote : un vote par utilisateur et par tip (+1 « utile », −1 « pas utile »), modifiable et annulable. Interdit sur ses propres tips.
-- **RG-TIP-03** Fil de tips : classé par score de Wilson (borne inférieure, 95 %) des votes, pondéré par la proximité de contexte (§7.2) avec le jardin courant. Filtres par tag, espèce et environnement.
-- **RG-MOD-01** Signalement : motif (spam, inexact ou dangereux, inapproprié, droits d'auteur, autre) et détail optionnel. Un seul signalement par utilisateur et par contenu.
+- **RG-TIP-03** Fil de tips : classé par score de Wilson (borne inférieure, 95 %) des votes, pondéré par la proximité de contexte (§7.2) avec le jardin courant. Filtres par tag, espèce et environnement. Rang V1 : `0,7 × Wilson + 0,3 × (1 − d)`, où `d` est la distance de contexte entre le tip (geohash4, Köppen, environnement) et le jardin courant ; les 300 tips les plus récents correspondant aux filtres sont classés, 50 sont affichés.
+- **RG-MOD-01** Signalement : motif (spam, inexact ou dangereux, inapproprié, droits d'auteur, autre) et détail optionnel. Un seul signalement par utilisateur et par contenu. On ne signale pas son propre contenu ; on ne signale qu'un contenu qu'on peut lire.
 - **RG-MOD-02** Un contenu qui reçoit 3 signalements ouverts d'utilisateurs distincts est **masqué automatiquement** en attendant la décision de la modération. L'auteur en est notifié.
 - **RG-MOD-03** Décisions de modération : `dismissed` (le contenu est réaffiché) ou `actioned` (le contenu reste masqué, l'auteur est notifié avec le motif). Les décisions sont tracées.
 
@@ -1386,7 +1386,7 @@ Le contexte d'une zone est son contexte effectif (§6.3) combiné au contexte du
 | Altitude | 0,15 | `min(|Δ| / 800 m, 1)` ; 0,5 si inconnue |
 | Latitude | 0,10 | `min(|Δlat| / 8°, 1)`, latitude du centre de la cellule geohash4 ; hémisphère opposé = 1 |
 | Rusticité | 0,05 | `min(|Δ demi-zones| / 4, 1)` ; 0,5 si inconnue |
-| Sol | 0,10 | 0 si identique ; 0,5 entre types voisins (matrice : limoneux ↔ argileux ↔ limoneux-sableux…) ; 1 sinon ; 0,5 si inconnu |
+| Sol | 0,10 | 0 si identique ; 0,5 entre types voisins (matrice V1 : limoneux ↔ limon fin, limoneux ↔ argileux, limoneux ↔ sableux, limon fin ↔ argileux, sableux ↔ caillouteux, calcaire ↔ caillouteux, tourbeux ↔ terreau) ; 1 sinon ; 0,5 si inconnu |
 | pH | 0,05 | `min(|Δ| / 2, 1)` ; 0,5 si inconnu |
 | Pratiques | 0,10 | distance de Jaccard sur les pratiques effectives qui influencent la culture (`organic`, `no_dig`, `living_soil`, `mulching`, `irrigation_*`, `green_manure`) |
 
@@ -2168,6 +2168,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.7 | 2026-10-02 | Fin du lot 4 : tâches de guide relatives à la date réelle de l'étape et réapplication (RG-GUI-05), guides non listés lisibles sans compte et guides illisibles en 404 (RG-GUI-03), rang du fil de tips (RG-TIP-03), pas d'auto-signalement (RG-MOD-01), notifications `content_hidden` et `moderation_decision` (RG-NTF-01), matrice des sols voisins (§7.2), événements de modération (§3.5). Écart : les tâches récurrentes de `GuideCalendarV1` sont reportées (§4.5). Le profil public n'affiche pas encore avatar ni niveau (lots 6 et 8). |
 | 0.6 | 2026-10-02 | Corrections de l'audit du lot 3 : la désinscription par e-mail passe par une confirmation explicite (RG-NTF-04, NTF-04) ; pièces jointes des tickets ponctuels (RG-TCK-01, TCK-19) ; découpage des services volumineux (§3.2). |
 | 0.5 | 2026-10-02 | Fin du lot 3 : tickets d'étape (titre traduisible, rattachés à la culture), occurrences détachées (RG-TCK-09), regroupement des notifications et type `group_archived_unassigned` (RG-NTF-03), menu « Déplacer vers » du kanban, page `/app/taches` et cloche de notifications, page publique `/desinscription/[token]`. Audit du lot 2 (76/100) corrigé : endpoints HTTP d'authentification restreints, en-têtes de sécurité (CSP à nonce), actions de lecture sans revalidation, listes bornées, CI et pre-commit. |
 | 0.4 | 2026-10-01 | Fin du lot 2 : clôture manuelle des saisons (RG-SEA-02), confirmation explicite des alertes de rotation (RG-ROT-02), archivage d'une zone avec cultures en cours (RG-ZON-06), photos « en attente » et EXIF retiré côté serveur (RG-JRN-03), intervention `transplant`, scripts `db:reference` et `assets:sync`, dossier de build e2e séparé (`NEXT_DIST_DIR`). JRN-05 et les parties « tickets » de CUL-07 / ZON-10 passent au lot 3. |
