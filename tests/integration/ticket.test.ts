@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { createCulture, deleteCulture, recordStage } from '../../src/features/culture/service';
 import { createJournalEntry, uploadPhoto } from '../../src/features/journal/service';
@@ -13,6 +13,7 @@ import { fixedClock } from '../../src/server/clock';
 import type { Tx } from '../../src/server/db/client';
 import { attachment, notification, ticket, ticketAssignee, ticketChecklistItem, ticketEvent, ticketSeries } from '../../src/server/db/schema';
 import type { Actor } from '../../src/server/action-core';
+import { housekeeping } from '../../src/server/jobs/handlers';
 import { memoryStorage, tinyJpegWithExif } from './files';
 import { addMember, makeGarden, makeGroup, makeZone, speciesRefId } from './fixtures';
 import { inTx, makeUser, NOW, recordingQueue, scopedCtx } from './helpers';
@@ -149,6 +150,20 @@ describe('tickets', () => {
       for (const [name, run] of attempts) await expect(run(), name).rejects.toMatchObject({ code: 'NOT_FOUND' });
       const [row] = await tx.select({ title: ticket.title, status: ticket.status, deletedAt: ticket.deletedAt }).from(ticket).where(eq(ticket.id, id));
       expect(row).toEqual({ title: 'Ticket de J2', status: 'todo', deletedAt: null });
+    }));
+
+  it('[TCK-19] le nettoyage quotidien garde les photos jointes à un ticket et retire seulement les orphelines', () =>
+    inTx(async (tx) => {
+      const s = await setup(tx);
+      const asDavid = await scopedCtx(tx, s.david, s.gardenId);
+      const files = memoryStorage();
+      const kept = await uploadPhoto(tx, asDavid.scope, s.david.id, tinyJpegWithExif(), files);
+      const orphan = await uploadPhoto(tx, asDavid.scope, s.david.id, tinyJpegWithExif(), files);
+      await createTicket(asDavid, { ...base(s.gardenId), attachmentIds: [kept.attachmentId] });
+      await tx.update(attachment).set({ createdAt: new Date(NOW.getTime() - 3 * 86_400_000) }).where(inArray(attachment.id, [kept.attachmentId, orphan.attachmentId]));
+      await housekeeping(tx, NOW, files);
+      const left = await tx.select({ id: attachment.id }).from(attachment).where(inArray(attachment.id, [kept.attachmentId, orphan.attachmentId]));
+      expect(left.map((a) => a.id)).toEqual([kept.attachmentId]);
     }));
 
   it('[TCK-12] checklist : 2 éléments cochés sur 3 → 2/3', () =>

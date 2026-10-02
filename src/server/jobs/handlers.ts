@@ -1,7 +1,7 @@
 import { and, inArray, isNull, lt, or, sql } from 'drizzle-orm';
-import type { Db } from '../db/client';
+import type { Db, Executor } from '../db/client';
 import { attachment, domainEvent, gardenInvitation, session } from '../db/schema';
-import { storage } from '../storage/storage';
+import { storage, type FileStorage } from '../storage/storage';
 import { sendMailNow } from '../mail/transport';
 import type { Mail } from '../mail/templates';
 
@@ -33,17 +33,17 @@ export async function sendMail(mail: Mail): Promise<void> {
   await sendMailNow(mail);
 }
 
-/** Purge quotidienne (SPEC §3.6) : sessions expirées, invitations expirées depuis 30 jours. */
-export async function housekeeping(db: Db, now: Date): Promise<void> {
+/** Purge quotidienne (SPEC §3.6) : sessions expirées, invitations expirées depuis 30 jours, photos orphelines. */
+export async function housekeeping(db: Executor, now: Date, files: FileStorage = storage()): Promise<void> {
   await db.delete(session).where(lt(session.expiresAt, now));
   const cutoff = new Date(now.getTime() - 30 * 86_400_000);
   await db.delete(gardenInvitation).where(and(
     or(lt(gardenInvitation.expiresAt, cutoff), lt(gardenInvitation.revokedAt, cutoff)),
     isNull(gardenInvitation.acceptedAt),
   ));
-  // Photos téléversées mais jamais rattachées à une entrée de journal (RG-JRN-03).
+  // Photos téléversées mais rattachées à RIEN (ni entrée de journal, ni ticket, ni commentaire) depuis un jour (RG-JRN-03).
   const stale = await db.delete(attachment)
-    .where(and(isNull(attachment.journalEntryId), lt(attachment.createdAt, new Date(now.getTime() - 86_400_000))))
+    .where(and(isNull(attachment.journalEntryId), isNull(attachment.ticketId), isNull(attachment.ticketCommentId), lt(attachment.createdAt, new Date(now.getTime() - 86_400_000))))
     .returning({ key: attachment.storageKey });
-  for (const s of stale) await storage().remove(s.key);
+  for (const s of stale) await files.remove(s.key);
 }
