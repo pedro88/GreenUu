@@ -170,6 +170,21 @@ describe('progression collective', () => {
       expect(g).toMatchObject({ current: 12, target: 30 });
     }));
 
+  it('[COL-03] la période d\'un objectif suit les jours locaux du jardin (Europe/Brussels), pas l\'UTC', () =>
+    inTx(async (tx) => {
+      const bruno = await makeUser(tx);
+      const gardenId = await makeGarden(tx, bruno, { orgType: 'collective' });
+      const asBruno = await scopedCtx(tx, bruno, gardenId);
+      await createGoal(asBruno, { gardenId, title: 'Juin', metric: 'tickets_completed', target: 30, periodStart: '2026-06-01', periodEnd: '2026-06-30' });
+      // Heure de Bruxelles (UTC+2) : 1er juin 00:30 et 01:30 comptés, 1er juillet 00:30 exclu. En UTC, on compterait 1, pas 2.
+      for (const at of ['2026-05-31T22:30:00Z', '2026-05-31T23:30:00Z', '2026-06-30T22:30:00Z']) {
+        const { ticketId } = await createTicket(asBruno, { gardenId, type: 'task', title: `Tâche ${at}`, priority: 'normal', checklist: [], memberIds: [], groupIds: [] });
+        await transitionTicket({ ...asBruno, clock: fixedClock(new Date(at)) }, ticketId ?? '', 'done');
+      }
+      const [g] = await goalsOf(tx, asBruno.scope);
+      expect(g?.current).toBe(2);
+    }));
+
   it('un objectif ne peut pas cibler le groupe d\'un autre jardin (VALIDATION, rien n\'est écrit)', () =>
     inTx(async (tx) => {
       const bruno = await makeUser(tx);

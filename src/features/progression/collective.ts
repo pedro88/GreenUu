@@ -72,19 +72,21 @@ export async function createGoal(ctx: ScopedCtx, input: GoalInput) {
 export async function goalsOf(tx: Executor, scope: Scope) {
   const goals = await tx.select().from(gardenGoal).where(and(eq(gardenGoal.gardenId, scope.gardenId), isNull(gardenGoal.archivedAt))).orderBy(asc(gardenGoal.periodEnd)).limit(50);
   const out = [];
+  const [gd] = goals.length ? await tx.select({ tz: garden.timezone }).from(garden).where(eq(garden.id, scope.gardenId)).limit(1) : [];
+  const tz = gd?.tz ?? 'Europe/Paris';
   for (const g of goals) {
-    const from = new Date(`${g.periodStart}T00:00:00Z`);
-    const to = new Date(`${g.periodEnd}T23:59:59.999Z`);
+    // La période est en jours locaux du jardin : un instant compte selon sa date à l'heure du jardin (M5, audit lot 6).
+    const within = (col: AnyPgColumn) => sql`(${col} at time zone ${tz})::date between ${g.periodStart}::date and ${g.periodEnd}::date`;
     const users = g.groupId
       ? (await tx.select({ u: gardenMember.userId }).from(groupMember).innerJoin(gardenMember, eq(gardenMember.id, groupMember.memberId)).where(eq(groupMember.groupId, g.groupId))).map((r) => r.u)
       : null;
     const who = (col: AnyPgColumn) => (users ? inArray(col, users.length ? users : ['00000000-0000-0000-0000-000000000000']) : undefined);
     let current = 0;
-    if (g.metric === 'tickets_completed') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(ticket).where(and(eq(ticket.gardenId, g.gardenId), gte(ticket.completedAt, from), lte(ticket.completedAt, to), isNull(ticket.deletedAt), who(ticket.completedBy))))[0]?.n ?? 0;
+    if (g.metric === 'tickets_completed') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(ticket).where(and(eq(ticket.gardenId, g.gardenId), within(ticket.completedAt), isNull(ticket.deletedAt), who(ticket.completedBy))))[0]?.n ?? 0;
     if (g.metric === 'harvest_kg') current = (await tx.select({ n: sql<number>`coalesce(sum(${harvest.quantityKg}), 0)::float` }).from(harvest).where(and(eq(harvest.gardenId, g.gardenId), gte(harvest.harvestedOn, g.periodStart), lte(harvest.harvestedOn, g.periodEnd), isNull(harvest.deletedAt), who(harvest.authorId))))[0]?.n ?? 0;
-    if (g.metric === 'observations') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(journalEntry).where(and(eq(journalEntry.gardenId, g.gardenId), gte(journalEntry.observedAt, from), lte(journalEntry.observedAt, to), isNull(journalEntry.deletedAt), who(journalEntry.authorId))))[0]?.n ?? 0;
-    if (g.metric === 'results_complete') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(cultureResult).where(and(eq(cultureResult.gardenId, g.gardenId), eq(cultureResult.completeness, 100), gte(cultureResult.submittedAt, from), lte(cultureResult.submittedAt, to), who(cultureResult.authorId))))[0]?.n ?? 0;
-    if (g.metric === 'cultures_started') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(culture).where(and(eq(culture.gardenId, g.gardenId), gte(culture.createdAt, from), lte(culture.createdAt, to), isNull(culture.deletedAt), who(culture.createdBy))))[0]?.n ?? 0;
+    if (g.metric === 'observations') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(journalEntry).where(and(eq(journalEntry.gardenId, g.gardenId), within(journalEntry.observedAt), isNull(journalEntry.deletedAt), who(journalEntry.authorId))))[0]?.n ?? 0;
+    if (g.metric === 'results_complete') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(cultureResult).where(and(eq(cultureResult.gardenId, g.gardenId), eq(cultureResult.completeness, 100), within(cultureResult.submittedAt), who(cultureResult.authorId))))[0]?.n ?? 0;
+    if (g.metric === 'cultures_started') current = (await tx.select({ n: sql<number>`count(*)::int` }).from(culture).where(and(eq(culture.gardenId, g.gardenId), within(culture.createdAt), isNull(culture.deletedAt), who(culture.createdBy))))[0]?.n ?? 0;
     out.push({ ...g, current: Math.round(current * 10) / 10 });
   }
   return out;
