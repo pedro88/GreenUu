@@ -1,14 +1,18 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { PixelIcon } from '@/components/ui/PlantIcon';
+import type { AvatarConfigV1 } from '@/features/avatar/config.pure';
+import { AvatarThumb } from '@/features/avatar/ui/AvatarThumb';
 import { tDynamic } from '@/i18n/dynamic';
 import { nextLevelAt } from '../rules.pure';
 import styles from './DashboardHeader.module.scss';
 
 type Quest = { id: string; kind: string; titleKey: string; titleParams: Record<string, string | number>; progress: number; target: number };
 
-/** En-tête du tableau de bord (maquette « Accueil ») : salutation, niveau et barre d'XP, quête du jour. */
-export async function DashboardHeader({ name, level, totalXp, quest }: { name: string; level: number; totalXp: number; quest: Quest | null }) {
+/** En-tête du tableau de bord (maquette « Accueil ») : avatar, salutation, niveau et barre d'XP, quête du jour. */
+export async function DashboardHeader({ name, level, totalXp, quest, avatar }: {
+  name: string; level: number; totalXp: number; quest: Quest | null; avatar: { userId: string; config: AvatarConfigV1; configHash: string };
+}) {
   const t = await getTranslations('dashboard');
   const tq = await getTranslations('quests');
   const from = nextLevelAt(level - 1);
@@ -17,7 +21,9 @@ export async function DashboardHeader({ name, level, totalXp, quest }: { name: s
   return (
     <div className={styles.wrap}>
       <header className={styles.card}>
-        <span className={styles.avatar} aria-hidden>{name.slice(0, 1)}</span>
+        <Link href="/app/profil/avatar" className={styles.avatar} aria-label={t('editAvatar')}>
+          <AvatarThumb userId={avatar.userId} config={avatar.config} configHash={avatar.configHash} pseudo={name} size={64} />
+        </Link>
         <h1 className={styles.hello}>{t('hello', { name })}</h1>
         <div className={styles.level}>
           <Link href="/app/profil/xp" className={styles.levelPill} data-testid="dashboard-level">{t('level', { level })}</Link>

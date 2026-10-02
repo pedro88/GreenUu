@@ -26,14 +26,12 @@
   grid-area: avatar;
   display: grid;
   place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 4.5rem;
+  height: 4.5rem;
   border-radius: var(--radius-full);
   background: var(--color-honey-soft);
   border: 2px solid var(--color-border);
-  font-size: var(--font-size-xl);
-  font-weight: 800;
-  text-transform: uppercase;
+  overflow: hidden;
 }
 
 .hello {

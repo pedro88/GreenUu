@@ -4,6 +4,7 @@ import { Card, Grid, Muted, Stack } from '@/components/ui/Layout';
 import { VerifyBanner } from '@/features/account/ui/VerifyBanner';
 import { listMyGardens } from '@/features/garden/service';
 import { GardenCard } from '@/features/garden/ui/GardenCard';
+import { avatarOf } from '@/features/avatar/service';
 import { questsOf } from '@/features/progression/quests';
 import { progressOf } from '@/features/progression/service';
 import { DashboardHeader } from '@/features/progression/ui/DashboardHeader';
@@ -21,10 +22,10 @@ export async function generateMetadata() {
 export default async function DashboardPage() {
   const u = await requireUser();
   const t = await getTranslations('dashboard');
-  const [gardens, progress, quests] = await Promise.all([listMyGardens(db(), u.id), progressOf(db(), u.id), questsOf(db(), u.id)]);
+  const [gardens, progress, quests, avatar] = await Promise.all([listMyGardens(db(), u.id), progressOf(db(), u.id), questsOf(db(), u.id), avatarOf(db(), u.id)]);
   return (
     <Stack gap="lg">
-      <DashboardHeader name={u.pseudo ?? u.name} level={progress.level} totalXp={progress.totalXp} quest={quests.find((q) => q.kind === 'daily') ?? null} />
+      <DashboardHeader name={u.pseudo ?? u.name} level={progress.level} totalXp={progress.totalXp} quest={quests.find((q) => q.kind === 'daily') ?? null} avatar={avatar} />
       {!u.emailVerified ? <VerifyBanner email={u.email} /> : null}
       <section aria-labelledby="aujourdhui">
         <Stack>

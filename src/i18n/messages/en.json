@@ -291,7 +291,8 @@
     "level": "Niv. {level}",
     "xp": "XP",
     "xpProgress": "Progression vers le niveau {next}",
-    "quest": "Quête du jour"
+    "quest": "Quête du jour",
+    "editAvatar": "Modifier mon avatar"
   },
   "gardens": {
     "title": "Mes jardins",
