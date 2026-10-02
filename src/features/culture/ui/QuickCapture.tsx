@@ -19,7 +19,9 @@ import { recordHarvestAction } from '../../harvest/actions';
 import { createJournalEntryAction } from '../../journal/actions';
 import styles from './QuickCapture.module.scss';
 
-type Mode = 'observation' | 'photo' | 'watering' | 'harvest';
+export type QuickMode = 'observation' | 'photo' | 'watering' | 'harvest';
+type Mode = QuickMode;
+const MODES = [['observation', 'ui/action-observer'], ['photo', 'ui/action-photo'], ['watering', 'ui/action-arroser'], ['harvest', 'ui/action-recolter']] as const;
 
 const QUALITY = [{ v: 3, key: 'qualityAverage' }, { v: 4, key: 'qualityGood' }, { v: 5, key: 'qualityExcellent' }] as const;
 
@@ -27,8 +29,10 @@ const QUALITY = [{ v: 3, key: 'qualityAverage' }, { v: 4, key: 'qualityGood' }, 
  * Saisie rapide (maquette « saisie rapide », NFR-03) : 1 tap pour ouvrir, 1 tap pour choisir,
  * au plus 3 champs obligatoires (récolte : quantité, unité ; date pré-remplie).
  */
-export function QuickCapture({ gardenId, cultureId, title, problems, triggerClassName }: {
+export function QuickCapture({ gardenId, cultureId, title, problems, triggerClassName, actionsClassName, asActions = false }: {
   gardenId: string; cultureId: string; title: string; problems: { code: string; category: string }[]; triggerClassName?: string | undefined;
+  /** Feuille de la vue jardin (§9.5) : une rangée d'actions rapides, chacune ouvrant la saisie dans son mode. */
+  asActions?: boolean; actionsClassName?: string | undefined;
 }) {
   const t = useTranslations('quick');
   const tp = useTranslations('problems');
@@ -69,12 +73,23 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
     await journal.run({ gardenId, cultureId, kind, body, attachmentIds, ...(kind !== 'note' ? { problemCode, severity } : {}), ...extra });
   };
 
+  const openIn = (m: Mode) => { setMode(m); setDone(null); setOpen(true); if (m === 'photo') fileInput.current?.click(); };
+  const actions = asActions ? (
+    <div className={actionsClassName} role="group" aria-label={t('modes')}>
+      {MODES.map(([m, icon]) => (
+        <Button key={m} variant="secondary" onClick={() => openIn(m)} data-testid={`sheet-${m}`}><PixelIcon name={icon} size={16} /> {t(m)}</Button>
+      ))}
+    </div>
+  ) : null;
+
   return (
+    <>
+    {actions}
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setDone(null); }} title={title}
-      trigger={<Button size="large" className={triggerClassName} aria-label={t('open')} data-testid="quick-open"><Plus aria-hidden /></Button>}>
+      {...(asActions ? {} : { trigger: <Button size="large" className={triggerClassName} aria-label={t('open')} data-testid="quick-open"><Plus aria-hidden /></Button> })}>
       <Stack>
         <div className={styles.tiles} role="group" aria-label={t('modes')}>
-          {([['observation', 'ui/action-observer'], ['photo', 'ui/action-photo'], ['watering', 'ui/action-arroser'], ['harvest', 'ui/action-recolter']] as const).map(([m, icon]) => (
+          {MODES.map(([m, icon]) => (
             <button key={m} type="button" className={styles.tile} aria-pressed={mode === m} onClick={() => { setMode(m); setDone(null); if (m === 'photo') fileInput.current?.click(); }} data-testid={`quick-${m}`}>
               <span className={styles.tileIcon}><PixelIcon name={icon} size={32} /></span>
               {t(m)}
@@ -151,5 +166,6 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
         ) : null}
       </Stack>
     </Dialog>
+    </>
   );
 }

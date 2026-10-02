@@ -1,0 +1,308 @@
+@use "../styles/mixins" as *;
+
+/* Vue jardin et éditeur de plan (SPEC §9) : le canvas dessine, la couche DOM au-dessus porte l'interaction. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-weight: 600;
+
+  > * + *::before {
+    content: "›";
+    margin-right: var(--space-2);
+    color: var(--color-text-muted);
+  }
+}
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  height: min(65vh, 36rem);
+  min-height: 20rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-leaf-soft);
+  touch-action: none;
+  user-select: none;
+
+  @include motion-safe {
+    transition: opacity 300ms ease;
+  }
+}
+
+.fading {
+  opacity: 0;
+}
+
+.canvasHost {
+  position: absolute;
+  inset: 0;
+
+  canvas {
+    display: block;
+    image-rendering: pixelated;
+  }
+}
+
+.world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.entity {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.culture {
+  /* Au-dessus des zones (z-index = profondeur + 1) : une culture reste touchable dans sa planche. */
+  z-index: 20;
+  width: 32px;
+  height: 32px;
+}
+
+/* Sans canvas (chargement, pas de WebGL) : un rendu de repli lisible, sans changer la couche d'interaction. */
+.root[data-canvas="loading"],
+.root[data-canvas="unavailable"] {
+  .zone {
+    border: 1px solid var(--color-earth);
+    background: var(--color-surface-muted);
+  }
+
+  .culture {
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-full);
+    background: var(--color-leaf);
+  }
+}
+
+.zoom {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  button {
+    @include touch-target;
+
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    cursor: pointer;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}
+
+.notice {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+.sheet {
+  position: sticky;
+  bottom: calc(var(--nav-height) + var(--space-2));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 60vh;
+  overflow: auto;
+  padding: var(--space-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-md) var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--font-size-md);
+  }
+
+  p {
+    margin: 0;
+  }
+
+  @include from($bp-lg) {
+    bottom: var(--space-4);
+  }
+}
+
+.sheetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.close {
+  @include touch-target;
+
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+  cursor: pointer;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.states {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.quickActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.sheetLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.primaryLink {
+  @include touch-target;
+
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.drawer {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+
+  summary {
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  ul {
+    margin: var(--space-2) 0 0;
+    padding-left: var(--space-5);
+  }
+}
+
+.linkish {
+  padding: var(--space-1) 0;
+  border: 0;
+  background: none;
+  color: var(--color-link);
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+/* ---------- Éditeur de plan ---------- */
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: end;
+}
+
+.tool[aria-pressed="true"] {
+  outline: 3px solid var(--color-honey);
+}
+
+.planGrid {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: crosshair;
+
+  &[data-tool="select"] {
+    cursor: grab;
+  }
+}
+
+.status {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.dims {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: var(--space-2);
+  align-items: end;
+}

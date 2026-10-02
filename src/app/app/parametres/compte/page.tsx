@@ -21,6 +21,7 @@ export default async function AccountPage() {
         <AccountForm initial={{ pseudo: p?.pseudo ?? '', timezone: p?.timezone ?? 'Europe/Paris', locale: p?.locale === 'en' ? 'en' : 'fr' }} />
       </Card>
       <Link href="/app/parametres/confidentialite">{t('privacyLink')}</Link>
+      <Link href="/app/parametres/affichage" data-testid="display-link">{t('displayLink')}</Link>
     </Stack>
   );
 }

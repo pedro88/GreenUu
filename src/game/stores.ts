@@ -21,8 +21,13 @@ export function createCameraStore() {
   return createStore<{ x: number; y: number; zoom: number; pan: (dx: number, dy: number) => void; zoomBy: (f: number) => void; reset: () => void }>()((set) => ({
     x: 0, y: 0, zoom: 1,
     pan: (dx, dy) => set((s) => ({ x: s.x + dx, y: s.y + dy })),
-    // Zoom par paliers entiers ou demi-entiers : le pixel art reste net (`nearest`, §9.1).
-    zoomBy: (f) => set((s) => ({ zoom: Math.min(4, Math.max(0.5, Math.round(s.zoom * f * 2) / 2)) })),
+    // Zoom par paliers (quarts sous 1, demis au-dessus) : le pixel art reste net (`nearest`, §9.1).
+    zoomBy: (f) => set((s) => {
+      const z = s.zoom * f;
+      const step = z < 1 ? 4 : 2;
+      const next = Math.min(4, Math.max(0.25, Math.round(z * step) / step));
+      return { zoom: next === s.zoom ? Math.min(4, Math.max(0.25, s.zoom + (f > 1 ? 1 / step : -1 / step))) : next };
+    }),
     reset: () => set({ x: 0, y: 0, zoom: 1 }),
   }));
 }
@@ -82,3 +87,15 @@ export function createHistoryStore(base: EditorScene, baseVersion: number, types
 }
 
 export type HistoryStore = ReturnType<typeof createHistoryStore>;
+
+/** Rectangle en cours de dessin dans l'éditeur (aperçu), en centimètres. */
+export function createDraftStore() {
+  return createStore<{ rect: { x: number; y: number; w: number; h: number } | null; set: (r: { x: number; y: number; w: number; h: number } | null) => void }>()((set) => ({ rect: null, set: (rect) => set({ rect }) }));
+}
+
+export type GameStores = {
+  scene: ReturnType<typeof createSceneStore>;
+  camera: ReturnType<typeof createCameraStore>;
+  selection: ReturnType<typeof createSelectionStore>;
+  draft: ReturnType<typeof createDraftStore>;
+};
