@@ -30,6 +30,8 @@ export default defineConfig({
       SMTP_PORT: '1026',
       MAIL_FROM: 'GreenU <no-reply@greenu.test>',
       NEXT_DIST_DIR: '.next-e2e',
+      // Serveur Node dans un autre fuseau que le navigateur (Europe/Brussels) et que l'UTC.
+      TZ: 'America/New_York',
     },
   },
 });
