@@ -141,3 +141,29 @@
     position: static;
   }
 }
+
+// Recherche pleine largeur, puis critères en pastilles (même grammaire que les filtres de tâches).
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+
+  input[type="search"] {
+    flex: 1 1 100%;
+
+    @include from($bp-md) {
+      flex-basis: 16rem;
+    }
+  }
+
+  select {
+    flex: none;
+    width: auto;
+    max-width: 14rem;
+    padding-inline: var(--space-4) var(--space-5);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+  }
+}
