@@ -197,6 +197,8 @@ test.describe('éditeur de plan', () => {
     await sceneReady(page, 'plan-editor');
     await page.getByTestId('tool-eraser').click();
     const grid = page.getByTestId('plan-grid');
+    // La grille doit être à l'écran : sinon le clic tombe sur la navigation fixe du bas (mobile).
+    await grid.scrollIntoViewIfNeeded();
     const box = await grid.boundingBox();
     const tile = Number(await grid.getAttribute('data-tile-px'));
     await page.mouse.click((box?.x ?? 0) + Number(await grid.getAttribute('data-origin-x')) + 3 * tile, (box?.y ?? 0) + Number(await grid.getAttribute('data-origin-y')) + 3 * tile);
@@ -262,12 +264,15 @@ test.describe('éditeur de plan', () => {
     expect(await zoneAt(COMBES, { x: 600, y: 200, w: 100, h: 100 })).not.toBeNull();
   });
 
-  test('[PLN-06] un membre d\'un jardin collectif (édition réservée aux admins) voit les outils désactivés, avec une explication', async ({ page }) => {
+  test('[PLN-06] un membre d\'un jardin collectif (édition réservée aux admins) voit les outils de zone et de terrain désactivés, avec une explication', async ({ page }) => {
     await login(page, 'david');
     await page.goto(`/app/jardins/${CANAL}/plan`);
     await sceneReady(page, 'plan-editor');
     await expect(page.getByTestId('plan-readonly')).toBeVisible();
-    for (const tool of ['tool-zone', 'tool-terrain', 'tool-eraser', 'plan-scale', 'zone-type']) await expect(page.getByTestId(tool), tool).toBeDisabled();
+    for (const tool of ['tool-zone', 'tool-terrain', 'plan-scale', 'zone-type']) await expect(page.getByTestId(tool), tool).toBeDisabled();
+    // La déco a sa propre permission (`decor:place`, membres compris) : l'outil Déco et la gomme (sur la déco) restent actifs.
+    await expect(page.getByTestId('tool-decor')).toBeEnabled();
+    await expect(page.getByTestId('tool-eraser')).toBeEnabled();
     await expect(page.getByTestId('zone-form-dims')).toHaveCount(0);
   });
 });
