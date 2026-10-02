@@ -1,9 +1,12 @@
 import { getTranslations } from 'next-intl/server';
 import { LinkButton } from '@/components/ui/Button';
-import { Card, Grid, Muted, PageHeader, Stack } from '@/components/ui/Layout';
+import { Card, Grid, Muted, Stack } from '@/components/ui/Layout';
 import { VerifyBanner } from '@/features/account/ui/VerifyBanner';
 import { listMyGardens } from '@/features/garden/service';
 import { GardenCard } from '@/features/garden/ui/GardenCard';
+import { questsOf } from '@/features/progression/quests';
+import { progressOf } from '@/features/progression/service';
+import { DashboardHeader } from '@/features/progression/ui/DashboardHeader';
 import { requireUser } from '@/server/auth/session';
 import { appClock } from '@/server/clock';
 import { myTasksToday } from '@/features/ticket/queries';
@@ -14,14 +17,14 @@ export async function generateMetadata() {
   return { title: (await getTranslations('dashboard'))('title') };
 }
 
-/** Tableau de bord : tâches du jour et jardins. Quêtes et XP arrivent au lot 6. */
+/** Tableau de bord : niveau et quête du jour, tâches du jour et jardins. */
 export default async function DashboardPage() {
   const u = await requireUser();
   const t = await getTranslations('dashboard');
-  const gardens = await listMyGardens(db(), u.id);
+  const [gardens, progress, quests] = await Promise.all([listMyGardens(db(), u.id), progressOf(db(), u.id), questsOf(db(), u.id)]);
   return (
     <Stack gap="lg">
-      <PageHeader title={t('hello', { name: u.pseudo ?? u.name })} />
+      <DashboardHeader name={u.pseudo ?? u.name} level={progress.level} totalXp={progress.totalXp} quest={quests.find((q) => q.kind === 'daily') ?? null} />
       {!u.emailVerified ? <VerifyBanner email={u.email} /> : null}
       <section aria-labelledby="aujourdhui">
         <Stack>

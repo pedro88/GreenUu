@@ -281,7 +281,11 @@
     "myGardens": "Mes jardins",
     "noGarden": "Tu n'as pas encore de jardin. Crée le premier en quelques étapes, ou accepte une invitation reçue par e-mail.",
     "createFirst": "Créer mon premier jardin",
-    "today": "Aujourd'hui"
+    "today": "Aujourd'hui",
+    "level": "Niv. {level}",
+    "xp": "XP",
+    "xpProgress": "Progression vers le niveau {next}",
+    "quest": "Quête du jour"
   },
   "gardens": {
     "title": "Mes jardins",

@@ -1,7 +1,7 @@
-import { Sprout } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/Layout';
+import { PixelIcon } from '@/components/ui/PlantIcon';
 import type { GardenRole, OrgType } from '@/lib/enums';
 import styles from './GardenCard.module.scss';
 
@@ -13,7 +13,7 @@ export async function GardenCard({ garden }: { garden: GardenCardData }) {
   const to = await getTranslations('orgTypes');
   return (
     <Link href={`/app/jardins/${garden.id}`} className={styles.card} data-testid={`garden-card-${garden.id}`}>
-      <span className={styles.thumb} aria-hidden><Sprout size={40} /></span>
+      <span className={styles.thumb} aria-hidden><PixelIcon name="ui/competence-potager" size={48} /></span>
       <span className={styles.name}>{garden.name}</span>
       <span className={styles.meta}>
         <Badge data-testid="garden-role">{tr(garden.role)}</Badge>

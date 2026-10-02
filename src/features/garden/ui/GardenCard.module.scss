@@ -21,13 +21,15 @@
   place-items: center;
   height: 6rem;
   border-radius: var(--radius-md);
-  background: var(--color-leaf-soft);
-  color: var(--color-leaf);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-leaf);
+  background-image: radial-gradient(var(--color-leaf-soft) 1px, transparent 1.5px);
+  background-size: 12px 12px;
 }
 
 .name {
   font-size: var(--font-size-lg);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .meta {
