@@ -1,0 +1,69 @@
+# Intégration continue (audit M4) : types, lint, tests unitaires et d'intégration, e2e, traçabilité spec.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: greenu
+          POSTGRES_PASSWORD: greenu
+          POSTGRES_DB: greenu
+        ports: ['5434:5432']
+        options: >-
+          --health-cmd "pg_isready -U greenu -d greenu"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+      mailpit:
+        image: axllent/mailpit:latest
+        ports: ['1026:1025', '8026:8025']
+        env:
+          MP_SMTP_AUTH_ACCEPT_ANY: 1
+          MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    env:
+      DATABASE_URL_TEST: postgres://greenu:greenu@localhost:5434/greenu_test
+      MAILPIT_API_URL: http://localhost:8026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Base de test et extensions
+        env:
+          PGPASSWORD: greenu
+        run: |
+          psql -h localhost -p 5434 -U greenu -d greenu -c "CREATE DATABASE greenu_test OWNER greenu;"
+          for db in greenu greenu_test; do
+            psql -h localhost -p 5434 -U greenu -d $db -c "CREATE EXTENSION IF NOT EXISTS citext; CREATE EXTENSION IF NOT EXISTS pg_trgm; CREATE EXTENSION IF NOT EXISTS unaccent;"
+          done
+      - name: Fichier .env
+        run: |
+          cp .env.example .env
+          sed -i "s|^BETTER_AUTH_SECRET=.*|BETTER_AUTH_SECRET=$(openssl rand -base64 32)|" .env
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - run: pnpm test:spec
+      - name: Rapports Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

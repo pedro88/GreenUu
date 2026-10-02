@@ -43,6 +43,11 @@ Les e-mails envoyés (vérification, invitations, réinitialisation) arrivent da
 | `pnpm test:spec` | Vérifie que chaque critère d'acceptation du lot courant a un test au vert |
 | `pnpm db:generate` / `db:migrate` / `db:seed` / `db:reset` | Migrations Drizzle, seed déterministe, remise à zéro (dev) |
 
+## Qualité
+
+- **Pre-commit** : `pnpm install` active `.githooks/` (lint des fichiers indexés et vérification des types).
+- **CI** : `.github/workflows/ci.yml` lance types, lint, Vitest, Playwright et `test:spec` sur chaque PR et sur `main`.
+
 ## Architecture
 
 Voir SPEC.md §3 : UI → Server Actions (`defineAction`) → services (logique pure, testable) → dépôts scopés par jardin. Toute lecture ou écriture vérifie l'adhésion au jardin ; la base impose en plus des clés étrangères composites `(garden_id, …)`.

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-commit (audit M4) : lint des fichiers indexés, puis vérification des types.
+set -e
+staged_ts=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|mjs)$' || true)
+staged_scss=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.scss$' || true)
+if [ -n "$staged_ts" ]; then
+  echo "pre-commit : ESLint sur les fichiers indexés"
+  # shellcheck disable=SC2086
+  pnpm exec eslint --max-warnings 0 $staged_ts
+fi
+if [ -n "$staged_scss" ]; then
+  echo "pre-commit : Stylelint sur les fichiers indexés"
+  # shellcheck disable=SC2086
+  pnpm exec stylelint $staged_scss
+fi
+if [ -n "$staged_ts" ]; then
+  echo "pre-commit : vérification des types"
+  pnpm typecheck
+fi
