@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { hasExif, imageSize, sniffImage } from '../../src/lib/images';
 import { gardenId } from './ids';
 import { linkFrom, login, waitForMail } from './helpers';
 
@@ -27,6 +28,28 @@ test.describe('ticketing', () => {
       const p = await (await browser.newContext()).newPage();
       await login(p, who);
       await expect(await myTasks(p)).toContainText(unique);
+    }
+  });
+
+  test('[TCK-19] un membre joint deux photos à un ticket : affichées sur la fiche, réduites et sans EXIF', async ({ page }) => {
+    const title = `Fuite au robinet ${Date.now().toString(36)}`;
+    await login(page, 'emma');
+    await page.goto(`/app/jardins/${CANAL}/tickets/nouveau`);
+    await page.getByLabel('Titre').fill(title);
+    await page.getByTestId('ticket-files').setInputFiles(['tests/e2e/fixtures/photo-gps.jpg', 'tests/e2e/fixtures/photo-small.jpg']);
+    await page.getByTestId('ticket-submit').click();
+    await expect(page.getByTestId('ticket-title')).toHaveText(title);
+    const photos = page.getByTestId('ticket-photo');
+    await expect(photos).toHaveCount(2);
+    for (const src of await photos.evaluateAll((els) => els.map((e) => e.getAttribute('src') ?? ''))) {
+      const res = await page.request.get(src);
+      expect(res.ok()).toBe(true);
+      const buf = new Uint8Array(await res.body());
+      const mime = sniffImage(buf);
+      expect(mime).toBe('image/jpeg');
+      const size = mime ? imageSize(buf, mime) : null;
+      expect(Math.max(size?.width ?? 9999, size?.height ?? 9999)).toBeLessThanOrEqual(1600);
+      expect(hasExif(buf)).toBe(false);
     }
   });
 
