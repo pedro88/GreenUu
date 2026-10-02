@@ -135,7 +135,7 @@ export const harvest = pgTable(
 
 /**
  * Pièces jointes. Téléversées d'abord « en attente » (aucune cible), puis rattachées à une entrée de journal.
- * Les cibles ticket / commentaire s'ajoutent au lot 3 (arc exclusif, au plus une cible).
+ * Arc exclusif : au plus une cible parmi entrée de journal, ticket, commentaire.
  */
 export const attachment = pgTable(
   'attachment',
@@ -143,6 +143,9 @@ export const attachment = pgTable(
     id: id(),
     gardenId: uuid('garden_id').notNull().references(() => garden.id, { onDelete: 'cascade' }),
     journalEntryId: uuid('journal_entry_id').references(() => journalEntry.id, { onDelete: 'cascade' }),
+    /** Cibles ajoutées au lot 3 (FK posées dans ticket.ts via migration, pour éviter un import circulaire). */
+    ticketId: uuid('ticket_id'),
+    ticketCommentId: uuid('ticket_comment_id'),
     storageKey: text('storage_key').notNull().unique(),
     mime: text('mime', { enum: ['image/jpeg', 'image/png', 'image/webp'] }).notNull(),
     bytes: integer('bytes').notNull(),
@@ -153,7 +156,9 @@ export const attachment = pgTable(
     createdAt: createdAt(),
   },
   (t) => [
-    check('attachment_max_one_target', sql`num_nonnulls(${t.journalEntryId}) <= 1`),
+    check('attachment_max_one_target', sql`num_nonnulls(${t.journalEntryId}, ${t.ticketId}, ${t.ticketCommentId}) <= 1`),
+    index('attachment_ticket_idx').on(t.ticketId),
+    index('attachment_comment_idx').on(t.ticketCommentId),
     index('attachment_garden_idx').on(t.gardenId),
     index('attachment_journal_idx').on(t.journalEntryId),
     index('attachment_uploaded_by_idx').on(t.uploadedBy),

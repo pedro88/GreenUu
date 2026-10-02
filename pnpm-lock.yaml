@@ -74,6 +74,9 @@ importers:
       react-dom:
         specifier: 19.3.0
         version: 19.3.0(react@19.3.0)
+      rrule:
+        specifier: ^2.8.1
+        version: 2.8.1
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -3679,6 +3682,9 @@ packages:
 
   rrule-temporal@2.2.8:
     resolution: {integrity: sha512-+wWUe0J02oMh1UWKIt1RTu2H0Cz+gP11O/iweK0MN2UP6JLGeepTUkbSBa90Hxq0W+ywSxM9IlJNouIUdMOwhg==}
+
+  rrule@2.8.1:
+    resolution: {integrity: sha512-hM3dHSBMeaJ0Ktp7W38BJZ7O1zOgaFEsn41PDk+yHoEtfLV+PoJt9E9xAlZiWgf/iqEqionN0ebHFZIDAp+iGw==}
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
@@ -7451,6 +7457,10 @@ snapshots:
   rrule-temporal@2.2.8:
     dependencies:
       temporal-spec: 1.0.1
+
+  rrule@2.8.1:
+    dependencies:
+      tslib: 2.8.1
 
   run-parallel@1.2.0:
     dependencies:

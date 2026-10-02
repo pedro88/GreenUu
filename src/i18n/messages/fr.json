@@ -797,5 +797,23 @@
     "reject": "Refuser",
     "merge": "Fusionner",
     "mergeInto": "Fusionner avec"
+  },
+  "notifications": {
+    "unsubscribeTitle": "Désinscription",
+    "unsubscribeInvalid": "Ce lien de désinscription n'est pas valide.",
+    "unsubscribeDone": "Tu ne recevras plus d'e-mails « {type} ». Tu peux le réactiver dans tes préférences."
+  },
+  "notificationTypes": {
+    "assigned": "Tâche assignée",
+    "due_soon": "Échéance proche",
+    "overdue": "Tâche en retard",
+    "mentioned": "Mention",
+    "commented": "Nouveau commentaire",
+    "invited": "Invitation",
+    "member_left_unassigned": "Départ d'un membre",
+    "group_archived_unassigned": "Groupe archivé",
+    "digest": "Récapitulatif quotidien",
+    "achievement": "Succès",
+    "quest": "Quête"
   }
 }

@@ -5,6 +5,8 @@ import { assertCan, type Scope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
 import { gardenGroup, gardenMember, groupMember, zoneGroupPermission } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
+import { notify } from '../notification/service';
+import { unassignGroup } from '../ticket/service';
 
 type GroupInput = { name: string; color: string; memberIds: string[] };
 
@@ -48,13 +50,20 @@ export async function updateGroup(ctx: ScopedCtx, groupId: string, input: GroupI
   return { groupId };
 }
 
-/** RG-GRP-02 : archiver retire les restrictions de zone (et, au lot 3, les assignations ouvertes). */
+/** RG-GRP-02 : archiver retire les restrictions de zone et les assignations du groupe ; les créateurs sont prévenus. */
 export async function archiveGroup(ctx: ScopedCtx, groupId: string) {
   const { tx, scope, actor, clock } = ctx;
   assertCan(scope, 'group:manage');
   const group = await findActiveGroup(tx, scope, groupId);
   await tx.update(gardenGroup).set({ archivedAt: clock.now() }).where(eq(gardenGroup.id, group.id));
   await tx.delete(zoneGroupPermission).where(and(eq(zoneGroupPermission.gardenId, scope.gardenId), eq(zoneGroupPermission.groupId, group.id)));
+  const orphaned = await unassignGroup(tx, scope.gardenId, group.id);
+  for (const t of orphaned) {
+    await notify(tx, ctx.jobs, ctx.appUrl, {
+      userIds: [t.createdBy], type: 'group_archived_unassigned', gardenId: scope.gardenId, groupKey: t.id, actorId: actor.id, now: clock.now(),
+      payload: { title: t.title, url: `/app/jardins/${scope.gardenId}/tickets/${t.id}`, excerpt: group.name },
+    });
+  }
   await emit(tx, { type: 'group.archived', subjectType: 'group', subjectId: group.id, gardenId: scope.gardenId, actorId: actor.id, payload: {} }, clock.now());
   return { groupId };
 }

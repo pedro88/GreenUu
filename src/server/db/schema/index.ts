@@ -4,3 +4,4 @@ export * from './zone';
 export * from './event';
 export * from './plant';
 export * from './culture';
+export * from './ticket';

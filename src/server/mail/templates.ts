@@ -75,3 +75,27 @@ export function memberLeftMail(p: { to: string; gardenName: string; memberName: 
     text: `${p.memberName} a quitté « ${p.gardenName} ». ${p.ticketCount} ticket(s) ne sont plus assignés.\n${p.url}\n`,
   };
 }
+
+const SUBJECTS: Record<string, (p: { title: string; gardenName: string; actorName: string }) => string> = {
+  assigned: (p) => `Nouvelle tâche pour toi : ${p.title}`,
+  due_soon: (p) => `À faire demain : ${p.title}`,
+  overdue: (p) => `En retard : ${p.title}`,
+  mentioned: (p) => `${p.actorName} t'a mentionné·e : ${p.title}`,
+  commented: (p) => `Nouveau commentaire : ${p.title}`,
+  member_left_unassigned: (p) => `Tickets à réassigner dans « ${p.gardenName} »`,
+  group_archived_unassigned: (p) => `Tickets à réassigner dans « ${p.gardenName} »`,
+  digest: (p) => `Tes tâches du jour — ${p.gardenName}`,
+};
+
+/** E-mail de notification (RG-NTF-01) avec lien de désinscription du type (RG-NTF-04). */
+export function notificationMail(p: { to: string; type: string; gardenName: string; title: string; actorName: string; excerpt: string; url: string; unsubscribeUrl: string }): Mail {
+  const subject = (SUBJECTS[p.type] ?? ((x: { title: string }) => x.title))(p);
+  const excerpt = p.excerpt ? `<blockquote style="border-left:3px solid #e3cca6;margin:12px 0;padding-left:12px">${esc(p.excerpt)}</blockquote>` : '';
+  const footer = `<p style="font-size:12px;color:#6e5a50">Tu reçois cet e-mail pour le jardin « ${esc(p.gardenName)} ». <a href="${esc(p.unsubscribeUrl)}">Ne plus recevoir ce type d'e-mail</a>.</p>`;
+  return {
+    to: p.to,
+    subject,
+    html: layout(subject, `<p>${esc(p.title)}</p>${excerpt}${footer}`, { label: 'Voir', url: p.url }),
+    text: `${subject}\n\n${p.excerpt ? `« ${p.excerpt} »\n\n` : ''}${p.url}\n\nNe plus recevoir ce type d'e-mail : ${p.unsubscribeUrl}\n`,
+  };
+}

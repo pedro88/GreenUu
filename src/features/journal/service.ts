@@ -8,6 +8,7 @@ import type { Executor } from '@/server/db/client';
 import { attachment, culture, journalEntry, problem } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import type { FileStorage } from '@/server/storage/storage';
+import { completeWateringTickets } from '../ticket/service';
 import { assertZoneContribute } from '../zone/service';
 import type { JournalCreateInput } from './schema';
 
@@ -59,6 +60,10 @@ export async function createJournalEntry(ctx: ScopedCtx, input: JournalCreateInp
   }).returning({ id: journalEntry.id });
   if (!e) throw new Error("Insertion de l'entrée échouée");
   if (attachments.length > 0) await tx.update(attachment).set({ journalEntryId: e.id }).where(inArray(attachment.id, attachments.map((a) => a.id)));
+  // JRN-05 : arroser termine les tickets d'arrosage échus de la culture, de sa zone ou d'un ancêtre.
+  if (input.kind === 'intervention' && input.intervention === 'watering') {
+    await completeWateringTickets(tx, scope, { cultureId: input.cultureId, zoneId: input.cultureId ? undefined : input.zoneId }, actor.id, now);
+  }
   const structured = problemId !== null || input.intervention !== undefined || input.weather !== undefined;
   await emit(tx, { type: 'journal.entry_created', subjectType: 'journal_entry', subjectId: e.id, gardenId: scope.gardenId, actorId: actor.id, payload: { kind, hasPhoto: attachments.length > 0, structured, cultureId: input.cultureId ?? null } }, now);
   return { entryId: e.id };

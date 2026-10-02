@@ -10,6 +10,7 @@ import {
 } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import { assertVarietyUsable } from '../plant/service';
+import { cancelCultureTickets, syncStageTickets } from '../ticket/service';
 import { seasonYearOf } from '../season/season.pure';
 import { ensureSeason } from '../season/service';
 import { assertZoneContribute } from '../zone/service';
@@ -135,6 +136,7 @@ export async function createCulture(ctx: ScopedCtx, input: CultureCreateInput) {
   if (!c) throw new Error('Insertion de la culture échouée');
   await tx.insert(cultureStage).values(preview.stages.map((st) => ({ gardenId: scope.gardenId, cultureId: c.id, stage: st.stage, plannedOn: st.plannedOn })));
   await emit(tx, { type: 'culture.created', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: { speciesId: input.speciesId, method: input.method, rotationOverride: preview.rotation !== null } }, clock.now());
+  await syncStageTickets(tx, scope.gardenId, c.id, actor.id, clock.now());
   return { cultureId: c.id, rotationOverride: preview.rotation !== null };
 }
 
@@ -196,6 +198,7 @@ export async function recordStage(ctx: ScopedCtx, input: StageRecordInput) {
   }
   const fresh = await loadCulture(tx, scope, c.id);
   const { rows, status } = await recompute(tx, fresh);
+  await syncStageTickets(tx, scope.gardenId, c.id, actor.id, clock.now());
   if (input.actualOn !== undefined || input.plannedOn !== undefined) {
     await emit(tx, { type: 'culture.stage_recorded', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: { stage: input.stage, actualOn: input.actualOn ?? null, plannedOn: input.plannedOn ?? null } }, clock.now());
   }
@@ -213,6 +216,7 @@ async function moveCulture(ctx: ScopedCtx, c: typeof culture.$inferSelect, targe
   if (!type?.canHost || target.archivedAt) throw validation({ targetZoneId: ['zoneCannotHostCultures'] });
   const [from] = await tx.select({ name: zone.name }).from(zone).where(eq(zone.id, c.zoneId)).limit(1);
   await tx.update(culture).set({ zoneId: target.id }).where(eq(culture.id, c.id));
+  // Les titres des tickets d'étape citent la zone : ils seront resynchronisés après le recalcul.
   await tx.insert(journalEntry).values({
     gardenId: scope.gardenId, cultureId: c.id, kind: 'intervention', intervention: 'transplant', observedAt: new Date(`${on}T12:00:00Z`),
     body: `${from?.name ?? ''} → ${target.name}`, authorId: actor.id,
@@ -243,6 +247,7 @@ export async function setOutcome(ctx: ScopedCtx, input: { cultureId: string; out
     .onConflictDoUpdate({ target: [cultureStage.cultureId, cultureStage.stage], set: { actualOn: on, recordedBy: actor.id } });
   await tx.update(culture).set({ status: input.outcome }).where(eq(culture.id, c.id));
   await recompute(tx, { ...c, status: input.outcome });
+  await syncStageTickets(tx, scope.gardenId, c.id, actor.id, clock.now());
   await emit(tx, { type: 'culture.ended', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: { status: input.outcome } }, clock.now());
   return { cultureId: c.id };
 }
@@ -253,6 +258,8 @@ export async function deleteCulture(ctx: ScopedCtx, cultureId: string) {
   const c = await loadCulture(tx, scope, cultureId);
   await assertZoneContribute(tx, scope, 'culture:delete', c.zoneId, { isOwn: c.createdBy === actor.id });
   await tx.update(culture).set({ deletedAt: clock.now(), deletedBy: actor.id }).where(eq(culture.id, c.id));
+  // RG-CUL-07 : ses tickets ouverts sont annulés.
+  await cancelCultureTickets(tx, scope.gardenId, c.id, actor.id);
   await emit(tx, { type: 'culture.deleted', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: {} }, clock.now());
   return { cultureId: c.id };
 }

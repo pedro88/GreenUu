@@ -42,6 +42,11 @@ export type DomainEvent =
   | E<'journal.entry_deleted', 'journal_entry', Record<string, never>>
   | E<'harvest.recorded', 'harvest', { cultureId: string; quantityKg: number | null; unit: string; seedSaving: boolean }>
   | E<'harvest.deleted', 'harvest', { cultureId: string }>
-  | E<'season.closed' | 'season.reopened', 'season', { year: number }>;
+  | E<'season.closed' | 'season.reopened', 'season', { year: number }>
+  | E<'ticket.created', 'ticket', { source: string }>
+  | E<'ticket.completed', 'ticket', { firstTime: boolean; assignedToGroup: boolean; createdBy: string }>
+  | E<'ticket.reopened' | 'ticket.deleted', 'ticket', Record<string, never>>
+  | E<'ticket.assigned', 'ticket', { memberIds: string[]; groupIds: string[] }>
+  | E<'comment.created', 'ticket', { mentions: string[] }>;
 
 export type DomainEventType = DomainEvent['type'];

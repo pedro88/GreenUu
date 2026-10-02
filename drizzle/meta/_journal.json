@@ -29,6 +29,20 @@
       "when": 1790887616672,
       "tag": "0003_updated_at_triggers_lot2",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790920544773,
+      "tag": "0004_ticketing",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790920546049,
+      "tag": "0005_ticketing_constraints",
+      "breakpoints": true
     }
   ]
 }

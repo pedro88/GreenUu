@@ -11,6 +11,8 @@ import '../../src/features/culture/actions';
 import '../../src/features/journal/actions';
 import '../../src/features/harvest/actions';
 import '../../src/features/plant/actions';
+import '../../src/features/ticket/actions';
+import '../../src/features/notification/actions';
 import { actionRegistry, runAction, type ActionDeps } from '../../src/server/action-core';
 import { loadScope } from '../../src/server/authz/scope';
 import type { Tx } from '../../src/server/db/client';
@@ -64,6 +66,15 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'harvest.record': { gardenId, cultureId: id, quantity: 1, unit: 'kg' },
     'harvest.delete': { gardenId, harvestId: id },
     'plant.gardenVarieties': { gardenId, speciesId: id },
+    'ticket.create': { gardenId, type: 'task', title: 'Arroser' },
+    'ticket.update': { gardenId, ticketId: id, type: 'task', title: 'Arroser' },
+    'ticket.transition': { gardenId, ticketId: id, status: 'done' },
+    'ticket.assign': { gardenId, ticketId: id, memberIds: [], groupIds: [] },
+    'ticket.delete': { gardenId, ticketId: id },
+    'ticket.stopSeries': { gardenId, seriesId: id },
+    'ticket.toggleChecklist': { gardenId, itemId: id, done: true },
+    'ticket.addChecklist': { gardenId, ticketId: id, label: 'x' },
+    'ticket.comment': { gardenId, ticketId: id, body: 'x' },
   };
 }
 

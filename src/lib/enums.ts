@@ -35,3 +35,18 @@ export type Stage = (typeof STAGES)[number];
 export type JournalKind = (typeof JOURNAL_KINDS)[number];
 export type Intervention = (typeof INTERVENTIONS)[number];
 export type HarvestUnit = (typeof HARVEST_UNITS)[number];
+
+/* ---------- Lot 3 : ticketing et notifications ---------- */
+export const TICKET_TYPES = ['task', 'problem', 'check', 'harvest', 'purchase', 'maintenance'] as const;
+export const TICKET_STATUSES = ['todo', 'in_progress', 'blocked', 'done', 'cancelled', 'skipped'] as const;
+export const TICKET_PRIORITIES = ['low', 'normal', 'high', 'urgent'] as const;
+export const TICKET_SOURCES = ['manual', 'recurrence', 'stage', 'guide'] as const;
+export const ACTION_TAGS = ['watering', 'sowing', 'planting', 'harvest', 'weeding', 'treatment', 'pruning', 'purchase', 'repair'] as const;
+export const NOTIFICATION_TYPES = ['assigned', 'due_soon', 'overdue', 'mentioned', 'commented', 'invited', 'member_left_unassigned', 'group_archived_unassigned', 'digest', 'achievement', 'quest'] as const;
+export const NOTIFICATION_CHANNELS = ['email', 'in_app'] as const;
+
+export type TicketType = (typeof TICKET_TYPES)[number];
+export type TicketStatus = (typeof TICKET_STATUSES)[number];
+export type TicketPriority = (typeof TICKET_PRIORITIES)[number];
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];

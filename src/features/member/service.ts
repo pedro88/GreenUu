@@ -9,6 +9,8 @@ import type { Executor } from '@/server/db/client';
 import { garden, gardenGroup, gardenInvitation, gardenMember, groupMember, user, userProfile } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import { invitationMail, memberLeftMail } from '@/server/mail/templates';
+import { notify } from '../notification/service';
+import { unassignMember } from '../ticket/service';
 import type { InviteInput } from './schema';
 
 export const INVITATION_TTL_DAYS = 7;
@@ -140,8 +142,8 @@ async function endMembership(ctx: ScopedCtx, target: typeof gardenMember.$inferS
   const now = clock.now();
   await tx.update(gardenMember).set({ leftAt: now, removedBy }).where(eq(gardenMember.id, target.id));
   await tx.delete(groupMember).where(eq(groupMember.memberId, target.id));
-  // Les tickets arrivent au lot 3 : la liste des tickets désassignés sera alimentée à ce moment-là.
-  const unassignedTicketIds: string[] = [];
+  // RG-MBR-02 : ses assignations directes aux tickets ouverts sont retirées.
+  const unassignedTicketIds = await unassignMember(tx, scope.gardenId, target.id);
   const [g] = await tx.select({ name: garden.name }).from(garden).where(eq(garden.id, scope.gardenId)).limit(1);
   const admins = await tx.select({ email: user.email }).from(gardenMember).innerJoin(user, eq(user.id, gardenMember.userId)).where(and(
     eq(gardenMember.gardenId, scope.gardenId), isNull(gardenMember.leftAt), inArray(gardenMember.role, ['owner', 'admin']),
@@ -150,6 +152,13 @@ async function endMembership(ctx: ScopedCtx, target: typeof gardenMember.$inferS
   for (const a of admins) {
     await jobs.enqueue('mail.send', memberLeftMail({ to: a.email, gardenName: g?.name ?? '', memberName: name, ticketCount: unassignedTicketIds.length, url: `${appUrl}/app/jardins/${scope.gardenId}/membres` }));
   }
+  const adminIds = await tx.select({ id: gardenMember.userId }).from(gardenMember).where(and(
+    eq(gardenMember.gardenId, scope.gardenId), isNull(gardenMember.leftAt), inArray(gardenMember.role, ['owner', 'admin']),
+  ));
+  await notify(tx, jobs, appUrl, {
+    userIds: adminIds.map((a) => a.id), type: 'member_left_unassigned', gardenId: scope.gardenId, groupKey: target.id, actorId: actor.id, now,
+    payload: { title: name, url: `/app/jardins/${scope.gardenId}/tickets`, excerpt: String(unassignedTicketIds.length) },
+  });
   await emit(tx, { type: 'member.left', subjectType: 'member', subjectId: target.id, gardenId: scope.gardenId, actorId: actor.id, payload: { userId: target.userId, removedBy, unassignedTicketIds } }, now);
   return { memberId: target.id };
 }
