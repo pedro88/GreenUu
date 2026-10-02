@@ -9,3 +9,4 @@ export * from './content';
 export * from './result';
 export * from './progression';
 export * from './scene';
+export * from './avatar';
