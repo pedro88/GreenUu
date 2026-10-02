@@ -3,51 +3,52 @@
 
 :root {
   // Palette « cozy » alignée sur les maquettes (Mockup/)
-  --color-bg: #f6ead6;
-  --color-surface: #fdf6ea;
-  --color-surface-muted: #f3e3c6;
-  --color-border: #e2c99f;
+  --color-bg: #f7ebd1;
+  --color-surface: #fcf5e6;
+  --color-surface-muted: #f3dfb6;
+  --color-border: #e0c9a3;
   --color-text: #2b1d1f;
   --color-text-muted: #6e5a50;
 
   // Bouton principal : expresso
-  --color-primary: #2e1f22;
-  --color-primary-hover: #46302f;
+  --color-primary: #33201f;
+  --color-primary-hover: #4a302d;
   --color-primary-contrast: #fbefdc;
 
   // Accents
-  --color-honey: #f2c14e;
-  --color-honey-soft: #f8dc8f;
+  --color-honey: #f6c463;
+  --color-honey-soft: #f9dd9a;
   --color-honey-contrast: #2b1d1f;
-  --color-earth: #8b5a3c;
+  --color-earth: #8a5a40;
   --color-earth-hover: #74492f;
   --color-earth-contrast: #fdf6ea;
-  --color-leaf: #6f9a4f;
-  --color-leaf-soft: #e1ead0;
-  --color-accent: #d4573b;
+  --color-leaf: #7a9557;
+  --color-leaf-soft: #dfe2bf;
+  --color-accent: #c6623f;
   --color-link: #45602b;
 
-  // Familles botaniques (grille des saisons) : fonds moyens, texte foncé lisible dans les deux thèmes
+  // Familles botaniques (grille des saisons), couleurs des maquettes ; texte clair sur les fonds foncés (contraste AA)
   --family-text: #2b1d1f;
+  --family-text-light: #fdf6ea;
   --family-edge: rgb(43 29 31 / 14%);
-  --family-solanaceae: #e8836a;
-  --family-brassicaceae: #8fb86a;
-  --family-fabaceae: #c5d98f;
-  --family-apiaceae: #f0a65a;
+  --family-solanaceae: #bb5638;
+  --family-brassicaceae: #5f7f42;
+  --family-fabaceae: #b1b281;
+  --family-apiaceae: #e8973f;
   --family-cucurbitaceae: #f2c94e;
-  --family-amaryllidaceae: #d9c3a5;
-  --family-asteraceae: #b9a2d8;
+  --family-amaryllidaceae: #cda886;
+  --family-asteraceae: #9d8fc4;
   --family-lamiaceae: #9fcfb8;
-  --family-rosaceae: #f0a3b0;
+  --family-rosaceae: #e3b0ad;
   --family-poaceae: #e6d27a;
-  --family-amaranthaceae: #d39cbc;
+  --family-amaranthaceae: #a35680;
 
   // États
   --color-warning-bg: #fbe3a2;
   --color-warning-text: #5c3d00;
   --color-danger: #b3402f;
   --color-danger-bg: #f8ddd4;
-  --color-success-bg: #e1ead0;
+  --color-success-bg: #dfe2bf;
   --color-success-text: #3f5e27;
   --color-info-bg: #ece2cf;
   --color-info-text: #4b3a30;
@@ -73,7 +74,7 @@
   --shadow-nav: 0 -2px 10px rgb(43 29 31 / 6%);
 
   // Typographie
-  --font-body: var(--font-roboto), system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
   --font-size-lg: 1.25rem;

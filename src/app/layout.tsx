@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Roboto } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { getLocale, getTranslations } from 'next-intl/server';
@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import '@/styles/globals.scss';
 
 /** Police des maquettes, auto-hébergée par next/font (pas de requête vers Google à l'exécution). */
-const roboto = Roboto({ subsets: ['latin'], variable: '--font-roboto', display: 'swap' });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('meta');
@@ -19,7 +19,7 @@ export const viewport: Viewport = { width: 'device-width', initialScale: 1, them
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await getLocale();
   return (
-    <html lang={locale} className={roboto.variable}>
+    <html lang={locale} className={inter.variable}>
       <body>
         <NextIntlClientProvider>
           <NuqsAdapter>{children}</NuqsAdapter>

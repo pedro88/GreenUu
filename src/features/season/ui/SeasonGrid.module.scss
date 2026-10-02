@@ -53,6 +53,12 @@
     color: var(--family-text);
   }
 
+  &[data-family="solanaceae"],
+  &[data-family="brassicaceae"],
+  &[data-family="amaranthaceae"] {
+    color: var(--family-text-light);
+  }
+
   &[data-family="solanaceae"] {
     --family-bg: var(--family-solanaceae);
   }
@@ -104,8 +110,7 @@
   box-shadow: var(--shadow-sm);
 
   &:hover {
-    color: var(--family-text);
-    filter: brightness(1.05);
+    filter: brightness(1.06);
   }
 }
 
