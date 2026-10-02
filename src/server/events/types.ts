@@ -1,4 +1,4 @@
-/** Catalogue typé des événements de domaine émis au lot 1 (SPEC §3.5). */
+/** Catalogue typé des événements de domaine (SPEC §3.5). */
 
 type E<TType extends string, TSubject extends string, TPayload extends Record<string, unknown>> = {
   type: TType;
@@ -47,6 +47,13 @@ export type DomainEvent =
   | E<'ticket.completed', 'ticket', { firstTime: boolean; assignedToGroup: boolean; createdBy: string }>
   | E<'ticket.reopened' | 'ticket.deleted', 'ticket', Record<string, never>>
   | E<'ticket.assigned', 'ticket', { memberIds: string[]; groupIds: string[] }>
-  | E<'comment.created', 'ticket', { mentions: string[] }>;
+  | E<'comment.created', 'ticket', { mentions: string[] }>
+  | E<'guide.published', 'guide', { number: number; visibility: string; words: number; firstPublication: boolean }>
+  | E<'guide.forked', 'guide', { fromVersionId: string; fromAuthorId: string; visibility: string }>
+  | E<'guide.applied', 'guide', { versionId: string; cultureId: string; authorId: string; tickets: number }>
+  | E<'tip.created', 'tip', { tags: string[] }>
+  | E<'tip.voted', 'tip', { value: number; previous: number; voterId: string; authorId: string }>
+  | E<'content.reported', 'guide' | 'tip' | 'user', { reason: string; openReports: number; autoHidden: boolean }>
+  | E<'moderation.decided', 'guide' | 'tip' | 'user', { decision: 'dismissed' | 'actioned'; reports: number }>;
 
 export type DomainEventType = DomainEvent['type'];

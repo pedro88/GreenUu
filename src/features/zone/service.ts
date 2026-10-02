@@ -43,7 +43,7 @@ async function assertZoneEdit(tx: Executor, scope: Scope, permission: ZonePermis
  * Droit de « cultiver » une zone (cultures, journal, récoltes) : permission de rôle, puis restriction
  * de zone de niveau `contribute` au moins (SPEC §5.3). Renvoie la zone.
  */
-export async function assertZoneContribute(tx: Executor, scope: Scope, permission: 'culture:create' | 'culture:update' | 'culture:delete' | 'journal:create' | 'ticket:create', zoneId: string, facts?: { isOwn?: boolean }) {
+export async function assertZoneContribute(tx: Executor, scope: Scope, permission: 'culture:create' | 'culture:update' | 'culture:delete' | 'journal:create' | 'ticket:create' | 'guide:apply', zoneId: string, facts?: { isOwn?: boolean }) {
   if (scope.archived) throw forbidden('gardenArchived');
   const z = await repo.findZone(tx, scope, zoneId);
   if (!can(scope, permission, facts)) throw forbidden();

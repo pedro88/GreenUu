@@ -205,6 +205,37 @@ export async function recordStage(ctx: ScopedCtx, input: StageRecordInput) {
   return { cultureId: c.id, status, warnings: orderWarnings(rows) };
 }
 
+export type PlannedDatesResult =
+  | { status: 'needsConfirmation'; conflicts: { stage: Stage; current: string; proposed: string }[] }
+  | { status: 'applied'; changed: Stage[] };
+
+/**
+ * RG-GUI-05 : dates prévues proposées par un guide. Les étapes vides sont remplies ; une date prévue déjà
+ * renseignée n'est écrasée que si `overwrite` est vrai (sinon on renvoie les conflits pour que l'UI demande).
+ * Les dates réelles ne sont jamais modifiées ; seules les étapes pertinentes pour la culture sont touchées.
+ */
+export async function applyPlannedDates(ctx: ScopedCtx, cultureId: string, dates: Partial<Record<Stage, string>>, overwrite: boolean | undefined, appliedGuideVersionId: string): Promise<PlannedDatesResult> {
+  const { tx, scope, actor, clock } = ctx;
+  const c = await loadCulture(tx, scope, cultureId);
+  await assertZoneContribute(tx, scope, 'guide:apply', c.zoneId);
+  await assertSeasonOpen(tx, c.seasonId);
+  const rows = await tx.select().from(cultureStage).where(eq(cultureStage.cultureId, c.id));
+  const proposals = rows.flatMap((r) => {
+    const proposed = dates[r.stage];
+    return proposed && r.actualOn === null && r.plannedOn !== proposed ? [{ row: r, proposed }] : [];
+  });
+  const conflicts = proposals.filter((p) => p.row.plannedOn !== null);
+  if (conflicts.length > 0 && overwrite === undefined) {
+    return { status: 'needsConfirmation', conflicts: conflicts.map((p) => ({ stage: p.row.stage, current: p.row.plannedOn ?? '', proposed: p.proposed })) };
+  }
+  const toWrite = proposals.filter((p) => p.row.plannedOn === null || overwrite === true);
+  for (const p of toWrite) await tx.update(cultureStage).set({ plannedOn: p.proposed }).where(eq(cultureStage.id, p.row.id));
+  await tx.update(culture).set({ appliedGuideVersionId }).where(eq(culture.id, c.id));
+  await recompute(tx, await loadCulture(tx, scope, c.id));
+  await syncStageTickets(tx, scope.gardenId, c.id, actor.id, clock.now());
+  return { status: 'applied', changed: toWrite.map((p) => p.row.stage) };
+}
+
 /** CUL-08 : changement de zone tracé dans le journal (entrée `intervention = transplant`). */
 async function moveCulture(ctx: ScopedCtx, c: typeof culture.$inferSelect, targetZoneId: string, on: string) {
   const { tx, scope, actor, clock } = ctx;

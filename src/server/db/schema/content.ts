@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { type AnyPgColumn, boolean, check, index, integer, jsonb, pgTable, primaryKey, smallint, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import { ENVIRONMENTS, GUIDE_VISIBILITIES, REPORT_REASONS, REPORT_STATUSES, type Environment, type Stage, type TicketType } from '@/lib/enums';
+import { ENVIRONMENTS, GUIDE_VISIBILITIES, REPORT_REASONS, REPORT_STATUSES, type ACTION_TAGS, type Environment, type Stage, type TicketType } from '@/lib/enums';
 import { createdAt, id, timestamps, tz } from './_columns';
 import { user } from './auth';
 import { garden } from './garden';
@@ -9,18 +9,18 @@ import { species, variety } from './plant';
 /* Guides, tips et modération (SPEC §4.2.4, RG-GUI, RG-TIP, RG-MOD). */
 
 /** SPEC §4.5 `guide_version.context`. */
-export type GuideContextV1 = { v: 1; koppen?: string[]; environments?: Environment[]; practices?: string[]; altitudeMaxM?: number; hemisphere?: 'N' | 'S' };
+export type GuideContextV1 = { v: 1; koppen?: string[] | undefined; environments?: Environment[] | undefined; practices?: string[] | undefined; altitudeMaxM?: number | undefined; hemisphere?: 'N' | 'S' | undefined };
 
 /** SPEC §4.5 `guide_version.calendar_template` (V1 : tâches sans récurrence, cf. journal 0.7). */
 export type GuideCalendarV1 = {
   v: 1;
   anchor: 'sowing' | 'planting';
   stages: { stage: Stage; offsetDays: number }[];
-  tasks: { title: string; type: TicketType; actionTag?: string; relativeTo: Stage; offsetDays: number; leadDays?: number }[];
+  tasks: { title: string; type: TicketType; actionTag?: (typeof ACTION_TAGS)[number] | undefined; relativeTo: Stage; offsetDays: number; leadDays?: number | undefined }[];
 };
 
 /** Brouillon en cours : ce que la prochaine publication figera dans une version. */
-export type GuideDraft = { title: string; bodyMd: string; context: GuideContextV1; calendarTemplate: GuideCalendarV1 | null; changeNote?: string };
+export type GuideDraft = { title: string; bodyMd: string; context: GuideContextV1; calendarTemplate: GuideCalendarV1 | null; changeNote?: string | undefined };
 
 export const guide = pgTable(
   'guide',
