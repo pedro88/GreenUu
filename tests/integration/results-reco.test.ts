@@ -1,6 +1,6 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
-import { createCulture } from '../../src/features/culture/service';
+import { createCulture, previewCulture, zoneWarningsBatch } from '../../src/features/culture/service';
 import { recordHarvest } from '../../src/features/harvest/service';
 import { createJournalEntry } from '../../src/features/journal/service';
 import { buildExport, isDeactivated, purgeDeletedAccounts, purgeExpiredExports, readExport, requestDeletion, requestExport, restoreAccount } from '../../src/features/privacy/service';
@@ -253,5 +253,23 @@ describe('archives d\'export (audit lot 5, M1)', () => {
       await requestDeletion(ctxFor(tx, alice, { clock: at(9) }), { confirmTransferToMember: false });
       await purgeDeletedAccounts(tx, store, new Date(NOW.getTime() + 40 * 86_400_000));
       expect(store.files.size).toBe(0);
+    }));
+});
+
+describe('alertes groupées du moteur (audit lot 5, M2)', () => {
+  it('[RCO-08] rotation et associations groupées identiques à l\'aperçu de culture', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const gardenId = await makeGarden(tx, alice);
+      const zoneId = await makeZone(tx, alice, gardenId, 'Planche 1');
+      const ctx = await scopedCtx(tx, alice, gardenId);
+      await createCulture(ctx, { gardenId, zoneId, speciesId: speciesRefId('tomate'), method: 'bought_plants', anchorDate: '2025-05-15', seedSource: 'bought', plannedDates: {}, acknowledgeRotation: true });
+      const items = ['tomate', 'pomme-de-terre', 'laitue', 'haricot'].map((code) => ({ speciesId: speciesRefId(code), method: 'bought_plants' as const }));
+      const batch = await zoneWarningsBatch(tx, ctx.scope, zoneId, items, '2026-05-15');
+      for (const it of items) {
+        const p = await previewCulture(tx, ctx.scope, { gardenId, zoneId, speciesId: it.speciesId, method: it.method, anchorDate: '2026-05-15' });
+        expect(batch.get(`${it.speciesId}|${it.method}`)).toEqual({ rotation: p.rotation !== null, unfavorable: p.companions.some((c) => c.effect === 'unfavorable') });
+      }
+      expect(batch.get(`${speciesRefId('tomate')}|bought_plants`)?.rotation).toBe(true);
     }));
 });

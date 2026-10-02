@@ -3,7 +3,7 @@ import type { Environment, Method, Stage } from '@/lib/enums';
 import type { Scope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
 import { culture, cultureResult, guide, guideVersion, sharedResultFact, species, speciesCalendar, variety } from '@/server/db/schema';
-import { previewCulture } from '../culture/service';
+import { zoneWarningsBatch } from '../culture/service';
 import { anchorStage } from '../culture/stages.pure';
 import { gardenContext } from '../tip/service';
 import type { Context } from './context.pure';
@@ -43,6 +43,10 @@ export interface RecommendationEngine {
 
 type Similar = Fact & { s: number; environment: Environment | null };
 
+/** Faits candidats lus par appel, après les filtres durs ; au-delà, les plus récents sont gardés et un avertissement est journalisé. */
+export const FACT_SCAN_LIMIT = 20_000;
+const SOILLESS: Environment[] = ['indoor', 'soilless', 'hydroponic'];
+
 const doyOf = (d: Date) => Math.floor((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 86_400_000);
 const inWindow = (from: number, to: number, w: { start: number; end: number }) => (w.start <= w.end ? from <= w.end && to >= w.start : from <= w.end || to >= w.start);
 
@@ -60,7 +64,19 @@ export function createEngineV1(tx: Executor): RecommendationEngine {
 
   /** Faits similaires (hors jardin courant), avec le rang de rendement par espèce et environnement. */
   async function similarFacts(scope: Scope, target: Context, speciesId?: string) {
-    const rows = await tx.select().from(sharedResultFact).where(speciesId ? eq(sharedResultFact.speciesId, speciesId) : undefined).limit(20_000);
+    // Filtres durs en SQL (§7.2) : environnement comparable et même hémisphère (bit de latitude du 1er caractère du geohash).
+    const north = target.geohash4 ? decodeGeohash(target.geohash4).lat >= 0 : null;
+    const rows = await tx.select().from(sharedResultFact).where(and(
+      speciesId ? eq(sharedResultFact.speciesId, speciesId) : undefined,
+      target.environment === 'open_air' ? sql`(${sharedResultFact.environment} is null or ${sharedResultFact.environment} <> all (array['indoor', 'soilless', 'hydroponic']))` : undefined,
+      target.environment && SOILLESS.includes(target.environment) ? sql`${sharedResultFact.environment} is distinct from 'open_air'` : undefined,
+      north === null ? undefined : sql`((strpos('0123456789bcdefghjkmnpqrstuvwxyz', left(${sharedResultFact.geohash4}, 1)) - 1) & 8 <> 0) = ${north}`,
+    )).orderBy(desc(sharedResultFact.year), asc(sharedResultFact.factId)).limit(FACT_SCAN_LIMIT + 1);
+    // Borne explicite et signalée : jamais de troncature muette (audit lot 5 M2).
+    if (rows.length > FACT_SCAN_LIMIT) {
+      console.warn(`[reco] plus de ${FACT_SCAN_LIMIT} faits candidats : les plus récents sont retenus`);
+      rows.length = FACT_SCAN_LIMIT;
+    }
     const facts: Fact[] = rows.map((r) => ({ ...r, soilPh: r.soilPhHalf, altitudeM: r.altitude100, yieldKgM2: r.yieldKgM2 === null ? null : Number(r.yieldKgM2) }));
     const { community } = partitionOwn(facts, await gardenPseudo(tx, scope.gardenId));
     const yields = new Map<string, number[]>();
@@ -73,11 +89,28 @@ export function createEngineV1(tx: Executor): RecommendationEngine {
     return { similar, pYieldOf };
   }
 
-  async function ownHistory(scope: Scope, speciesId: string, varietyId: string | null) {
-    const [r] = await tx.select({ seasons: sql<number>`count(distinct ${cultureResult.seasonId})::int`, rating: sql<number | null>`avg(${cultureResult.rating})::float` })
+  /**
+   * Historique propre du jardin courant (§7.3 point 6) en une requête : par variété pour un groupe de variété,
+   * et toutes variétés confondues pour un groupe d'espèce (clé `espèce|`).
+   */
+  async function ownHistories(scope: Scope) {
+    const rows = await tx.select({ speciesId: culture.speciesId, varietyId: culture.varietyId, seasonId: cultureResult.seasonId, rating: cultureResult.rating })
       .from(cultureResult).innerJoin(culture, eq(culture.id, cultureResult.cultureId))
-      .where(and(eq(cultureResult.gardenId, scope.gardenId), eq(culture.speciesId, speciesId), varietyId ? eq(culture.varietyId, varietyId) : undefined, isNull(culture.deletedAt)));
-    return r && r.seasons > 0 && r.rating !== null ? { seasons: r.seasons, meanRating: Math.round(r.rating * 10) / 10 } : undefined;
+      .where(and(eq(cultureResult.gardenId, scope.gardenId), isNull(culture.deletedAt)));
+    const acc = new Map<string, { seasons: Set<string>; ratings: number[] }>();
+    const add = (key: string, r: (typeof rows)[number]) => {
+      const a = acc.get(key) ?? { seasons: new Set<string>(), ratings: [] };
+      a.seasons.add(r.seasonId);
+      if (r.rating !== null) a.ratings.push(r.rating);
+      acc.set(key, a);
+    };
+    for (const r of rows) {
+      add(`${r.speciesId}|`, r);
+      if (r.varietyId) add(`${r.speciesId}|${r.varietyId}`, r);
+    }
+    const out = new Map<string, { seasons: number; meanRating: number }>();
+    for (const [k, a] of acc) if (a.ratings.length) out.set(k, { seasons: a.seasons.size, meanRating: Math.round((a.ratings.reduce((x, y) => x + y, 0) / a.ratings.length) * 10) / 10 });
+    return out;
   }
 
   async function referenceWindow(speciesId: string, target: Context, stages: Stage[]): Promise<DoyWindow | null> {
@@ -138,6 +171,15 @@ async function coldStart(q: VarietyQuery, target: Context, facts: Similar[]): Pr
       const groups = new Map<string, Similar[]>();
       for (const f of similar) groups.set(`${f.speciesId}|${f.varietyId ?? ''}`, [...(groups.get(`${f.speciesId}|${f.varietyId ?? ''}`) ?? []), f]);
       const n = await names([...groups.values()].map((g) => ({ speciesId: g[0]?.speciesId ?? '', varietyId: g[0]?.varietyId ?? null })));
+      const methodOf = (facts: Similar[]) => {
+        const methods = new Map<Method, number>();
+        for (const f of facts) methods.set(f.method, (methods.get(f.method) ?? 0) + 1);
+        return [...methods.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+      };
+      // Rotation et associations calculées une fois pour toutes les espèces candidates (au lieu d'un aperçu par groupe).
+      const warningsOf = await zoneWarningsBatch(tx, scope, q.zoneId, [...groups.values()].flatMap((g) => (g[0] ? [{ speciesId: g[0].speciesId, method: methodOf(g) ?? 'bought_plants' }] : [])), q.from.toISOString().slice(0, 10));
+      const owns = await ownHistories(scope);
+      const refs = new Map<string, DoyWindow | null>();
       const out: VarietyRecommendation[] = [];
       for (const facts of groups.values()) {
         const first = facts[0];
@@ -147,12 +189,12 @@ async function coldStart(q: VarietyQuery, target: Context, facts: Similar[]): Pr
         const prior = outcomes.length ? outcomes.reduce((a, b) => a + b, 0) / outcomes.length : 0.6;
         const g = scoreGroup(facts, prior, pYieldOf);
         if (g.confidence === 'cold_start') continue;
-        const methods = new Map<Method, number>();
-        for (const f of facts) methods.set(f.method, (methods.get(f.method) ?? 0) + 1);
-        const bestMethod = [...methods.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+        const bestMethod = methodOf(facts);
         const spInfo = n.sp.get(first.speciesId);
         const stage = anchorStage(bestMethod ?? 'bought_plants');
-        const ref = await referenceWindow(first.speciesId, target, [stage]);
+        const refKey = `${first.speciesId}|${stage}`;
+        if (!refs.has(refKey)) refs.set(refKey, await referenceWindow(first.speciesId, target, [stage]));
+        const ref = refs.get(refKey) ?? null;
         const warnings: Warning[] = [];
         if (ref) {
           const w = { start: shiftDoy(ref.start, (target.lat ?? 0) < 0), end: shiftDoy(ref.end, (target.lat ?? 0) < 0) };
@@ -161,12 +203,12 @@ async function coldStart(q: VarietyQuery, target: Context, facts: Similar[]): Pr
             warnings.push('out_of_window');
           }
         }
-        const preview = await previewCulture(tx, scope, { gardenId: scope.gardenId, zoneId: q.zoneId, speciesId: first.speciesId, method: bestMethod ?? 'bought_plants', anchorDate: q.from.toISOString().slice(0, 10) });
-        const rotation = preview.rotation !== null;
-        const unfavorable = preview.companions.some((c) => c.effect === 'unfavorable');
+        const zw = warningsOf.get(`${first.speciesId}|${bestMethod ?? 'bought_plants'}`);
+        const rotation = zw?.rotation ?? false;
+        const unfavorable = zw?.unfavorable ?? false;
         if (rotation) warnings.push('rotation');
         if (unfavorable) warnings.push('unfavorable_companion');
-        const own = await ownHistory(scope, first.speciesId, first.varietyId);
+        const own = owns.get(`${first.speciesId}|${first.varietyId ?? ''}`);
         out.push({
           speciesId: first.speciesId, ...(first.varietyId ? { varietyId: first.varietyId, varietyName: n.v.get(first.varietyId) ?? '' } : {}), speciesName: spInfo?.name ?? '',
           score: adjust(g.score, { rotation, unfavorableCompanion: unfavorable }), ...(ref ? { window: ref } : {}), ...(bestMethod ? { bestMethod } : {}),

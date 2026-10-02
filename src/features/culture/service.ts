@@ -1,7 +1,7 @@
 import { and, eq, inArray, isNull, or } from 'drizzle-orm';
 import { DomainError, forbidden, notFound, validation } from '@/lib/errors';
 import { addDays, localDate } from '@/lib/dates';
-import type { Stage } from '@/lib/enums';
+import type { Method, Stage } from '@/lib/enums';
 import type { ScopedCtx } from '@/server/action-core';
 import { can, loadScope, type Scope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
@@ -107,6 +107,39 @@ export async function previewCulture(tx: Executor, scope: Scope, input: CultureP
     companions: await companionWarnings(tx, scope, z, input.speciesId, occ, g.tileSizeCm, null),
     zoneCanHostCultures: type?.canHost ?? false,
   };
+}
+
+/**
+ * Alertes de rotation et d'association pour plusieurs espèces sur une même zone, en lisant une seule fois la zone,
+ * le jardin, l'historique et les voisins (moteur de recommandation, audit lot 5 M2). Même règle que `previewCulture`.
+ */
+export async function zoneWarningsBatch(tx: Executor, scope: Scope, zoneId: string, items: { speciesId: string; method: Method }[], anchorDate: string) {
+  const out = new Map<string, { rotation: boolean; unfavorable: boolean }>();
+  if (items.length === 0) return out;
+  const z = await findZone(tx, scope, zoneId);
+  const g = await gardenInfo(tx, scope.gardenId);
+  const history = await historyFor(tx, scope, await rotationScopeZoneIds(tx, scope, z), g.seasonStartMonth, null);
+  const ids = [...new Set(items.map((i) => i.speciesId))];
+  const infos = await tx.select({ sp: species, family: botanicalFamily }).from(species).innerJoin(botanicalFamily, eq(botanicalFamily.id, species.familyId)).where(inArray(species.id, ids));
+  const siblings = await tx.select({ id: zone.id, geometry: zone.geometry }).from(zone)
+    .where(and(eq(zone.gardenId, scope.gardenId), z.parentId ? eq(zone.parentId, z.parentId) : isNull(zone.parentId), isNull(zone.archivedAt)));
+  const zoneIds = [z.id, ...siblings.filter((x) => x.id !== z.id && (!z.geometry || !x.geometry || areNeighbors(z.geometry, x.geometry, g.tileSizeCm))).map((x) => x.id)];
+  const rels = await tx.select().from(companion).where(and(eq(companion.effect, 'unfavorable'), or(inArray(companion.speciesAId, ids), inArray(companion.speciesBId, ids))));
+  const nearby = await tx.select({ speciesId: culture.speciesId, from: culture.occupiedFrom, to: culture.occupiedTo, status: culture.status }).from(culture)
+    .where(and(eq(culture.gardenId, scope.gardenId), inArray(culture.zoneId, zoneIds), isNull(culture.deletedAt)));
+  for (const item of items) {
+    const s = infos.find((x) => x.sp.id === item.speciesId);
+    if (!s) continue;
+    const plan = planStages(item.method, s.sp.visualModel, anchorDate, { min: s.sp.daysToMaturityMin, max: s.sp.daysToMaturityMax });
+    const rows: StageRow[] = stagesFor(item.method, s.sp.visualModel).map((stage) => ({ stage, plannedOn: plan[stage] ?? null, actualOn: null }));
+    const occ = occupation(item.method, rows);
+    const year = seasonYearOf(occ.from ?? firstDate(rows) ?? anchorDate, g.seasonStartMonth);
+    const rotation = rotationWarning({ familyId: s.family.id, returnYears: s.family.rotationReturnYears, year, perennial: s.sp.perennial, greenManure: s.sp.greenManure, history }) !== null;
+    const enemies = new Set(rels.flatMap((r) => (r.speciesAId === item.speciesId ? [r.speciesBId] : r.speciesBId === item.speciesId ? [r.speciesAId] : [])));
+    const unfavorable = nearby.some((c) => enemies.has(c.speciesId) && c.status !== 'failed' && c.status !== 'abandoned' && periodsOverlap(occ, { from: c.from, to: c.to }));
+    out.set(`${item.speciesId}|${item.method}`, { rotation, unfavorable });
+  }
+  return out;
 }
 
 /** RG-CUL-01 à 03 : création d'une culture et de ses étapes prévues. */
