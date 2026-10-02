@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { placedEntities, zoneAt } from './db';
+import { cultureOfTicket, placedEntities, zoneAt } from './db';
 import { gardenId, zoneId } from './ids';
 import { login } from './helpers';
 
@@ -92,6 +92,20 @@ test.describe('vue jardin', () => {
     // Une action rapide ouvre la saisie rapide dans son mode.
     await sheet.getByTestId('sheet-harvest').click();
     await expect(page.getByRole('dialog').getByTestId('quick-qty-input')).toBeVisible();
+  });
+
+  test('[MAP-02] une culture qui a un ticket en retard porte l\'état dans sa couche accessible, et sa feuille l\'explique', async ({ page }) => {
+    // Seed : ticket échu le 30 août 2026, toujours ouvert au 14 octobre (E2E_NOW) ; aucune autre spec ne le termine.
+    const id = await cultureOfTicket(TILLEULS, 'Terminer : Tomate Noire de Crimée (Planche 1)');
+    await login(page, 'alice');
+    await page.goto(`/app/jardins/${TILLEULS}?vue=jardin`);
+    await sceneReady(page);
+    const button = page.getByTestId(`culture-${id}`);
+    await expect(button).toHaveAttribute('data-state', /(^| )overdue_ticket( |$)/);
+    await expect(button).toHaveAttribute('aria-label', /ticket en retard/);
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
+    await expect(page.getByTestId('sheet-states')).toContainText('ticket en retard — un ticket ouvert sur cette culture a dépassé son échéance.');
   });
 
   test('[MAP-10] entrer dans la serre affiche la scène intérieure, et le fil d\'Ariane ramène dehors', async ({ page }) => {

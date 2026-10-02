@@ -105,3 +105,15 @@ export async function zoneAt(gardenId: string, g: { x: number; y: number; w: num
     await sql.end();
   }
 }
+
+/** Culture rattachée à un ticket du seed (E2E-MAP-04b). */
+export async function cultureOfTicket(gardenId: string, title: string): Promise<string> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ id: string | null }[]>`select culture_id as id from ticket where garden_id = ${gardenId} and title = ${title} and deleted_at is null limit 1`;
+    if (!row?.id) throw new Error(`ticket « ${title} » sans culture`);
+    return row.id;
+  } finally {
+    await sql.end();
+  }
+}
