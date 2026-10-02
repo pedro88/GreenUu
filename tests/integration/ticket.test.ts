@@ -6,9 +6,9 @@ import { archiveGroup } from '../../src/features/group/service';
 import { leave } from '../../src/features/member/service';
 import { setPreference } from '../../src/features/notification/service';
 import { dueReminders } from '../../src/features/ticket/jobs';
-import { addComment, assignTicket, createTicket, toggleChecklistItem, transitionTicket, updateTicket } from '../../src/features/ticket/commands';
+import { addComment, addChecklistItem, assignTicket, deleteTicket, createTicket, toggleChecklistItem, transitionTicket, updateTicket } from '../../src/features/ticket/commands';
 import { materializeSeries } from '../../src/features/ticket/generated';
-import { calendarMonth, listTickets, myTasksToday } from '../../src/features/ticket/queries';
+import { calendarMonth, listTickets, myTasksToday, ticketDetail } from '../../src/features/ticket/queries';
 import { fixedClock } from '../../src/server/clock';
 import type { Tx } from '../../src/server/db/client';
 import { attachment, notification, ticket, ticketAssignee, ticketChecklistItem, ticketEvent, ticketSeries } from '../../src/server/db/schema';
@@ -126,6 +126,29 @@ describe('tickets', () => {
       await expect(createTicket(await scopedCtx(tx, s.emma, s.gardenId), { ...base(s.gardenId), attachmentIds: [c.attachmentId] })).rejects.toMatchObject({ code: 'VALIDATION' });
       await expect(createTicket(asDavid, { ...base(s.gardenId), attachmentIds: [c.attachmentId], recurrence: { rrule: 'FREQ=DAILY', dtstart: '2026-06-15', skipMissed: true } }))
         .rejects.toMatchObject({ fieldErrors: { attachmentIds: ['attachmentsNotForSeries'] } });
+    }));
+
+  it("[AUTHZ-03] un ID de ticket d'un autre jardin dont on est membre donne NOT_FOUND, en lecture comme en écriture", () =>
+    inTx(async (tx) => {
+      const s = await setup(tx);
+      const other = await makeGarden(tx, s.bruno, { name: 'J2' });
+      const { ticketId } = await createTicket(await scopedCtx(tx, s.bruno, other), { ...base(other), title: 'Ticket de J2', checklist: ['Point'] });
+      const id = ticketId ?? '';
+      const [item] = await tx.select({ id: ticketChecklistItem.id }).from(ticketChecklistItem).where(eq(ticketChecklistItem.ticketId, id));
+      const inJ1 = await scopedCtx(tx, s.bruno, s.gardenId);
+      const attempts: [string, () => Promise<unknown>][] = [
+        ['ticketDetail', () => ticketDetail(tx, inJ1.scope, id)],
+        ['transitionTicket', () => transitionTicket(inJ1, id, 'done')],
+        ['updateTicket', () => updateTicket(inJ1, { gardenId: s.gardenId, ticketId: id, type: 'task', title: 'Piraté', priority: 'normal', applyTo: 'this' })],
+        ['assignTicket', () => assignTicket(inJ1, id, [], [])],
+        ['deleteTicket', () => deleteTicket(inJ1, id)],
+        ['addComment', () => addComment(inJ1, id, 'Intrusion')],
+        ['addChecklistItem', () => addChecklistItem(inJ1, id, 'Intrusion')],
+        ['toggleChecklistItem', () => toggleChecklistItem(inJ1, item?.id ?? '', true)],
+      ];
+      for (const [name, run] of attempts) await expect(run(), name).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      const [row] = await tx.select({ title: ticket.title, status: ticket.status, deletedAt: ticket.deletedAt }).from(ticket).where(eq(ticket.id, id));
+      expect(row).toEqual({ title: 'Ticket de J2', status: 'todo', deletedAt: null });
     }));
 
   it('[TCK-12] checklist : 2 éléments cochés sur 3 → 2/3', () =>
