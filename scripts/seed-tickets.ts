@@ -1,5 +1,5 @@
 import { and, eq, isNull } from 'drizzle-orm';
-import { addComment, createTicket } from '../src/features/ticket/service';
+import { addComment, createTicket } from '../src/features/ticket/commands';
 import { addDaysIso } from '../src/features/culture/stages.pure';
 import type { Actor, ScopedCtx } from '../src/server/action-core';
 import { loadScope } from '../src/server/authz/scope';

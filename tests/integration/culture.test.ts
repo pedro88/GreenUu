@@ -1,6 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
-import { createCulture, cultureDetail, deleteCulture, listCultures, previewCulture, recordStage, restoreCulture, zoneHistory } from '../../src/features/culture/service';
+import { cultureDetail, listCultures, zoneHistory } from '../../src/features/culture/queries';
+import { createCulture, deleteCulture, previewCulture, recordStage, restoreCulture } from '../../src/features/culture/service';
 import { recordHarvest } from '../../src/features/harvest/service';
 import { createJournalEntry } from '../../src/features/journal/service';
 import { setSeasonClosed } from '../../src/features/season/service';
@@ -213,7 +214,7 @@ describe('listes bornées', () => {
     inTx(async (tx) => {
       const { alice, gardenId, plancheId, ctx } = await setup(tx);
       for (let i = 0; i < 3; i++) await plant(tx, alice, gardenId, plancheId, 'laitue', `2026-0${4 + i}-01`);
-      const { countCultures } = await import('../../src/features/culture/service');
+      const { countCultures } = await import('../../src/features/culture/queries');
       expect(await listCultures(tx, ctx.scope, {}, { limit: 2 })).toHaveLength(2);
       expect(await listCultures(tx, ctx.scope, {}, { limit: 2, offset: 2 })).toHaveLength(1);
       expect(await countCultures(tx, ctx.scope, {})).toBe(3);

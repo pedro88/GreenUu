@@ -159,6 +159,7 @@ src/
     ui/                     # composants (Server et Client)
     actions.ts              # Server Actions fines, qui délèguent au service
     service.ts              # logique métier pure et testable ; reçoit un Scope et des dépôts
+                            # (une fonctionnalité volumineuse le découpe : commands.ts, queries.ts, generated.ts, shared.ts)
     repo.ts                 # accès données Drizzle, toujours filtré par gardenId
     schema.ts               # schémas Zod de l'entité (partagés client / serveur)
     events.ts               # types des événements émis par le domaine
@@ -2167,7 +2168,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
-| 0.6 | 2026-10-02 | Corrections de l'audit du lot 3 : la désinscription par e-mail passe par une confirmation explicite (RG-NTF-04, NTF-04) ; pièces jointes des tickets ponctuels (RG-TCK-01, TCK-19). |
+| 0.6 | 2026-10-02 | Corrections de l'audit du lot 3 : la désinscription par e-mail passe par une confirmation explicite (RG-NTF-04, NTF-04) ; pièces jointes des tickets ponctuels (RG-TCK-01, TCK-19) ; découpage des services volumineux (§3.2). |
 | 0.5 | 2026-10-02 | Fin du lot 3 : tickets d'étape (titre traduisible, rattachés à la culture), occurrences détachées (RG-TCK-09), regroupement des notifications et type `group_archived_unassigned` (RG-NTF-03), menu « Déplacer vers » du kanban, page `/app/taches` et cloche de notifications, page publique `/desinscription/[token]`. Audit du lot 2 (76/100) corrigé : endpoints HTTP d'authentification restreints, en-têtes de sécurité (CSP à nonce), actions de lecture sans revalidation, listes bornées, CI et pre-commit. |
 | 0.4 | 2026-10-01 | Fin du lot 2 : clôture manuelle des saisons (RG-SEA-02), confirmation explicite des alertes de rotation (RG-ROT-02), archivage d'une zone avec cultures en cours (RG-ZON-06), photos « en attente » et EXIF retiré côté serveur (RG-JRN-03), intervention `transplant`, scripts `db:reference` et `assets:sync`, dossier de build e2e séparé (`NEXT_DIST_DIR`). JRN-05 et les parties « tickets » de CUL-07 / ZON-10 passent au lot 3. |
 | 0.3 | 2026-10-01 | Fin du lot 1 : ports et nom du projet Compose, `no-restricted-imports` au lieu d'`eslint-plugin-boundaries`, Stylelint limité aux couleurs, dépendances ajoutées (`concurrently`, `@axe-core/playwright`, `server-only`), table `garden_group`, ZON-09 / ZON-10 / AUTHZ-08 déplacés au lot 2, choix D-23 à D-26, question Q-24. |

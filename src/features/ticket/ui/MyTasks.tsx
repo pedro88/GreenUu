@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Muted, Stack } from '@/components/ui/Layout';
 import { PixelIcon } from '@/components/ui/PlantIcon';
-import type { myTasksToday } from '../service';
+import type { myTasksToday } from '../queries';
 import { TaskCheck } from './TaskCheck';
 import { ticketIcon } from './TicketCard';
 import styles from './Ticket.module.scss';

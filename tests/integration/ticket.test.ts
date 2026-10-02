@@ -6,9 +6,9 @@ import { archiveGroup } from '../../src/features/group/service';
 import { leave } from '../../src/features/member/service';
 import { setPreference } from '../../src/features/notification/service';
 import { dueReminders } from '../../src/features/ticket/jobs';
-import {
-  addComment, assignTicket, calendarMonth, createTicket, listTickets, materializeSeries, myTasksToday, toggleChecklistItem, transitionTicket, updateTicket,
-} from '../../src/features/ticket/service';
+import { addComment, assignTicket, createTicket, toggleChecklistItem, transitionTicket, updateTicket } from '../../src/features/ticket/commands';
+import { materializeSeries } from '../../src/features/ticket/generated';
+import { calendarMonth, listTickets, myTasksToday } from '../../src/features/ticket/queries';
 import { fixedClock } from '../../src/server/clock';
 import type { Tx } from '../../src/server/db/client';
 import { attachment, notification, ticket, ticketAssignee, ticketChecklistItem, ticketEvent, ticketSeries } from '../../src/server/db/schema';

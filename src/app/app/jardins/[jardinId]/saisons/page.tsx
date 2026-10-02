@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Card, Muted, PageHeader, Stack } from '@/components/ui/Layout';
 import { PlantIcon } from '@/components/ui/PlantIcon';
-import { listCultures, seasonGrid } from '@/features/culture/service';
+import { listCultures, seasonGrid } from '@/features/culture/queries';
 import { familySpriteOf } from '@/features/culture/ui/CultureList';
 import { getGarden } from '@/features/garden/service';
 import { seasonBounds, seasonYearOf } from '@/features/season/season.pure';

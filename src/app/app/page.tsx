@@ -6,7 +6,7 @@ import { listMyGardens } from '@/features/garden/service';
 import { GardenCard } from '@/features/garden/ui/GardenCard';
 import { requireUser } from '@/server/auth/session';
 import { appClock } from '@/server/clock';
-import { myTasksToday } from '@/features/ticket/service';
+import { myTasksToday } from '@/features/ticket/queries';
 import { MyTasks } from '@/features/ticket/ui/MyTasks';
 import { db } from '@/server/db/client';
 

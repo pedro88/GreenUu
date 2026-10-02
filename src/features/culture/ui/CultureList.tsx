@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/Layout';
 import { PlantIcon } from '@/components/ui/PlantIcon';
-import type { CultureListRow } from '../service';
+import type { CultureListRow } from '../queries';
 import styles from './CultureList.module.scss';
 
 export async function CultureList({ gardenId, rows }: { gardenId: string; rows: Pick<CultureListRow, 'id' | 'label' | 'status' | 'zoneName' | 'seasonYear' | 'occupiedFrom' | 'occupiedTo' | 'spriteKey' | 'familyCode'>[] }) {

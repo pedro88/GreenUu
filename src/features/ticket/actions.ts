@@ -5,7 +5,7 @@ import {
   checklistAddSchema, checklistToggleSchema, commentSchema, seriesRefSchema, ticketAssignSchema, ticketCreateSchema, ticketRefSchema,
   ticketTransitionSchema, ticketUpdateSchema,
 } from './schema';
-import * as service from './service';
+import * as service from './commands';
 
 /* Les règles « propre / assigné » et les restrictions de zone sont appliquées par le service (SPEC §5.2, §5.3). */
 

@@ -6,7 +6,8 @@ import { garden, gardenMember, groupMember, notification, notificationPreference
 import type { JobQueue } from '@/server/jobs/queues';
 import { addDaysIso } from '../culture/stages.pure';
 import { notify } from '../notification/service';
-import { materializeSeries, myTasksToday } from './service';
+import { materializeSeries } from './generated';
+import { myTasksToday } from './queries';
 
 /** Job horaire : matérialisation des occurrences et occurrences manquées (RG-TCK-07, 08). */
 export async function materializeAllSeries(db: { transaction: <T>(fn: (tx: Executor) => Promise<T>) => Promise<T> } & Executor, now: Date) {

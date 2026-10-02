@@ -2,7 +2,7 @@ import { CalendarDays, CheckSquare, Repeat } from 'lucide-react';
 import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { PixelIcon } from '@/components/ui/PlantIcon';
-import type { TicketListRow } from '../service';
+import type { TicketListRow } from '../queries';
 import styles from './Ticket.module.scss';
 import { ticketTitle } from './ticketText';
 

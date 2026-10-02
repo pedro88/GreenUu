@@ -8,7 +8,7 @@ import type { Executor } from '@/server/db/client';
 import { attachment, culture, journalEntry, problem } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import type { FileStorage } from '@/server/storage/storage';
-import { completeWateringTickets } from '../ticket/service';
+import { completeWateringTickets } from '../ticket/generated';
 import { claimAttachments } from './attachments';
 import { assertZoneContribute } from '../zone/service';
 import type { JournalCreateInput } from './schema';

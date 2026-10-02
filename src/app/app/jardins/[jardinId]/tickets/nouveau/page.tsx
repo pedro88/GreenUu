@@ -4,7 +4,7 @@ import { PageHeader, Stack } from '@/components/ui/Layout';
 import { listGroups } from '@/features/group/service';
 import { listMembers } from '@/features/member/service';
 import { runningCultures } from '@/features/ticket/queries';
-import { gardenToday } from '@/features/ticket/service';
+import { gardenToday } from '@/features/ticket/shared';
 import { TicketForm } from '@/features/ticket/ui/TicketForm';
 import { listZoneRows } from '@/features/zone/service';
 import { can } from '@/server/authz/scope';

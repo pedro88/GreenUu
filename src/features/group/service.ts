@@ -6,7 +6,7 @@ import type { Executor } from '@/server/db/client';
 import { gardenGroup, gardenMember, groupMember, zoneGroupPermission } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import { notify } from '../notification/service';
-import { unassignGroup } from '../ticket/service';
+import { unassignGroup } from '../ticket/generated';
 
 type GroupInput = { name: string; color: string; memberIds: string[] };
 

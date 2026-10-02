@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createCulture, listCultures } from '../../src/features/culture/service';
+import { listCultures } from '../../src/features/culture/queries';
+import { createCulture } from '../../src/features/culture/service';
 import { createJournalEntry, readAttachment, uploadPhoto } from '../../src/features/journal/service';
 import { moderateVariety, proposeVariety, searchPlants, varietiesForGarden } from '../../src/features/plant/service';
 import { loadScope } from '../../src/server/authz/scope';

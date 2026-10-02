@@ -10,7 +10,7 @@ import { garden, gardenGroup, gardenInvitation, gardenMember, groupMember, user,
 import { emit } from '@/server/events/emit';
 import { invitationMail, memberLeftMail } from '@/server/mail/templates';
 import { notify } from '../notification/service';
-import { unassignMember } from '../ticket/service';
+import { unassignMember } from '../ticket/generated';
 import type { InviteInput } from './schema';
 
 export const INVITATION_TTL_DAYS = 7;

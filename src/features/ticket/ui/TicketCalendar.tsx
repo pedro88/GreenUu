@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import type { CalendarItem } from '../service';
+import type { CalendarItem } from '../queries';
 import styles from './Ticket.module.scss';
 import { ticketTitle } from './ticketText';
 

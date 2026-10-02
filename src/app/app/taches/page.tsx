@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { PageHeader, Stack } from '@/components/ui/Layout';
-import { myTasksToday } from '@/features/ticket/service';
+import { myTasksToday } from '@/features/ticket/queries';
 import { MyTasks } from '@/features/ticket/ui/MyTasks';
 import { requireUser } from '@/server/auth/session';
 import { appClock } from '@/server/clock';

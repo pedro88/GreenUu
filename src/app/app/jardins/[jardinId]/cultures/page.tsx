@@ -3,7 +3,7 @@ import { LinkButton } from '@/components/ui/Button';
 import Link from 'next/link';
 import { Card, Muted, PageHeader, Row, Stack } from '@/components/ui/Layout';
 import { cultureFiltersSchema } from '@/features/culture/schema';
-import { countCultures, CULTURE_PAGE_SIZE, cultureSpeciesOptions, listCultures } from '@/features/culture/service';
+import { countCultures, CULTURE_PAGE_SIZE, cultureSpeciesOptions, listCultures } from '@/features/culture/queries';
 import { CultureFilters } from '@/features/culture/ui/CultureFilters';
 import { CultureList } from '@/features/culture/ui/CultureList';
 import { listSeasons } from '@/features/season/service';
