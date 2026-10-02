@@ -238,6 +238,30 @@ test.describe('éditeur de plan', () => {
     expect(await zoneAt(COMBES, { x: 200, y: 600, w: 100, h: 50 })).not.toBeNull();
   });
 
+  test('[PLN-03] deux sessions éditent le même plan : la seconde reçoit CONFLICT, recharge, rejoue et enregistre sa zone (E2E-PLN-03b)', async ({ page, browser }) => {
+    const COMBES = gardenId('combes');
+    await login(page, 'gaelle');
+    const other = await (await browser.newContext()).newPage();
+    await login(other, 'gaelle');
+    for (const p of [page, other]) {
+      await p.goto(`/app/jardins/${COMBES}/plan`);
+      await sceneReady(p, 'plan-editor');
+    }
+    const version = Number(await page.getByTestId('plan-editor').getAttribute('data-plan-version'));
+    expect(Number(await other.getByTestId('plan-editor').getAttribute('data-plan-version'))).toBe(version);
+    // A enregistre d'abord (bande libre x = 600 à 700 cm, entre la serre et la pépinière).
+    await page.getByTestId('tool-zone').click();
+    await dragTiles(page, { x: 12, y: 0 }, { x: 13, y: 1 });
+    await expect(page.getByTestId('plan-editor')).toHaveAttribute('data-plan-version', String(version + 1));
+    // B, resté sur l'ancienne version, dessine ailleurs : CONFLICT, rechargement, rejeu, nouvel enregistrement.
+    await other.getByTestId('tool-zone').click();
+    await dragTiles(other, { x: 12, y: 4 }, { x: 13, y: 5 });
+    await expect(other.getByTestId('plan-editor')).toHaveAttribute('data-plan-version', String(version + 2), { timeout: 20_000 });
+    await expect(other.getByTestId('plan-conflicts')).toHaveCount(0);
+    expect(await zoneAt(COMBES, { x: 600, y: 0, w: 100, h: 100 })).not.toBeNull();
+    expect(await zoneAt(COMBES, { x: 600, y: 200, w: 100, h: 100 })).not.toBeNull();
+  });
+
   test('[PLN-06] un membre d\'un jardin collectif (édition réservée aux admins) voit les outils désactivés, avec une explication', async ({ page }) => {
     await login(page, 'david');
     await page.goto(`/app/jardins/${CANAL}/plan`);
