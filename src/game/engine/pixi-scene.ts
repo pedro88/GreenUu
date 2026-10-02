@@ -4,7 +4,7 @@ import { Application, Assets, Container, Graphics, Rectangle, Sprite, Texture, T
 import type { SceneCulture, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
 import { TILE_PX } from '@/features/scene/grid.pure';
-import { atlasSchema, buildPhaseIndex, grassFrame, resolvePlantFrame, STATE_FRAMES, TERRAIN_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
+import { fetchAtlas, grassFrame, resolvePlantFrame, STATE_FRAMES, TERRAIN_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
 
 /*
  * Rendu PixiJS de la scène (SPEC §9.1, §9.2). Seul ce module (et `GardenCanvas`) importe PixiJS. Il lit les stores et ne
@@ -23,22 +23,29 @@ function clearLayer(layer: Container) {
   for (const child of layer.removeChildren()) child.destroy({ children: true, texture: false, textureSource: false });
 }
 
-export const ATLAS_URL = '/sprites/atlas/atlas.json';
-
 type Atlas = { index: PhaseIndex; textures: Map<string, Texture> } | null;
 
+/**
+ * Atlas multi-pages (sprites HD) : une source par page, à la résolution des assets ; les cadres sont exprimés en unités
+ * logiques (pixels / résolution), comme le fait le parseur de spritesheets de PixiJS.
+ */
 async function loadAtlas(): Promise<Atlas> {
+  const atlas = await fetchAtlas();
+  if (!atlas) return null;
   try {
-    const res = await fetch(ATLAS_URL);
-    if (!res.ok) return null;
-    const parsed = atlasSchema.safeParse(await res.json());
-    if (!parsed.success) return null;
-    const base = await Assets.load<Texture>(ATLAS_URL.replace(/atlas\.json$/, parsed.data.meta.image));
-    const textures = new Map<string, Texture>();
-    for (const [name, f] of Object.entries(parsed.data.frames)) {
-      textures.set(name, new Texture({ source: base.source, frame: new Rectangle(f.frame.x, f.frame.y, f.frame.w, f.frame.h) }));
+    const sources = new Map<string, Texture>();
+    for (const page of atlas.pages) {
+      const t = await Assets.load<Texture>(page);
+      t.source.resolution = atlas.resolution;
+      sources.set(page, t);
     }
-    return { index: buildPhaseIndex(parsed.data), textures };
+    const r = atlas.resolution;
+    const textures = new Map<string, Texture>();
+    for (const [name, f] of atlas.frames) {
+      const src = sources.get(f.page);
+      if (src) textures.set(name, new Texture({ source: src.source, frame: new Rectangle(f.x / r, f.y / r, f.w / r, f.h / r) }));
+    }
+    return { index: atlas.index, textures };
   } catch {
     return null;
   }
