@@ -14,7 +14,7 @@ import { seasonYearOf } from '../season/season.pure';
 import { ensureSeason } from '../season/service';
 import { assertZoneContribute } from '../zone/service';
 import { findDescendants, findZone } from '../zone/repo';
-import { childPath, effectiveSurface } from '../zone/tree';
+import { effectiveSurface } from '../zone/tree';
 import { areNeighbors, periodsOverlap, rotationWarning, seasonYearsTouched, type PastCulture, type RotationWarning } from './rotation.pure';
 import type { CultureCreateInput, CultureFilters, CulturePreviewInput, StageRecordInput } from './schema';
 import { cultureArea, deriveStatus, firstDate, occupation, orderWarnings, planStages, stageOrder, stagesFor, type StageRow } from './stages.pure';
@@ -350,7 +350,8 @@ export async function activeCulturesOfZone(tx: Executor, scope: Scope, zoneId: s
  */
 export async function seasonGrid(tx: Executor, scope: Scope, lastYear: number, span = 5) {
   const g = await gardenInfo(tx, scope.gardenId);
-  const years = Array.from({ length: span }, (_, i) => lastYear - span + 1 + i);
+  // Saison la plus récente en premier : c'est elle qu'on voit d'abord sur mobile.
+  const years = Array.from({ length: span }, (_, i) => lastYear - i);
   const zones = await tx.select({ id: zone.id, name: zone.name, path: zone.path, depth: zone.depth, sortOrder: zone.sortOrder }).from(zone)
     .innerJoin(zoneType, eq(zoneType.id, zone.zoneTypeId))
     .where(and(eq(zone.gardenId, scope.gardenId), isNull(zone.archivedAt), eq(zoneType.canHostCultures, true)));
@@ -362,7 +363,21 @@ export async function seasonGrid(tx: Executor, scope: Scope, lastYear: number, s
   // Une culture compte pour sa zone, ses ancêtres et ses descendants (même logique que les alertes).
   const zoneChain = new Map(zones.map((z) => [z.id, [...(z.path ? z.path.split('/') : []), z.id]]));
   const related = (zoneA: string, zoneB: string) => (zoneChain.get(zoneA)?.includes(zoneB) ?? false) || (zoneChain.get(zoneB)?.includes(zoneA) ?? false);
-  const ordered = [...zones].sort((a, b) => (childPath(a) + a.name).localeCompare(childPath(b) + b.name, 'fr'));
+  // Ordre de l'arbre : parent puis enfants, triés par ordre puis par nom.
+  const byParent = new Map<string, typeof zones>();
+  for (const z of zones) {
+    const parent = z.path ? (z.path.split('/').pop() ?? '') : '';
+    byParent.set(parent, [...(byParent.get(parent) ?? []), z]);
+  }
+  const ordered: typeof zones = [];
+  const walk = (parent: string) => {
+    for (const z of (byParent.get(parent) ?? []).sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'fr'))) {
+      ordered.push(z);
+      walk(z.id);
+    }
+  };
+  walk('');
+  for (const z of zones) if (!ordered.includes(z)) ordered.push(z);
   return {
     years,
     rows: ordered.filter((z) => rows.some((r) => related(r.zoneId, z.id) && r.zoneId === z.id) || z.depth === 0).map((z) => ({

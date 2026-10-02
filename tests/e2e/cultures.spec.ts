@@ -60,7 +60,7 @@ test.describe('cultures, journal, récoltes', () => {
     await expect(grid).toBeVisible();
     const row = grid.getByRole('row', { name: /Planche 1/ });
     await expect(row.getByTestId('rotation-early')).toContainText('Noire de Crimée');
-    await expect(row.getByTestId('rotation-ok').first()).toContainText('Tomate Cœur de bœuf');
+    await expect(row.getByTestId('rotation-ok').filter({ hasText: 'Tomate Cœur de bœuf' })).toHaveCount(1);
   });
 
   test('[PLT-02] variété proposée : en attente dans le jardin, absente ailleurs, visible en modération', async ({ page, browser }) => {

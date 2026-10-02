@@ -35,6 +35,7 @@
     @include touch-target;
 
     display: inline-flex;
+    flex: none;
     align-items: center;
     padding: 0 var(--space-4);
     border-radius: var(--radius-full);
