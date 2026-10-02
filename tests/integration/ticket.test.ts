@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { createCulture, deleteCulture, recordStage } from '../../src/features/culture/service';
-import { createJournalEntry } from '../../src/features/journal/service';
+import { createJournalEntry, uploadPhoto } from '../../src/features/journal/service';
 import { archiveGroup } from '../../src/features/group/service';
 import { leave } from '../../src/features/member/service';
 import { setPreference } from '../../src/features/notification/service';
@@ -11,8 +11,9 @@ import {
 } from '../../src/features/ticket/service';
 import { fixedClock } from '../../src/server/clock';
 import type { Tx } from '../../src/server/db/client';
-import { notification, ticket, ticketAssignee, ticketChecklistItem, ticketEvent, ticketSeries } from '../../src/server/db/schema';
+import { attachment, notification, ticket, ticketAssignee, ticketChecklistItem, ticketEvent, ticketSeries } from '../../src/server/db/schema';
 import type { Actor } from '../../src/server/action-core';
+import { memoryStorage, tinyJpegWithExif } from './files';
 import { addMember, makeGarden, makeGroup, makeZone, speciesRefId } from './fixtures';
 import { inTx, makeUser, NOW, recordingQueue, scopedCtx } from './helpers';
 
@@ -105,6 +106,26 @@ describe('tickets', () => {
       await expect(addComment(asDavid, ticketId ?? '', 'Je peux quand même commenter')).resolves.toBeDefined();
       await assignTicket(asBruno, ticketId ?? '', [s.davidM], []);
       await expect(toggleChecklistItem(await scopedCtx(tx, s.david, s.gardenId), item?.id ?? '', true)).resolves.toEqual({ itemId: item?.id });
+    }));
+
+  it('[TCK-19] photos jointes à un ticket : rattachées une seule fois, par leur auteur, jamais à une série', () =>
+    inTx(async (tx) => {
+      const s = await setup(tx);
+      const asDavid = await scopedCtx(tx, s.david, s.gardenId);
+      const files = memoryStorage();
+      const [a, b] = [await uploadPhoto(tx, asDavid.scope, s.david.id, tinyJpegWithExif(), files), await uploadPhoto(tx, asDavid.scope, s.david.id, tinyJpegWithExif(), files)];
+      const { ticketId } = await createTicket(asDavid, { ...base(s.gardenId), attachmentIds: [a.attachmentId, b.attachmentId] });
+      const linked = await tx.select({ id: attachment.id }).from(attachment).where(eq(attachment.ticketId, ticketId ?? ''));
+      expect(linked).toHaveLength(2);
+      // Déjà rattachée : refusée, y compris dans le journal.
+      await expect(createTicket(asDavid, { ...base(s.gardenId), attachmentIds: [a.attachmentId] })).rejects.toMatchObject({ fieldErrors: { attachmentIds: ['attachmentInvalid'] } });
+      await expect(createJournalEntry(asDavid, { gardenId: s.gardenId, zoneId: s.serre, kind: 'note', body: 'x', attachmentIds: [b.attachmentId] }))
+        .rejects.toMatchObject({ fieldErrors: { attachmentIds: ['attachmentInvalid'] } });
+      // La photo d'une autre personne ne peut pas être rattachée.
+      const c = await uploadPhoto(tx, asDavid.scope, s.david.id, tinyJpegWithExif(), files);
+      await expect(createTicket(await scopedCtx(tx, s.emma, s.gardenId), { ...base(s.gardenId), attachmentIds: [c.attachmentId] })).rejects.toMatchObject({ code: 'VALIDATION' });
+      await expect(createTicket(asDavid, { ...base(s.gardenId), attachmentIds: [c.attachmentId], recurrence: { rrule: 'FREQ=DAILY', dtstart: '2026-06-15', skipMissed: true } }))
+        .rejects.toMatchObject({ fieldErrors: { attachmentIds: ['attachmentsNotForSeries'] } });
     }));
 
   it('[TCK-12] checklist : 2 éléments cochés sur 3 → 2/3', () =>

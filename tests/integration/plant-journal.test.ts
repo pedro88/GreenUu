@@ -3,22 +3,9 @@ import { createCulture, listCultures } from '../../src/features/culture/service'
 import { createJournalEntry, readAttachment, uploadPhoto } from '../../src/features/journal/service';
 import { moderateVariety, proposeVariety, searchPlants, varietiesForGarden } from '../../src/features/plant/service';
 import { loadScope } from '../../src/server/authz/scope';
-import type { FileStorage } from '../../src/server/storage/storage';
 import { addMember, makeGarden, makeZone, speciesRefId, varietyRefId } from './fixtures';
+import { memoryStorage, tinyJpegWithExif } from './files';
 import { ctxFor, inTx, makeUser, scopedCtx } from './helpers';
-
-function memoryStorage(): FileStorage & { files: Map<string, Uint8Array> } {
-  const files = new Map<string, Uint8Array>();
-  return { files, put: async (k, d) => void files.set(k, d), get: async (k) => files.get(k) ?? null, remove: async (k) => void files.delete(k) };
-}
-
-/** JPEG minimal 2×2 (SOI, APP1 Exif avec GPS fictif, SOF0, SOS, EOI). */
-function tinyJpegWithExif(): Uint8Array {
-  const exif = [0xff, 0xe1, 0x00, 0x10, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00, 0x47, 0x50, 0x53, 0x34, 0x38, 0x2e, 0x38, 0x35];
-  const sof = [0xff, 0xc0, 0x00, 0x0b, 0x08, 0x00, 0x02, 0x00, 0x02, 0x01, 0x01, 0x11, 0x00];
-  const sos = [0xff, 0xda, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3f, 0x00, 0x00, 0xff, 0xd9];
-  return new Uint8Array([0xff, 0xd8, ...exif, ...sof, ...sos]);
-}
 
 describe('référentiel végétal', () => {
   it('[PLT-01] « tomatte » et « cœur de boeuf » trouvent la tomate et la variété', () =>

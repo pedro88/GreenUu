@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { forbidden, notFound, validation } from '@/lib/errors';
 import { addDays } from '@/lib/dates';
 import { hasExif, imageSize, sniffImage, stripJpegMetadata } from '@/lib/images';
@@ -9,6 +9,7 @@ import { attachment, culture, journalEntry, problem } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import type { FileStorage } from '@/server/storage/storage';
 import { completeWateringTickets } from '../ticket/service';
+import { claimAttachments } from './attachments';
 import { assertZoneContribute } from '../zone/service';
 import type { JournalCreateInput } from './schema';
 
@@ -47,25 +48,20 @@ export async function createJournalEntry(ctx: ScopedCtx, input: JournalCreateInp
   }
   if (input.kind === 'intervention' && !input.intervention) throw validation({ intervention: ['required'] });
   if (input.kind === 'note' && !input.body && input.attachmentIds.length === 0) throw validation({ body: ['required'] });
-  const attachments = input.attachmentIds.length === 0 ? [] : await tx.select({ id: attachment.id }).from(attachment).where(and(
-    eq(attachment.gardenId, scope.gardenId), inArray(attachment.id, input.attachmentIds), eq(attachment.uploadedBy, actor.id),
-    isNull(attachment.journalEntryId), isNull(attachment.deletedAt),
-  ));
-  if (attachments.length !== new Set(input.attachmentIds).size) throw validation({ attachmentIds: ['attachmentInvalid'] });
-  const kind = input.kind === 'note' && !input.body && attachments.length > 0 ? 'photo' : input.kind;
+  const kind = input.kind === 'note' && !input.body && input.attachmentIds.length > 0 ? 'photo' : input.kind;
   const [e] = await tx.insert(journalEntry).values({
     gardenId: scope.gardenId, cultureId: input.cultureId ?? null, zoneId: input.cultureId ? null : (input.zoneId ?? null), kind, observedAt,
     body: input.body ?? null, problemId, problemOther: input.problemOther ?? null, severity: input.severity ?? null,
     intervention: input.kind === 'intervention' ? (input.intervention ?? null) : null, weather: input.weather ?? null, authorId: actor.id,
   }).returning({ id: journalEntry.id });
   if (!e) throw new Error("Insertion de l'entrée échouée");
-  if (attachments.length > 0) await tx.update(attachment).set({ journalEntryId: e.id }).where(inArray(attachment.id, attachments.map((a) => a.id)));
+  const photos = await claimAttachments(tx, scope, actor.id, input.attachmentIds, { journalEntryId: e.id });
   // JRN-05 : arroser termine les tickets d'arrosage échus de la culture, de sa zone ou d'un ancêtre.
   if (input.kind === 'intervention' && input.intervention === 'watering') {
     await completeWateringTickets(tx, scope, { cultureId: input.cultureId, zoneId: input.cultureId ? undefined : input.zoneId }, actor.id, now);
   }
   const structured = problemId !== null || input.intervention !== undefined || input.weather !== undefined;
-  await emit(tx, { type: 'journal.entry_created', subjectType: 'journal_entry', subjectId: e.id, gardenId: scope.gardenId, actorId: actor.id, payload: { kind, hasPhoto: attachments.length > 0, structured, cultureId: input.cultureId ?? null } }, now);
+  await emit(tx, { type: 'journal.entry_created', subjectType: 'journal_entry', subjectId: e.id, gardenId: scope.gardenId, actorId: actor.id, payload: { kind, hasPhoto: photos > 0, structured, cultureId: input.cultureId ?? null } }, now);
   return { entryId: e.id };
 }
 

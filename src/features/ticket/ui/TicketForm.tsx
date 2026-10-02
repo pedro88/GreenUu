@@ -2,12 +2,14 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Checkbox, ChipGroup, Field, NativeSelect, TextArea, TextInput } from '@/components/ui/Field';
 import { FormError } from '@/components/ui/FormError';
 import { Row, Stack } from '@/components/ui/Layout';
 import { useAction } from '@/components/ui/useAction';
+import { uploadPhoto } from '@/lib/client/compress-image';
+import type { ActionError } from '@/lib/errors';
 import { ACTION_TAGS, TICKET_PRIORITIES, TICKET_TYPES, type TicketPriority, type TicketType } from '@/lib/enums';
 import { createTicketAction } from '../actions';
 
@@ -48,18 +50,37 @@ export function TicketForm({ gardenId, zones, cultures, members, groups, today, 
   const [months, setMonths] = useState<string[]>([]);
   const [until, setUntil] = useState('');
   const [skipMissed, setSkipMissed] = useState(true);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<ActionError | null>(null);
   const action = useAction(createTicketAction, { refresh: false, onSuccess: (d) => router.push(d.ticketId ? `/app/jardins/${gardenId}/tickets/${d.ticketId}` : `/app/jardins/${gardenId}/tickets`) });
   const fe = action.fieldErrors;
-  const submit = () => void action.run({
-    gardenId, type, actionTag, title, description, priority, memberIds, groupIds,
+  const submit = async () => {
+    setUploadError(null);
+    let attachmentIds: string[] = [];
+    if (repeat === 'none' && files.length > 0) {
+      setUploading(true);
+      try {
+        attachmentIds = (await Promise.all(files.map((f) => uploadPhoto(gardenId, f)))).map((r) => r.attachmentId);
+      } catch {
+        setUploadError({ code: 'VALIDATION', message: 'uploadFailed' });
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+    await action.run({
+    gardenId, type, actionTag, title, description, priority, memberIds, groupIds, attachmentIds,
     zoneId: target.startsWith('z:') ? target.slice(2) : '', cultureId: target.startsWith('c:') ? target.slice(2) : '',
     checklist: checklist.split('\n').map((l) => l.trim()).filter(Boolean),
     ...(repeat === 'none' ? { dueOn } : { recurrence: { rrule: buildRrule(repeat, every, days, months), dtstart: dueOn, until, skipMissed } }),
-  });
+    });
+  };
   return (
-    <form onSubmit={(e) => { e.preventDefault(); submit(); }} data-testid="ticket-form">
+    <form onSubmit={(e) => { e.preventDefault(); void submit(); }} data-testid="ticket-form">
       <Stack>
-        <FormError error={action.error && !Object.keys(fe).length ? action.error : null} />
+        <FormError error={uploadError ?? (action.error && !Object.keys(fe).length ? action.error : null)} />
         <Field label={t('titleLabel')} errors={fe.title}>{(p) => <TextInput {...p} name="title" required value={title} onChange={(e) => setTitle(e.target.value)} />}</Field>
         <Field label={t('attachedTo')} errors={fe.zoneId}>{(p) => (
           <NativeSelect {...p} value={target} onChange={(e) => setTarget(e.target.value)}>
@@ -109,7 +130,16 @@ export function TicketForm({ gardenId, zones, cultures, members, groups, today, 
             <Checkbox label={t('skipMissed')} checked={skipMissed} onChange={(e) => setSkipMissed(e.target.checked)} />
           </Stack>
         ) : null}
-        <Button type="submit" size="large" block disabled={action.pending || title.trim().length < 3} data-testid="ticket-submit">{t('create')}</Button>
+        {repeat === 'none' ? (
+          <Field label={t('photos')} hint={t('photosHint')} errors={fe.attachmentIds}>{(p) => (
+            <Stack gap="sm">
+              <input {...p} ref={fileInput} type="file" accept="image/*" multiple hidden data-testid="ticket-files"
+                onChange={(e) => setFiles(Array.from(e.target.files ?? []).slice(0, 10))} />
+              <Button variant="secondary" onClick={() => fileInput.current?.click()}>{files.length > 0 ? t('photosSelected', { count: files.length }) : t('photos')}</Button>
+            </Stack>
+          )}</Field>
+        ) : null}
+        <Button type="submit" size="large" block disabled={action.pending || uploading || title.trim().length < 3} data-testid="ticket-submit">{uploading ? t('uploading') : t('create')}</Button>
       </Stack>
     </form>
   );

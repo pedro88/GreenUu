@@ -11,6 +11,7 @@ import {
 } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import type { JobQueue } from '@/server/jobs/queues';
+import { claimAttachments } from '../journal/attachments';
 import { notify } from '../notification/service';
 import { addDaysIso } from '../culture/stages.pure';
 import { findDescendants, findZone } from '../zone/repo';
@@ -98,13 +99,14 @@ async function insertTicket(tx: Executor, values: typeof ticket.$inferInsert, ch
 }
 
 /** RG-TCK-01, 04, 07 : création d'un ticket, ou d'une série récurrente et de ses premières occurrences. */
-export async function createTicket(ctx: ScopedCtx, input: TicketCreateInput) {
+export async function createTicket(ctx: ScopedCtx, input: Omit<TicketCreateInput, 'attachmentIds'> & { attachmentIds?: string[] }) {
   const { tx, scope, actor, clock } = ctx;
   if (scope.archived || !can(scope, 'ticket:create')) throw forbidden(scope.archived ? 'gardenArchived' : 'forbidden');
   const zoneId = await targetZoneId(tx, scope, input);
   if (zoneId) await assertZoneContribute(tx, scope, 'ticket:create', zoneId);
   const { memberIds, groupIds } = await assertAssignees(tx, scope, input.memberIds, input.groupIds);
   if (input.recurrence) {
+    if (input.attachmentIds?.length) throw validation({ attachmentIds: ['attachmentsNotForSeries'] });
     const [s] = await tx.insert(ticketSeries).values({
       gardenId: scope.gardenId, zoneId: input.zoneId ?? null, cultureId: input.cultureId ?? null, rrule: input.recurrence.rrule,
       dtstart: input.recurrence.dtstart, until: input.recurrence.until ?? null, skipMissed: input.recurrence.skipMissed, createdBy: actor.id,
@@ -120,6 +122,7 @@ export async function createTicket(ctx: ScopedCtx, input: TicketCreateInput) {
     title: input.title, description: input.description ?? null, priority: input.priority, dueOn: input.dueOn ?? null, createdBy: actor.id,
   }, input.checklist, memberIds, groupIds);
   if (!t) throw new Error('Insertion du ticket échouée');
+  await claimAttachments(tx, scope, actor.id, input.attachmentIds ?? [], { ticketId: t.id });
   await emit(tx, { type: 'ticket.created', subjectType: 'ticket', subjectId: t.id, gardenId: scope.gardenId, actorId: actor.id, payload: { source: 'manual' } }, clock.now());
   await notifyAssigned(ctx, scope, t, memberIds, groupIds);
   return { ticketId: t.id, seriesId: null };

@@ -217,3 +217,10 @@
     text-decoration: none;
   }
 }
+
+.photo {
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}

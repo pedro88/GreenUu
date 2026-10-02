@@ -34,7 +34,10 @@ export const ticketCreateSchema = z.object({
   memberIds: z.array(uuidSchema).max(50).default([]),
   groupIds: z.array(uuidSchema).max(20).default([]),
   recurrence: recurrenceSchema.optional(),
-}).refine((v) => !(v.zoneId && v.cultureId), { message: 'oneTarget', path: ['zoneId'] });
+  /** RG-TCK-01 : photos téléversées au préalable (10 maximum), pour un ticket ponctuel seulement. */
+  attachmentIds: z.array(uuidSchema).max(10).default([]),
+}).refine((v) => !(v.zoneId && v.cultureId), { message: 'oneTarget', path: ['zoneId'] })
+  .refine((v) => !(v.recurrence && v.attachmentIds.length), { message: 'attachmentsNotForSeries', path: ['attachmentIds'] });
 export type TicketCreateInput = z.output<typeof ticketCreateSchema>;
 
 export const ticketUpdateSchema = z.object({

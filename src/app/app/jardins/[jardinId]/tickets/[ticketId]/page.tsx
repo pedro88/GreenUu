@@ -70,6 +70,14 @@ export default async function TicketPage({ params }: PageProps<'/app/jardins/[ja
         </Stack>
       </Card>
       {full?.description ? <Card><p style={{ whiteSpace: 'pre-wrap' }}>{full.description}</p></Card> : null}
+      {d.photos.length > 0 ? (
+        <Card>
+          <Stack gap="sm">
+            <h2>{tk('photos')}</h2>
+            <Row>{d.photos.map((p) => <a key={p.id} href={`/api/files/${p.id}`}><img src={`/api/files/${p.id}`} alt={tk('photoAlt')} width={p.width} height={p.height} loading="lazy" className={styles.photo} data-testid="ticket-photo" /></a>)}</Row>
+          </Stack>
+        </Card>
+      ) : null}
       <Card>
         <Stack gap="sm">
           <h2>{tk('checklist')}</h2>
