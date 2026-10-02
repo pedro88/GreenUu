@@ -89,8 +89,12 @@
 .culture {
   /* Au-dessus des zones (z-index = profondeur + 1) : une culture reste touchable dans sa planche. */
   z-index: 20;
-  width: 32px;
-  height: 32px;
+  width: var(--touch-min);
+  height: var(--touch-min);
+
+  /* Taille tactile constante à l'écran : contre-échelle du zoom, ancrée au pied de la plante (§9.2). */
+  transform: scale(var(--inv-zoom, 1));
+  transform-origin: 50% 100%;
 }
 
 /* Sans canvas (chargement, pas de WebGL) : un rendu de repli lisible, sans changer la couche d'interaction. */

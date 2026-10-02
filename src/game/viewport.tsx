@@ -97,7 +97,10 @@ export function WorldLayer({ stores, children, label }: { stores: GameStores; ch
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const apply = (c: { x: number; y: number; zoom: number }) => {
-      if (ref.current) ref.current.style.transform = `translate(${c.x}px, ${c.y}px) scale(${c.zoom})`;
+      if (!ref.current) return;
+      ref.current.style.transform = `translate(${c.x}px, ${c.y}px) scale(${c.zoom})`;
+      // Les cibles tactiles gardent au moins leur taille à l'écran quand on dézoome (audit lot 7, M4).
+      ref.current.style.setProperty('--inv-zoom', String(Math.max(1, 1 / c.zoom)));
     };
     apply(stores.camera.getState());
     return stores.camera.subscribe(apply);

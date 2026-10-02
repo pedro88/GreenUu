@@ -127,7 +127,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
           {placedCultures.map((c) => c.position ? (
             <button key={c.id} type="button" ref={(el) => { if (el) entityRefs.current.set(c.id, el); }} className={`${styles.entity} ${styles.culture}`} data-testid={`culture-${c.id}`}
               data-phase={c.phase} data-state={c.states.join(' ')} aria-label={cultureAria(c)}
-              style={{ left: c.position.x * k - 16, top: c.position.y * k - 32 }} onFocus={() => reveal(c.position?.x ?? 0, c.position?.y ?? 0)} onClick={() => open('culture', c.id)} />
+              style={{ left: `calc(${c.position.x * k}px - var(--touch-min) / 2)`, top: `calc(${c.position.y * k}px - var(--touch-min))` }} onFocus={() => reveal(c.position?.x ?? 0, c.position?.y ?? 0)} onClick={() => open('culture', c.id)} />
           ) : null)}
         </WorldLayer>
         <div className={styles.zoom} role="group" aria-label={t('zoomGroup')}>

@@ -75,6 +75,9 @@ test.describe('vue jardin', () => {
     await sceneReady(page);
     const button = page.getByTestId(`culture-${cultures[0]}`);
     await button.scrollIntoViewIfNeeded();
+    // Cible tactile d'au moins 44 px à l'écran, même dézoomée pour faire tenir le jardin (audit lot 7, M4).
+    const box = await button.boundingBox();
+    expect(Math.min(box?.width ?? 0, box?.height ?? 0)).toBeGreaterThanOrEqual(44);
     const label = (await button.getAttribute('aria-label')) ?? '';
     await button.click();
     const sheet = page.getByTestId('scene-sheet');
