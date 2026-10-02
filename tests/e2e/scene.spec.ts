@@ -1,6 +1,6 @@
-import { expect, test, type Page } from '@playwright/test';
-import { cultureOfTicket, placedEntities, zoneAt } from './db';
-import { gardenId, zoneId } from './ids';
+import { devices, expect, test, type Page } from '@playwright/test';
+import { cultureOfTicket, decorAtPosition, placedEntities, practiceDeclarations, zoneAt } from './db';
+import { gardenId, userId, zoneId } from './ids';
 import { login } from './helpers';
 
 const TILLEULS = gardenId('tilleuls');
@@ -274,5 +274,35 @@ test.describe('éditeur de plan', () => {
     await expect(page.getByTestId('tool-decor')).toBeEnabled();
     await expect(page.getByTestId('tool-eraser')).toBeEnabled();
     await expect(page.getByTestId('zone-form-dims')).toHaveCount(0);
+  });
+
+  test('un membre sans plan:edit pose un banc avec l\'outil Déco ; la gomme sur un objet déclaré propose de garder la pratique (E2E-DEC-01b)', async ({ page, browser }) => {
+    // Canal : decor_min_role = member, plan_edit_min_role = admin. La tuile (12, 2) est libre, entre les parcelles A et B.
+    await login(page, 'david');
+    await page.goto(`/app/jardins/${CANAL}/plan`);
+    await sceneReady(page, 'plan-editor');
+    const editor = page.getByTestId('plan-editor');
+    const version = Number(await editor.getAttribute('data-plan-version'));
+    await page.getByTestId('tool-decor').click();
+    await page.getByTestId('decor-item-bench').click();
+    await dragTiles(page, { x: 12, y: 2 }, { x: 12, y: 2 });
+    await expect(editor).toHaveAttribute('data-plan-version', String(version + 1));
+    // Pied du banc : bas de la tuile, centré sur son emprise d'une tuile de 50 cm.
+    expect(await decorAtPosition(CANAL, 'bench', 625, 150)).toMatchObject({ placedBy: userId('david') });
+
+    // Tilleuls : l'hôtel à insectes du seed est déclaré comme pratique ; la gomme propose de la garder.
+    const alice = await (await browser.newContext({ ...devices['Pixel 7'] })).newPage();
+    await login(alice, 'alice');
+    await alice.goto(`/app/jardins/${TILLEULS}/plan`);
+    await sceneReady(alice, 'plan-editor');
+    const aliceEditor = alice.getByTestId('plan-editor');
+    const v2 = Number(await aliceEditor.getAttribute('data-plan-version'));
+    await alice.getByTestId('tool-eraser').click();
+    await dragTiles(alice, { x: 24, y: 8 }, { x: 24, y: 8 });
+    await expect(alice.getByRole('dialog')).toContainText('Hôtel à insectes');
+    await alice.getByTestId('decor-remove-keep').click();
+    await expect(aliceEditor).toHaveAttribute('data-plan-version', String(v2 + 1));
+    expect(await decorAtPosition(TILLEULS, 'insect_hotel', 1225, 450)).toBeNull();
+    expect(await practiceDeclarations(TILLEULS, 'biodiversity_insect_hotel')).toEqual([{ decorPlacementId: null }]);
   });
 });
