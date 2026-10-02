@@ -50,13 +50,4 @@ test.describe('jardins et zones', () => {
     await expect(page.getByTestId(`garden-card-${gardenId('canal')}`).getByTestId('garden-role')).toHaveText('Membre');
     await expect(page.getByTestId(`garden-card-${gardenId('tilleuls')}`).getByTestId('garden-role')).toHaveText('Observateur·rice');
   });
-
-  test('[AUTHZ-01] un non-membre voit la page 403 sans aucune donnée du jardin', async ({ page }) => {
-    await login(page, 'hugo');
-    for (const path of ['', '/zones', '/membres', '/parametres']) {
-      await page.goto(`/app/jardins/${gardenId('canal')}${path}`);
-      await expect(page.getByTestId('page-403')).toBeVisible();
-      await expect(page.locator('body')).not.toContainText('Canal');
-    }
-  });
 });

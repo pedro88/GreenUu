@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import { TEST_DB } from './tests/e2e/db';
 
 const PORT = 3100;
-const TEST_DB = process.env.DATABASE_URL_TEST ?? 'postgres://greenu:greenu@localhost:5434/greenu_test';
 
 /** E2E sur la base `greenu_test`, remise à zéro et seedée au démarrage du serveur (SPEC §13). */
 export default defineConfig({
