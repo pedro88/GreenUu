@@ -17,6 +17,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <nav className={styles.topnav} aria-label={t('nav')}>
           <Link href="/admin/varietes">{t('varieties')}</Link>
           <Link href="/admin/signalements" data-testid="admin-reports">{t('reports')}</Link>
+          <Link href="/admin/xp">{t('xp')}</Link>
         </nav>
       </header>
       <main id="contenu" className={styles.main}>{children}</main>

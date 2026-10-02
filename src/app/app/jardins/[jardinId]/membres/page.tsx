@@ -15,8 +15,10 @@ import { assignableRoles, canManageMember } from '@/server/authz/permissions';
 import { can } from '@/server/authz/scope';
 import { appClock } from '@/server/clock';
 import { db } from '@/server/db/client';
+import { ContributionsPanel } from '@/features/progression/ui/ContributionsPanel';
+import { getGarden } from '@/features/garden/service';
 
-const TABS = ['membres', 'groupes', 'invitations'] as const;
+const TABS = ['membres', 'groupes', 'invitations', 'contributions'] as const;
 
 export async function generateMetadata() {
   return { title: (await getTranslations('members'))('title') };
@@ -91,6 +93,8 @@ export default async function MembersPage({ params, searchParams }: PageProps<'/
           </ul>
         )
       ) : null}
+
+      {tab === 'contributions' ? <ContributionsPanel tx={db()} scope={scope} now={appClock().now()} timezone={(await getGarden(db(), scope)).timezone} groups={groups.map((g) => ({ id: g.id, name: g.name }))} /> : null}
 
       {canInvite ? (
         <div className={styles.inviteBar}>

@@ -18,6 +18,7 @@ import '../../src/features/tip/actions';
 import '../../src/features/moderation/actions';
 import '../../src/features/result/actions';
 import '../../src/features/privacy/actions';
+import '../../src/features/progression/actions';
 import { actionRegistry, runAction, type ActionDeps } from '../../src/server/action-core';
 import { loadScope } from '../../src/server/authz/scope';
 import type { Tx } from '../../src/server/db/client';
@@ -83,6 +84,8 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'guide.apply': { gardenId, cultureId: id, guideId: id, anchorOn: '2026-03-01' },
     'result.submit': { gardenId, cultureId: id, totalKg: 1, quality: 4, successPct: 80, rating: 4, wouldGrowAgain: true },
     'result.setSharing': { gardenId, enabled: true },
+    'goal.create': { gardenId, title: 'Objectif', metric: 'tickets_completed', target: 10, periodStart: '2026-06-01', periodEnd: '2026-06-30' },
+    'leaderboard.toggle': { gardenId, enabled: true },
   };
 }
 

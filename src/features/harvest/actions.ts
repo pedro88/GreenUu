@@ -2,6 +2,7 @@
 
 import { defineAction } from '@/server/action';
 import { harvestCreateSchema, harvestRefSchema } from './schema';
+import { xpForSubject } from '../progression/service';
 import * as service from './service';
 
 export const recordHarvestAction = defineAction({
@@ -9,7 +10,11 @@ export const recordHarvestAction = defineAction({
   input: harvestCreateSchema,
   permission: 'journal:create',
   gardenId: (i) => i.gardenId,
-  handler: (ctx, input) => service.recordHarvest(ctx, input),
+  handler: async (ctx, input) => {
+    const r = await service.recordHarvest(ctx, input);
+    // XP-02 : la réponse annonce le gain (calculé dans la même transaction par l'abonné d'emit).
+    return { ...r, xp: await xpForSubject(ctx.tx, ctx.actor.id, r.harvestId) };
+  },
 });
 
 export const deleteHarvestAction = defineAction({

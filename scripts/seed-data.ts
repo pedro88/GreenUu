@@ -12,6 +12,8 @@ import type { Environment, GardenRole, OrgType } from '../src/lib/enums';
 import { loadReferenceData } from '../src/features/plant/reference/load';
 import { closeOldSeasons, seedCultures } from './seed-cultures';
 import { seedCommunity, seedOwnResults } from './seed-community';
+import { awardAchievements } from '../src/features/progression/achievements';
+import { recomputeXp } from '../src/features/progression/service';
 import { seedContent } from './seed-content';
 import { seedTickets } from './seed-tickets';
 
@@ -153,6 +155,9 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
     await seedCommunity(tx, referenceDate);
     // La saison N−2 est close : lecture seule (RG-SEA-02).
     for (const g of SEED_GARDENS) await closeOldSeasons(tx, gardenId(g.key), year - 1);
+    // Progression (SPEC §14) : les événements historiques sont rejoués par le recalcul, puis les succès évalués.
+    await recomputeXp(tx, { apply: true, now: referenceDate });
+    for (const u of SEED_USERS) await awardAchievements(tx, userId(u.key), null, referenceDate);
     // Vérification d'intégrité minimale : un owner par jardin.
     for (const g of SEED_GARDENS) {
       const owners = await tx.select().from(gardenMember).where(eq(gardenMember.id, seedId(`member:${g.key}:${g.owner}`)));

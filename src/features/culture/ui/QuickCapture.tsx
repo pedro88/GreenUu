@@ -46,9 +46,10 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
   const [uploadError, setUploadError] = useState<ActionError | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
-  const finish = (msg: string) => { setDone(msg); setBody(''); setFiles([]); setProblemCode(''); };
+  const [xp, setXp] = useState(0);
+  const finish = (msg: string) => { setDone(msg); setXp(0); setBody(''); setFiles([]); setProblemCode(''); };
   const journal = useAction(createJournalEntryAction, { onSuccess: () => finish(t('saved')) });
-  const harvestAction = useAction(recordHarvestAction, { onSuccess: () => finish(t('harvestSaved')) });
+  const harvestAction = useAction(recordHarvestAction, { onSuccess: (d) => { finish(t('harvestSaved')); setXp(d.xp); } });
   const step = unit === 'kg' ? 0.1 : unit === 'g' ? 50 : 1;
 
   const submitJournal = async (extra: Record<string, unknown> = {}) => {
@@ -80,7 +81,7 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
             </button>
           ))}
         </div>
-        {done ? <Alert tone="success"><span data-testid="quick-done">{done}</span></Alert> : null}
+        {done ? <Alert tone="success"><span data-testid="quick-done">{done}</span>{xp > 0 ? <> <strong data-testid="quick-xp">{t('xpGained', { xp })}</strong></> : null}</Alert> : null}
         <FormError error={uploadError ?? (journal.error && !Object.keys(journal.fieldErrors).length ? journal.error : null) ?? harvestAction.error} />
 
         <input ref={fileInput} type="file" accept="image/*" capture="environment" multiple hidden data-testid="quick-file"

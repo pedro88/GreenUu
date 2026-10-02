@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.9 — validée le 2026-10-01, mise à jour en fin de lot 5. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.10 — validée le 2026-10-01, mise à jour en fin de lot 6. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -930,6 +930,8 @@ erDiagram
     text reason "award|cap_reached|reversal|quest|recompute"
     text idempotency_key UK
     uuid reverses_entry_id FK
+    uuid subject_id "contenu à l'origine du gain"
+    uuid culture_id "culture liée, pour les annulations"
     date local_day
     int rules_version
   }
@@ -955,7 +957,12 @@ erDiagram
     text source "ticket|stage|template"
     uuid ticket_id FK
     uuid stage_id FK
+    uuid culture_id
     text template_code
+    text title_key "clé i18n"
+    jsonb title_params
+    int target
+    int progress
     date period_start
     date period_end
     text status "open|done|expired"
@@ -974,7 +981,7 @@ erDiagram
   }
 ```
 
-`user_progress` est une projection recalculable du journal d'XP ; elle n'est jamais la source de vérité. Les définitions des succès et des modèles de quêtes vivent **dans le code** (registre typé et testé), pas en base.
+`user_progress` est une projection recalculable du journal d'XP ; elle n'est jamais la source de vérité. Le journal porte aussi `subject_id` et `culture_id` : ils retrouvent les gains liés à un contenu supprimé (RG-XP-02) sans relire les événements. Une quête stocke son texte sous forme de clé i18n et de paramètres (`title_key`, `title_params`), et son avancement (`progress` / `target`) pour les quêtes à plusieurs étapes. Deux tables complètent le modèle : `xp_flag` (fenêtres de saisie en masse signalées, RG-XP-07) et la colonne `user_profile.leaderboard_opt_out` (retrait du classement, §8.7). Les définitions des succès et des modèles de quêtes vivent **dans le code** (registre typé et testé), pas en base.
 
 #### 4.2.6 Plan, décoration, avatar
 
@@ -1485,7 +1492,7 @@ Volontairement, rien ne rapporte d'XP pour : créer un jardin, une zone ou un ti
 - **RG-XP-05 Idempotence** : chaque gain a une clé `{code}:{subjectId}[:{suffix}]` (par exemple `journal.photo:{entryId}`, `result.complete:{cultureId}:{seasonId}`). Une clé déjà présente ne produit pas de nouveau gain.
 - **RG-XP-06 Antidatage** : les gains sont datés à l'instant de la saisie et non à la date déclarée (`observed_at`). Antidater ne permet donc pas de contourner les plafonds.
 - **RG-XP-07 Saisies en masse** : plus de 30 événements générateurs d'XP en 10 minutes par un même utilisateur placent les suivants en `amount = 0, reason = cap_reached` jusqu'à la fin de la fenêtre, et signalent le cas dans `/admin/xp`.
-- **RG-XP-08 Recalcul** : `pnpm xp:recompute [--user <id>]` rejoue tous les événements dans l'ordre avec le barème courant, dans une table fantôme. Il produit un rapport des écarts, puis remplace le journal de manière atomique (lignes `reason = recompute`), sur confirmation d'un admin. Un recalcul ne fait **jamais baisser le niveau affiché** : le niveau est un maximum historique conservé dans `user_progress` (§17 Q-14).
+- **RG-XP-08 Recalcul** : `pnpm xp:recompute [--user <id>]` rejoue tous les événements dans l'ordre avec le barème courant, dans une table fantôme. Il produit un rapport des écarts, puis, avec `--apply`, ajoute dans la même transaction des lignes de correction `reason = recompute` dont la clé est `{clé d'origine}#recompute{horodatage}`. Le journal reste donc append-only et un second recalcul ne trouve aucun écart. La table fantôme est tenue en mémoire. Le recalcul est lancé par un admin en ligne de commande ; il n'y a pas de recalcul ciblé déclenché par un événement. Un recalcul ne fait **jamais baisser le niveau affiché** : le niveau est un maximum historique conservé dans `user_progress` (§17 Q-14).
 
 ### 8.4 Niveaux et compétences
 
@@ -1509,7 +1516,7 @@ Volontairement, rien ne rapporte d'XP pour : créer un jardin, une zone ou un ti
 | `collective_active` | 20 tickets terminés dans des jardins collectifs, associatifs ou pédagogiques |
 | `all_seasons` | Au moins une action génératrice d'XP pendant chacune des 4 saisons astronomiques d'une même année glissante |
 
-Les succès sont évalués de façon asynchrone après les événements pertinents. Ils sont idempotents et **jamais retirés** (même après une suppression qui annule de l'XP). Les succès verrouillés sont visibles avec leur condition et, si possible, leur avancement (« 7 / 10 variétés »).
+Les succès sont évalués **de façon synchrone**, dans la transaction de l'événement qui les déclenche, par l'abonné de progression (§3.5) ; le seed les évalue une fois en fin de chargement. Ils sont idempotents et **jamais retirés** (même après une suppression qui annule de l'XP). Les succès verrouillés sont visibles avec leur condition et, si possible, leur avancement (« 7 / 10 variétés »).
 
 ### 8.6 Quêtes
 
@@ -1523,7 +1530,7 @@ Les succès sont évalués de façon asynchrone après les événements pertinen
 
 - **XP du jardin** = somme des gains (hors annulations) dont `garden_id` est ce jardin. Niveau du jardin : `seuil(L) × 5`.
 - **Objectifs collectifs** (`garden_goal`) : métrique (`tickets_completed`, `harvest_kg`, `observations`, `results_complete`, `cultures_started`), cible, période, et groupe optionnel. La progression est calculée à la lecture.
-- **Tableau des contributions** : par membre, sur une période, le nombre d'actions par catégorie (tickets, observations, récoltes, bilans). Il est **trié par ordre alphabétique** par défaut, sans rang affiché. Si un admin active `leaderboard_enabled`, un onglet « Classement » trié par XP apparaît, et chaque membre peut choisir d'en être exclu (`user_profile`).
+- **Tableau des contributions** : par membre, sur une période, le nombre d'actions par catégorie (tickets, observations, récoltes, bilans). Il est **trié par ordre alphabétique** par défaut, sans rang affiché. Il est affiché dans l'onglet « Contributions » de la page des membres, avec les objectifs. Si un admin active `leaderboard_enabled`, un classement trié par XP s'ajoute sous ce tableau, et chaque membre peut choisir d'en être exclu depuis son profil (`user_profile.leaderboard_opt_out`).
 
 ---
 
@@ -2169,6 +2176,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.10 | 2026-10-02 | Fin du lot 6 : colonnes `subject_id` et `culture_id` du journal d'XP, table `xp_flag`, `user_profile.leaderboard_opt_out` (§4.2.5) ; texte et avancement des quêtes (`title_key`, `title_params`, `target`, `progress`) ; recalcul par lignes de correction `#recompute`, sans recalcul ciblé par événement (RG-XP-08) ; succès évalués de façon synchrone (§8.5) ; contributions et classement dans l'onglet « Contributions » des membres (§8.7). Le seed vérifie l'éligibilité des votes (RG-XP-04) comme en production. |
 | 0.9 | 2026-10-02 | Fin du lot 5 : complétude plafonnée sans revue des problèmes (RG-RES-03) ; démarrage à froid sous 5 jardins seulement, redistribution des poids inconnus et filtre de l'hémisphère opposé (§7.2, §7.3) ; contenu précisé de `shared_result_fact` (§11.3) ; transfert de propriété à la purge (§11.4). Écarts : cache des recommandations et pré-remplissage du taux de réussite reportés ; journal d'XP de l'export vide jusqu'au lot 6. |
 | 0.8 | 2026-10-02 | Corrections de l'audit du lot 4 : instant de référence unique des e2e et horloge des jetons tiers (§3.7) ; plafonds horaires des contenus communautaires (§6.9). |
 | 0.7 | 2026-10-02 | Fin du lot 4 : tâches de guide relatives à la date réelle de l'étape et réapplication (RG-GUI-05), guides non listés lisibles sans compte et guides illisibles en 404 (RG-GUI-03), rang du fil de tips (RG-TIP-03), pas d'auto-signalement (RG-MOD-01), notifications `content_hidden` et `moderation_decision` (RG-NTF-01), matrice des sols voisins (§7.2), événements de modération (§3.5). Écart : les tâches récurrentes de `GuideCalendarV1` sont reportées (§4.5). Le profil public n'affiche pas encore avatar ni niveau (lots 6 et 8). |

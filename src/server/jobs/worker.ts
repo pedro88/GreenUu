@@ -7,6 +7,8 @@ import { BOSS_SCHEMA } from './boss';
 import { dispatchOutbox, housekeeping, sendMail } from './handlers';
 import { dailyDigest, dueReminders, materializeAllSeries } from '../../features/ticket/jobs';
 import { refreshSharedFacts } from '../../features/reco/facts';
+import { generateQuests } from '../../features/progression/quests';
+import { gardenMember } from '../db/schema';
 import { buildExport, purgeDeletedAccounts, purgeExpiredExports } from '../../features/privacy/service';
 import { storage } from '../storage/storage';
 import '../../features/progression/register';
@@ -32,6 +34,7 @@ async function main() {
   await boss.createQueue('reco.refresh-facts', { policy: 'singleton' });
   await boss.createQueue('privacy.export', { retryLimit: 3, retryBackoff: true });
   await boss.createQueue('privacy.purge', { policy: 'singleton' });
+  await boss.createQueue('quests.generate', { policy: 'singleton' });
   // Les e-mails de notification sont mis en file dans la transaction du job (pas d'envoi si elle échoue).
   const txQueue = (tx: Parameters<Parameters<typeof db.transaction>[0]>[0]): JobQueue => ({
     enqueue: async (name, data, opts = {}) => { await boss.send(name, data, { db: fromDrizzle(tx, dsql), ...opts }); },
@@ -61,7 +64,14 @@ async function main() {
     });
   });
 
+  // §3.6 : quêtes du jour, de la semaine et de la saison, selon le fuseau de chacun (idempotent par période).
+  await boss.work('quests.generate', async () => {
+    const users = await db.selectDistinct({ id: gardenMember.userId }).from(gardenMember).where(dsql`${gardenMember.leftAt} is null`);
+    for (const u of users) await db.transaction((tx) => generateQuests(tx, u.id, appClock().now()));
+  });
+
   await boss.schedule('outbox.dispatch', '* * * * *');
+  await boss.schedule('quests.generate', '2 * * * *');
   await boss.schedule('reco.refresh-facts', '10 * * * *');
   await boss.schedule('privacy.purge', '45 3 * * *', undefined, { tz: 'Europe/Paris' });
   await boss.schedule('housekeeping', '30 3 * * *', undefined, { tz: 'Europe/Paris' });

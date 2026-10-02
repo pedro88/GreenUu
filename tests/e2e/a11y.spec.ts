@@ -16,6 +16,7 @@ const APP = [
   `/app/jardins/${gardenId('canal')}/tickets/nouveau`, '/app/taches', '/app/notifications', '/app/parametres/notifications',
   '/app/guides', '/app/guides/nouveau', '/app/tips', '/app/jardiniers/alice',
   `/app/jardins/${gardenId('canal')}/recommandations`, '/app/parametres/confidentialite',
+  '/app/profil', '/app/profil/xp', '/app/profil/succes', '/app/profil/quetes', `/app/jardins/${gardenId('canal')}/membres?onglet=contributions`,
 ];
 
 async function audit(page: Page, path: string) {

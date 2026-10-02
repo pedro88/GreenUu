@@ -11,7 +11,7 @@ const ITEMS = [
   { href: '/app/jardins', key: 'gardens', icon: Sprout, match: (p: string) => p.startsWith('/app/jardins') },
   { href: '/app/taches', key: 'tasks', icon: ClipboardList, match: (p: string) => p.startsWith('/app/taches') },
   { href: '/app/plantes', key: 'knowledge', icon: BookOpen, match: (p: string) => ['/app/plantes', '/app/guides', '/app/tips', '/app/jardiniers'].some((x) => p.startsWith(x)) },
-  { href: '/app/parametres/compte', key: 'profile', icon: UserRound, match: (p: string) => p.startsWith('/app/parametres') || p.startsWith('/app/profil') },
+  { href: '/app/profil', key: 'profile', icon: UserRound, match: (p: string) => p.startsWith('/app/parametres') || p.startsWith('/app/profil') },
 ] as const;
 
 /** Barre d'onglets bas (mobile) ou navigation d'en-tête (desktop), comme les maquettes. */

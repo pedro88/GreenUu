@@ -18,6 +18,7 @@
     "db:migrate": "tsx --env-file=.env scripts/migrate.ts",
     "db:seed": "tsx --env-file=.env scripts/seed.ts",
     "db:reset": "tsx --env-file=.env scripts/reset.ts",
+    "xp:recompute": "tsx --env-file=.env scripts/xp-recompute.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

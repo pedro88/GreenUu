@@ -1,0 +1,15 @@
+// Le tableau défile dans sa carte plutôt que d'élargir la page (A11Y-02, 360 px).
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-1) var(--space-2);
+    text-align: left;
+  }
+}

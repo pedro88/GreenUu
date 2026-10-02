@@ -229,9 +229,10 @@ export async function awardQuest(tx: Executor, userId: string, questId: string, 
 
 /* ---------- Lectures ---------- */
 
-export async function progressOf(tx: Executor, userId: string) {
-  const [p] = await tx.select().from(userProgress).where(eq(userProgress.userId, userId)).limit(1);
-  return p ?? { userId, totalXp: 0, level: 1, skills: {}, recomputedAt: null };
+export async function progressOf(tx: Executor, userId: string): Promise<{ totalXp: number; level: number; skills: Partial<Record<Skill, number>>; leaderboardOptOut: boolean }> {
+  const [p] = await tx.select({ totalXp: userProgress.totalXp, level: userProgress.level, skills: userProgress.skills }).from(userProgress).where(eq(userProgress.userId, userId)).limit(1);
+  const [prof] = await tx.select({ optOut: userProfile.leaderboardOptOut }).from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
+  return { totalXp: p?.totalXp ?? 0, level: p?.level ?? 1, skills: p?.skills ?? {}, leaderboardOptOut: prof?.optOut ?? false };
 }
 
 /** Journal d'XP de l'utilisateur (`/app/profil/xp`), transparent : gains, plafonds et annulations. */
