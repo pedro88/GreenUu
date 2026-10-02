@@ -29,7 +29,6 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         <AppNav variant="top" />
         <NotificationBell count={unread} label={t('notifications')} />
       </header>
-      <div className={styles.mobileBell}><NotificationBell count={unread} label={t('notifications')} /></div>
       <main id="contenu" className={styles.main}>{children}</main>
       <AppNav variant="bottom" />
     </div>

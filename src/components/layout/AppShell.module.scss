@@ -26,15 +26,16 @@
   }
 }
 
+// Mobile : barre fine (marque + cloche) ; la navigation est dans la barre d'onglets du bas.
 .topbar {
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-1) var(--space-2) 0 var(--space-4);
 
   @include from($bp-md) {
-    display: flex;
-    align-items: center;
-    gap: var(--space-5);
-    max-width: var(--content-max);
-    margin: 0 auto;
     padding: var(--space-3) var(--space-4);
   }
 }
@@ -50,9 +51,13 @@
 }
 
 .topnav {
-  display: flex;
+  display: none;
   gap: var(--space-4);
   margin-left: auto;
+
+  @include from($bp-md) {
+    display: flex;
+  }
 
   a {
     color: var(--color-text);
@@ -113,9 +118,14 @@
   @include touch-target;
 
   position: relative;
+  margin-left: auto;
   display: inline-grid;
   place-items: center;
   color: var(--color-text);
+
+  @include from($bp-md) {
+    margin-left: 0;
+  }
 }
 
 .bellCount {
@@ -132,13 +142,3 @@
   text-align: center;
 }
 
-.mobileBell {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
-  z-index: 3;
-
-  @include from($bp-md) {
-    display: none;
-  }
-}
