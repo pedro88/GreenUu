@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { linkFrom, login, SEED_PASSWORD, uniqueEmail, uniquePseudo, waitForMail } from './helpers';
+import { clearMail, linkFrom, login, SEED_PASSWORD, uniqueEmail, uniquePseudo, waitForMail } from './helpers';
 
 test.describe('authentification', () => {
   test('[AUTH-01] inscription : compte créé, e-mail de vérification, redirection vers /bienvenue', async ({ page }) => {
@@ -39,6 +39,7 @@ test.describe('authentification', () => {
     const other = await browser.newContext();
     const otherPage = await other.newPage();
     await login(otherPage, 'farid');
+    await clearMail('farid@greenu.test');
     await page.goto('/mot-de-passe-oublie');
     await page.getByLabel('Adresse e-mail').fill('farid@greenu.test');
     await page.getByRole('button', { name: 'Envoyer le lien' }).click();

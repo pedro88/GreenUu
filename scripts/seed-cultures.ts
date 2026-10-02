@@ -17,7 +17,7 @@ import type { HarvestUnit, Method, Stage } from '../src/lib/enums';
 type C = {
   zone: string; species: string; variety?: string; method: Method; anchor: string; author: string;
   actual?: Partial<Record<Stage, string>>; harvests?: [string, number, HarvestUnit][]; notes?: [string, string][]; pest?: [string, string];
-  ack?: boolean; moveTo?: string;
+  ack?: boolean; moveTo?: string; areaM2?: number;
 };
 
 export async function seedCultures(tx: Tx, ref: Date, ids: { gardenId: (k: string) => string; zoneId: (g: string, z: string) => string; userId: (k: string) => string }) {
@@ -48,6 +48,8 @@ export async function seedCultures(tx: Tx, ref: Date, ids: { gardenId: (k: strin
       { zone: 'a1', species: 'tomate', variety: 'Saint-Pierre', method: 'bought_plants', anchor: d(0, '05-15'), author: 'david', actual: { planting: d(0, '05-15'), harvest_start: d(0, '07-25') }, harvests: [[d(0, '08-10'), 5.5, 'kg']] },
       { zone: 'a2', species: 'courgette', variety: 'Ronde de Nice', method: 'bought_plants', anchor: d(0, '05-18'), author: 'chloe', actual: { planting: d(0, '05-18'), harvest_start: d(0, '07-05') }, harvests: [[d(0, '07-20'), 9, 'unit']] },
       { zone: 'b1', species: 'haricot', variety: 'Beurre de Rocquencourt', method: 'direct_sowing', anchor: d(0, '05-25'), author: 'emma', actual: { sowing: d(0, '05-25'), emergence: d(0, '06-04'), harvest_start: d(0, '07-25'), harvest_end: d(0, '09-01'), end: d(0, '09-02') }, harvests: [[d(0, '08-05'), 2.2, 'kg']] },
+      // RES-01 : culture terminée, 3 récoltes (4,2 kg en tout) sur 3 m², sans bilan.
+      { zone: 'b2', species: 'haricot', variety: 'Contender', method: 'direct_sowing', anchor: d(0, '05-10'), author: 'david', areaM2: 3, actual: { sowing: d(0, '05-10'), emergence: d(0, '05-20'), harvest_start: d(0, '07-10'), harvest_end: d(0, '08-20'), end: d(0, '08-25') }, harvests: [[d(0, '07-15'), 1.2, 'kg'], [d(0, '07-30'), 1.6, 'kg'], [d(0, '08-15'), 1.4, 'kg']] },
       { zone: 'd1', species: 'carotte', variety: 'Touchon', method: 'direct_sowing', anchor: d(0, '04-10'), author: 'emma', actual: { sowing: d(0, '04-10'), emergence: d(0, '04-28') } },
       { zone: 't1-b1', species: 'basilic', variety: 'Pourpre', method: 'tray_sowing', anchor: d(0, '04-01'), author: 'david', actual: { sowing: d(0, '04-01'), emergence: d(0, '04-09'), transplanting: d(0, '04-25') } },
       { zone: 't1-b2', species: 'poivron', variety: 'Corno di toro', method: 'bought_plants', anchor: d(0, '05-05'), author: 'emma', actual: { planting: d(0, '05-05'), flowering: d(0, '06-10'), fruiting: d(0, '07-05'), harvest_start: d(0, '08-01') }, harvests: [[d(0, '08-20'), 14, 'unit']] },
@@ -68,7 +70,7 @@ export async function seedCultures(tx: Tx, ref: Date, ids: { gardenId: (k: strin
       const ctx = await ctxFor(tx, gardenId, ids.userId(c.author), new Date(`${c.anchor}T09:00:00Z`));
       const { cultureId } = await createCulture(ctx, {
         gardenId, zoneId: ids.zoneId(gardenKey, c.zone), speciesId: speciesRefId(c.species), varietyId: c.variety ? varietyRefId(c.species, c.variety) : undefined,
-        method: c.method, anchorDate: c.anchor, seedSource: 'bought', plannedDates: {}, acknowledgeRotation: c.ack ?? false,
+        method: c.method, anchorDate: c.anchor, seedSource: 'bought', plannedDates: {}, acknowledgeRotation: c.ack ?? false, ...(c.areaM2 ? { areaM2: c.areaM2 } : {}),
       });
       const later = await ctxFor(tx, gardenId, ids.userId(c.author), ref);
       for (const [stage, on] of Object.entries(c.actual ?? {}) as [Stage, string][]) { // as: clés issues du type Partial<Record<Stage, string>>

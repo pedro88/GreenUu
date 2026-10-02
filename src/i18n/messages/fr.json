@@ -1243,7 +1243,7 @@
     "winter": "Hiver",
     "submit": "Voir les suggestions",
     "empty": "Aucune suggestion pour cette période.",
-    "explanation": "{gardens} jardins à contexte proche, réussite moyenne {success} %, rendement médian {yield} kg/m²",
+    "explanation": "{gardens} jardins à contexte proche, réussite moyenne {success} %, rendement médian {yield, number} kg/m²",
     "explanationNoYield": "{gardens} jardins à contexte proche, réussite moyenne {success} %",
     "confidence": "Confiance : {level}",
     "confidence_high": "élevée",
@@ -1267,7 +1267,7 @@
     "title": "Résultats de la communauté",
     "notEnough": "Pas encore assez de jardins pour afficher des résultats (au moins 5 jardins distincts).",
     "summary": "{gardens} jardins, réussite moyenne {success} %",
-    "yield": "rendement médian {value} kg/m²",
+    "yield": "rendement médian {value, number} kg/m²",
     "problems": "Problèmes fréquents"
   },
   "restore": {

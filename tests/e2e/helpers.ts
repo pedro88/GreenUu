@@ -43,3 +43,8 @@ export function linkFrom(text: string, path: string): string {
   if (!m) throw new Error(`lien ${path} introuvable dans l'e-mail`);
   return m[0];
 }
+
+/** Purge les e-mails d'un destinataire du seed (adresse fixe) : un test ne doit lire que ceux qu'il provoque. */
+export async function clearMail(to: string) {
+  await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${to}"`)}`, { method: 'DELETE' });
+}
