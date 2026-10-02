@@ -3,14 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { applyPlanCommands } from '../../src/features/scene/plan';
 import { planCommandSchema, type PlanCommandInput } from '../../src/features/scene/plan.schema';
 import { sceneSnapshot } from '../../src/features/scene/snapshot';
+import '../../src/features/decor/actions';
 import { declareDecorPractice } from '../../src/features/decor/service';
+import { actionRegistry, runAction, type ActionDeps } from '../../src/server/action-core';
 import { createTicket } from '../../src/features/ticket/commands';
 import { fixedClock } from '../../src/server/clock';
 import { culture, decorPlacement, garden, practice, practiceDeclaration, userProgress, zone } from '../../src/server/db/schema';
 import type { Tx } from '../../src/server/db/client';
 import type { Actor } from '../../src/server/action-core';
 import { addMember, makeGarden, makeZone } from './fixtures';
-import { inTx, makeUser, NOW, scopedCtx } from './helpers';
+import { inTx, makeUser, NOW, recordingQueue, scopedCtx } from './helpers';
+
+const deps = (tx: Tx): ActionDeps => ({ db: tx, clock: fixedClock(NOW), appUrl: 'http://localhost:3000', jobs: () => recordingQueue() });
 
 const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
 const cmd = (c: PlanCommandInput) => planCommandSchema.parse(c);
@@ -111,6 +115,47 @@ describe('décoration (§9.7, §4.2.6)', () => {
         .where(and(eq(practiceDeclaration.gardenId, gardenId), eq(practice.code, 'biodiversity_birdhouse')));
       expect(kept).toHaveLength(1);
       expect(kept[0]?.practice_declaration.decorPlacementId).toBeNull();
+    }));
+});
+
+describe('pratiques déclarées par la déco : refus (§5.2, audit e2e lot 8 E1)', () => {
+  it('[DEC-03] un membre et un observateur ne déclarent pas de pratique, ni ne la retirent avec l\'objet ; une pratique déjà déclarée donne CONFLICT', () =>
+    inTx(async (tx) => {
+      const bruno = await makeUser(tx);
+      const { gardenId, ctx } = await setup(tx, bruno, 'collective');
+      const david = await makeUser(tx);
+      const farid = await makeUser(tx);
+      await addMember(tx, gardenId, david, 'member');
+      await addMember(tx, gardenId, farid, 'observer');
+      const r = await applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: await version(tx, gardenId), commands: [
+        cmd({ op: 'placeDecor', clientId: 'tmp:n', itemCode: 'birdhouse', x: 100, y: 100 }),
+        cmd({ op: 'placeDecor', clientId: 'tmp:h', itemCode: 'insect_hotel', x: 300, y: 100 }),
+      ] });
+      const nest = r.ids['tmp:n'] ?? '';
+      const hotel = r.ids['tmp:h'] ?? '';
+      const def = actionRegistry.get('decor.declarePractice');
+      if (!def) throw new Error('decor.declarePractice');
+      const count = async () => (await tx.select().from(practiceDeclaration).where(eq(practiceDeclaration.gardenId, gardenId))).length;
+      const before = await count();
+      // La matrice de l'action, pour un membre puis un observateur.
+      for (const who of [david, farid]) {
+        expect(await runAction(def, who, { gardenId, placementId: nest }, deps(tx))).toMatchObject({ ok: false, error: { code: 'FORBIDDEN' } });
+      }
+      // La garde du service, sans la matrice de l'action.
+      await expect(declareDecorPractice(await scopedCtx(tx, david, gardenId), nest)).rejects.toMatchObject({ code: 'FORBIDDEN' });
+      expect(await count()).toBe(before);
+
+      // Retirer l'objet en retirant sa pratique exige garden:update ; rien ne change.
+      await declareDecorPractice(ctx, hotel);
+      await expect(applyPlanCommands(await scopedCtx(tx, david, gardenId), { gardenId, sceneZoneId: null, baseVersion: await version(tx, gardenId),
+        commands: [cmd({ op: 'removeDecor', decorId: hotel, removePractice: true })] })).rejects.toMatchObject({ code: 'FORBIDDEN' });
+      expect(await tx.select().from(decorPlacement).where(eq(decorPlacement.id, hotel))).toHaveLength(1);
+      expect(await tx.select().from(practiceDeclaration).where(eq(practiceDeclaration.decorPlacementId, hotel))).toHaveLength(1);
+
+      // Une déclaration de jardin existe déjà pour le nichoir, sans lien : déclarer l'objet donne CONFLICT.
+      const [pr] = await tx.select({ id: practice.id }).from(practice).where(eq(practice.code, 'biodiversity_birdhouse'));
+      await tx.insert(practiceDeclaration).values({ gardenId, practiceId: pr?.id ?? '' });
+      await expect(declareDecorPractice(ctx, nest)).rejects.toMatchObject({ code: 'CONFLICT', message: 'practiceAlreadyDeclared' });
     }));
 });
 
