@@ -8,6 +8,7 @@ import { appClock } from './clock';
 import { db } from './db/client';
 import { env } from './env';
 import { transactionalQueue } from './jobs/boss';
+import '@/features/progression/register';
 
 export async function currentActor(): Promise<Actor | null> {
   const u = await getSessionUser();

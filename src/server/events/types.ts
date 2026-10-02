@@ -38,7 +38,7 @@ export type DomainEvent =
   | E<'culture.ended', 'culture', { status: string }>
   | E<'culture.moved', 'culture', { fromZoneId: string; toZoneId: string }>
   | E<'culture.stage_recorded', 'culture', { stage: string; actualOn: string | null; plannedOn: string | null }>
-  | E<'journal.entry_created', 'journal_entry', { kind: string; hasPhoto: boolean; structured: boolean; cultureId: string | null }>
+  | E<'journal.entry_created', 'journal_entry', { kind: string; hasPhoto: boolean; structured: boolean; cultureId: string | null; textLength: number }>
   | E<'journal.entry_deleted', 'journal_entry', Record<string, never>>
   | E<'harvest.recorded', 'harvest', { cultureId: string; quantityKg: number | null; unit: string; seedSaving: boolean }>
   | E<'harvest.deleted', 'harvest', { cultureId: string }>
@@ -56,6 +56,8 @@ export type DomainEvent =
   | E<'content.reported', 'guide' | 'tip' | 'user', { reason: string; openReports: number; autoHidden: boolean }>
   | E<'result.submitted' | 'result.updated', 'result', { cultureId: string; completeness: number }>
   | E<'privacy.export_requested' | 'privacy.deletion_requested' | 'privacy.deletion_cancelled' | 'privacy.purged', 'user', Record<string, unknown>>
+  | E<'achievement.earned', 'user', { code: string }>
+  | E<'quest.completed', 'user', { questId: string; kind: string }>
   | E<'moderation.decided', 'guide' | 'tip' | 'user', { decision: 'dismissed' | 'actioned'; reports: number }>;
 
 export type DomainEventType = DomainEvent['type'];

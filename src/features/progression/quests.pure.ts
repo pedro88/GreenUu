@@ -41,3 +41,25 @@ export const SEASONAL_TEMPLATES = [
 export function seasonalTemplates(season: AstronomicalSeason, has: { beds: boolean; cultures: boolean }) {
   return SEASONAL_TEMPLATES.filter((t) => t.season === season && has[t.needs]);
 }
+
+/** Bornes de la saison astronomique en cours (période d'une quête saisonnière) ; seule l'étiquette change selon l'hémisphère. */
+export function seasonBounds(date: string): { start: string; end: string } {
+  const y = Number(date.slice(0, 4));
+  const s = astronomicalSeason(date, false);
+  const md = date.slice(5);
+  const bounds: Record<AstronomicalSeason, [string, string]> = {
+    spring: [`${y}-03-20`, `${y}-06-20`], summer: [`${y}-06-21`, `${y}-09-21`], autumn: [`${y}-09-22`, `${y}-12-20`],
+    winter: md >= '12-21' ? [`${y}-12-21`, `${y + 1}-03-19`] : [`${y - 1}-12-21`, `${y}-03-19`],
+  };
+  const [start, end] = bounds[s];
+  return { start, end };
+}
+
+/** Lundi et dimanche de la semaine d'une date ISO (quêtes hebdomadaires). */
+export function weekBounds(date: string): { start: string; end: string } {
+  const d = new Date(`${date}T12:00:00Z`);
+  const dow = (d.getUTCDay() + 6) % 7;
+  const start = new Date(d.getTime() - dow * 86_400_000);
+  const end = new Date(start.getTime() + 6 * 86_400_000);
+  return { start: start.toISOString().slice(0, 10), end: end.toISOString().slice(0, 10) };
+}

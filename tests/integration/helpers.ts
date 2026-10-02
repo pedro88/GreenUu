@@ -7,6 +7,7 @@ import { user, userProfile } from '../../src/server/db/schema';
 import type { JobName, JobQueue } from '../../src/server/jobs/queues';
 import type { Mail } from '../../src/server/mail/templates';
 import { testEnv } from './env';
+import '../../src/features/progression/register';
 
 const sql = createSql(testEnv().DATABASE_URL ?? '');
 export const testDb: Db = createDb(sql);

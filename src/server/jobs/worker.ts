@@ -9,6 +9,7 @@ import { dailyDigest, dueReminders, materializeAllSeries } from '../../features/
 import { refreshSharedFacts } from '../../features/reco/facts';
 import { buildExport, purgeDeletedAccounts, purgeExpiredExports } from '../../features/privacy/service';
 import { storage } from '../storage/storage';
+import '../../features/progression/register';
 import { appClock } from '../clock';
 import { fromDrizzle } from 'pg-boss';
 import { sql as dsql } from 'drizzle-orm';

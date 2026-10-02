@@ -61,7 +61,7 @@ export async function createJournalEntry(ctx: ScopedCtx, input: JournalCreateInp
     await completeWateringTickets(tx, scope, { cultureId: input.cultureId, zoneId: input.cultureId ? undefined : input.zoneId }, actor.id, now);
   }
   const structured = problemId !== null || input.intervention !== undefined || input.weather !== undefined;
-  await emit(tx, { type: 'journal.entry_created', subjectType: 'journal_entry', subjectId: e.id, gardenId: scope.gardenId, actorId: actor.id, payload: { kind, hasPhoto: photos > 0, structured, cultureId: input.cultureId ?? null } }, now);
+  await emit(tx, { type: 'journal.entry_created', subjectType: 'journal_entry', subjectId: e.id, gardenId: scope.gardenId, actorId: actor.id, payload: { kind, hasPhoto: photos > 0, structured, cultureId: input.cultureId ?? null, textLength: (input.body ?? '').trim().length } }, now);
   return { entryId: e.id };
 }
 
