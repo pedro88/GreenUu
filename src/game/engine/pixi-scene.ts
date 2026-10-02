@@ -1,3 +1,5 @@
+// Synchronisation des shaders précompilée : la CSP de production interdit `eval` / `new Function` (audit lot 7, M1).
+import 'pixi.js/unsafe-eval';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Texture, TextureStyle, TilingSprite } from 'pixi.js';
 import type { SceneCulture, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
