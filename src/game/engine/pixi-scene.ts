@@ -1,7 +1,9 @@
 // Synchronisation des shaders précompilée : la CSP de production interdit `eval` / `new Function` (audit lot 7, M1).
 import 'pixi.js/unsafe-eval';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Texture, TextureStyle, TilingSprite } from 'pixi.js';
-import type { SceneCulture, SceneSnapshot } from '@/features/scene/snapshot.schema';
+import { avatarCanvas, WALK } from '@/features/avatar/compose';
+import { decorFrame } from '@/features/decor/catalog';
+import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
 import { TILE_PX } from '@/features/scene/grid.pure';
 import { fetchAtlas, grassFrame, resolvePlantFrame, STATE_FRAMES, TERRAIN_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
@@ -80,7 +82,8 @@ export type SceneView = {
   destroy: () => void;
 };
 
-export async function createSceneView(host: HTMLElement, opts: { onMissingSprite?: (key: string) => void } = {}): Promise<SceneView> {
+export async function createSceneView(host: HTMLElement, opts: { onMissingSprite?: (key: string) => void; onChange?: () => void } = {}): Promise<SceneView> {
+  const onAvatarReady = opts.onChange;
   const app = new Application();
   await app.init({ resizeTo: host, backgroundAlpha: 0, antialias: false, autoStart: false, preference: 'webgl', resolution: window.devicePixelRatio || 1, autoDensity: true });
   app.ticker.stop();
@@ -107,6 +110,10 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   let gridOn = false;
   let elapsed = 0;
   const plants: Sprite[] = [];
+  /** Avatars posés : frames de marche composées en Canvas 2D (§10.2), animées seulement par la boucle ambiante. */
+  const walkers: { sprite: Sprite; frames: Texture[]; baseX: number; phase: number }[] = [];
+  const avatarTextures = new Map<string, Promise<Texture[]>>();
+  let generation = 0;
   const tex = (name: string | null | undefined) => (name ? atlas?.textures.get(name) : undefined);
 
   const px = (cm: number) => cm * scale;
@@ -182,6 +189,62 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     }
   }
 
+  function decorNode(d: SceneDecor): Sprite | Graphics {
+    const t = tex(decorFrame(d.spriteKey));
+    if (t) {
+      const sp = new Sprite(t);
+      sp.anchor.set(0.5, 1);
+      return sp;
+    }
+    // Substitution : un bloc de la taille de l'emprise.
+    const w = d.w * TILE_PX;
+    const h = d.h * TILE_PX * 0.75;
+    return new Graphics().rect(-w / 2 + 2, -h, w - 4, h).fill(0xa77b52).stroke({ width: 2, color: 0x2e222f });
+  }
+
+  function drawDecor(s: SceneSnapshot) {
+    for (const d of s.decor) {
+      const node = decorNode(d);
+      node.position.set(px(d.x), px(d.y));
+      node.zIndex = d.y;
+      plantLayer.addChild(node);
+    }
+  }
+
+  /** Textures d'un avatar (arrêt puis marche), en cache par `configHash`, à la résolution des sprites HD. */
+  function avatarFrames(a: SceneAvatar): Promise<Texture[]> {
+    let p = avatarTextures.get(a.configHash);
+    if (!p) {
+      p = Promise.all((['arret', ...WALK] as const).map((pose) => avatarCanvas(a.config, 'bas', pose))).then((canvases) => canvases.flatMap((c) => {
+        if (!c) return [];
+        const t = Texture.from(c);
+        t.source.resolution = 2;
+        t.source.scaleMode = 'nearest';
+        return [t];
+      }));
+      avatarTextures.set(a.configHash, p);
+    }
+    return p;
+  }
+
+  function drawAvatars(s: SceneSnapshot) {
+    walkers.length = 0;
+    const gen = generation;
+    for (const [i, a] of s.avatars.entries()) {
+      void avatarFrames(a).then((frames) => {
+        const first = frames[0];
+        if (gen !== generation || !first) return;
+        const sp = new Sprite(first);
+        sp.anchor.set(0.5, 1);
+        sp.position.set(px(a.position.x), px(a.position.y));
+        sp.zIndex = a.position.y + 1;
+        plantLayer.addChild(sp);
+        walkers.push({ sprite: sp, frames, baseX: sp.x, phase: i * 1.7 });
+        onAvatarReady?.();
+      });
+    }
+  }
+
   function drawGrid(s: SceneSnapshot) {
     grid.clear();
     if (!gridOn) return;
@@ -208,6 +271,9 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       drawZones(s);
       drawGrid(s);
       drawPlants(s);
+      drawDecor(s);
+      generation += 1;
+      drawAvatars(s);
       drawTint(s);
     },
     setCamera(c) {
@@ -235,6 +301,13 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       elapsed += ms;
       // Ondulation légère, seulement quand la boucle ambiante tourne (jamais en animations réduites).
       plants.forEach((p, i) => { p.skew.x = Math.sin(elapsed / 700 + i) * 0.04; });
+      // Marche lente d'un côté à l'autre, au pied de la zone (§9.5) ; statique en animations réduites.
+      for (const w of walkers) {
+        const t = elapsed / 1000 + w.phase;
+        w.sprite.x = w.baseX + Math.sin(t / 3) * 12;
+        const f = w.frames[1 + (Math.floor(elapsed / 220) % Math.max(1, w.frames.length - 1))];
+        if (f) w.sprite.texture = f;
+      }
     },
     render() {
       app.render();

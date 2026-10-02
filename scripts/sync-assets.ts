@@ -39,11 +39,12 @@ async function pickIcons(dir: string, prefix = ''): Promise<Map<string, string>>
 await mkdir(path.join(DEST, 'icons'), { recursive: true });
 const icons = new Map([...(await pickIcons(path.join(SRC, 'cultures'))), ...(await pickIcons(path.join(SRC, 'fleurs'))), ...(await pickIcons(path.join(SRC, 'familles'), 'family-'))]);
 for (const [key, file] of icons) await copyFile(file, path.join(DEST, 'icons', `${key}.png`));
-for (const sub of ['ui', 'bulles']) {
+// Icônes d'interface, bulles d'état et objets de déco (vignettes de la palette de l'éditeur).
+for (const [sub, to] of [['ui', 'ui'], ['bulles', 'bulles'], ['deco', 'decor']] as const) {
   const dir = path.join(SRC, sub);
   if (!existsSync(dir)) continue;
-  await mkdir(path.join(DEST, sub), { recursive: true });
-  for (const f of (await readdir(dir)).filter((x) => x.endsWith('.png'))) await copyFile(path.join(dir, f), path.join(DEST, sub, f));
+  await mkdir(path.join(DEST, to), { recursive: true });
+  for (const f of (await readdir(dir)).filter((x) => x.endsWith('.png'))) await copyFile(path.join(dir, f), path.join(DEST, to, f));
 }
 // Atlas de la vue jardin (§9.2, format TexturePacker, éventuellement en plusieurs pages) : copié tel quel, validé par
 // Zod au chargement. Les pages d'une livraison précédente sont retirées.

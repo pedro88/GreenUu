@@ -34,6 +34,31 @@ export const sceneCultureSchema = z.object({
 
 export const sceneTerrainSchema = z.object({ id: z.uuid(), kind: z.enum(TERRAIN_KINDS), geometry: rectSchema });
 
+/** Objet de déco : pied (bas au centre) en centimètres, emprise en tuiles. */
+export const sceneDecorSchema = z.object({
+  id: z.string(),
+  itemCode: z.string(),
+  spriteKey: z.string(),
+  w: z.number().int().positive(),
+  h: z.number().int().positive(),
+  x: z.number().int(),
+  y: z.number().int(),
+  label: z.string().nullable(),
+  /** Objet ★ : code de la pratique qu'il peut déclarer, et s'il l'a déclarée (DEC-03). */
+  practiceCode: z.string().nullable(),
+  practiceDeclared: z.boolean(),
+});
+
+/** Membre actif dans les 24 dernières heures, près de la zone de sa dernière action (§9.5, COL-04). */
+export const sceneAvatarSchema = z.object({
+  userId: z.uuid(),
+  pseudo: z.string(),
+  config: z.object({ v: z.literal(1), layers: z.record(z.string(), z.object({ item: z.string().nullable(), palettes: z.array(z.string()) })) }),
+  configHash: z.string(),
+  zoneId: z.uuid(),
+  position: z.object({ x: z.number(), y: z.number() }),
+});
+
 export const sceneSnapshotSchema = z.object({
   gardenId: z.uuid(),
   gardenName: z.string(),
@@ -47,11 +72,15 @@ export const sceneSnapshotSchema = z.object({
   zones: z.array(sceneZoneSchema),
   terrain: z.array(sceneTerrainSchema),
   cultures: z.array(sceneCultureSchema),
+  decor: z.array(sceneDecorSchema),
+  avatars: z.array(sceneAvatarSchema),
   ambient: z.object({ period: z.enum(['night', 'dawn', 'day', 'dusk']), season: z.enum(['spring', 'summer', 'autumn', 'winter']), tint: z.number().int(), alpha: z.number() }),
-  viewer: z.object({ canEditPlan: z.boolean(), reducedMotion: z.boolean() }),
+  viewer: z.object({ canEditPlan: z.boolean(), canPlaceDecor: z.boolean(), canDeclarePractice: z.boolean(), reducedMotion: z.boolean() }),
 });
 
 export type SceneSnapshot = z.infer<typeof sceneSnapshotSchema>;
 export type SceneZone = z.infer<typeof sceneZoneSchema>;
 export type SceneCulture = z.infer<typeof sceneCultureSchema>;
 export type SceneTerrain = z.infer<typeof sceneTerrainSchema>;
+export type SceneDecor = z.infer<typeof sceneDecorSchema>;
+export type SceneAvatar = z.infer<typeof sceneAvatarSchema>;

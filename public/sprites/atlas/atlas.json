@@ -2,8 +2,8 @@
  "frames": {
   "avatar/accessoire-arrosoir-bas-arret.png": {
    "frame": {
-    "x": 1234,
-    "y": 161,
+    "x": 258,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -19,8 +19,8 @@
   },
   "avatar/accessoire-arrosoir-bas-marche-f1.png": {
    "frame": {
-    "x": 1299,
-    "y": 161,
+    "x": 323,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -36,8 +36,8 @@
   },
   "avatar/accessoire-arrosoir-bas-marche-f2.png": {
    "frame": {
-    "x": 1364,
-    "y": 161,
+    "x": 388,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -53,8 +53,8 @@
   },
   "avatar/accessoire-arrosoir-bas-marche-f3.png": {
    "frame": {
-    "x": 1429,
-    "y": 161,
+    "x": 453,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -70,8 +70,8 @@
   },
   "avatar/accessoire-arrosoir-bas-marche-f4.png": {
    "frame": {
-    "x": 1494,
-    "y": 161,
+    "x": 518,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -87,8 +87,8 @@
   },
   "avatar/accessoire-arrosoir-droite-arret.png": {
    "frame": {
-    "x": 1559,
-    "y": 161,
+    "x": 583,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -104,8 +104,8 @@
   },
   "avatar/accessoire-arrosoir-droite-marche-f1.png": {
    "frame": {
-    "x": 1624,
-    "y": 161,
+    "x": 648,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -121,8 +121,8 @@
   },
   "avatar/accessoire-arrosoir-droite-marche-f2.png": {
    "frame": {
-    "x": 1689,
-    "y": 161,
+    "x": 713,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -138,8 +138,8 @@
   },
   "avatar/accessoire-arrosoir-droite-marche-f3.png": {
    "frame": {
-    "x": 1754,
-    "y": 161,
+    "x": 778,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -155,8 +155,8 @@
   },
   "avatar/accessoire-arrosoir-droite-marche-f4.png": {
    "frame": {
-    "x": 1819,
-    "y": 161,
+    "x": 843,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -172,8 +172,8 @@
   },
   "avatar/accessoire-arrosoir-gauche-arret.png": {
    "frame": {
-    "x": 1884,
-    "y": 161,
+    "x": 908,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -189,8 +189,8 @@
   },
   "avatar/accessoire-arrosoir-gauche-marche-f1.png": {
    "frame": {
-    "x": 1949,
-    "y": 161,
+    "x": 973,
+    "y": 290,
     "w": 64,
     "h": 96
    },
@@ -206,7 +206,7 @@
   },
   "avatar/accessoire-arrosoir-gauche-marche-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 1038,
     "y": 290,
     "w": 64,
     "h": 96
@@ -223,7 +223,7 @@
   },
   "avatar/accessoire-arrosoir-gauche-marche-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1103,
     "y": 290,
     "w": 64,
     "h": 96
@@ -240,7 +240,7 @@
   },
   "avatar/accessoire-arrosoir-gauche-marche-f4.png": {
    "frame": {
-    "x": 130,
+    "x": 1168,
     "y": 290,
     "w": 64,
     "h": 96
@@ -257,7 +257,7 @@
   },
   "avatar/accessoire-arrosoir-haut-arret.png": {
    "frame": {
-    "x": 195,
+    "x": 1233,
     "y": 290,
     "w": 64,
     "h": 96
@@ -274,7 +274,7 @@
   },
   "avatar/accessoire-arrosoir-haut-marche-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1298,
     "y": 290,
     "w": 64,
     "h": 96
@@ -291,7 +291,7 @@
   },
   "avatar/accessoire-arrosoir-haut-marche-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1363,
     "y": 290,
     "w": 64,
     "h": 96
@@ -308,7 +308,7 @@
   },
   "avatar/accessoire-arrosoir-haut-marche-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1428,
     "y": 290,
     "w": 64,
     "h": 96
@@ -325,7 +325,7 @@
   },
   "avatar/accessoire-arrosoir-haut-marche-f4.png": {
    "frame": {
-    "x": 455,
+    "x": 1493,
     "y": 290,
     "w": 64,
     "h": 96
@@ -342,7 +342,7 @@
   },
   "avatar/accessoire-beche-bas-arret.png": {
    "frame": {
-    "x": 520,
+    "x": 1558,
     "y": 290,
     "w": 64,
     "h": 96
@@ -359,7 +359,7 @@
   },
   "avatar/accessoire-beche-bas-marche-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1623,
     "y": 290,
     "w": 64,
     "h": 96
@@ -376,7 +376,7 @@
   },
   "avatar/accessoire-beche-bas-marche-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1688,
     "y": 290,
     "w": 64,
     "h": 96
@@ -393,7 +393,7 @@
   },
   "avatar/accessoire-beche-bas-marche-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1753,
     "y": 290,
     "w": 64,
     "h": 96
@@ -410,7 +410,7 @@
   },
   "avatar/accessoire-beche-bas-marche-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1818,
     "y": 290,
     "w": 64,
     "h": 96
@@ -427,7 +427,7 @@
   },
   "avatar/accessoire-beche-droite-arret.png": {
    "frame": {
-    "x": 845,
+    "x": 1883,
     "y": 290,
     "w": 64,
     "h": 96
@@ -444,7 +444,7 @@
   },
   "avatar/accessoire-beche-droite-marche-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1948,
     "y": 290,
     "w": 64,
     "h": 96
@@ -461,8 +461,8 @@
   },
   "avatar/accessoire-beche-droite-marche-f2.png": {
    "frame": {
-    "x": 975,
-    "y": 290,
+    "x": 0,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -478,8 +478,8 @@
   },
   "avatar/accessoire-beche-droite-marche-f3.png": {
    "frame": {
-    "x": 1040,
-    "y": 290,
+    "x": 65,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -495,8 +495,8 @@
   },
   "avatar/accessoire-beche-droite-marche-f4.png": {
    "frame": {
-    "x": 1105,
-    "y": 290,
+    "x": 130,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -512,8 +512,8 @@
   },
   "avatar/accessoire-beche-gauche-arret.png": {
    "frame": {
-    "x": 1170,
-    "y": 290,
+    "x": 195,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -529,8 +529,8 @@
   },
   "avatar/accessoire-beche-gauche-marche-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 290,
+    "x": 260,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -546,8 +546,8 @@
   },
   "avatar/accessoire-beche-gauche-marche-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 290,
+    "x": 325,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -563,8 +563,8 @@
   },
   "avatar/accessoire-beche-gauche-marche-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 290,
+    "x": 390,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -580,8 +580,8 @@
   },
   "avatar/accessoire-beche-gauche-marche-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 290,
+    "x": 455,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -597,8 +597,8 @@
   },
   "avatar/accessoire-beche-haut-arret.png": {
    "frame": {
-    "x": 1495,
-    "y": 290,
+    "x": 520,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -614,8 +614,8 @@
   },
   "avatar/accessoire-beche-haut-marche-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 290,
+    "x": 585,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -631,8 +631,8 @@
   },
   "avatar/accessoire-beche-haut-marche-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 290,
+    "x": 650,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -648,8 +648,8 @@
   },
   "avatar/accessoire-beche-haut-marche-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 290,
+    "x": 715,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -665,8 +665,8 @@
   },
   "avatar/accessoire-beche-haut-marche-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 290,
+    "x": 780,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -682,8 +682,8 @@
   },
   "avatar/accessoire-panier-bas-arret.png": {
    "frame": {
-    "x": 1820,
-    "y": 290,
+    "x": 845,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -699,8 +699,8 @@
   },
   "avatar/accessoire-panier-bas-marche-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 290,
+    "x": 910,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -716,8 +716,8 @@
   },
   "avatar/accessoire-panier-bas-marche-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 290,
+    "x": 975,
+    "y": 387,
     "w": 64,
     "h": 96
    },
@@ -733,7 +733,7 @@
   },
   "avatar/accessoire-panier-bas-marche-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 387,
     "w": 64,
     "h": 96
@@ -750,7 +750,7 @@
   },
   "avatar/accessoire-panier-bas-marche-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 387,
     "w": 64,
     "h": 96
@@ -767,7 +767,7 @@
   },
   "avatar/accessoire-panier-droite-arret.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 387,
     "w": 64,
     "h": 96
@@ -784,7 +784,7 @@
   },
   "avatar/accessoire-panier-droite-marche-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 387,
     "w": 64,
     "h": 96
@@ -801,7 +801,7 @@
   },
   "avatar/accessoire-panier-droite-marche-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 387,
     "w": 64,
     "h": 96
@@ -818,7 +818,7 @@
   },
   "avatar/accessoire-panier-droite-marche-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 387,
     "w": 64,
     "h": 96
@@ -835,7 +835,7 @@
   },
   "avatar/accessoire-panier-droite-marche-f4.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 387,
     "w": 64,
     "h": 96
@@ -852,7 +852,7 @@
   },
   "avatar/accessoire-panier-gauche-arret.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 387,
     "w": 64,
     "h": 96
@@ -869,7 +869,7 @@
   },
   "avatar/accessoire-panier-gauche-marche-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 387,
     "w": 64,
     "h": 96
@@ -886,7 +886,7 @@
   },
   "avatar/accessoire-panier-gauche-marche-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 387,
     "w": 64,
     "h": 96
@@ -903,7 +903,7 @@
   },
   "avatar/accessoire-panier-gauche-marche-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 387,
     "w": 64,
     "h": 96
@@ -920,7 +920,7 @@
   },
   "avatar/accessoire-panier-gauche-marche-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 387,
     "w": 64,
     "h": 96
@@ -937,7 +937,7 @@
   },
   "avatar/accessoire-panier-haut-arret.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 387,
     "w": 64,
     "h": 96
@@ -954,7 +954,7 @@
   },
   "avatar/accessoire-panier-haut-marche-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 387,
     "w": 64,
     "h": 96
@@ -971,7 +971,7 @@
   },
   "avatar/accessoire-panier-haut-marche-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 387,
     "w": 64,
     "h": 96
@@ -988,8 +988,8 @@
   },
   "avatar/accessoire-panier-haut-marche-f3.png": {
    "frame": {
-    "x": 975,
-    "y": 387,
+    "x": 0,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1005,8 +1005,8 @@
   },
   "avatar/accessoire-panier-haut-marche-f4.png": {
    "frame": {
-    "x": 1040,
-    "y": 387,
+    "x": 65,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1022,8 +1022,8 @@
   },
   "avatar/bas-pantalon-bas-arret.png": {
    "frame": {
-    "x": 1105,
-    "y": 387,
+    "x": 130,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1039,8 +1039,8 @@
   },
   "avatar/bas-pantalon-bas-arroser-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 387,
+    "x": 195,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1056,8 +1056,8 @@
   },
   "avatar/bas-pantalon-bas-arroser-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 387,
+    "x": 260,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1073,8 +1073,8 @@
   },
   "avatar/bas-pantalon-bas-arroser-f3.png": {
    "frame": {
-    "x": 1300,
-    "y": 387,
+    "x": 325,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1090,8 +1090,8 @@
   },
   "avatar/bas-pantalon-bas-arroser-f4.png": {
    "frame": {
-    "x": 1365,
-    "y": 387,
+    "x": 390,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1107,8 +1107,8 @@
   },
   "avatar/bas-pantalon-bas-becher-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 387,
+    "x": 455,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1124,8 +1124,8 @@
   },
   "avatar/bas-pantalon-bas-becher-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 387,
+    "x": 520,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1141,8 +1141,8 @@
   },
   "avatar/bas-pantalon-bas-becher-f3.png": {
    "frame": {
-    "x": 1560,
-    "y": 387,
+    "x": 585,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1158,8 +1158,8 @@
   },
   "avatar/bas-pantalon-bas-becher-f4.png": {
    "frame": {
-    "x": 1625,
-    "y": 387,
+    "x": 650,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1175,8 +1175,8 @@
   },
   "avatar/bas-pantalon-bas-content-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 387,
+    "x": 715,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1192,8 +1192,8 @@
   },
   "avatar/bas-pantalon-bas-content-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 387,
+    "x": 780,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1209,8 +1209,8 @@
   },
   "avatar/bas-pantalon-bas-marche-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 387,
+    "x": 845,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1226,8 +1226,8 @@
   },
   "avatar/bas-pantalon-bas-marche-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 387,
+    "x": 910,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1243,8 +1243,8 @@
   },
   "avatar/bas-pantalon-bas-marche-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 387,
+    "x": 975,
+    "y": 484,
     "w": 64,
     "h": 96
    },
@@ -1260,7 +1260,7 @@
   },
   "avatar/bas-pantalon-bas-marche-f4.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1277,7 +1277,7 @@
   },
   "avatar/bas-pantalon-bas-observer-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1294,7 +1294,7 @@
   },
   "avatar/bas-pantalon-bas-observer-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1311,7 +1311,7 @@
   },
   "avatar/bas-pantalon-bas-photo-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1328,7 +1328,7 @@
   },
   "avatar/bas-pantalon-bas-photo-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1345,7 +1345,7 @@
   },
   "avatar/bas-pantalon-bas-planter-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1362,7 +1362,7 @@
   },
   "avatar/bas-pantalon-bas-planter-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1379,7 +1379,7 @@
   },
   "avatar/bas-pantalon-bas-planter-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1396,7 +1396,7 @@
   },
   "avatar/bas-pantalon-bas-planter-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1413,7 +1413,7 @@
   },
   "avatar/bas-pantalon-bas-porter-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1430,7 +1430,7 @@
   },
   "avatar/bas-pantalon-bas-porter-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1447,7 +1447,7 @@
   },
   "avatar/bas-pantalon-bas-porter-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1464,7 +1464,7 @@
   },
   "avatar/bas-pantalon-bas-porter-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1481,7 +1481,7 @@
   },
   "avatar/bas-pantalon-bas-recolter-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1498,7 +1498,7 @@
   },
   "avatar/bas-pantalon-bas-recolter-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 484,
     "w": 64,
     "h": 96
@@ -1515,8 +1515,8 @@
   },
   "avatar/bas-pantalon-bas-recolter-f3.png": {
    "frame": {
-    "x": 975,
-    "y": 484,
+    "x": 0,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1532,8 +1532,8 @@
   },
   "avatar/bas-pantalon-bas-recolter-f4.png": {
    "frame": {
-    "x": 1040,
-    "y": 484,
+    "x": 65,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1549,8 +1549,8 @@
   },
   "avatar/bas-pantalon-bas-saluer-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 484,
+    "x": 130,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1566,8 +1566,8 @@
   },
   "avatar/bas-pantalon-bas-saluer-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 484,
+    "x": 195,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1583,8 +1583,8 @@
   },
   "avatar/bas-pantalon-bas-saluer-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 484,
+    "x": 260,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1600,8 +1600,8 @@
   },
   "avatar/bas-pantalon-bas-semer-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 484,
+    "x": 325,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1617,8 +1617,8 @@
   },
   "avatar/bas-pantalon-bas-semer-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 484,
+    "x": 390,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1634,8 +1634,8 @@
   },
   "avatar/bas-pantalon-bas-semer-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 484,
+    "x": 455,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1651,8 +1651,8 @@
   },
   "avatar/bas-pantalon-bas-semer-f4.png": {
    "frame": {
-    "x": 1495,
-    "y": 484,
+    "x": 520,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1668,8 +1668,8 @@
   },
   "avatar/bas-pantalon-droite-arret.png": {
    "frame": {
-    "x": 1560,
-    "y": 484,
+    "x": 585,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1685,8 +1685,8 @@
   },
   "avatar/bas-pantalon-droite-arroser-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 484,
+    "x": 650,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1702,8 +1702,8 @@
   },
   "avatar/bas-pantalon-droite-arroser-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 484,
+    "x": 715,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1719,8 +1719,8 @@
   },
   "avatar/bas-pantalon-droite-arroser-f3.png": {
    "frame": {
-    "x": 1755,
-    "y": 484,
+    "x": 780,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1736,8 +1736,8 @@
   },
   "avatar/bas-pantalon-droite-arroser-f4.png": {
    "frame": {
-    "x": 1820,
-    "y": 484,
+    "x": 845,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1753,8 +1753,8 @@
   },
   "avatar/bas-pantalon-droite-becher-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 484,
+    "x": 910,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1770,8 +1770,8 @@
   },
   "avatar/bas-pantalon-droite-becher-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 484,
+    "x": 975,
+    "y": 581,
     "w": 64,
     "h": 96
    },
@@ -1787,7 +1787,7 @@
   },
   "avatar/bas-pantalon-droite-becher-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1804,7 +1804,7 @@
   },
   "avatar/bas-pantalon-droite-becher-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1821,7 +1821,7 @@
   },
   "avatar/bas-pantalon-droite-content-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1838,7 +1838,7 @@
   },
   "avatar/bas-pantalon-droite-content-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1855,7 +1855,7 @@
   },
   "avatar/bas-pantalon-droite-marche-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1872,7 +1872,7 @@
   },
   "avatar/bas-pantalon-droite-marche-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1889,7 +1889,7 @@
   },
   "avatar/bas-pantalon-droite-marche-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1906,7 +1906,7 @@
   },
   "avatar/bas-pantalon-droite-marche-f4.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1923,7 +1923,7 @@
   },
   "avatar/bas-pantalon-droite-observer-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1940,7 +1940,7 @@
   },
   "avatar/bas-pantalon-droite-observer-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1957,7 +1957,7 @@
   },
   "avatar/bas-pantalon-droite-photo-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1974,7 +1974,7 @@
   },
   "avatar/bas-pantalon-droite-photo-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 581,
     "w": 64,
     "h": 96
@@ -1991,7 +1991,7 @@
   },
   "avatar/bas-pantalon-droite-planter-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 581,
     "w": 64,
     "h": 96
@@ -2008,7 +2008,7 @@
   },
   "avatar/bas-pantalon-droite-planter-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 581,
     "w": 64,
     "h": 96
@@ -2025,7 +2025,7 @@
   },
   "avatar/bas-pantalon-droite-planter-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 581,
     "w": 64,
     "h": 96
@@ -2042,8 +2042,8 @@
   },
   "avatar/bas-pantalon-droite-planter-f4.png": {
    "frame": {
-    "x": 975,
-    "y": 581,
+    "x": 0,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2059,8 +2059,8 @@
   },
   "avatar/bas-pantalon-droite-porter-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 581,
+    "x": 65,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2076,8 +2076,8 @@
   },
   "avatar/bas-pantalon-droite-porter-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 581,
+    "x": 130,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2093,8 +2093,8 @@
   },
   "avatar/bas-pantalon-droite-porter-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 581,
+    "x": 195,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2110,8 +2110,8 @@
   },
   "avatar/bas-pantalon-droite-porter-f4.png": {
    "frame": {
-    "x": 1235,
-    "y": 581,
+    "x": 260,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2127,8 +2127,8 @@
   },
   "avatar/bas-pantalon-droite-recolter-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 581,
+    "x": 325,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2144,8 +2144,8 @@
   },
   "avatar/bas-pantalon-droite-recolter-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 581,
+    "x": 390,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2161,8 +2161,8 @@
   },
   "avatar/bas-pantalon-droite-recolter-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 581,
+    "x": 455,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2178,8 +2178,8 @@
   },
   "avatar/bas-pantalon-droite-recolter-f4.png": {
    "frame": {
-    "x": 1495,
-    "y": 581,
+    "x": 520,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2195,8 +2195,8 @@
   },
   "avatar/bas-pantalon-droite-saluer-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 581,
+    "x": 585,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2212,8 +2212,8 @@
   },
   "avatar/bas-pantalon-droite-saluer-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 581,
+    "x": 650,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2229,8 +2229,8 @@
   },
   "avatar/bas-pantalon-droite-saluer-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 581,
+    "x": 715,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2246,8 +2246,8 @@
   },
   "avatar/bas-pantalon-droite-semer-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 581,
+    "x": 780,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2263,8 +2263,8 @@
   },
   "avatar/bas-pantalon-droite-semer-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 581,
+    "x": 845,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2280,8 +2280,8 @@
   },
   "avatar/bas-pantalon-droite-semer-f3.png": {
    "frame": {
-    "x": 1885,
-    "y": 581,
+    "x": 910,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2297,8 +2297,8 @@
   },
   "avatar/bas-pantalon-droite-semer-f4.png": {
    "frame": {
-    "x": 1950,
-    "y": 581,
+    "x": 975,
+    "y": 678,
     "w": 64,
     "h": 96
    },
@@ -2314,7 +2314,7 @@
   },
   "avatar/bas-pantalon-gauche-arret.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2331,7 +2331,7 @@
   },
   "avatar/bas-pantalon-gauche-arroser-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2348,7 +2348,7 @@
   },
   "avatar/bas-pantalon-gauche-arroser-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2365,7 +2365,7 @@
   },
   "avatar/bas-pantalon-gauche-arroser-f3.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2382,7 +2382,7 @@
   },
   "avatar/bas-pantalon-gauche-arroser-f4.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2399,7 +2399,7 @@
   },
   "avatar/bas-pantalon-gauche-becher-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2416,7 +2416,7 @@
   },
   "avatar/bas-pantalon-gauche-becher-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2433,7 +2433,7 @@
   },
   "avatar/bas-pantalon-gauche-becher-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2450,7 +2450,7 @@
   },
   "avatar/bas-pantalon-gauche-becher-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2467,7 +2467,7 @@
   },
   "avatar/bas-pantalon-gauche-content-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2484,7 +2484,7 @@
   },
   "avatar/bas-pantalon-gauche-content-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2501,7 +2501,7 @@
   },
   "avatar/bas-pantalon-gauche-marche-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2518,7 +2518,7 @@
   },
   "avatar/bas-pantalon-gauche-marche-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2535,7 +2535,7 @@
   },
   "avatar/bas-pantalon-gauche-marche-f3.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2552,7 +2552,7 @@
   },
   "avatar/bas-pantalon-gauche-marche-f4.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 678,
     "w": 64,
     "h": 96
@@ -2569,8 +2569,8 @@
   },
   "avatar/bas-pantalon-gauche-observer-f1.png": {
    "frame": {
-    "x": 975,
-    "y": 678,
+    "x": 0,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2586,8 +2586,8 @@
   },
   "avatar/bas-pantalon-gauche-observer-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 678,
+    "x": 65,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2603,8 +2603,8 @@
   },
   "avatar/bas-pantalon-gauche-photo-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 678,
+    "x": 130,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2620,8 +2620,8 @@
   },
   "avatar/bas-pantalon-gauche-photo-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 678,
+    "x": 195,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2637,8 +2637,8 @@
   },
   "avatar/bas-pantalon-gauche-planter-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 678,
+    "x": 260,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2654,8 +2654,8 @@
   },
   "avatar/bas-pantalon-gauche-planter-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 678,
+    "x": 325,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2671,8 +2671,8 @@
   },
   "avatar/bas-pantalon-gauche-planter-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 678,
+    "x": 390,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2688,8 +2688,8 @@
   },
   "avatar/bas-pantalon-gauche-planter-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 678,
+    "x": 455,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2705,8 +2705,8 @@
   },
   "avatar/bas-pantalon-gauche-porter-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 678,
+    "x": 520,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2722,8 +2722,8 @@
   },
   "avatar/bas-pantalon-gauche-porter-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 678,
+    "x": 585,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2739,8 +2739,8 @@
   },
   "avatar/bas-pantalon-gauche-porter-f3.png": {
    "frame": {
-    "x": 1625,
-    "y": 678,
+    "x": 650,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2756,8 +2756,8 @@
   },
   "avatar/bas-pantalon-gauche-porter-f4.png": {
    "frame": {
-    "x": 1690,
-    "y": 678,
+    "x": 715,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2773,8 +2773,8 @@
   },
   "avatar/bas-pantalon-gauche-recolter-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 678,
+    "x": 780,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2790,8 +2790,8 @@
   },
   "avatar/bas-pantalon-gauche-recolter-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 678,
+    "x": 845,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2807,8 +2807,8 @@
   },
   "avatar/bas-pantalon-gauche-recolter-f3.png": {
    "frame": {
-    "x": 1885,
-    "y": 678,
+    "x": 910,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2824,8 +2824,8 @@
   },
   "avatar/bas-pantalon-gauche-recolter-f4.png": {
    "frame": {
-    "x": 1950,
-    "y": 678,
+    "x": 975,
+    "y": 775,
     "w": 64,
     "h": 96
    },
@@ -2841,7 +2841,7 @@
   },
   "avatar/bas-pantalon-gauche-saluer-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2858,7 +2858,7 @@
   },
   "avatar/bas-pantalon-gauche-saluer-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2875,7 +2875,7 @@
   },
   "avatar/bas-pantalon-gauche-saluer-f3.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2892,7 +2892,7 @@
   },
   "avatar/bas-pantalon-gauche-semer-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2909,7 +2909,7 @@
   },
   "avatar/bas-pantalon-gauche-semer-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2926,7 +2926,7 @@
   },
   "avatar/bas-pantalon-gauche-semer-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2943,7 +2943,7 @@
   },
   "avatar/bas-pantalon-gauche-semer-f4.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2960,7 +2960,7 @@
   },
   "avatar/bas-pantalon-haut-arret.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2977,7 +2977,7 @@
   },
   "avatar/bas-pantalon-haut-arroser-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 775,
     "w": 64,
     "h": 96
@@ -2994,7 +2994,7 @@
   },
   "avatar/bas-pantalon-haut-arroser-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 775,
     "w": 64,
     "h": 96
@@ -3011,7 +3011,7 @@
   },
   "avatar/bas-pantalon-haut-arroser-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 775,
     "w": 64,
     "h": 96
@@ -3028,7 +3028,7 @@
   },
   "avatar/bas-pantalon-haut-arroser-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 775,
     "w": 64,
     "h": 96
@@ -3045,7 +3045,7 @@
   },
   "avatar/bas-pantalon-haut-becher-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 775,
     "w": 64,
     "h": 96
@@ -3062,7 +3062,7 @@
   },
   "avatar/bas-pantalon-haut-becher-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 775,
     "w": 64,
     "h": 96
@@ -3079,7 +3079,7 @@
   },
   "avatar/bas-pantalon-haut-becher-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 775,
     "w": 64,
     "h": 96
@@ -3096,8 +3096,8 @@
   },
   "avatar/bas-pantalon-haut-becher-f4.png": {
    "frame": {
-    "x": 975,
-    "y": 775,
+    "x": 0,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3113,8 +3113,8 @@
   },
   "avatar/bas-pantalon-haut-content-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 775,
+    "x": 65,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3130,8 +3130,8 @@
   },
   "avatar/bas-pantalon-haut-content-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 775,
+    "x": 130,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3147,8 +3147,8 @@
   },
   "avatar/bas-pantalon-haut-marche-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 775,
+    "x": 195,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3164,8 +3164,8 @@
   },
   "avatar/bas-pantalon-haut-marche-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 775,
+    "x": 260,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3181,8 +3181,8 @@
   },
   "avatar/bas-pantalon-haut-marche-f3.png": {
    "frame": {
-    "x": 1300,
-    "y": 775,
+    "x": 325,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3198,8 +3198,8 @@
   },
   "avatar/bas-pantalon-haut-marche-f4.png": {
    "frame": {
-    "x": 1365,
-    "y": 775,
+    "x": 390,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3215,8 +3215,8 @@
   },
   "avatar/bas-pantalon-haut-observer-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 775,
+    "x": 455,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3232,8 +3232,8 @@
   },
   "avatar/bas-pantalon-haut-observer-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 775,
+    "x": 520,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3249,8 +3249,8 @@
   },
   "avatar/bas-pantalon-haut-photo-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 775,
+    "x": 585,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3266,8 +3266,8 @@
   },
   "avatar/bas-pantalon-haut-photo-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 775,
+    "x": 650,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3283,8 +3283,8 @@
   },
   "avatar/bas-pantalon-haut-planter-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 775,
+    "x": 715,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3300,8 +3300,8 @@
   },
   "avatar/bas-pantalon-haut-planter-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 775,
+    "x": 780,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3317,8 +3317,8 @@
   },
   "avatar/bas-pantalon-haut-planter-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 775,
+    "x": 845,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3334,8 +3334,8 @@
   },
   "avatar/bas-pantalon-haut-planter-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 775,
+    "x": 910,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3351,8 +3351,8 @@
   },
   "avatar/bas-pantalon-haut-porter-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 775,
+    "x": 975,
+    "y": 872,
     "w": 64,
     "h": 96
    },
@@ -3368,7 +3368,7 @@
   },
   "avatar/bas-pantalon-haut-porter-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3385,7 +3385,7 @@
   },
   "avatar/bas-pantalon-haut-porter-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3402,7 +3402,7 @@
   },
   "avatar/bas-pantalon-haut-porter-f4.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3419,7 +3419,7 @@
   },
   "avatar/bas-pantalon-haut-recolter-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3436,7 +3436,7 @@
   },
   "avatar/bas-pantalon-haut-recolter-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3453,7 +3453,7 @@
   },
   "avatar/bas-pantalon-haut-recolter-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3470,7 +3470,7 @@
   },
   "avatar/bas-pantalon-haut-recolter-f4.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3487,7 +3487,7 @@
   },
   "avatar/bas-pantalon-haut-saluer-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3504,7 +3504,7 @@
   },
   "avatar/bas-pantalon-haut-saluer-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3521,7 +3521,7 @@
   },
   "avatar/bas-pantalon-haut-saluer-f3.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3538,7 +3538,7 @@
   },
   "avatar/bas-pantalon-haut-semer-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3555,7 +3555,7 @@
   },
   "avatar/bas-pantalon-haut-semer-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3572,7 +3572,7 @@
   },
   "avatar/bas-pantalon-haut-semer-f3.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3589,7 +3589,7 @@
   },
   "avatar/bas-pantalon-haut-semer-f4.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3606,7 +3606,7 @@
   },
   "avatar/bas-short-bas-arret.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 872,
     "w": 64,
     "h": 96
@@ -3623,8 +3623,8 @@
   },
   "avatar/bas-short-bas-arroser-f1.png": {
    "frame": {
-    "x": 975,
-    "y": 872,
+    "x": 0,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3640,8 +3640,8 @@
   },
   "avatar/bas-short-bas-arroser-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 872,
+    "x": 65,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3657,8 +3657,8 @@
   },
   "avatar/bas-short-bas-arroser-f3.png": {
    "frame": {
-    "x": 1105,
-    "y": 872,
+    "x": 130,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3674,8 +3674,8 @@
   },
   "avatar/bas-short-bas-arroser-f4.png": {
    "frame": {
-    "x": 1170,
-    "y": 872,
+    "x": 195,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3691,8 +3691,8 @@
   },
   "avatar/bas-short-bas-becher-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 872,
+    "x": 260,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3708,8 +3708,8 @@
   },
   "avatar/bas-short-bas-becher-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 872,
+    "x": 325,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3725,8 +3725,8 @@
   },
   "avatar/bas-short-bas-becher-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 872,
+    "x": 390,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3742,8 +3742,8 @@
   },
   "avatar/bas-short-bas-becher-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 872,
+    "x": 455,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3759,8 +3759,8 @@
   },
   "avatar/bas-short-bas-content-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 872,
+    "x": 520,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3776,8 +3776,8 @@
   },
   "avatar/bas-short-bas-content-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 872,
+    "x": 585,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3793,8 +3793,8 @@
   },
   "avatar/bas-short-bas-marche-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 872,
+    "x": 650,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3810,8 +3810,8 @@
   },
   "avatar/bas-short-bas-marche-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 872,
+    "x": 715,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3827,8 +3827,8 @@
   },
   "avatar/bas-short-bas-marche-f3.png": {
    "frame": {
-    "x": 1755,
-    "y": 872,
+    "x": 780,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3844,8 +3844,8 @@
   },
   "avatar/bas-short-bas-marche-f4.png": {
    "frame": {
-    "x": 1820,
-    "y": 872,
+    "x": 845,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3861,8 +3861,8 @@
   },
   "avatar/bas-short-bas-observer-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 872,
+    "x": 910,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3878,8 +3878,8 @@
   },
   "avatar/bas-short-bas-observer-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 872,
+    "x": 975,
+    "y": 969,
     "w": 64,
     "h": 96
    },
@@ -3895,7 +3895,7 @@
   },
   "avatar/bas-short-bas-photo-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 969,
     "w": 64,
     "h": 96
@@ -3912,7 +3912,7 @@
   },
   "avatar/bas-short-bas-photo-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 969,
     "w": 64,
     "h": 96
@@ -3929,7 +3929,7 @@
   },
   "avatar/bas-short-bas-planter-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 969,
     "w": 64,
     "h": 96
@@ -3946,7 +3946,7 @@
   },
   "avatar/bas-short-bas-planter-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 969,
     "w": 64,
     "h": 96
@@ -3963,7 +3963,7 @@
   },
   "avatar/bas-short-bas-planter-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 969,
     "w": 64,
     "h": 96
@@ -3980,7 +3980,7 @@
   },
   "avatar/bas-short-bas-planter-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 969,
     "w": 64,
     "h": 96
@@ -3997,7 +3997,7 @@
   },
   "avatar/bas-short-bas-porter-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4014,7 +4014,7 @@
   },
   "avatar/bas-short-bas-porter-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4031,7 +4031,7 @@
   },
   "avatar/bas-short-bas-porter-f3.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4048,7 +4048,7 @@
   },
   "avatar/bas-short-bas-porter-f4.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4065,7 +4065,7 @@
   },
   "avatar/bas-short-bas-recolter-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4082,7 +4082,7 @@
   },
   "avatar/bas-short-bas-recolter-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4099,7 +4099,7 @@
   },
   "avatar/bas-short-bas-recolter-f3.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4116,7 +4116,7 @@
   },
   "avatar/bas-short-bas-recolter-f4.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4133,7 +4133,7 @@
   },
   "avatar/bas-short-bas-saluer-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 969,
     "w": 64,
     "h": 96
@@ -4150,8 +4150,8 @@
   },
   "avatar/bas-short-bas-saluer-f2.png": {
    "frame": {
-    "x": 975,
-    "y": 969,
+    "x": 0,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4167,8 +4167,8 @@
   },
   "avatar/bas-short-bas-saluer-f3.png": {
    "frame": {
-    "x": 1040,
-    "y": 969,
+    "x": 65,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4184,8 +4184,8 @@
   },
   "avatar/bas-short-bas-semer-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 969,
+    "x": 130,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4201,8 +4201,8 @@
   },
   "avatar/bas-short-bas-semer-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 969,
+    "x": 195,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4218,8 +4218,8 @@
   },
   "avatar/bas-short-bas-semer-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 969,
+    "x": 260,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4235,8 +4235,8 @@
   },
   "avatar/bas-short-bas-semer-f4.png": {
    "frame": {
-    "x": 1300,
-    "y": 969,
+    "x": 325,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4252,8 +4252,8 @@
   },
   "avatar/bas-short-droite-arret.png": {
    "frame": {
-    "x": 1365,
-    "y": 969,
+    "x": 390,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4269,8 +4269,8 @@
   },
   "avatar/bas-short-droite-arroser-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 969,
+    "x": 455,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4286,8 +4286,8 @@
   },
   "avatar/bas-short-droite-arroser-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 969,
+    "x": 520,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4303,8 +4303,8 @@
   },
   "avatar/bas-short-droite-arroser-f3.png": {
    "frame": {
-    "x": 1560,
-    "y": 969,
+    "x": 585,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4320,8 +4320,8 @@
   },
   "avatar/bas-short-droite-arroser-f4.png": {
    "frame": {
-    "x": 1625,
-    "y": 969,
+    "x": 650,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4337,8 +4337,8 @@
   },
   "avatar/bas-short-droite-becher-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 969,
+    "x": 715,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4354,8 +4354,8 @@
   },
   "avatar/bas-short-droite-becher-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 969,
+    "x": 780,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4371,8 +4371,8 @@
   },
   "avatar/bas-short-droite-becher-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 969,
+    "x": 845,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4388,8 +4388,8 @@
   },
   "avatar/bas-short-droite-becher-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 969,
+    "x": 910,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4405,8 +4405,8 @@
   },
   "avatar/bas-short-droite-content-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 969,
+    "x": 975,
+    "y": 1066,
     "w": 64,
     "h": 96
    },
@@ -4422,7 +4422,7 @@
   },
   "avatar/bas-short-droite-content-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4439,7 +4439,7 @@
   },
   "avatar/bas-short-droite-marche-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4456,7 +4456,7 @@
   },
   "avatar/bas-short-droite-marche-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4473,7 +4473,7 @@
   },
   "avatar/bas-short-droite-marche-f3.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4490,7 +4490,7 @@
   },
   "avatar/bas-short-droite-marche-f4.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4507,7 +4507,7 @@
   },
   "avatar/bas-short-droite-observer-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4524,7 +4524,7 @@
   },
   "avatar/bas-short-droite-observer-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4541,7 +4541,7 @@
   },
   "avatar/bas-short-droite-photo-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4558,7 +4558,7 @@
   },
   "avatar/bas-short-droite-photo-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4575,7 +4575,7 @@
   },
   "avatar/bas-short-droite-planter-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4592,7 +4592,7 @@
   },
   "avatar/bas-short-droite-planter-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4609,7 +4609,7 @@
   },
   "avatar/bas-short-droite-planter-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4626,7 +4626,7 @@
   },
   "avatar/bas-short-droite-planter-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4643,7 +4643,7 @@
   },
   "avatar/bas-short-droite-porter-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4660,7 +4660,7 @@
   },
   "avatar/bas-short-droite-porter-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1066,
     "w": 64,
     "h": 96
@@ -4677,8 +4677,8 @@
   },
   "avatar/bas-short-droite-porter-f3.png": {
    "frame": {
-    "x": 975,
-    "y": 1066,
+    "x": 0,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4694,8 +4694,8 @@
   },
   "avatar/bas-short-droite-porter-f4.png": {
    "frame": {
-    "x": 1040,
-    "y": 1066,
+    "x": 65,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4711,8 +4711,8 @@
   },
   "avatar/bas-short-droite-recolter-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 1066,
+    "x": 130,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4728,8 +4728,8 @@
   },
   "avatar/bas-short-droite-recolter-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 1066,
+    "x": 195,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4745,8 +4745,8 @@
   },
   "avatar/bas-short-droite-recolter-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 1066,
+    "x": 260,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4762,8 +4762,8 @@
   },
   "avatar/bas-short-droite-recolter-f4.png": {
    "frame": {
-    "x": 1300,
-    "y": 1066,
+    "x": 325,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4779,8 +4779,8 @@
   },
   "avatar/bas-short-droite-saluer-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 1066,
+    "x": 390,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4796,8 +4796,8 @@
   },
   "avatar/bas-short-droite-saluer-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 1066,
+    "x": 455,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4813,8 +4813,8 @@
   },
   "avatar/bas-short-droite-saluer-f3.png": {
    "frame": {
-    "x": 1495,
-    "y": 1066,
+    "x": 520,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4830,8 +4830,8 @@
   },
   "avatar/bas-short-droite-semer-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 1066,
+    "x": 585,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4847,8 +4847,8 @@
   },
   "avatar/bas-short-droite-semer-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 1066,
+    "x": 650,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4864,8 +4864,8 @@
   },
   "avatar/bas-short-droite-semer-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 1066,
+    "x": 715,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4881,8 +4881,8 @@
   },
   "avatar/bas-short-droite-semer-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 1066,
+    "x": 780,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4898,8 +4898,8 @@
   },
   "avatar/bas-short-gauche-arret.png": {
    "frame": {
-    "x": 1820,
-    "y": 1066,
+    "x": 845,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4915,8 +4915,8 @@
   },
   "avatar/bas-short-gauche-arroser-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 1066,
+    "x": 910,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4932,8 +4932,8 @@
   },
   "avatar/bas-short-gauche-arroser-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 1066,
+    "x": 975,
+    "y": 1163,
     "w": 64,
     "h": 96
    },
@@ -4949,7 +4949,7 @@
   },
   "avatar/bas-short-gauche-arroser-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -4966,7 +4966,7 @@
   },
   "avatar/bas-short-gauche-arroser-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -4983,7 +4983,7 @@
   },
   "avatar/bas-short-gauche-becher-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5000,7 +5000,7 @@
   },
   "avatar/bas-short-gauche-becher-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5017,7 +5017,7 @@
   },
   "avatar/bas-short-gauche-becher-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5034,7 +5034,7 @@
   },
   "avatar/bas-short-gauche-becher-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5051,7 +5051,7 @@
   },
   "avatar/bas-short-gauche-content-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5068,7 +5068,7 @@
   },
   "avatar/bas-short-gauche-content-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5085,7 +5085,7 @@
   },
   "avatar/bas-short-gauche-marche-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5102,7 +5102,7 @@
   },
   "avatar/bas-short-gauche-marche-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5119,7 +5119,7 @@
   },
   "avatar/bas-short-gauche-marche-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5136,7 +5136,7 @@
   },
   "avatar/bas-short-gauche-marche-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5153,7 +5153,7 @@
   },
   "avatar/bas-short-gauche-observer-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5170,7 +5170,7 @@
   },
   "avatar/bas-short-gauche-observer-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5187,7 +5187,7 @@
   },
   "avatar/bas-short-gauche-photo-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1163,
     "w": 64,
     "h": 96
@@ -5204,8 +5204,8 @@
   },
   "avatar/bas-short-gauche-photo-f2.png": {
    "frame": {
-    "x": 975,
-    "y": 1163,
+    "x": 0,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5221,8 +5221,8 @@
   },
   "avatar/bas-short-gauche-planter-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 1163,
+    "x": 65,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5238,8 +5238,8 @@
   },
   "avatar/bas-short-gauche-planter-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 1163,
+    "x": 130,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5255,8 +5255,8 @@
   },
   "avatar/bas-short-gauche-planter-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 1163,
+    "x": 195,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5272,8 +5272,8 @@
   },
   "avatar/bas-short-gauche-planter-f4.png": {
    "frame": {
-    "x": 1235,
-    "y": 1163,
+    "x": 260,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5289,8 +5289,8 @@
   },
   "avatar/bas-short-gauche-porter-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 1163,
+    "x": 325,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5306,8 +5306,8 @@
   },
   "avatar/bas-short-gauche-porter-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 1163,
+    "x": 390,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5323,8 +5323,8 @@
   },
   "avatar/bas-short-gauche-porter-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 1163,
+    "x": 455,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5340,8 +5340,8 @@
   },
   "avatar/bas-short-gauche-porter-f4.png": {
    "frame": {
-    "x": 1495,
-    "y": 1163,
+    "x": 520,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5357,8 +5357,8 @@
   },
   "avatar/bas-short-gauche-recolter-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 1163,
+    "x": 585,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5374,8 +5374,8 @@
   },
   "avatar/bas-short-gauche-recolter-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 1163,
+    "x": 650,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5391,8 +5391,8 @@
   },
   "avatar/bas-short-gauche-recolter-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 1163,
+    "x": 715,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5408,8 +5408,8 @@
   },
   "avatar/bas-short-gauche-recolter-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 1163,
+    "x": 780,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5425,8 +5425,8 @@
   },
   "avatar/bas-short-gauche-saluer-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 1163,
+    "x": 845,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5442,8 +5442,8 @@
   },
   "avatar/bas-short-gauche-saluer-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 1163,
+    "x": 910,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5459,8 +5459,8 @@
   },
   "avatar/bas-short-gauche-saluer-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 1163,
+    "x": 975,
+    "y": 1260,
     "w": 64,
     "h": 96
    },
@@ -5476,7 +5476,7 @@
   },
   "avatar/bas-short-gauche-semer-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5493,7 +5493,7 @@
   },
   "avatar/bas-short-gauche-semer-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5510,7 +5510,7 @@
   },
   "avatar/bas-short-gauche-semer-f3.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5527,7 +5527,7 @@
   },
   "avatar/bas-short-gauche-semer-f4.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5544,7 +5544,7 @@
   },
   "avatar/bas-short-haut-arret.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5561,7 +5561,7 @@
   },
   "avatar/bas-short-haut-arroser-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5578,7 +5578,7 @@
   },
   "avatar/bas-short-haut-arroser-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5595,7 +5595,7 @@
   },
   "avatar/bas-short-haut-arroser-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5612,7 +5612,7 @@
   },
   "avatar/bas-short-haut-arroser-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5629,7 +5629,7 @@
   },
   "avatar/bas-short-haut-becher-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5646,7 +5646,7 @@
   },
   "avatar/bas-short-haut-becher-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5663,7 +5663,7 @@
   },
   "avatar/bas-short-haut-becher-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5680,7 +5680,7 @@
   },
   "avatar/bas-short-haut-becher-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5697,7 +5697,7 @@
   },
   "avatar/bas-short-haut-content-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5714,7 +5714,7 @@
   },
   "avatar/bas-short-haut-content-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1260,
     "w": 64,
     "h": 96
@@ -5731,8 +5731,8 @@
   },
   "avatar/bas-short-haut-marche-f1.png": {
    "frame": {
-    "x": 975,
-    "y": 1260,
+    "x": 0,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5748,8 +5748,8 @@
   },
   "avatar/bas-short-haut-marche-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 1260,
+    "x": 65,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5765,8 +5765,8 @@
   },
   "avatar/bas-short-haut-marche-f3.png": {
    "frame": {
-    "x": 1105,
-    "y": 1260,
+    "x": 130,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5782,8 +5782,8 @@
   },
   "avatar/bas-short-haut-marche-f4.png": {
    "frame": {
-    "x": 1170,
-    "y": 1260,
+    "x": 195,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5799,8 +5799,8 @@
   },
   "avatar/bas-short-haut-observer-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 1260,
+    "x": 260,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5816,8 +5816,8 @@
   },
   "avatar/bas-short-haut-observer-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 1260,
+    "x": 325,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5833,8 +5833,8 @@
   },
   "avatar/bas-short-haut-photo-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 1260,
+    "x": 390,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5850,8 +5850,8 @@
   },
   "avatar/bas-short-haut-photo-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 1260,
+    "x": 455,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5867,8 +5867,8 @@
   },
   "avatar/bas-short-haut-planter-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 1260,
+    "x": 520,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5884,8 +5884,8 @@
   },
   "avatar/bas-short-haut-planter-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 1260,
+    "x": 585,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5901,8 +5901,8 @@
   },
   "avatar/bas-short-haut-planter-f3.png": {
    "frame": {
-    "x": 1625,
-    "y": 1260,
+    "x": 650,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5918,8 +5918,8 @@
   },
   "avatar/bas-short-haut-planter-f4.png": {
    "frame": {
-    "x": 1690,
-    "y": 1260,
+    "x": 715,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5935,8 +5935,8 @@
   },
   "avatar/bas-short-haut-porter-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 1260,
+    "x": 780,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5952,8 +5952,8 @@
   },
   "avatar/bas-short-haut-porter-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 1260,
+    "x": 845,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5969,8 +5969,8 @@
   },
   "avatar/bas-short-haut-porter-f3.png": {
    "frame": {
-    "x": 1885,
-    "y": 1260,
+    "x": 910,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -5986,8 +5986,8 @@
   },
   "avatar/bas-short-haut-porter-f4.png": {
    "frame": {
-    "x": 1950,
-    "y": 1260,
+    "x": 975,
+    "y": 1357,
     "w": 64,
     "h": 96
    },
@@ -6003,7 +6003,7 @@
   },
   "avatar/bas-short-haut-recolter-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6020,7 +6020,7 @@
   },
   "avatar/bas-short-haut-recolter-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6037,7 +6037,7 @@
   },
   "avatar/bas-short-haut-recolter-f3.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6054,7 +6054,7 @@
   },
   "avatar/bas-short-haut-recolter-f4.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6071,7 +6071,7 @@
   },
   "avatar/bas-short-haut-saluer-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6088,7 +6088,7 @@
   },
   "avatar/bas-short-haut-saluer-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6105,7 +6105,7 @@
   },
   "avatar/bas-short-haut-saluer-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6122,7 +6122,7 @@
   },
   "avatar/bas-short-haut-semer-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6139,7 +6139,7 @@
   },
   "avatar/bas-short-haut-semer-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6156,7 +6156,7 @@
   },
   "avatar/bas-short-haut-semer-f3.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6173,7 +6173,7 @@
   },
   "avatar/bas-short-haut-semer-f4.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6190,7 +6190,7 @@
   },
   "avatar/chaussures-baskets-bas-arret.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6207,7 +6207,7 @@
   },
   "avatar/chaussures-baskets-bas-arroser-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6224,7 +6224,7 @@
   },
   "avatar/chaussures-baskets-bas-arroser-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6241,7 +6241,7 @@
   },
   "avatar/chaussures-baskets-bas-arroser-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1357,
     "w": 64,
     "h": 96
@@ -6258,8 +6258,8 @@
   },
   "avatar/chaussures-baskets-bas-arroser-f4.png": {
    "frame": {
-    "x": 975,
-    "y": 1357,
+    "x": 0,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6275,8 +6275,8 @@
   },
   "avatar/chaussures-baskets-bas-becher-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 1357,
+    "x": 65,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6292,8 +6292,8 @@
   },
   "avatar/chaussures-baskets-bas-becher-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 1357,
+    "x": 130,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6309,8 +6309,8 @@
   },
   "avatar/chaussures-baskets-bas-becher-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 1357,
+    "x": 195,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6326,8 +6326,8 @@
   },
   "avatar/chaussures-baskets-bas-becher-f4.png": {
    "frame": {
-    "x": 1235,
-    "y": 1357,
+    "x": 260,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6343,8 +6343,8 @@
   },
   "avatar/chaussures-baskets-bas-content-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 1357,
+    "x": 325,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6360,8 +6360,8 @@
   },
   "avatar/chaussures-baskets-bas-content-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 1357,
+    "x": 390,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6377,8 +6377,8 @@
   },
   "avatar/chaussures-baskets-bas-marche-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 1357,
+    "x": 455,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6394,8 +6394,8 @@
   },
   "avatar/chaussures-baskets-bas-marche-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 1357,
+    "x": 520,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6411,8 +6411,8 @@
   },
   "avatar/chaussures-baskets-bas-marche-f3.png": {
    "frame": {
-    "x": 1560,
-    "y": 1357,
+    "x": 585,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6428,8 +6428,8 @@
   },
   "avatar/chaussures-baskets-bas-marche-f4.png": {
    "frame": {
-    "x": 1625,
-    "y": 1357,
+    "x": 650,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6445,8 +6445,8 @@
   },
   "avatar/chaussures-baskets-bas-observer-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 1357,
+    "x": 715,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6462,8 +6462,8 @@
   },
   "avatar/chaussures-baskets-bas-observer-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 1357,
+    "x": 780,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6479,8 +6479,8 @@
   },
   "avatar/chaussures-baskets-bas-photo-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 1357,
+    "x": 845,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6496,8 +6496,8 @@
   },
   "avatar/chaussures-baskets-bas-photo-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 1357,
+    "x": 910,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6513,8 +6513,8 @@
   },
   "avatar/chaussures-baskets-bas-planter-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 1357,
+    "x": 975,
+    "y": 1454,
     "w": 64,
     "h": 96
    },
@@ -6530,7 +6530,7 @@
   },
   "avatar/chaussures-baskets-bas-planter-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6547,7 +6547,7 @@
   },
   "avatar/chaussures-baskets-bas-planter-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6564,7 +6564,7 @@
   },
   "avatar/chaussures-baskets-bas-planter-f4.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6581,7 +6581,7 @@
   },
   "avatar/chaussures-baskets-bas-porter-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6598,7 +6598,7 @@
   },
   "avatar/chaussures-baskets-bas-porter-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6615,7 +6615,7 @@
   },
   "avatar/chaussures-baskets-bas-porter-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6632,7 +6632,7 @@
   },
   "avatar/chaussures-baskets-bas-porter-f4.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6649,7 +6649,7 @@
   },
   "avatar/chaussures-baskets-bas-recolter-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6666,7 +6666,7 @@
   },
   "avatar/chaussures-baskets-bas-recolter-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6683,7 +6683,7 @@
   },
   "avatar/chaussures-baskets-bas-recolter-f3.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6700,7 +6700,7 @@
   },
   "avatar/chaussures-baskets-bas-recolter-f4.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6717,7 +6717,7 @@
   },
   "avatar/chaussures-baskets-bas-saluer-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6734,7 +6734,7 @@
   },
   "avatar/chaussures-baskets-bas-saluer-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6751,7 +6751,7 @@
   },
   "avatar/chaussures-baskets-bas-saluer-f3.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6768,7 +6768,7 @@
   },
   "avatar/chaussures-baskets-bas-semer-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1454,
     "w": 64,
     "h": 96
@@ -6785,8 +6785,8 @@
   },
   "avatar/chaussures-baskets-bas-semer-f2.png": {
    "frame": {
-    "x": 975,
-    "y": 1454,
+    "x": 0,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6802,8 +6802,8 @@
   },
   "avatar/chaussures-baskets-bas-semer-f3.png": {
    "frame": {
-    "x": 1040,
-    "y": 1454,
+    "x": 65,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6819,8 +6819,8 @@
   },
   "avatar/chaussures-baskets-bas-semer-f4.png": {
    "frame": {
-    "x": 1105,
-    "y": 1454,
+    "x": 130,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6836,8 +6836,8 @@
   },
   "avatar/chaussures-baskets-droite-arret.png": {
    "frame": {
-    "x": 1170,
-    "y": 1454,
+    "x": 195,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6853,8 +6853,8 @@
   },
   "avatar/chaussures-baskets-droite-arroser-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 1454,
+    "x": 260,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6870,8 +6870,8 @@
   },
   "avatar/chaussures-baskets-droite-arroser-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 1454,
+    "x": 325,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6887,8 +6887,8 @@
   },
   "avatar/chaussures-baskets-droite-arroser-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 1454,
+    "x": 390,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6904,8 +6904,8 @@
   },
   "avatar/chaussures-baskets-droite-arroser-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 1454,
+    "x": 455,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6921,8 +6921,8 @@
   },
   "avatar/chaussures-baskets-droite-becher-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 1454,
+    "x": 520,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6938,8 +6938,8 @@
   },
   "avatar/chaussures-baskets-droite-becher-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 1454,
+    "x": 585,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6955,8 +6955,8 @@
   },
   "avatar/chaussures-baskets-droite-becher-f3.png": {
    "frame": {
-    "x": 1625,
-    "y": 1454,
+    "x": 650,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6972,8 +6972,8 @@
   },
   "avatar/chaussures-baskets-droite-becher-f4.png": {
    "frame": {
-    "x": 1690,
-    "y": 1454,
+    "x": 715,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -6989,8 +6989,8 @@
   },
   "avatar/chaussures-baskets-droite-content-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 1454,
+    "x": 780,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -7006,8 +7006,8 @@
   },
   "avatar/chaussures-baskets-droite-content-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 1454,
+    "x": 845,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -7023,8 +7023,8 @@
   },
   "avatar/chaussures-baskets-droite-marche-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 1454,
+    "x": 910,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -7040,8 +7040,8 @@
   },
   "avatar/chaussures-baskets-droite-marche-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 1454,
+    "x": 975,
+    "y": 1551,
     "w": 64,
     "h": 96
    },
@@ -7057,7 +7057,7 @@
   },
   "avatar/chaussures-baskets-droite-marche-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7074,7 +7074,7 @@
   },
   "avatar/chaussures-baskets-droite-marche-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7091,7 +7091,7 @@
   },
   "avatar/chaussures-baskets-droite-observer-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7108,7 +7108,7 @@
   },
   "avatar/chaussures-baskets-droite-observer-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7125,7 +7125,7 @@
   },
   "avatar/chaussures-baskets-droite-photo-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7142,7 +7142,7 @@
   },
   "avatar/chaussures-baskets-droite-photo-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7159,7 +7159,7 @@
   },
   "avatar/chaussures-baskets-droite-planter-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7176,7 +7176,7 @@
   },
   "avatar/chaussures-baskets-droite-planter-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7193,7 +7193,7 @@
   },
   "avatar/chaussures-baskets-droite-planter-f3.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7210,7 +7210,7 @@
   },
   "avatar/chaussures-baskets-droite-planter-f4.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7227,7 +7227,7 @@
   },
   "avatar/chaussures-baskets-droite-porter-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7244,7 +7244,7 @@
   },
   "avatar/chaussures-baskets-droite-porter-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7261,7 +7261,7 @@
   },
   "avatar/chaussures-baskets-droite-porter-f3.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7278,7 +7278,7 @@
   },
   "avatar/chaussures-baskets-droite-porter-f4.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7295,7 +7295,7 @@
   },
   "avatar/chaussures-baskets-droite-recolter-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1551,
     "w": 64,
     "h": 96
@@ -7312,8 +7312,8 @@
   },
   "avatar/chaussures-baskets-droite-recolter-f2.png": {
    "frame": {
-    "x": 975,
-    "y": 1551,
+    "x": 0,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7329,8 +7329,8 @@
   },
   "avatar/chaussures-baskets-droite-recolter-f3.png": {
    "frame": {
-    "x": 1040,
-    "y": 1551,
+    "x": 65,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7346,8 +7346,8 @@
   },
   "avatar/chaussures-baskets-droite-recolter-f4.png": {
    "frame": {
-    "x": 1105,
-    "y": 1551,
+    "x": 130,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7363,8 +7363,8 @@
   },
   "avatar/chaussures-baskets-droite-saluer-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 1551,
+    "x": 195,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7380,8 +7380,8 @@
   },
   "avatar/chaussures-baskets-droite-saluer-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 1551,
+    "x": 260,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7397,8 +7397,8 @@
   },
   "avatar/chaussures-baskets-droite-saluer-f3.png": {
    "frame": {
-    "x": 1300,
-    "y": 1551,
+    "x": 325,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7414,8 +7414,8 @@
   },
   "avatar/chaussures-baskets-droite-semer-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 1551,
+    "x": 390,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7431,8 +7431,8 @@
   },
   "avatar/chaussures-baskets-droite-semer-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 1551,
+    "x": 455,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7448,8 +7448,8 @@
   },
   "avatar/chaussures-baskets-droite-semer-f3.png": {
    "frame": {
-    "x": 1495,
-    "y": 1551,
+    "x": 520,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7465,8 +7465,8 @@
   },
   "avatar/chaussures-baskets-droite-semer-f4.png": {
    "frame": {
-    "x": 1560,
-    "y": 1551,
+    "x": 585,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7482,8 +7482,8 @@
   },
   "avatar/chaussures-baskets-gauche-arret.png": {
    "frame": {
-    "x": 1625,
-    "y": 1551,
+    "x": 650,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7499,8 +7499,8 @@
   },
   "avatar/chaussures-baskets-gauche-arroser-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 1551,
+    "x": 715,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7516,8 +7516,8 @@
   },
   "avatar/chaussures-baskets-gauche-arroser-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 1551,
+    "x": 780,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7533,8 +7533,8 @@
   },
   "avatar/chaussures-baskets-gauche-arroser-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 1551,
+    "x": 845,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7550,8 +7550,8 @@
   },
   "avatar/chaussures-baskets-gauche-arroser-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 1551,
+    "x": 910,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7567,8 +7567,8 @@
   },
   "avatar/chaussures-baskets-gauche-becher-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 1551,
+    "x": 975,
+    "y": 1648,
     "w": 64,
     "h": 96
    },
@@ -7584,7 +7584,7 @@
   },
   "avatar/chaussures-baskets-gauche-becher-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7601,7 +7601,7 @@
   },
   "avatar/chaussures-baskets-gauche-becher-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7618,7 +7618,7 @@
   },
   "avatar/chaussures-baskets-gauche-becher-f4.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7635,7 +7635,7 @@
   },
   "avatar/chaussures-baskets-gauche-content-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7652,7 +7652,7 @@
   },
   "avatar/chaussures-baskets-gauche-content-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7669,7 +7669,7 @@
   },
   "avatar/chaussures-baskets-gauche-marche-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7686,7 +7686,7 @@
   },
   "avatar/chaussures-baskets-gauche-marche-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7703,7 +7703,7 @@
   },
   "avatar/chaussures-baskets-gauche-marche-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7720,7 +7720,7 @@
   },
   "avatar/chaussures-baskets-gauche-marche-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7737,7 +7737,7 @@
   },
   "avatar/chaussures-baskets-gauche-observer-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7754,7 +7754,7 @@
   },
   "avatar/chaussures-baskets-gauche-observer-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7771,7 +7771,7 @@
   },
   "avatar/chaussures-baskets-gauche-photo-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7788,7 +7788,7 @@
   },
   "avatar/chaussures-baskets-gauche-photo-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7805,7 +7805,7 @@
   },
   "avatar/chaussures-baskets-gauche-planter-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7822,7 +7822,7 @@
   },
   "avatar/chaussures-baskets-gauche-planter-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1648,
     "w": 64,
     "h": 96
@@ -7839,8 +7839,8 @@
   },
   "avatar/chaussures-baskets-gauche-planter-f3.png": {
    "frame": {
-    "x": 975,
-    "y": 1648,
+    "x": 0,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7856,8 +7856,8 @@
   },
   "avatar/chaussures-baskets-gauche-planter-f4.png": {
    "frame": {
-    "x": 1040,
-    "y": 1648,
+    "x": 65,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7873,8 +7873,8 @@
   },
   "avatar/chaussures-baskets-gauche-porter-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 1648,
+    "x": 130,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7890,8 +7890,8 @@
   },
   "avatar/chaussures-baskets-gauche-porter-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 1648,
+    "x": 195,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7907,8 +7907,8 @@
   },
   "avatar/chaussures-baskets-gauche-porter-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 1648,
+    "x": 260,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7924,8 +7924,8 @@
   },
   "avatar/chaussures-baskets-gauche-porter-f4.png": {
    "frame": {
-    "x": 1300,
-    "y": 1648,
+    "x": 325,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7941,8 +7941,8 @@
   },
   "avatar/chaussures-baskets-gauche-recolter-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 1648,
+    "x": 390,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7958,8 +7958,8 @@
   },
   "avatar/chaussures-baskets-gauche-recolter-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 1648,
+    "x": 455,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7975,8 +7975,8 @@
   },
   "avatar/chaussures-baskets-gauche-recolter-f3.png": {
    "frame": {
-    "x": 1495,
-    "y": 1648,
+    "x": 520,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -7992,8 +7992,8 @@
   },
   "avatar/chaussures-baskets-gauche-recolter-f4.png": {
    "frame": {
-    "x": 1560,
-    "y": 1648,
+    "x": 585,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -8009,8 +8009,8 @@
   },
   "avatar/chaussures-baskets-gauche-saluer-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 1648,
+    "x": 650,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -8026,8 +8026,8 @@
   },
   "avatar/chaussures-baskets-gauche-saluer-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 1648,
+    "x": 715,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -8043,8 +8043,8 @@
   },
   "avatar/chaussures-baskets-gauche-saluer-f3.png": {
    "frame": {
-    "x": 1755,
-    "y": 1648,
+    "x": 780,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -8060,8 +8060,8 @@
   },
   "avatar/chaussures-baskets-gauche-semer-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 1648,
+    "x": 845,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -8077,8 +8077,8 @@
   },
   "avatar/chaussures-baskets-gauche-semer-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 1648,
+    "x": 910,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -8094,8 +8094,8 @@
   },
   "avatar/chaussures-baskets-gauche-semer-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 1648,
+    "x": 975,
+    "y": 1745,
     "w": 64,
     "h": 96
    },
@@ -8111,7 +8111,7 @@
   },
   "avatar/chaussures-baskets-gauche-semer-f4.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8128,7 +8128,7 @@
   },
   "avatar/chaussures-baskets-haut-arret.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8145,7 +8145,7 @@
   },
   "avatar/chaussures-baskets-haut-arroser-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8162,7 +8162,7 @@
   },
   "avatar/chaussures-baskets-haut-arroser-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8179,7 +8179,7 @@
   },
   "avatar/chaussures-baskets-haut-arroser-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8196,7 +8196,7 @@
   },
   "avatar/chaussures-baskets-haut-arroser-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8213,7 +8213,7 @@
   },
   "avatar/chaussures-baskets-haut-becher-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8230,7 +8230,7 @@
   },
   "avatar/chaussures-baskets-haut-becher-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8247,7 +8247,7 @@
   },
   "avatar/chaussures-baskets-haut-becher-f3.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8264,7 +8264,7 @@
   },
   "avatar/chaussures-baskets-haut-becher-f4.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8281,7 +8281,7 @@
   },
   "avatar/chaussures-baskets-haut-content-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8298,7 +8298,7 @@
   },
   "avatar/chaussures-baskets-haut-content-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8315,7 +8315,7 @@
   },
   "avatar/chaussures-baskets-haut-marche-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8332,7 +8332,7 @@
   },
   "avatar/chaussures-baskets-haut-marche-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8349,7 +8349,7 @@
   },
   "avatar/chaussures-baskets-haut-marche-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1745,
     "w": 64,
     "h": 96
@@ -8366,8 +8366,8 @@
   },
   "avatar/chaussures-baskets-haut-marche-f4.png": {
    "frame": {
-    "x": 975,
-    "y": 1745,
+    "x": 0,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8383,8 +8383,8 @@
   },
   "avatar/chaussures-baskets-haut-observer-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 1745,
+    "x": 65,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8400,8 +8400,8 @@
   },
   "avatar/chaussures-baskets-haut-observer-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 1745,
+    "x": 130,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8417,8 +8417,8 @@
   },
   "avatar/chaussures-baskets-haut-photo-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 1745,
+    "x": 195,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8434,8 +8434,8 @@
   },
   "avatar/chaussures-baskets-haut-photo-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 1745,
+    "x": 260,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8451,8 +8451,8 @@
   },
   "avatar/chaussures-baskets-haut-planter-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 1745,
+    "x": 325,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8468,8 +8468,8 @@
   },
   "avatar/chaussures-baskets-haut-planter-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 1745,
+    "x": 390,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8485,8 +8485,8 @@
   },
   "avatar/chaussures-baskets-haut-planter-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 1745,
+    "x": 455,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8502,8 +8502,8 @@
   },
   "avatar/chaussures-baskets-haut-planter-f4.png": {
    "frame": {
-    "x": 1495,
-    "y": 1745,
+    "x": 520,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8519,8 +8519,8 @@
   },
   "avatar/chaussures-baskets-haut-porter-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 1745,
+    "x": 585,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8536,8 +8536,8 @@
   },
   "avatar/chaussures-baskets-haut-porter-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 1745,
+    "x": 650,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8553,8 +8553,8 @@
   },
   "avatar/chaussures-baskets-haut-porter-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 1745,
+    "x": 715,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8570,8 +8570,8 @@
   },
   "avatar/chaussures-baskets-haut-porter-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 1745,
+    "x": 780,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8587,8 +8587,8 @@
   },
   "avatar/chaussures-baskets-haut-recolter-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 1745,
+    "x": 845,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8604,8 +8604,8 @@
   },
   "avatar/chaussures-baskets-haut-recolter-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 1745,
+    "x": 910,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8621,8 +8621,8 @@
   },
   "avatar/chaussures-baskets-haut-recolter-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 1745,
+    "x": 975,
+    "y": 1842,
     "w": 64,
     "h": 96
    },
@@ -8638,7 +8638,7 @@
   },
   "avatar/chaussures-baskets-haut-recolter-f4.png": {
    "frame": {
-    "x": 0,
+    "x": 1040,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8655,7 +8655,7 @@
   },
   "avatar/chaussures-baskets-haut-saluer-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1105,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8672,7 +8672,7 @@
   },
   "avatar/chaussures-baskets-haut-saluer-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1170,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8689,7 +8689,7 @@
   },
   "avatar/chaussures-baskets-haut-saluer-f3.png": {
    "frame": {
-    "x": 195,
+    "x": 1235,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8706,7 +8706,7 @@
   },
   "avatar/chaussures-baskets-haut-semer-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1300,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8723,7 +8723,7 @@
   },
   "avatar/chaussures-baskets-haut-semer-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1365,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8740,7 +8740,7 @@
   },
   "avatar/chaussures-baskets-haut-semer-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1430,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8757,7 +8757,7 @@
   },
   "avatar/chaussures-baskets-haut-semer-f4.png": {
    "frame": {
-    "x": 455,
+    "x": 1495,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8774,7 +8774,7 @@
   },
   "avatar/chaussures-bottes-bas-arret.png": {
    "frame": {
-    "x": 520,
+    "x": 1560,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8791,7 +8791,7 @@
   },
   "avatar/chaussures-bottes-bas-arroser-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1625,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8808,7 +8808,7 @@
   },
   "avatar/chaussures-bottes-bas-arroser-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1690,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8825,7 +8825,7 @@
   },
   "avatar/chaussures-bottes-bas-arroser-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1755,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8842,7 +8842,7 @@
   },
   "avatar/chaussures-bottes-bas-arroser-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1820,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8859,7 +8859,7 @@
   },
   "avatar/chaussures-bottes-bas-becher-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1885,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8876,7 +8876,7 @@
   },
   "avatar/chaussures-bottes-bas-becher-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1950,
     "y": 1842,
     "w": 64,
     "h": 96
@@ -8893,278 +8893,6 @@
   },
   "avatar/chaussures-bottes-bas-becher-f3.png": {
    "frame": {
-    "x": 975,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-becher-f4.png": {
-   "frame": {
-    "x": 1040,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-content-f1.png": {
-   "frame": {
-    "x": 1105,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-content-f2.png": {
-   "frame": {
-    "x": 1170,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-marche-f1.png": {
-   "frame": {
-    "x": 1235,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-marche-f2.png": {
-   "frame": {
-    "x": 1300,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-marche-f3.png": {
-   "frame": {
-    "x": 1365,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-marche-f4.png": {
-   "frame": {
-    "x": 1430,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-observer-f1.png": {
-   "frame": {
-    "x": 1495,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-observer-f2.png": {
-   "frame": {
-    "x": 1560,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-photo-f1.png": {
-   "frame": {
-    "x": 1625,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-photo-f2.png": {
-   "frame": {
-    "x": 1690,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-planter-f1.png": {
-   "frame": {
-    "x": 1755,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-planter-f2.png": {
-   "frame": {
-    "x": 1820,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-planter-f3.png": {
-   "frame": {
-    "x": 1885,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-planter-f4.png": {
-   "frame": {
-    "x": 1950,
-    "y": 1842,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/chaussures-bottes-bas-porter-f1.png": {
-   "frame": {
     "x": 0,
     "y": 1939,
     "w": 64,
@@ -9180,7 +8908,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-porter-f2.png": {
+  "avatar/chaussures-bottes-bas-becher-f4.png": {
    "frame": {
     "x": 65,
     "y": 1939,
@@ -9197,7 +8925,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-porter-f3.png": {
+  "avatar/chaussures-bottes-bas-content-f1.png": {
    "frame": {
     "x": 130,
     "y": 1939,
@@ -9214,7 +8942,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-porter-f4.png": {
+  "avatar/chaussures-bottes-bas-content-f2.png": {
    "frame": {
     "x": 195,
     "y": 1939,
@@ -9231,7 +8959,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-recolter-f1.png": {
+  "avatar/chaussures-bottes-bas-marche-f1.png": {
    "frame": {
     "x": 260,
     "y": 1939,
@@ -9248,7 +8976,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-recolter-f2.png": {
+  "avatar/chaussures-bottes-bas-marche-f2.png": {
    "frame": {
     "x": 325,
     "y": 1939,
@@ -9265,7 +8993,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-recolter-f3.png": {
+  "avatar/chaussures-bottes-bas-marche-f3.png": {
    "frame": {
     "x": 390,
     "y": 1939,
@@ -9282,7 +9010,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-recolter-f4.png": {
+  "avatar/chaussures-bottes-bas-marche-f4.png": {
    "frame": {
     "x": 455,
     "y": 1939,
@@ -9299,7 +9027,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-saluer-f1.png": {
+  "avatar/chaussures-bottes-bas-observer-f1.png": {
    "frame": {
     "x": 520,
     "y": 1939,
@@ -9316,7 +9044,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-saluer-f2.png": {
+  "avatar/chaussures-bottes-bas-observer-f2.png": {
    "frame": {
     "x": 585,
     "y": 1939,
@@ -9333,7 +9061,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-saluer-f3.png": {
+  "avatar/chaussures-bottes-bas-photo-f1.png": {
    "frame": {
     "x": 650,
     "y": 1939,
@@ -9350,7 +9078,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-semer-f1.png": {
+  "avatar/chaussures-bottes-bas-photo-f2.png": {
    "frame": {
     "x": 715,
     "y": 1939,
@@ -9367,7 +9095,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-semer-f2.png": {
+  "avatar/chaussures-bottes-bas-planter-f1.png": {
    "frame": {
     "x": 780,
     "y": 1939,
@@ -9384,7 +9112,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-semer-f3.png": {
+  "avatar/chaussures-bottes-bas-planter-f2.png": {
    "frame": {
     "x": 845,
     "y": 1939,
@@ -9401,7 +9129,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-bas-semer-f4.png": {
+  "avatar/chaussures-bottes-bas-planter-f3.png": {
    "frame": {
     "x": 910,
     "y": 1939,
@@ -9418,7 +9146,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-arret.png": {
+  "avatar/chaussures-bottes-bas-planter-f4.png": {
    "frame": {
     "x": 975,
     "y": 1939,
@@ -9435,7 +9163,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-arroser-f1.png": {
+  "avatar/chaussures-bottes-bas-porter-f1.png": {
    "frame": {
     "x": 1040,
     "y": 1939,
@@ -9452,7 +9180,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-arroser-f2.png": {
+  "avatar/chaussures-bottes-bas-porter-f2.png": {
    "frame": {
     "x": 1105,
     "y": 1939,
@@ -9469,7 +9197,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-arroser-f3.png": {
+  "avatar/chaussures-bottes-bas-porter-f3.png": {
    "frame": {
     "x": 1170,
     "y": 1939,
@@ -9486,7 +9214,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-arroser-f4.png": {
+  "avatar/chaussures-bottes-bas-porter-f4.png": {
    "frame": {
     "x": 1235,
     "y": 1939,
@@ -9503,7 +9231,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-becher-f1.png": {
+  "avatar/chaussures-bottes-bas-recolter-f1.png": {
    "frame": {
     "x": 1300,
     "y": 1939,
@@ -9520,7 +9248,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-becher-f2.png": {
+  "avatar/chaussures-bottes-bas-recolter-f2.png": {
    "frame": {
     "x": 1365,
     "y": 1939,
@@ -9537,7 +9265,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-becher-f3.png": {
+  "avatar/chaussures-bottes-bas-recolter-f3.png": {
    "frame": {
     "x": 1430,
     "y": 1939,
@@ -9554,7 +9282,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-becher-f4.png": {
+  "avatar/chaussures-bottes-bas-recolter-f4.png": {
    "frame": {
     "x": 1495,
     "y": 1939,
@@ -9571,7 +9299,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-content-f1.png": {
+  "avatar/chaussures-bottes-bas-saluer-f1.png": {
    "frame": {
     "x": 1560,
     "y": 1939,
@@ -9588,7 +9316,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-content-f2.png": {
+  "avatar/chaussures-bottes-bas-saluer-f2.png": {
    "frame": {
     "x": 1625,
     "y": 1939,
@@ -9605,7 +9333,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-marche-f1.png": {
+  "avatar/chaussures-bottes-bas-saluer-f3.png": {
    "frame": {
     "x": 1690,
     "y": 1939,
@@ -9622,7 +9350,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-marche-f2.png": {
+  "avatar/chaussures-bottes-bas-semer-f1.png": {
    "frame": {
     "x": 1755,
     "y": 1939,
@@ -9639,7 +9367,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-marche-f3.png": {
+  "avatar/chaussures-bottes-bas-semer-f2.png": {
    "frame": {
     "x": 1820,
     "y": 1939,
@@ -9656,7 +9384,7 @@
    },
    "priority": "P3"
   },
-  "avatar/chaussures-bottes-droite-marche-f4.png": {
+  "avatar/chaussures-bottes-bas-semer-f3.png": {
    "frame": {
     "x": 1885,
     "y": 1939,
@@ -9673,9 +9401,26 @@
    },
    "priority": "P3"
   },
+  "avatar/chaussures-bottes-bas-semer-f4.png": {
+   "frame": {
+    "x": 1950,
+    "y": 1939,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
   "cultures/mais-1-graine.png": {
    "frame": {
-    "x": 129,
+    "x": 226,
     "y": 161,
     "w": 64,
     "h": 128
@@ -9692,7 +9437,7 @@
   },
   "cultures/mais-2-levee.png": {
    "frame": {
-    "x": 194,
+    "x": 291,
     "y": 161,
     "w": 64,
     "h": 128
@@ -9709,7 +9454,7 @@
   },
   "cultures/mais-3-croissance.png": {
    "frame": {
-    "x": 259,
+    "x": 356,
     "y": 161,
     "w": 64,
     "h": 128
@@ -9726,7 +9471,7 @@
   },
   "cultures/mais-4-floraison.png": {
    "frame": {
-    "x": 324,
+    "x": 421,
     "y": 161,
     "w": 64,
     "h": 128
@@ -9743,7 +9488,7 @@
   },
   "cultures/mais-5-fruits-verts.png": {
    "frame": {
-    "x": 389,
+    "x": 486,
     "y": 161,
     "w": 64,
     "h": 128
@@ -9760,7 +9505,7 @@
   },
   "cultures/mais-6-recolte.png": {
    "frame": {
-    "x": 454,
+    "x": 551,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10013,9 +9758,43 @@
    },
    "priority": "P2"
   },
+  "deco/puits.png": {
+   "frame": {
+    "x": 129,
+    "y": 161,
+    "w": 96,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 96,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/tracteur.png": {
+   "frame": {
+    "x": 0,
+    "y": 290,
+    "w": 128,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
   "familles/poacees-1-graine.png": {
    "frame": {
-    "x": 519,
+    "x": 616,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10032,7 +9811,7 @@
   },
   "familles/poacees-2-levee.png": {
    "frame": {
-    "x": 584,
+    "x": 681,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10049,7 +9828,7 @@
   },
   "familles/poacees-3-croissance.png": {
    "frame": {
-    "x": 649,
+    "x": 746,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10066,7 +9845,7 @@
   },
   "familles/poacees-4-floraison.png": {
    "frame": {
-    "x": 714,
+    "x": 811,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10083,7 +9862,7 @@
   },
   "familles/poacees-5-fruits-verts.png": {
    "frame": {
-    "x": 779,
+    "x": 876,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10100,7 +9879,7 @@
   },
   "familles/poacees-6-recolte.png": {
    "frame": {
-    "x": 844,
+    "x": 941,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10117,7 +9896,7 @@
   },
   "fleurs/tournesol-1-graine.png": {
    "frame": {
-    "x": 909,
+    "x": 1006,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10134,7 +9913,7 @@
   },
   "fleurs/tournesol-2-levee.png": {
    "frame": {
-    "x": 974,
+    "x": 1071,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10151,7 +9930,7 @@
   },
   "fleurs/tournesol-3-croissance.png": {
    "frame": {
-    "x": 1039,
+    "x": 1136,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10168,7 +9947,7 @@
   },
   "fleurs/tournesol-4-recolte.png": {
    "frame": {
-    "x": 1104,
+    "x": 1201,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10185,7 +9964,109 @@
   },
   "fleurs/tournesol-5-montee-graine.png": {
    "frame": {
-    "x": 1169,
+    "x": 1266,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/ratelier.png": {
+   "frame": {
+    "x": 129,
+    "y": 290,
+    "w": 128,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 128,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cabane-debut.png": {
+   "frame": {
+    "x": 1331,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cabane-fin.png": {
+   "frame": {
+    "x": 1396,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cabane-milieu.png": {
+   "frame": {
+    "x": 1461,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cabane-milieu-fenetre.png": {
+   "frame": {
+    "x": 1526,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cabane-milieu-porte.png": {
+   "frame": {
+    "x": 1591,
     "y": 161,
     "w": 64,
     "h": 128
@@ -10226,6 +10107,91 @@
    },
    "sourceSize": {
     "w": 192,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/serre-debut.png": {
+   "frame": {
+    "x": 1656,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/serre-fin.png": {
+   "frame": {
+    "x": 1721,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/serre-milieu.png": {
+   "frame": {
+    "x": 1786,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/serre-milieu-aeration.png": {
+   "frame": {
+    "x": 1851,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 128
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/serre-milieu-porte.png": {
+   "frame": {
+    "x": 1916,
+    "y": 161,
+    "w": 64,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 64,
     "h": 128
    },
    "anchor": {
@@ -11074,28 +11040,6 @@
    "avatar/chaussures-bottes-bas-semer-f2.png",
    "avatar/chaussures-bottes-bas-semer-f3.png",
    "avatar/chaussures-bottes-bas-semer-f4.png"
-  ],
-  "avatar/chaussures-bottes-droite-arroser": [
-   "avatar/chaussures-bottes-droite-arroser-f1.png",
-   "avatar/chaussures-bottes-droite-arroser-f2.png",
-   "avatar/chaussures-bottes-droite-arroser-f3.png",
-   "avatar/chaussures-bottes-droite-arroser-f4.png"
-  ],
-  "avatar/chaussures-bottes-droite-becher": [
-   "avatar/chaussures-bottes-droite-becher-f1.png",
-   "avatar/chaussures-bottes-droite-becher-f2.png",
-   "avatar/chaussures-bottes-droite-becher-f3.png",
-   "avatar/chaussures-bottes-droite-becher-f4.png"
-  ],
-  "avatar/chaussures-bottes-droite-content": [
-   "avatar/chaussures-bottes-droite-content-f1.png",
-   "avatar/chaussures-bottes-droite-content-f2.png"
-  ],
-  "avatar/chaussures-bottes-droite-marche": [
-   "avatar/chaussures-bottes-droite-marche-f1.png",
-   "avatar/chaussures-bottes-droite-marche-f2.png",
-   "avatar/chaussures-bottes-droite-marche-f3.png",
-   "avatar/chaussures-bottes-droite-marche-f4.png"
   ]
  },
  "meta": {

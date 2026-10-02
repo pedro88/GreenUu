@@ -54,3 +54,8 @@ export function sceneBounds(rects: RectGeometry[], tileCm: number, min = { w: 20
   const h = Math.max(min.h * tileCm, ...rects.map((r) => r.y + r.h + tileCm));
   return { w: Math.ceil(w / tileCm) * tileCm, h: Math.ceil(h / tileCm) * tileCm };
 }
+
+/** Places des avatars au pied d'une zone (§9.5) : réparties le long du bord inférieur, de gauche à droite. */
+export function spotsBelow(rect: RectGeometry, count: number): { x: number; y: number }[] {
+  return Array.from({ length: Math.max(0, count) }, (_, i) => ({ x: Math.round(rect.x + ((i + 1) * rect.w) / (count + 1)), y: rect.y + rect.h }));
+}

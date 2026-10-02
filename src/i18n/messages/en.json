@@ -175,7 +175,8 @@
     "confirmTransferToMember": "Confirme le transfert de propriété au membre le plus ancien.",
     "restoreInvalid": "Ce lien de rétablissement n'est plus valable.",
     "resultTooEarly": "Le bilan est proposé une fois la culture terminée ou après la première récolte.",
-    "lockedItem": "This item is not unlocked yet: nothing was saved."
+    "lockedItem": "This item is not unlocked yet: nothing was saved.",
+    "practiceAlreadyDeclared": "This practice is already declared for the garden."
   },
   "nav": {
     "label": "Navigation principale",
@@ -1473,7 +1474,8 @@
     "stateHelp_pest": "a pest reported in the last 30 days is unresolved.",
     "stateHelp_harvest_ready": "harvest has started and is not finished.",
     "stateHelp_needs_confirmation": "a planned stage is more than 7 days late: enter its actual date.",
-    "stateHelp_assigned_to_me": "an open ticket on this crop is assigned to you."
+    "stateHelp_assigned_to_me": "an open ticket on this crop is assigned to you.",
+    "avatarNear": "{pseudo}, near {zone}"
   },
   "plan": {
     "title": "Plan editor",
@@ -1518,7 +1520,10 @@
     "toPlace": "To place",
     "place": "Place",
     "placing": "Draw its location on the grid.",
-    "backToGarden": "Back to garden view"
+    "backToGarden": "Back to garden view",
+    "tool_decor": "Decor",
+    "readOnlyDecor": "Editing zones and terrain is limited to allowed roles; you can place decor.",
+    "issue_unknown_decor": "item removed meanwhile"
   },
   "display": {
     "title": "Display and accessibility",
@@ -1655,5 +1660,46 @@
     "summer": "summer",
     "autumn": "autumn",
     "winter": "winter"
+  },
+  "decor": {
+    "paletteLabel": "Decor items",
+    "placeHint": "Tap a tile to drop the selected item.",
+    "lockedHint": "Not unlocked yet: {condition}.",
+    "signLabel": "Sign text",
+    "removeTitle": "Remove “{name}”?",
+    "removePracticeQuestion": "This item is declared as a garden practice ({practice}). Remove the practice too?",
+    "removeKeepPractice": "Keep the practice",
+    "removeWithPractice": "Remove the practice too",
+    "sheetTitle": "{name}",
+    "declare": "Declare as a practice",
+    "declared": "Declared as a practice: {practice}",
+    "declareHelp": "Does this item really exist in the garden? Declare it: the practice will count in the garden context.",
+    "editInPlan": "Move or remove it in the plan editor",
+    "item_insect_hotel": "Insect hotel",
+    "item_birdhouse": "Birdhouse",
+    "item_bench": "Bench",
+    "item_scarecrow": "Scarecrow",
+    "item_watering_can": "Watering can",
+    "item_wheelbarrow": "Wheelbarrow",
+    "item_sign": "Sign",
+    "item_flower_pots_1": "Flower pots",
+    "item_flower_pots_2": "Flowering pots",
+    "item_flower_pots_3": "Large flowering pots",
+    "item_rockery_1": "Stones",
+    "item_rockery_2": "Rockery",
+    "item_rockery_3": "Large rockery",
+    "item_bird_feeder": "Bird feeder",
+    "item_bird_bath": "Bird bath",
+    "item_lantern": "Lantern",
+    "item_string_lights": "String lights",
+    "item_table_chairs": "Table and chairs",
+    "item_pond": "Pond",
+    "item_beehive": "Beehive",
+    "item_log_pile": "Log pile",
+    "item_wind_chime": "Wind chime",
+    "item_weathervane": "Weathervane",
+    "item_arch": "Arch",
+    "item_hammock": "Hammock",
+    "item_statue": "Statue"
   }
 }

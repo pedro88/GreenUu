@@ -1,6 +1,7 @@
 import { checkGeometry, type GeometryIssue, type RectGeometry } from '../zone/tree';
 import type { PlanCommand } from './plan.schema';
-import type { SceneTerrain, SceneZone } from './snapshot.schema';
+import { DECOR_BY_CODE } from '../decor/catalog';
+import type { SceneDecor, SceneTerrain, SceneZone } from './snapshot.schema';
 
 /*
  * Application locale (optimiste) des commandes du plan : même sémantique que le serveur, sans base. Sert au store de
@@ -8,8 +9,8 @@ import type { SceneTerrain, SceneZone } from './snapshot.schema';
  */
 
 export type ZoneTypeInfo = { id: string; code: string; label: string; canHostCultures: boolean; hasInteriorDefault: boolean };
-export type EditorScene = { tileSizeCm: number; zones: SceneZone[]; terrain: SceneTerrain[] };
-export type LocalIssue = GeometryIssue | 'unknown_zone';
+export type EditorScene = { tileSizeCm: number; zones: SceneZone[]; terrain: SceneTerrain[]; decor: SceneDecor[] };
+export type LocalIssue = GeometryIssue | 'unknown_zone' | 'unknown_decor';
 
 function siblingsOf(scene: EditorScene, parentId: string | null, selfId: string | null): RectGeometry[] {
   return scene.zones.filter((z) => z.parentId === parentId && z.id !== selfId && z.geometry).map((z) => z.geometry as RectGeometry); // as: filtré sur geometry non nulle
@@ -37,6 +38,7 @@ export function validateLocal(scene: EditorScene, cmd: PlanCommand): LocalIssue 
     return children.some((c) => c.geometry && checkGeometry(c.geometry, cmd.geometry, []) !== null) ? 'outside_parent' : null;
   }
   if (cmd.op === 'archiveZone') return scene.zones.some((z) => z.id === cmd.zoneId) ? null : 'unknown_zone';
+  if (cmd.op === 'moveDecor' || cmd.op === 'removeDecor') return scene.decor.some((d) => d.id === cmd.decorId) ? null : 'unknown_decor';
   return null;
 }
 
@@ -75,6 +77,15 @@ export function applyLocal(scene: EditorScene, cmd: PlanCommand, types: Map<stri
       return { ...scene, terrain: scene.terrain.filter((t) => t.id !== cmd.terrainId) };
     case 'setScale':
       return { ...scene, tileSizeCm: cmd.tileSizeCm };
+    case 'placeDecor': {
+      const item = DECOR_BY_CODE.get(cmd.itemCode);
+      const d: SceneDecor = { id: cmd.clientId, itemCode: cmd.itemCode, spriteKey: item?.spriteKey ?? cmd.itemCode, w: item?.w ?? 1, h: item?.h ?? 1, x: cmd.x, y: cmd.y, label: cmd.label, practiceCode: item?.practice ?? null, practiceDeclared: false };
+      return { ...scene, decor: [...scene.decor, d] };
+    }
+    case 'moveDecor':
+      return { ...scene, decor: scene.decor.map((d) => (d.id === cmd.decorId ? { ...d, x: cmd.x, y: cmd.y } : d)) };
+    case 'removeDecor':
+      return { ...scene, decor: scene.decor.filter((d) => d.id !== cmd.decorId) };
   }
 }
 

@@ -1,8 +1,263 @@
 {
  "frames": {
-  "avatar/chaussures-bottes-droite-observer-f1.png": {
+  "avatar/chaussures-bottes-droite-arret.png": {
    "frame": {
     "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-arroser-f1.png": {
+   "frame": {
+    "x": 65,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-arroser-f2.png": {
+   "frame": {
+    "x": 130,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-arroser-f3.png": {
+   "frame": {
+    "x": 195,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-arroser-f4.png": {
+   "frame": {
+    "x": 260,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-becher-f1.png": {
+   "frame": {
+    "x": 325,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-becher-f2.png": {
+   "frame": {
+    "x": 390,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-becher-f3.png": {
+   "frame": {
+    "x": 455,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-becher-f4.png": {
+   "frame": {
+    "x": 520,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-content-f1.png": {
+   "frame": {
+    "x": 585,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-content-f2.png": {
+   "frame": {
+    "x": 650,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-marche-f1.png": {
+   "frame": {
+    "x": 715,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-marche-f2.png": {
+   "frame": {
+    "x": 780,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-marche-f3.png": {
+   "frame": {
+    "x": 845,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-marche-f4.png": {
+   "frame": {
+    "x": 910,
+    "y": 0,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/chaussures-bottes-droite-observer-f1.png": {
+   "frame": {
+    "x": 975,
     "y": 0,
     "w": 64,
     "h": 96
@@ -19,7 +274,7 @@
   },
   "avatar/chaussures-bottes-droite-observer-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 0,
     "w": 64,
     "h": 96
@@ -36,7 +291,7 @@
   },
   "avatar/chaussures-bottes-droite-photo-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 0,
     "w": 64,
     "h": 96
@@ -53,7 +308,7 @@
   },
   "avatar/chaussures-bottes-droite-photo-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 0,
     "w": 64,
     "h": 96
@@ -70,7 +325,7 @@
   },
   "avatar/chaussures-bottes-droite-planter-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 0,
     "w": 64,
     "h": 96
@@ -87,7 +342,7 @@
   },
   "avatar/chaussures-bottes-droite-planter-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 0,
     "w": 64,
     "h": 96
@@ -104,7 +359,7 @@
   },
   "avatar/chaussures-bottes-droite-planter-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 0,
     "w": 64,
     "h": 96
@@ -121,7 +376,7 @@
   },
   "avatar/chaussures-bottes-droite-planter-f4.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 0,
     "w": 64,
     "h": 96
@@ -138,7 +393,7 @@
   },
   "avatar/chaussures-bottes-droite-porter-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 0,
     "w": 64,
     "h": 96
@@ -155,7 +410,7 @@
   },
   "avatar/chaussures-bottes-droite-porter-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 0,
     "w": 64,
     "h": 96
@@ -172,7 +427,7 @@
   },
   "avatar/chaussures-bottes-droite-porter-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 0,
     "w": 64,
     "h": 96
@@ -189,7 +444,7 @@
   },
   "avatar/chaussures-bottes-droite-porter-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 0,
     "w": 64,
     "h": 96
@@ -206,7 +461,7 @@
   },
   "avatar/chaussures-bottes-droite-recolter-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 0,
     "w": 64,
     "h": 96
@@ -223,7 +478,7 @@
   },
   "avatar/chaussures-bottes-droite-recolter-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 0,
     "w": 64,
     "h": 96
@@ -240,7 +495,7 @@
   },
   "avatar/chaussures-bottes-droite-recolter-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 0,
     "w": 64,
     "h": 96
@@ -257,7 +512,7 @@
   },
   "avatar/chaussures-bottes-droite-recolter-f4.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 0,
     "w": 64,
     "h": 96
@@ -274,8 +529,8 @@
   },
   "avatar/chaussures-bottes-droite-saluer-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 0,
+    "x": 0,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -291,8 +546,8 @@
   },
   "avatar/chaussures-bottes-droite-saluer-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 0,
+    "x": 65,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -308,8 +563,8 @@
   },
   "avatar/chaussures-bottes-droite-saluer-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 0,
+    "x": 130,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -325,8 +580,8 @@
   },
   "avatar/chaussures-bottes-droite-semer-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 0,
+    "x": 195,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -342,8 +597,8 @@
   },
   "avatar/chaussures-bottes-droite-semer-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 0,
+    "x": 260,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -359,8 +614,8 @@
   },
   "avatar/chaussures-bottes-droite-semer-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 0,
+    "x": 325,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -376,8 +631,8 @@
   },
   "avatar/chaussures-bottes-droite-semer-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 0,
+    "x": 390,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -393,8 +648,8 @@
   },
   "avatar/chaussures-bottes-gauche-arret.png": {
    "frame": {
-    "x": 1495,
-    "y": 0,
+    "x": 455,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -410,8 +665,8 @@
   },
   "avatar/chaussures-bottes-gauche-arroser-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 0,
+    "x": 520,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -427,8 +682,8 @@
   },
   "avatar/chaussures-bottes-gauche-arroser-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 0,
+    "x": 585,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -444,8 +699,8 @@
   },
   "avatar/chaussures-bottes-gauche-arroser-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 0,
+    "x": 650,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -461,8 +716,8 @@
   },
   "avatar/chaussures-bottes-gauche-arroser-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 0,
+    "x": 715,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -478,8 +733,8 @@
   },
   "avatar/chaussures-bottes-gauche-becher-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 0,
+    "x": 780,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -495,8 +750,8 @@
   },
   "avatar/chaussures-bottes-gauche-becher-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 0,
+    "x": 845,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -512,8 +767,8 @@
   },
   "avatar/chaussures-bottes-gauche-becher-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 0,
+    "x": 910,
+    "y": 97,
     "w": 64,
     "h": 96
    },
@@ -529,7 +784,7 @@
   },
   "avatar/chaussures-bottes-gauche-becher-f4.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 97,
     "w": 64,
     "h": 96
@@ -546,7 +801,7 @@
   },
   "avatar/chaussures-bottes-gauche-content-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 97,
     "w": 64,
     "h": 96
@@ -563,7 +818,7 @@
   },
   "avatar/chaussures-bottes-gauche-content-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 97,
     "w": 64,
     "h": 96
@@ -580,7 +835,7 @@
   },
   "avatar/chaussures-bottes-gauche-marche-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 97,
     "w": 64,
     "h": 96
@@ -597,7 +852,7 @@
   },
   "avatar/chaussures-bottes-gauche-marche-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 97,
     "w": 64,
     "h": 96
@@ -614,7 +869,7 @@
   },
   "avatar/chaussures-bottes-gauche-marche-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 97,
     "w": 64,
     "h": 96
@@ -631,7 +886,7 @@
   },
   "avatar/chaussures-bottes-gauche-marche-f4.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 97,
     "w": 64,
     "h": 96
@@ -648,7 +903,7 @@
   },
   "avatar/chaussures-bottes-gauche-observer-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 97,
     "w": 64,
     "h": 96
@@ -665,7 +920,7 @@
   },
   "avatar/chaussures-bottes-gauche-observer-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 97,
     "w": 64,
     "h": 96
@@ -682,7 +937,7 @@
   },
   "avatar/chaussures-bottes-gauche-photo-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 97,
     "w": 64,
     "h": 96
@@ -699,7 +954,7 @@
   },
   "avatar/chaussures-bottes-gauche-photo-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 97,
     "w": 64,
     "h": 96
@@ -716,7 +971,7 @@
   },
   "avatar/chaussures-bottes-gauche-planter-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 97,
     "w": 64,
     "h": 96
@@ -733,7 +988,7 @@
   },
   "avatar/chaussures-bottes-gauche-planter-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 97,
     "w": 64,
     "h": 96
@@ -750,7 +1005,7 @@
   },
   "avatar/chaussures-bottes-gauche-planter-f3.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 97,
     "w": 64,
     "h": 96
@@ -767,7 +1022,7 @@
   },
   "avatar/chaussures-bottes-gauche-planter-f4.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 97,
     "w": 64,
     "h": 96
@@ -784,7 +1039,7 @@
   },
   "avatar/chaussures-bottes-gauche-porter-f1.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 97,
     "w": 64,
     "h": 96
@@ -801,8 +1056,8 @@
   },
   "avatar/chaussures-bottes-gauche-porter-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 97,
+    "x": 0,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -818,8 +1073,8 @@
   },
   "avatar/chaussures-bottes-gauche-porter-f3.png": {
    "frame": {
-    "x": 1105,
-    "y": 97,
+    "x": 65,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -835,8 +1090,8 @@
   },
   "avatar/chaussures-bottes-gauche-porter-f4.png": {
    "frame": {
-    "x": 1170,
-    "y": 97,
+    "x": 130,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -852,8 +1107,8 @@
   },
   "avatar/chaussures-bottes-gauche-recolter-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 97,
+    "x": 195,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -869,8 +1124,8 @@
   },
   "avatar/chaussures-bottes-gauche-recolter-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 97,
+    "x": 260,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -886,8 +1141,8 @@
   },
   "avatar/chaussures-bottes-gauche-recolter-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 97,
+    "x": 325,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -903,8 +1158,8 @@
   },
   "avatar/chaussures-bottes-gauche-recolter-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 97,
+    "x": 390,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -920,8 +1175,8 @@
   },
   "avatar/chaussures-bottes-gauche-saluer-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 97,
+    "x": 455,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -937,8 +1192,8 @@
   },
   "avatar/chaussures-bottes-gauche-saluer-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 97,
+    "x": 520,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -954,8 +1209,8 @@
   },
   "avatar/chaussures-bottes-gauche-saluer-f3.png": {
    "frame": {
-    "x": 1625,
-    "y": 97,
+    "x": 585,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -971,8 +1226,8 @@
   },
   "avatar/chaussures-bottes-gauche-semer-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 97,
+    "x": 650,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -988,8 +1243,8 @@
   },
   "avatar/chaussures-bottes-gauche-semer-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 97,
+    "x": 715,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -1005,8 +1260,8 @@
   },
   "avatar/chaussures-bottes-gauche-semer-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 97,
+    "x": 780,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -1022,8 +1277,8 @@
   },
   "avatar/chaussures-bottes-gauche-semer-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 97,
+    "x": 845,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -1039,8 +1294,8 @@
   },
   "avatar/chaussures-bottes-haut-arret.png": {
    "frame": {
-    "x": 1950,
-    "y": 97,
+    "x": 910,
+    "y": 194,
     "w": 64,
     "h": 96
    },
@@ -1056,7 +1311,7 @@
   },
   "avatar/chaussures-bottes-haut-arroser-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1073,7 +1328,7 @@
   },
   "avatar/chaussures-bottes-haut-arroser-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1090,7 +1345,7 @@
   },
   "avatar/chaussures-bottes-haut-arroser-f3.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1107,7 +1362,7 @@
   },
   "avatar/chaussures-bottes-haut-arroser-f4.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1124,7 +1379,7 @@
   },
   "avatar/chaussures-bottes-haut-becher-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1141,7 +1396,7 @@
   },
   "avatar/chaussures-bottes-haut-becher-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1158,7 +1413,7 @@
   },
   "avatar/chaussures-bottes-haut-becher-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1175,7 +1430,7 @@
   },
   "avatar/chaussures-bottes-haut-becher-f4.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1192,7 +1447,7 @@
   },
   "avatar/chaussures-bottes-haut-content-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1209,7 +1464,7 @@
   },
   "avatar/chaussures-bottes-haut-content-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1226,7 +1481,7 @@
   },
   "avatar/chaussures-bottes-haut-marche-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1243,7 +1498,7 @@
   },
   "avatar/chaussures-bottes-haut-marche-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1260,7 +1515,7 @@
   },
   "avatar/chaussures-bottes-haut-marche-f3.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1277,7 +1532,7 @@
   },
   "avatar/chaussures-bottes-haut-marche-f4.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1294,7 +1549,7 @@
   },
   "avatar/chaussures-bottes-haut-observer-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1311,7 +1566,7 @@
   },
   "avatar/chaussures-bottes-haut-observer-f2.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 194,
     "w": 64,
     "h": 96
@@ -1328,8 +1583,8 @@
   },
   "avatar/chaussures-bottes-haut-photo-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 194,
+    "x": 0,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1345,8 +1600,8 @@
   },
   "avatar/chaussures-bottes-haut-photo-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 194,
+    "x": 65,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1362,8 +1617,8 @@
   },
   "avatar/chaussures-bottes-haut-planter-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 194,
+    "x": 130,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1379,8 +1634,8 @@
   },
   "avatar/chaussures-bottes-haut-planter-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 194,
+    "x": 195,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1396,8 +1651,8 @@
   },
   "avatar/chaussures-bottes-haut-planter-f3.png": {
    "frame": {
-    "x": 1300,
-    "y": 194,
+    "x": 260,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1413,8 +1668,8 @@
   },
   "avatar/chaussures-bottes-haut-planter-f4.png": {
    "frame": {
-    "x": 1365,
-    "y": 194,
+    "x": 325,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1430,8 +1685,8 @@
   },
   "avatar/chaussures-bottes-haut-porter-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 194,
+    "x": 390,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1447,8 +1702,8 @@
   },
   "avatar/chaussures-bottes-haut-porter-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 194,
+    "x": 455,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1464,8 +1719,8 @@
   },
   "avatar/chaussures-bottes-haut-porter-f3.png": {
    "frame": {
-    "x": 1560,
-    "y": 194,
+    "x": 520,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1481,8 +1736,8 @@
   },
   "avatar/chaussures-bottes-haut-porter-f4.png": {
    "frame": {
-    "x": 1625,
-    "y": 194,
+    "x": 585,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1498,8 +1753,8 @@
   },
   "avatar/chaussures-bottes-haut-recolter-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 194,
+    "x": 650,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1515,8 +1770,8 @@
   },
   "avatar/chaussures-bottes-haut-recolter-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 194,
+    "x": 715,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1532,8 +1787,8 @@
   },
   "avatar/chaussures-bottes-haut-recolter-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 194,
+    "x": 780,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1549,8 +1804,8 @@
   },
   "avatar/chaussures-bottes-haut-recolter-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 194,
+    "x": 845,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1566,8 +1821,8 @@
   },
   "avatar/chaussures-bottes-haut-saluer-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 194,
+    "x": 910,
+    "y": 291,
     "w": 64,
     "h": 96
    },
@@ -1583,7 +1838,7 @@
   },
   "avatar/chaussures-bottes-haut-saluer-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1600,7 +1855,7 @@
   },
   "avatar/chaussures-bottes-haut-saluer-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1617,7 +1872,7 @@
   },
   "avatar/chaussures-bottes-haut-semer-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1634,7 +1889,7 @@
   },
   "avatar/chaussures-bottes-haut-semer-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1651,7 +1906,7 @@
   },
   "avatar/chaussures-bottes-haut-semer-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1668,7 +1923,7 @@
   },
   "avatar/chaussures-bottes-haut-semer-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1685,7 +1940,7 @@
   },
   "avatar/cheveux-boucle-bas-arret.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1702,7 +1957,7 @@
   },
   "avatar/cheveux-boucle-bas-arroser-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1719,7 +1974,7 @@
   },
   "avatar/cheveux-boucle-bas-arroser-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1736,7 +1991,7 @@
   },
   "avatar/cheveux-boucle-bas-arroser-f3.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1753,7 +2008,7 @@
   },
   "avatar/cheveux-boucle-bas-arroser-f4.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1770,7 +2025,7 @@
   },
   "avatar/cheveux-boucle-bas-becher-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1787,7 +2042,7 @@
   },
   "avatar/cheveux-boucle-bas-becher-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1804,7 +2059,7 @@
   },
   "avatar/cheveux-boucle-bas-becher-f3.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1821,7 +2076,7 @@
   },
   "avatar/cheveux-boucle-bas-becher-f4.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1838,7 +2093,7 @@
   },
   "avatar/cheveux-boucle-bas-content-f1.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 291,
     "w": 64,
     "h": 96
@@ -1855,8 +2110,8 @@
   },
   "avatar/cheveux-boucle-bas-content-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 291,
+    "x": 0,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1872,8 +2127,8 @@
   },
   "avatar/cheveux-boucle-bas-marche-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 291,
+    "x": 65,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1889,8 +2144,8 @@
   },
   "avatar/cheveux-boucle-bas-marche-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 291,
+    "x": 130,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1906,8 +2161,8 @@
   },
   "avatar/cheveux-boucle-bas-marche-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 291,
+    "x": 195,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1923,8 +2178,8 @@
   },
   "avatar/cheveux-boucle-bas-marche-f4.png": {
    "frame": {
-    "x": 1300,
-    "y": 291,
+    "x": 260,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1940,8 +2195,8 @@
   },
   "avatar/cheveux-boucle-bas-observer-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 291,
+    "x": 325,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1957,8 +2212,8 @@
   },
   "avatar/cheveux-boucle-bas-observer-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 291,
+    "x": 390,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1974,8 +2229,8 @@
   },
   "avatar/cheveux-boucle-bas-photo-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 291,
+    "x": 455,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -1991,8 +2246,8 @@
   },
   "avatar/cheveux-boucle-bas-photo-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 291,
+    "x": 520,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -2008,8 +2263,8 @@
   },
   "avatar/cheveux-boucle-bas-planter-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 291,
+    "x": 585,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -2025,8 +2280,8 @@
   },
   "avatar/cheveux-boucle-bas-planter-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 291,
+    "x": 650,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -2042,8 +2297,8 @@
   },
   "avatar/cheveux-boucle-bas-planter-f3.png": {
    "frame": {
-    "x": 1755,
-    "y": 291,
+    "x": 715,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -2059,8 +2314,8 @@
   },
   "avatar/cheveux-boucle-bas-planter-f4.png": {
    "frame": {
-    "x": 1820,
-    "y": 291,
+    "x": 780,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -2076,8 +2331,8 @@
   },
   "avatar/cheveux-boucle-bas-porter-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 291,
+    "x": 845,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -2093,8 +2348,8 @@
   },
   "avatar/cheveux-boucle-bas-porter-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 291,
+    "x": 910,
+    "y": 388,
     "w": 64,
     "h": 96
    },
@@ -2110,7 +2365,7 @@
   },
   "avatar/cheveux-boucle-bas-porter-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2127,7 +2382,7 @@
   },
   "avatar/cheveux-boucle-bas-porter-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2144,7 +2399,7 @@
   },
   "avatar/cheveux-boucle-bas-recolter-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2161,7 +2416,7 @@
   },
   "avatar/cheveux-boucle-bas-recolter-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2178,7 +2433,7 @@
   },
   "avatar/cheveux-boucle-bas-recolter-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2195,7 +2450,7 @@
   },
   "avatar/cheveux-boucle-bas-recolter-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2212,7 +2467,7 @@
   },
   "avatar/cheveux-boucle-bas-saluer-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2229,7 +2484,7 @@
   },
   "avatar/cheveux-boucle-bas-saluer-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2246,7 +2501,7 @@
   },
   "avatar/cheveux-boucle-bas-saluer-f3.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2263,7 +2518,7 @@
   },
   "avatar/cheveux-boucle-bas-semer-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2280,7 +2535,7 @@
   },
   "avatar/cheveux-boucle-bas-semer-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2297,7 +2552,7 @@
   },
   "avatar/cheveux-boucle-bas-semer-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2314,7 +2569,7 @@
   },
   "avatar/cheveux-boucle-bas-semer-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2331,7 +2586,7 @@
   },
   "avatar/cheveux-boucle-droite-arret.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2348,7 +2603,7 @@
   },
   "avatar/cheveux-boucle-droite-arroser-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2365,7 +2620,7 @@
   },
   "avatar/cheveux-boucle-droite-arroser-f2.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 388,
     "w": 64,
     "h": 96
@@ -2382,8 +2637,8 @@
   },
   "avatar/cheveux-boucle-droite-arroser-f3.png": {
    "frame": {
-    "x": 1040,
-    "y": 388,
+    "x": 0,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2399,8 +2654,8 @@
   },
   "avatar/cheveux-boucle-droite-arroser-f4.png": {
    "frame": {
-    "x": 1105,
-    "y": 388,
+    "x": 65,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2416,8 +2671,8 @@
   },
   "avatar/cheveux-boucle-droite-becher-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 388,
+    "x": 130,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2433,8 +2688,8 @@
   },
   "avatar/cheveux-boucle-droite-becher-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 388,
+    "x": 195,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2450,8 +2705,8 @@
   },
   "avatar/cheveux-boucle-droite-becher-f3.png": {
    "frame": {
-    "x": 1300,
-    "y": 388,
+    "x": 260,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2467,8 +2722,8 @@
   },
   "avatar/cheveux-boucle-droite-becher-f4.png": {
    "frame": {
-    "x": 1365,
-    "y": 388,
+    "x": 325,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2484,8 +2739,8 @@
   },
   "avatar/cheveux-boucle-droite-content-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 388,
+    "x": 390,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2501,8 +2756,8 @@
   },
   "avatar/cheveux-boucle-droite-content-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 388,
+    "x": 455,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2518,8 +2773,8 @@
   },
   "avatar/cheveux-boucle-droite-marche-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 388,
+    "x": 520,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2535,8 +2790,8 @@
   },
   "avatar/cheveux-boucle-droite-marche-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 388,
+    "x": 585,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2552,8 +2807,8 @@
   },
   "avatar/cheveux-boucle-droite-marche-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 388,
+    "x": 650,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2569,8 +2824,8 @@
   },
   "avatar/cheveux-boucle-droite-marche-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 388,
+    "x": 715,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2586,8 +2841,8 @@
   },
   "avatar/cheveux-boucle-droite-observer-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 388,
+    "x": 780,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2603,8 +2858,8 @@
   },
   "avatar/cheveux-boucle-droite-observer-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 388,
+    "x": 845,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2620,8 +2875,8 @@
   },
   "avatar/cheveux-boucle-droite-photo-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 388,
+    "x": 910,
+    "y": 485,
     "w": 64,
     "h": 96
    },
@@ -2637,7 +2892,7 @@
   },
   "avatar/cheveux-boucle-droite-photo-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2654,7 +2909,7 @@
   },
   "avatar/cheveux-boucle-droite-planter-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2671,7 +2926,7 @@
   },
   "avatar/cheveux-boucle-droite-planter-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2688,7 +2943,7 @@
   },
   "avatar/cheveux-boucle-droite-planter-f3.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2705,7 +2960,7 @@
   },
   "avatar/cheveux-boucle-droite-planter-f4.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2722,7 +2977,7 @@
   },
   "avatar/cheveux-boucle-droite-porter-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2739,7 +2994,7 @@
   },
   "avatar/cheveux-boucle-droite-porter-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2756,7 +3011,7 @@
   },
   "avatar/cheveux-boucle-droite-porter-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2773,7 +3028,7 @@
   },
   "avatar/cheveux-boucle-droite-porter-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2790,7 +3045,7 @@
   },
   "avatar/cheveux-boucle-droite-recolter-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2807,7 +3062,7 @@
   },
   "avatar/cheveux-boucle-droite-recolter-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2824,7 +3079,7 @@
   },
   "avatar/cheveux-boucle-droite-recolter-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2841,7 +3096,7 @@
   },
   "avatar/cheveux-boucle-droite-recolter-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2858,7 +3113,7 @@
   },
   "avatar/cheveux-boucle-droite-saluer-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2875,7 +3130,7 @@
   },
   "avatar/cheveux-boucle-droite-saluer-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2892,7 +3147,7 @@
   },
   "avatar/cheveux-boucle-droite-saluer-f3.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 485,
     "w": 64,
     "h": 96
@@ -2909,8 +3164,8 @@
   },
   "avatar/cheveux-boucle-droite-semer-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 485,
+    "x": 0,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -2926,8 +3181,8 @@
   },
   "avatar/cheveux-boucle-droite-semer-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 485,
+    "x": 65,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -2943,8 +3198,8 @@
   },
   "avatar/cheveux-boucle-droite-semer-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 485,
+    "x": 130,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -2960,8 +3215,8 @@
   },
   "avatar/cheveux-boucle-droite-semer-f4.png": {
    "frame": {
-    "x": 1235,
-    "y": 485,
+    "x": 195,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -2977,8 +3232,8 @@
   },
   "avatar/cheveux-boucle-gauche-arret.png": {
    "frame": {
-    "x": 1300,
-    "y": 485,
+    "x": 260,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -2994,8 +3249,8 @@
   },
   "avatar/cheveux-boucle-gauche-arroser-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 485,
+    "x": 325,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3011,8 +3266,8 @@
   },
   "avatar/cheveux-boucle-gauche-arroser-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 485,
+    "x": 390,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3028,8 +3283,8 @@
   },
   "avatar/cheveux-boucle-gauche-arroser-f3.png": {
    "frame": {
-    "x": 1495,
-    "y": 485,
+    "x": 455,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3045,8 +3300,8 @@
   },
   "avatar/cheveux-boucle-gauche-arroser-f4.png": {
    "frame": {
-    "x": 1560,
-    "y": 485,
+    "x": 520,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3062,8 +3317,8 @@
   },
   "avatar/cheveux-boucle-gauche-becher-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 485,
+    "x": 585,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3079,8 +3334,8 @@
   },
   "avatar/cheveux-boucle-gauche-becher-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 485,
+    "x": 650,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3096,8 +3351,8 @@
   },
   "avatar/cheveux-boucle-gauche-becher-f3.png": {
    "frame": {
-    "x": 1755,
-    "y": 485,
+    "x": 715,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3113,8 +3368,8 @@
   },
   "avatar/cheveux-boucle-gauche-becher-f4.png": {
    "frame": {
-    "x": 1820,
-    "y": 485,
+    "x": 780,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3130,8 +3385,8 @@
   },
   "avatar/cheveux-boucle-gauche-content-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 485,
+    "x": 845,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3147,8 +3402,8 @@
   },
   "avatar/cheveux-boucle-gauche-content-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 485,
+    "x": 910,
+    "y": 582,
     "w": 64,
     "h": 96
    },
@@ -3164,7 +3419,7 @@
   },
   "avatar/cheveux-boucle-gauche-marche-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3181,7 +3436,7 @@
   },
   "avatar/cheveux-boucle-gauche-marche-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3198,7 +3453,7 @@
   },
   "avatar/cheveux-boucle-gauche-marche-f3.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3215,7 +3470,7 @@
   },
   "avatar/cheveux-boucle-gauche-marche-f4.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3232,7 +3487,7 @@
   },
   "avatar/cheveux-boucle-gauche-observer-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3249,7 +3504,7 @@
   },
   "avatar/cheveux-boucle-gauche-observer-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3266,7 +3521,7 @@
   },
   "avatar/cheveux-boucle-gauche-photo-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3283,7 +3538,7 @@
   },
   "avatar/cheveux-boucle-gauche-photo-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3300,7 +3555,7 @@
   },
   "avatar/cheveux-boucle-gauche-planter-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3317,7 +3572,7 @@
   },
   "avatar/cheveux-boucle-gauche-planter-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3334,7 +3589,7 @@
   },
   "avatar/cheveux-boucle-gauche-planter-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3351,7 +3606,7 @@
   },
   "avatar/cheveux-boucle-gauche-planter-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3368,7 +3623,7 @@
   },
   "avatar/cheveux-boucle-gauche-porter-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3385,7 +3640,7 @@
   },
   "avatar/cheveux-boucle-gauche-porter-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3402,7 +3657,7 @@
   },
   "avatar/cheveux-boucle-gauche-porter-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3419,7 +3674,7 @@
   },
   "avatar/cheveux-boucle-gauche-porter-f4.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 582,
     "w": 64,
     "h": 96
@@ -3436,8 +3691,8 @@
   },
   "avatar/cheveux-boucle-gauche-recolter-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 582,
+    "x": 0,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3453,8 +3708,8 @@
   },
   "avatar/cheveux-boucle-gauche-recolter-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 582,
+    "x": 65,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3470,8 +3725,8 @@
   },
   "avatar/cheveux-boucle-gauche-recolter-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 582,
+    "x": 130,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3487,8 +3742,8 @@
   },
   "avatar/cheveux-boucle-gauche-recolter-f4.png": {
    "frame": {
-    "x": 1235,
-    "y": 582,
+    "x": 195,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3504,8 +3759,8 @@
   },
   "avatar/cheveux-boucle-gauche-saluer-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 582,
+    "x": 260,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3521,8 +3776,8 @@
   },
   "avatar/cheveux-boucle-gauche-saluer-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 582,
+    "x": 325,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3538,8 +3793,8 @@
   },
   "avatar/cheveux-boucle-gauche-saluer-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 582,
+    "x": 390,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3555,8 +3810,8 @@
   },
   "avatar/cheveux-boucle-gauche-semer-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 582,
+    "x": 455,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3572,8 +3827,8 @@
   },
   "avatar/cheveux-boucle-gauche-semer-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 582,
+    "x": 520,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3589,8 +3844,8 @@
   },
   "avatar/cheveux-boucle-gauche-semer-f3.png": {
    "frame": {
-    "x": 1625,
-    "y": 582,
+    "x": 585,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3606,8 +3861,8 @@
   },
   "avatar/cheveux-boucle-gauche-semer-f4.png": {
    "frame": {
-    "x": 1690,
-    "y": 582,
+    "x": 650,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3623,8 +3878,8 @@
   },
   "avatar/cheveux-boucle-haut-arret.png": {
    "frame": {
-    "x": 1755,
-    "y": 582,
+    "x": 715,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3640,8 +3895,8 @@
   },
   "avatar/cheveux-boucle-haut-arroser-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 582,
+    "x": 780,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3657,8 +3912,8 @@
   },
   "avatar/cheveux-boucle-haut-arroser-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 582,
+    "x": 845,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3674,8 +3929,8 @@
   },
   "avatar/cheveux-boucle-haut-arroser-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 582,
+    "x": 910,
+    "y": 679,
     "w": 64,
     "h": 96
    },
@@ -3691,7 +3946,7 @@
   },
   "avatar/cheveux-boucle-haut-arroser-f4.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3708,7 +3963,7 @@
   },
   "avatar/cheveux-boucle-haut-becher-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3725,7 +3980,7 @@
   },
   "avatar/cheveux-boucle-haut-becher-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3742,7 +3997,7 @@
   },
   "avatar/cheveux-boucle-haut-becher-f3.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3759,7 +4014,7 @@
   },
   "avatar/cheveux-boucle-haut-becher-f4.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3776,7 +4031,7 @@
   },
   "avatar/cheveux-boucle-haut-content-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3793,7 +4048,7 @@
   },
   "avatar/cheveux-boucle-haut-content-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3810,7 +4065,7 @@
   },
   "avatar/cheveux-boucle-haut-marche-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3827,7 +4082,7 @@
   },
   "avatar/cheveux-boucle-haut-marche-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3844,7 +4099,7 @@
   },
   "avatar/cheveux-boucle-haut-marche-f3.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3861,7 +4116,7 @@
   },
   "avatar/cheveux-boucle-haut-marche-f4.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3878,7 +4133,7 @@
   },
   "avatar/cheveux-boucle-haut-observer-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3895,7 +4150,7 @@
   },
   "avatar/cheveux-boucle-haut-observer-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3912,7 +4167,7 @@
   },
   "avatar/cheveux-boucle-haut-photo-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3929,7 +4184,7 @@
   },
   "avatar/cheveux-boucle-haut-photo-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3946,7 +4201,7 @@
   },
   "avatar/cheveux-boucle-haut-planter-f1.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 679,
     "w": 64,
     "h": 96
@@ -3963,8 +4218,8 @@
   },
   "avatar/cheveux-boucle-haut-planter-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 679,
+    "x": 0,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -3980,8 +4235,8 @@
   },
   "avatar/cheveux-boucle-haut-planter-f3.png": {
    "frame": {
-    "x": 1105,
-    "y": 679,
+    "x": 65,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -3997,8 +4252,8 @@
   },
   "avatar/cheveux-boucle-haut-planter-f4.png": {
    "frame": {
-    "x": 1170,
-    "y": 679,
+    "x": 130,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4014,8 +4269,8 @@
   },
   "avatar/cheveux-boucle-haut-porter-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 679,
+    "x": 195,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4031,8 +4286,8 @@
   },
   "avatar/cheveux-boucle-haut-porter-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 679,
+    "x": 260,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4048,8 +4303,8 @@
   },
   "avatar/cheveux-boucle-haut-porter-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 679,
+    "x": 325,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4065,8 +4320,8 @@
   },
   "avatar/cheveux-boucle-haut-porter-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 679,
+    "x": 390,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4082,8 +4337,8 @@
   },
   "avatar/cheveux-boucle-haut-recolter-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 679,
+    "x": 455,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4099,8 +4354,8 @@
   },
   "avatar/cheveux-boucle-haut-recolter-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 679,
+    "x": 520,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4116,8 +4371,8 @@
   },
   "avatar/cheveux-boucle-haut-recolter-f3.png": {
    "frame": {
-    "x": 1625,
-    "y": 679,
+    "x": 585,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4133,8 +4388,8 @@
   },
   "avatar/cheveux-boucle-haut-recolter-f4.png": {
    "frame": {
-    "x": 1690,
-    "y": 679,
+    "x": 650,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4150,8 +4405,8 @@
   },
   "avatar/cheveux-boucle-haut-saluer-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 679,
+    "x": 715,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4167,8 +4422,8 @@
   },
   "avatar/cheveux-boucle-haut-saluer-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 679,
+    "x": 780,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4184,8 +4439,8 @@
   },
   "avatar/cheveux-boucle-haut-saluer-f3.png": {
    "frame": {
-    "x": 1885,
-    "y": 679,
+    "x": 845,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4201,8 +4456,8 @@
   },
   "avatar/cheveux-boucle-haut-semer-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 679,
+    "x": 910,
+    "y": 776,
     "w": 64,
     "h": 96
    },
@@ -4218,7 +4473,7 @@
   },
   "avatar/cheveux-boucle-haut-semer-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4235,7 +4490,7 @@
   },
   "avatar/cheveux-boucle-haut-semer-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4252,7 +4507,7 @@
   },
   "avatar/cheveux-boucle-haut-semer-f4.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4269,7 +4524,7 @@
   },
   "avatar/cheveux-chignon-bas-arret.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4286,7 +4541,7 @@
   },
   "avatar/cheveux-chignon-bas-arroser-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4303,7 +4558,7 @@
   },
   "avatar/cheveux-chignon-bas-arroser-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4320,7 +4575,7 @@
   },
   "avatar/cheveux-chignon-bas-arroser-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4337,7 +4592,7 @@
   },
   "avatar/cheveux-chignon-bas-arroser-f4.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4354,7 +4609,7 @@
   },
   "avatar/cheveux-chignon-bas-becher-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4371,7 +4626,7 @@
   },
   "avatar/cheveux-chignon-bas-becher-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4388,7 +4643,7 @@
   },
   "avatar/cheveux-chignon-bas-becher-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4405,7 +4660,7 @@
   },
   "avatar/cheveux-chignon-bas-becher-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4422,7 +4677,7 @@
   },
   "avatar/cheveux-chignon-bas-content-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4439,7 +4694,7 @@
   },
   "avatar/cheveux-chignon-bas-content-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4456,7 +4711,7 @@
   },
   "avatar/cheveux-chignon-bas-marche-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4473,7 +4728,7 @@
   },
   "avatar/cheveux-chignon-bas-marche-f2.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 776,
     "w": 64,
     "h": 96
@@ -4490,8 +4745,8 @@
   },
   "avatar/cheveux-chignon-bas-marche-f3.png": {
    "frame": {
-    "x": 1040,
-    "y": 776,
+    "x": 0,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4507,8 +4762,8 @@
   },
   "avatar/cheveux-chignon-bas-marche-f4.png": {
    "frame": {
-    "x": 1105,
-    "y": 776,
+    "x": 65,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4524,8 +4779,8 @@
   },
   "avatar/cheveux-chignon-bas-observer-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 776,
+    "x": 130,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4541,8 +4796,8 @@
   },
   "avatar/cheveux-chignon-bas-observer-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 776,
+    "x": 195,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4558,8 +4813,8 @@
   },
   "avatar/cheveux-chignon-bas-photo-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 776,
+    "x": 260,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4575,8 +4830,8 @@
   },
   "avatar/cheveux-chignon-bas-photo-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 776,
+    "x": 325,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4592,8 +4847,8 @@
   },
   "avatar/cheveux-chignon-bas-planter-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 776,
+    "x": 390,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4609,8 +4864,8 @@
   },
   "avatar/cheveux-chignon-bas-planter-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 776,
+    "x": 455,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4626,8 +4881,8 @@
   },
   "avatar/cheveux-chignon-bas-planter-f3.png": {
    "frame": {
-    "x": 1560,
-    "y": 776,
+    "x": 520,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4643,8 +4898,8 @@
   },
   "avatar/cheveux-chignon-bas-planter-f4.png": {
    "frame": {
-    "x": 1625,
-    "y": 776,
+    "x": 585,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4660,8 +4915,8 @@
   },
   "avatar/cheveux-chignon-bas-porter-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 776,
+    "x": 650,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4677,8 +4932,8 @@
   },
   "avatar/cheveux-chignon-bas-porter-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 776,
+    "x": 715,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4694,8 +4949,8 @@
   },
   "avatar/cheveux-chignon-bas-porter-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 776,
+    "x": 780,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4711,8 +4966,8 @@
   },
   "avatar/cheveux-chignon-bas-porter-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 776,
+    "x": 845,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4728,8 +4983,8 @@
   },
   "avatar/cheveux-chignon-bas-recolter-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 776,
+    "x": 910,
+    "y": 873,
     "w": 64,
     "h": 96
    },
@@ -4745,7 +5000,7 @@
   },
   "avatar/cheveux-chignon-bas-recolter-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4762,7 +5017,7 @@
   },
   "avatar/cheveux-chignon-bas-recolter-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4779,7 +5034,7 @@
   },
   "avatar/cheveux-chignon-bas-recolter-f4.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4796,7 +5051,7 @@
   },
   "avatar/cheveux-chignon-bas-saluer-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4813,7 +5068,7 @@
   },
   "avatar/cheveux-chignon-bas-saluer-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4830,7 +5085,7 @@
   },
   "avatar/cheveux-chignon-bas-saluer-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4847,7 +5102,7 @@
   },
   "avatar/cheveux-chignon-bas-semer-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4864,7 +5119,7 @@
   },
   "avatar/cheveux-chignon-bas-semer-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4881,7 +5136,7 @@
   },
   "avatar/cheveux-chignon-bas-semer-f3.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4898,7 +5153,7 @@
   },
   "avatar/cheveux-chignon-bas-semer-f4.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4915,7 +5170,7 @@
   },
   "avatar/cheveux-chignon-droite-arret.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4932,7 +5187,7 @@
   },
   "avatar/cheveux-chignon-droite-arroser-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4949,7 +5204,7 @@
   },
   "avatar/cheveux-chignon-droite-arroser-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4966,7 +5221,7 @@
   },
   "avatar/cheveux-chignon-droite-arroser-f3.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 873,
     "w": 64,
     "h": 96
@@ -4983,7 +5238,7 @@
   },
   "avatar/cheveux-chignon-droite-arroser-f4.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 873,
     "w": 64,
     "h": 96
@@ -5000,7 +5255,7 @@
   },
   "avatar/cheveux-chignon-droite-becher-f1.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 873,
     "w": 64,
     "h": 96
@@ -5017,8 +5272,8 @@
   },
   "avatar/cheveux-chignon-droite-becher-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 873,
+    "x": 0,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5034,8 +5289,8 @@
   },
   "avatar/cheveux-chignon-droite-becher-f3.png": {
    "frame": {
-    "x": 1105,
-    "y": 873,
+    "x": 65,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5051,8 +5306,8 @@
   },
   "avatar/cheveux-chignon-droite-becher-f4.png": {
    "frame": {
-    "x": 1170,
-    "y": 873,
+    "x": 130,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5068,8 +5323,8 @@
   },
   "avatar/cheveux-chignon-droite-content-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 873,
+    "x": 195,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5085,8 +5340,8 @@
   },
   "avatar/cheveux-chignon-droite-content-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 873,
+    "x": 260,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5102,8 +5357,8 @@
   },
   "avatar/cheveux-chignon-droite-marche-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 873,
+    "x": 325,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5119,8 +5374,8 @@
   },
   "avatar/cheveux-chignon-droite-marche-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 873,
+    "x": 390,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5136,8 +5391,8 @@
   },
   "avatar/cheveux-chignon-droite-marche-f3.png": {
    "frame": {
-    "x": 1495,
-    "y": 873,
+    "x": 455,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5153,8 +5408,8 @@
   },
   "avatar/cheveux-chignon-droite-marche-f4.png": {
    "frame": {
-    "x": 1560,
-    "y": 873,
+    "x": 520,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5170,8 +5425,8 @@
   },
   "avatar/cheveux-chignon-droite-observer-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 873,
+    "x": 585,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5187,8 +5442,8 @@
   },
   "avatar/cheveux-chignon-droite-observer-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 873,
+    "x": 650,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5204,8 +5459,8 @@
   },
   "avatar/cheveux-chignon-droite-photo-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 873,
+    "x": 715,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5221,8 +5476,8 @@
   },
   "avatar/cheveux-chignon-droite-photo-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 873,
+    "x": 780,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5238,8 +5493,8 @@
   },
   "avatar/cheveux-chignon-droite-planter-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 873,
+    "x": 845,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5255,8 +5510,8 @@
   },
   "avatar/cheveux-chignon-droite-planter-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 873,
+    "x": 910,
+    "y": 970,
     "w": 64,
     "h": 96
    },
@@ -5272,7 +5527,7 @@
   },
   "avatar/cheveux-chignon-droite-planter-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5289,7 +5544,7 @@
   },
   "avatar/cheveux-chignon-droite-planter-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5306,7 +5561,7 @@
   },
   "avatar/cheveux-chignon-droite-porter-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5323,7 +5578,7 @@
   },
   "avatar/cheveux-chignon-droite-porter-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5340,7 +5595,7 @@
   },
   "avatar/cheveux-chignon-droite-porter-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5357,7 +5612,7 @@
   },
   "avatar/cheveux-chignon-droite-porter-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5374,7 +5629,7 @@
   },
   "avatar/cheveux-chignon-droite-recolter-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5391,7 +5646,7 @@
   },
   "avatar/cheveux-chignon-droite-recolter-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5408,7 +5663,7 @@
   },
   "avatar/cheveux-chignon-droite-recolter-f3.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5425,7 +5680,7 @@
   },
   "avatar/cheveux-chignon-droite-recolter-f4.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5442,7 +5697,7 @@
   },
   "avatar/cheveux-chignon-droite-saluer-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5459,7 +5714,7 @@
   },
   "avatar/cheveux-chignon-droite-saluer-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5476,7 +5731,7 @@
   },
   "avatar/cheveux-chignon-droite-saluer-f3.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5493,7 +5748,7 @@
   },
   "avatar/cheveux-chignon-droite-semer-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5510,7 +5765,7 @@
   },
   "avatar/cheveux-chignon-droite-semer-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5527,7 +5782,7 @@
   },
   "avatar/cheveux-chignon-droite-semer-f3.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 970,
     "w": 64,
     "h": 96
@@ -5544,8 +5799,8 @@
   },
   "avatar/cheveux-chignon-droite-semer-f4.png": {
    "frame": {
-    "x": 1040,
-    "y": 970,
+    "x": 0,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5561,8 +5816,8 @@
   },
   "avatar/cheveux-chignon-gauche-arret.png": {
    "frame": {
-    "x": 1105,
-    "y": 970,
+    "x": 65,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5578,8 +5833,8 @@
   },
   "avatar/cheveux-chignon-gauche-arroser-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 970,
+    "x": 130,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5595,8 +5850,8 @@
   },
   "avatar/cheveux-chignon-gauche-arroser-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 970,
+    "x": 195,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5612,8 +5867,8 @@
   },
   "avatar/cheveux-chignon-gauche-arroser-f3.png": {
    "frame": {
-    "x": 1300,
-    "y": 970,
+    "x": 260,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5629,8 +5884,8 @@
   },
   "avatar/cheveux-chignon-gauche-arroser-f4.png": {
    "frame": {
-    "x": 1365,
-    "y": 970,
+    "x": 325,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5646,8 +5901,8 @@
   },
   "avatar/cheveux-chignon-gauche-becher-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 970,
+    "x": 390,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5663,8 +5918,8 @@
   },
   "avatar/cheveux-chignon-gauche-becher-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 970,
+    "x": 455,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5680,8 +5935,8 @@
   },
   "avatar/cheveux-chignon-gauche-becher-f3.png": {
    "frame": {
-    "x": 1560,
-    "y": 970,
+    "x": 520,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5697,8 +5952,8 @@
   },
   "avatar/cheveux-chignon-gauche-becher-f4.png": {
    "frame": {
-    "x": 1625,
-    "y": 970,
+    "x": 585,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5714,8 +5969,8 @@
   },
   "avatar/cheveux-chignon-gauche-content-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 970,
+    "x": 650,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5731,8 +5986,8 @@
   },
   "avatar/cheveux-chignon-gauche-content-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 970,
+    "x": 715,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5748,8 +6003,8 @@
   },
   "avatar/cheveux-chignon-gauche-marche-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 970,
+    "x": 780,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5765,8 +6020,8 @@
   },
   "avatar/cheveux-chignon-gauche-marche-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 970,
+    "x": 845,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5782,8 +6037,8 @@
   },
   "avatar/cheveux-chignon-gauche-marche-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 970,
+    "x": 910,
+    "y": 1067,
     "w": 64,
     "h": 96
    },
@@ -5799,7 +6054,7 @@
   },
   "avatar/cheveux-chignon-gauche-marche-f4.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5816,7 +6071,7 @@
   },
   "avatar/cheveux-chignon-gauche-observer-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5833,7 +6088,7 @@
   },
   "avatar/cheveux-chignon-gauche-observer-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5850,7 +6105,7 @@
   },
   "avatar/cheveux-chignon-gauche-photo-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5867,7 +6122,7 @@
   },
   "avatar/cheveux-chignon-gauche-photo-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5884,7 +6139,7 @@
   },
   "avatar/cheveux-chignon-gauche-planter-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5901,7 +6156,7 @@
   },
   "avatar/cheveux-chignon-gauche-planter-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5918,7 +6173,7 @@
   },
   "avatar/cheveux-chignon-gauche-planter-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5935,7 +6190,7 @@
   },
   "avatar/cheveux-chignon-gauche-planter-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5952,7 +6207,7 @@
   },
   "avatar/cheveux-chignon-gauche-porter-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5969,7 +6224,7 @@
   },
   "avatar/cheveux-chignon-gauche-porter-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -5986,7 +6241,7 @@
   },
   "avatar/cheveux-chignon-gauche-porter-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -6003,7 +6258,7 @@
   },
   "avatar/cheveux-chignon-gauche-porter-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -6020,7 +6275,7 @@
   },
   "avatar/cheveux-chignon-gauche-recolter-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -6037,7 +6292,7 @@
   },
   "avatar/cheveux-chignon-gauche-recolter-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -6054,7 +6309,7 @@
   },
   "avatar/cheveux-chignon-gauche-recolter-f3.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1067,
     "w": 64,
     "h": 96
@@ -6071,8 +6326,8 @@
   },
   "avatar/cheveux-chignon-gauche-recolter-f4.png": {
    "frame": {
-    "x": 1040,
-    "y": 1067,
+    "x": 0,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6088,8 +6343,8 @@
   },
   "avatar/cheveux-chignon-gauche-saluer-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 1067,
+    "x": 65,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6105,8 +6360,8 @@
   },
   "avatar/cheveux-chignon-gauche-saluer-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 1067,
+    "x": 130,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6122,8 +6377,8 @@
   },
   "avatar/cheveux-chignon-gauche-saluer-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 1067,
+    "x": 195,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6139,8 +6394,8 @@
   },
   "avatar/cheveux-chignon-gauche-semer-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 1067,
+    "x": 260,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6156,8 +6411,8 @@
   },
   "avatar/cheveux-chignon-gauche-semer-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 1067,
+    "x": 325,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6173,8 +6428,8 @@
   },
   "avatar/cheveux-chignon-gauche-semer-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 1067,
+    "x": 390,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6190,8 +6445,8 @@
   },
   "avatar/cheveux-chignon-gauche-semer-f4.png": {
    "frame": {
-    "x": 1495,
-    "y": 1067,
+    "x": 455,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6207,8 +6462,8 @@
   },
   "avatar/cheveux-chignon-haut-arret.png": {
    "frame": {
-    "x": 1560,
-    "y": 1067,
+    "x": 520,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6224,8 +6479,8 @@
   },
   "avatar/cheveux-chignon-haut-arroser-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 1067,
+    "x": 585,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6241,8 +6496,8 @@
   },
   "avatar/cheveux-chignon-haut-arroser-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 1067,
+    "x": 650,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6258,8 +6513,8 @@
   },
   "avatar/cheveux-chignon-haut-arroser-f3.png": {
    "frame": {
-    "x": 1755,
-    "y": 1067,
+    "x": 715,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6275,8 +6530,8 @@
   },
   "avatar/cheveux-chignon-haut-arroser-f4.png": {
    "frame": {
-    "x": 1820,
-    "y": 1067,
+    "x": 780,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6292,8 +6547,8 @@
   },
   "avatar/cheveux-chignon-haut-becher-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 1067,
+    "x": 845,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6309,8 +6564,8 @@
   },
   "avatar/cheveux-chignon-haut-becher-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 1067,
+    "x": 910,
+    "y": 1164,
     "w": 64,
     "h": 96
    },
@@ -6326,7 +6581,7 @@
   },
   "avatar/cheveux-chignon-haut-becher-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6343,7 +6598,7 @@
   },
   "avatar/cheveux-chignon-haut-becher-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6360,7 +6615,7 @@
   },
   "avatar/cheveux-chignon-haut-content-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6377,7 +6632,7 @@
   },
   "avatar/cheveux-chignon-haut-content-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6394,7 +6649,7 @@
   },
   "avatar/cheveux-chignon-haut-marche-f1.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6411,7 +6666,7 @@
   },
   "avatar/cheveux-chignon-haut-marche-f2.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6428,7 +6683,7 @@
   },
   "avatar/cheveux-chignon-haut-marche-f3.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6445,7 +6700,7 @@
   },
   "avatar/cheveux-chignon-haut-marche-f4.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6462,7 +6717,7 @@
   },
   "avatar/cheveux-chignon-haut-observer-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6479,7 +6734,7 @@
   },
   "avatar/cheveux-chignon-haut-observer-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6496,7 +6751,7 @@
   },
   "avatar/cheveux-chignon-haut-photo-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6513,7 +6768,7 @@
   },
   "avatar/cheveux-chignon-haut-photo-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6530,7 +6785,7 @@
   },
   "avatar/cheveux-chignon-haut-planter-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6547,7 +6802,7 @@
   },
   "avatar/cheveux-chignon-haut-planter-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6564,7 +6819,7 @@
   },
   "avatar/cheveux-chignon-haut-planter-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6581,7 +6836,7 @@
   },
   "avatar/cheveux-chignon-haut-planter-f4.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1164,
     "w": 64,
     "h": 96
@@ -6598,8 +6853,8 @@
   },
   "avatar/cheveux-chignon-haut-porter-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 1164,
+    "x": 0,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6615,8 +6870,8 @@
   },
   "avatar/cheveux-chignon-haut-porter-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 1164,
+    "x": 65,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6632,8 +6887,8 @@
   },
   "avatar/cheveux-chignon-haut-porter-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 1164,
+    "x": 130,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6649,8 +6904,8 @@
   },
   "avatar/cheveux-chignon-haut-porter-f4.png": {
    "frame": {
-    "x": 1235,
-    "y": 1164,
+    "x": 195,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6666,8 +6921,8 @@
   },
   "avatar/cheveux-chignon-haut-recolter-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 1164,
+    "x": 260,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6683,8 +6938,8 @@
   },
   "avatar/cheveux-chignon-haut-recolter-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 1164,
+    "x": 325,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6700,8 +6955,8 @@
   },
   "avatar/cheveux-chignon-haut-recolter-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 1164,
+    "x": 390,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6717,8 +6972,8 @@
   },
   "avatar/cheveux-chignon-haut-recolter-f4.png": {
    "frame": {
-    "x": 1495,
-    "y": 1164,
+    "x": 455,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6734,8 +6989,8 @@
   },
   "avatar/cheveux-chignon-haut-saluer-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 1164,
+    "x": 520,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6751,8 +7006,8 @@
   },
   "avatar/cheveux-chignon-haut-saluer-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 1164,
+    "x": 585,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6768,8 +7023,8 @@
   },
   "avatar/cheveux-chignon-haut-saluer-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 1164,
+    "x": 650,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6785,8 +7040,8 @@
   },
   "avatar/cheveux-chignon-haut-semer-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 1164,
+    "x": 715,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6802,8 +7057,8 @@
   },
   "avatar/cheveux-chignon-haut-semer-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 1164,
+    "x": 780,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6819,8 +7074,8 @@
   },
   "avatar/cheveux-chignon-haut-semer-f3.png": {
    "frame": {
-    "x": 1885,
-    "y": 1164,
+    "x": 845,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6836,8 +7091,8 @@
   },
   "avatar/cheveux-chignon-haut-semer-f4.png": {
    "frame": {
-    "x": 1950,
-    "y": 1164,
+    "x": 910,
+    "y": 1261,
     "w": 64,
     "h": 96
    },
@@ -6853,7 +7108,7 @@
   },
   "avatar/cheveux-court-bas-arret.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6870,7 +7125,7 @@
   },
   "avatar/cheveux-court-bas-arroser-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6887,7 +7142,7 @@
   },
   "avatar/cheveux-court-bas-arroser-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6904,7 +7159,7 @@
   },
   "avatar/cheveux-court-bas-arroser-f3.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6921,7 +7176,7 @@
   },
   "avatar/cheveux-court-bas-arroser-f4.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6938,7 +7193,7 @@
   },
   "avatar/cheveux-court-bas-becher-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6955,7 +7210,7 @@
   },
   "avatar/cheveux-court-bas-becher-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6972,7 +7227,7 @@
   },
   "avatar/cheveux-court-bas-becher-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -6989,7 +7244,7 @@
   },
   "avatar/cheveux-court-bas-becher-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7006,7 +7261,7 @@
   },
   "avatar/cheveux-court-bas-content-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7023,7 +7278,7 @@
   },
   "avatar/cheveux-court-bas-content-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7040,7 +7295,7 @@
   },
   "avatar/cheveux-court-bas-marche-f1.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7057,7 +7312,7 @@
   },
   "avatar/cheveux-court-bas-marche-f2.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7074,7 +7329,7 @@
   },
   "avatar/cheveux-court-bas-marche-f3.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7091,7 +7346,7 @@
   },
   "avatar/cheveux-court-bas-marche-f4.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7108,7 +7363,7 @@
   },
   "avatar/cheveux-court-bas-observer-f1.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1261,
     "w": 64,
     "h": 96
@@ -7125,8 +7380,8 @@
   },
   "avatar/cheveux-court-bas-observer-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 1261,
+    "x": 0,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7142,8 +7397,8 @@
   },
   "avatar/cheveux-court-bas-photo-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 1261,
+    "x": 65,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7159,8 +7414,8 @@
   },
   "avatar/cheveux-court-bas-photo-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 1261,
+    "x": 130,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7176,8 +7431,8 @@
   },
   "avatar/cheveux-court-bas-planter-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 1261,
+    "x": 195,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7193,8 +7448,8 @@
   },
   "avatar/cheveux-court-bas-planter-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 1261,
+    "x": 260,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7210,8 +7465,8 @@
   },
   "avatar/cheveux-court-bas-planter-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 1261,
+    "x": 325,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7227,8 +7482,8 @@
   },
   "avatar/cheveux-court-bas-planter-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 1261,
+    "x": 390,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7244,8 +7499,8 @@
   },
   "avatar/cheveux-court-bas-porter-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 1261,
+    "x": 455,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7261,8 +7516,8 @@
   },
   "avatar/cheveux-court-bas-porter-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 1261,
+    "x": 520,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7278,8 +7533,8 @@
   },
   "avatar/cheveux-court-bas-porter-f3.png": {
    "frame": {
-    "x": 1625,
-    "y": 1261,
+    "x": 585,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7295,8 +7550,8 @@
   },
   "avatar/cheveux-court-bas-porter-f4.png": {
    "frame": {
-    "x": 1690,
-    "y": 1261,
+    "x": 650,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7312,8 +7567,8 @@
   },
   "avatar/cheveux-court-bas-recolter-f1.png": {
    "frame": {
-    "x": 1755,
-    "y": 1261,
+    "x": 715,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7329,8 +7584,8 @@
   },
   "avatar/cheveux-court-bas-recolter-f2.png": {
    "frame": {
-    "x": 1820,
-    "y": 1261,
+    "x": 780,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7346,8 +7601,8 @@
   },
   "avatar/cheveux-court-bas-recolter-f3.png": {
    "frame": {
-    "x": 1885,
-    "y": 1261,
+    "x": 845,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7363,8 +7618,8 @@
   },
   "avatar/cheveux-court-bas-recolter-f4.png": {
    "frame": {
-    "x": 1950,
-    "y": 1261,
+    "x": 910,
+    "y": 1358,
     "w": 64,
     "h": 96
    },
@@ -7380,7 +7635,7 @@
   },
   "avatar/cheveux-court-bas-saluer-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7397,7 +7652,7 @@
   },
   "avatar/cheveux-court-bas-saluer-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7414,7 +7669,7 @@
   },
   "avatar/cheveux-court-bas-saluer-f3.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7431,7 +7686,7 @@
   },
   "avatar/cheveux-court-bas-semer-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7448,7 +7703,7 @@
   },
   "avatar/cheveux-court-bas-semer-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7465,7 +7720,7 @@
   },
   "avatar/cheveux-court-bas-semer-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7482,7 +7737,7 @@
   },
   "avatar/cheveux-court-bas-semer-f4.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7499,7 +7754,7 @@
   },
   "avatar/cheveux-court-droite-arret.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7516,7 +7771,7 @@
   },
   "avatar/cheveux-court-droite-arroser-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7533,7 +7788,7 @@
   },
   "avatar/cheveux-court-droite-arroser-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7550,7 +7805,7 @@
   },
   "avatar/cheveux-court-droite-arroser-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7567,7 +7822,7 @@
   },
   "avatar/cheveux-court-droite-arroser-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7584,7 +7839,7 @@
   },
   "avatar/cheveux-court-droite-becher-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7601,7 +7856,7 @@
   },
   "avatar/cheveux-court-droite-becher-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7618,7 +7873,7 @@
   },
   "avatar/cheveux-court-droite-becher-f3.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7635,7 +7890,7 @@
   },
   "avatar/cheveux-court-droite-becher-f4.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1358,
     "w": 64,
     "h": 96
@@ -7652,8 +7907,8 @@
   },
   "avatar/cheveux-court-droite-content-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 1358,
+    "x": 0,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7669,8 +7924,8 @@
   },
   "avatar/cheveux-court-droite-content-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 1358,
+    "x": 65,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7686,8 +7941,8 @@
   },
   "avatar/cheveux-court-droite-marche-f1.png": {
    "frame": {
-    "x": 1170,
-    "y": 1358,
+    "x": 130,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7703,8 +7958,8 @@
   },
   "avatar/cheveux-court-droite-marche-f2.png": {
    "frame": {
-    "x": 1235,
-    "y": 1358,
+    "x": 195,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7720,8 +7975,8 @@
   },
   "avatar/cheveux-court-droite-marche-f3.png": {
    "frame": {
-    "x": 1300,
-    "y": 1358,
+    "x": 260,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7737,8 +7992,8 @@
   },
   "avatar/cheveux-court-droite-marche-f4.png": {
    "frame": {
-    "x": 1365,
-    "y": 1358,
+    "x": 325,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7754,8 +8009,8 @@
   },
   "avatar/cheveux-court-droite-observer-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 1358,
+    "x": 390,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7771,8 +8026,8 @@
   },
   "avatar/cheveux-court-droite-observer-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 1358,
+    "x": 455,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7788,8 +8043,8 @@
   },
   "avatar/cheveux-court-droite-photo-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 1358,
+    "x": 520,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7805,8 +8060,8 @@
   },
   "avatar/cheveux-court-droite-photo-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 1358,
+    "x": 585,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7822,8 +8077,8 @@
   },
   "avatar/cheveux-court-droite-planter-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 1358,
+    "x": 650,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7839,8 +8094,8 @@
   },
   "avatar/cheveux-court-droite-planter-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 1358,
+    "x": 715,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7856,8 +8111,8 @@
   },
   "avatar/cheveux-court-droite-planter-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 1358,
+    "x": 780,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7873,8 +8128,8 @@
   },
   "avatar/cheveux-court-droite-planter-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 1358,
+    "x": 845,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7890,8 +8145,8 @@
   },
   "avatar/cheveux-court-droite-porter-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 1358,
+    "x": 910,
+    "y": 1455,
     "w": 64,
     "h": 96
    },
@@ -7907,7 +8162,7 @@
   },
   "avatar/cheveux-court-droite-porter-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -7924,7 +8179,7 @@
   },
   "avatar/cheveux-court-droite-porter-f3.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -7941,7 +8196,7 @@
   },
   "avatar/cheveux-court-droite-porter-f4.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -7958,7 +8213,7 @@
   },
   "avatar/cheveux-court-droite-recolter-f1.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -7975,7 +8230,7 @@
   },
   "avatar/cheveux-court-droite-recolter-f2.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -7992,7 +8247,7 @@
   },
   "avatar/cheveux-court-droite-recolter-f3.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8009,7 +8264,7 @@
   },
   "avatar/cheveux-court-droite-recolter-f4.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8026,7 +8281,7 @@
   },
   "avatar/cheveux-court-droite-saluer-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8043,7 +8298,7 @@
   },
   "avatar/cheveux-court-droite-saluer-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8060,7 +8315,7 @@
   },
   "avatar/cheveux-court-droite-saluer-f3.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8077,7 +8332,7 @@
   },
   "avatar/cheveux-court-droite-semer-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8094,7 +8349,7 @@
   },
   "avatar/cheveux-court-droite-semer-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8111,7 +8366,7 @@
   },
   "avatar/cheveux-court-droite-semer-f3.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8128,7 +8383,7 @@
   },
   "avatar/cheveux-court-droite-semer-f4.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8145,7 +8400,7 @@
   },
   "avatar/cheveux-court-gauche-arret.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8162,7 +8417,7 @@
   },
   "avatar/cheveux-court-gauche-arroser-f1.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1455,
     "w": 64,
     "h": 96
@@ -8179,8 +8434,8 @@
   },
   "avatar/cheveux-court-gauche-arroser-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 1455,
+    "x": 0,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8196,8 +8451,8 @@
   },
   "avatar/cheveux-court-gauche-arroser-f3.png": {
    "frame": {
-    "x": 1105,
-    "y": 1455,
+    "x": 65,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8213,8 +8468,8 @@
   },
   "avatar/cheveux-court-gauche-arroser-f4.png": {
    "frame": {
-    "x": 1170,
-    "y": 1455,
+    "x": 130,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8230,8 +8485,8 @@
   },
   "avatar/cheveux-court-gauche-becher-f1.png": {
    "frame": {
-    "x": 1235,
-    "y": 1455,
+    "x": 195,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8247,8 +8502,8 @@
   },
   "avatar/cheveux-court-gauche-becher-f2.png": {
    "frame": {
-    "x": 1300,
-    "y": 1455,
+    "x": 260,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8264,8 +8519,8 @@
   },
   "avatar/cheveux-court-gauche-becher-f3.png": {
    "frame": {
-    "x": 1365,
-    "y": 1455,
+    "x": 325,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8281,8 +8536,8 @@
   },
   "avatar/cheveux-court-gauche-becher-f4.png": {
    "frame": {
-    "x": 1430,
-    "y": 1455,
+    "x": 390,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8298,8 +8553,8 @@
   },
   "avatar/cheveux-court-gauche-content-f1.png": {
    "frame": {
-    "x": 1495,
-    "y": 1455,
+    "x": 455,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8315,8 +8570,8 @@
   },
   "avatar/cheveux-court-gauche-content-f2.png": {
    "frame": {
-    "x": 1560,
-    "y": 1455,
+    "x": 520,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8332,8 +8587,8 @@
   },
   "avatar/cheveux-court-gauche-marche-f1.png": {
    "frame": {
-    "x": 1625,
-    "y": 1455,
+    "x": 585,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8349,8 +8604,8 @@
   },
   "avatar/cheveux-court-gauche-marche-f2.png": {
    "frame": {
-    "x": 1690,
-    "y": 1455,
+    "x": 650,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8366,8 +8621,8 @@
   },
   "avatar/cheveux-court-gauche-marche-f3.png": {
    "frame": {
-    "x": 1755,
-    "y": 1455,
+    "x": 715,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8383,8 +8638,8 @@
   },
   "avatar/cheveux-court-gauche-marche-f4.png": {
    "frame": {
-    "x": 1820,
-    "y": 1455,
+    "x": 780,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8400,8 +8655,8 @@
   },
   "avatar/cheveux-court-gauche-observer-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 1455,
+    "x": 845,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8417,8 +8672,8 @@
   },
   "avatar/cheveux-court-gauche-observer-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 1455,
+    "x": 910,
+    "y": 1552,
     "w": 64,
     "h": 96
    },
@@ -8434,7 +8689,7 @@
   },
   "avatar/cheveux-court-gauche-photo-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8451,7 +8706,7 @@
   },
   "avatar/cheveux-court-gauche-photo-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8468,7 +8723,7 @@
   },
   "avatar/cheveux-court-gauche-planter-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8485,7 +8740,7 @@
   },
   "avatar/cheveux-court-gauche-planter-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8502,7 +8757,7 @@
   },
   "avatar/cheveux-court-gauche-planter-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8519,7 +8774,7 @@
   },
   "avatar/cheveux-court-gauche-planter-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8536,7 +8791,7 @@
   },
   "avatar/cheveux-court-gauche-porter-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8553,7 +8808,7 @@
   },
   "avatar/cheveux-court-gauche-porter-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8570,7 +8825,7 @@
   },
   "avatar/cheveux-court-gauche-porter-f3.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8587,7 +8842,7 @@
   },
   "avatar/cheveux-court-gauche-porter-f4.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8604,7 +8859,7 @@
   },
   "avatar/cheveux-court-gauche-recolter-f1.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8621,7 +8876,7 @@
   },
   "avatar/cheveux-court-gauche-recolter-f2.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8638,7 +8893,7 @@
   },
   "avatar/cheveux-court-gauche-recolter-f3.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8655,7 +8910,7 @@
   },
   "avatar/cheveux-court-gauche-recolter-f4.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8672,7 +8927,7 @@
   },
   "avatar/cheveux-court-gauche-saluer-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8689,7 +8944,7 @@
   },
   "avatar/cheveux-court-gauche-saluer-f2.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1552,
     "w": 64,
     "h": 96
@@ -8706,8 +8961,8 @@
   },
   "avatar/cheveux-court-gauche-saluer-f3.png": {
    "frame": {
-    "x": 1040,
-    "y": 1552,
+    "x": 0,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8723,8 +8978,8 @@
   },
   "avatar/cheveux-court-gauche-semer-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 1552,
+    "x": 65,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8740,8 +8995,8 @@
   },
   "avatar/cheveux-court-gauche-semer-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 1552,
+    "x": 130,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8757,8 +9012,8 @@
   },
   "avatar/cheveux-court-gauche-semer-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 1552,
+    "x": 195,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8774,8 +9029,8 @@
   },
   "avatar/cheveux-court-gauche-semer-f4.png": {
    "frame": {
-    "x": 1300,
-    "y": 1552,
+    "x": 260,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8791,8 +9046,8 @@
   },
   "avatar/cheveux-court-haut-arret.png": {
    "frame": {
-    "x": 1365,
-    "y": 1552,
+    "x": 325,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8808,8 +9063,8 @@
   },
   "avatar/cheveux-court-haut-arroser-f1.png": {
    "frame": {
-    "x": 1430,
-    "y": 1552,
+    "x": 390,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8825,8 +9080,8 @@
   },
   "avatar/cheveux-court-haut-arroser-f2.png": {
    "frame": {
-    "x": 1495,
-    "y": 1552,
+    "x": 455,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8842,8 +9097,8 @@
   },
   "avatar/cheveux-court-haut-arroser-f3.png": {
    "frame": {
-    "x": 1560,
-    "y": 1552,
+    "x": 520,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8859,8 +9114,8 @@
   },
   "avatar/cheveux-court-haut-arroser-f4.png": {
    "frame": {
-    "x": 1625,
-    "y": 1552,
+    "x": 585,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8876,8 +9131,8 @@
   },
   "avatar/cheveux-court-haut-becher-f1.png": {
    "frame": {
-    "x": 1690,
-    "y": 1552,
+    "x": 650,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8893,8 +9148,8 @@
   },
   "avatar/cheveux-court-haut-becher-f2.png": {
    "frame": {
-    "x": 1755,
-    "y": 1552,
+    "x": 715,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8910,8 +9165,8 @@
   },
   "avatar/cheveux-court-haut-becher-f3.png": {
    "frame": {
-    "x": 1820,
-    "y": 1552,
+    "x": 780,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8927,8 +9182,8 @@
   },
   "avatar/cheveux-court-haut-becher-f4.png": {
    "frame": {
-    "x": 1885,
-    "y": 1552,
+    "x": 845,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8944,8 +9199,8 @@
   },
   "avatar/cheveux-court-haut-content-f1.png": {
    "frame": {
-    "x": 1950,
-    "y": 1552,
+    "x": 910,
+    "y": 1649,
     "w": 64,
     "h": 96
    },
@@ -8961,7 +9216,7 @@
   },
   "avatar/cheveux-court-haut-content-f2.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -8978,7 +9233,7 @@
   },
   "avatar/cheveux-court-haut-marche-f1.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -8995,7 +9250,7 @@
   },
   "avatar/cheveux-court-haut-marche-f2.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9012,7 +9267,7 @@
   },
   "avatar/cheveux-court-haut-marche-f3.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9029,7 +9284,7 @@
   },
   "avatar/cheveux-court-haut-marche-f4.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9046,7 +9301,7 @@
   },
   "avatar/cheveux-court-haut-observer-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9063,7 +9318,7 @@
   },
   "avatar/cheveux-court-haut-observer-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9080,7 +9335,7 @@
   },
   "avatar/cheveux-court-haut-photo-f1.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9097,7 +9352,7 @@
   },
   "avatar/cheveux-court-haut-photo-f2.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9114,7 +9369,7 @@
   },
   "avatar/cheveux-court-haut-planter-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9131,7 +9386,7 @@
   },
   "avatar/cheveux-court-haut-planter-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9148,7 +9403,7 @@
   },
   "avatar/cheveux-court-haut-planter-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9165,7 +9420,7 @@
   },
   "avatar/cheveux-court-haut-planter-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9182,7 +9437,7 @@
   },
   "avatar/cheveux-court-haut-porter-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9199,7 +9454,7 @@
   },
   "avatar/cheveux-court-haut-porter-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9216,7 +9471,7 @@
   },
   "avatar/cheveux-court-haut-porter-f3.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1649,
     "w": 64,
     "h": 96
@@ -9233,8 +9488,8 @@
   },
   "avatar/cheveux-court-haut-porter-f4.png": {
    "frame": {
-    "x": 1040,
-    "y": 1649,
+    "x": 0,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9250,8 +9505,8 @@
   },
   "avatar/cheveux-court-haut-recolter-f1.png": {
    "frame": {
-    "x": 1105,
-    "y": 1649,
+    "x": 65,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9267,8 +9522,8 @@
   },
   "avatar/cheveux-court-haut-recolter-f2.png": {
    "frame": {
-    "x": 1170,
-    "y": 1649,
+    "x": 130,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9284,8 +9539,8 @@
   },
   "avatar/cheveux-court-haut-recolter-f3.png": {
    "frame": {
-    "x": 1235,
-    "y": 1649,
+    "x": 195,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9301,8 +9556,8 @@
   },
   "avatar/cheveux-court-haut-recolter-f4.png": {
    "frame": {
-    "x": 1300,
-    "y": 1649,
+    "x": 260,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9318,8 +9573,8 @@
   },
   "avatar/cheveux-court-haut-saluer-f1.png": {
    "frame": {
-    "x": 1365,
-    "y": 1649,
+    "x": 325,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9335,8 +9590,8 @@
   },
   "avatar/cheveux-court-haut-saluer-f2.png": {
    "frame": {
-    "x": 1430,
-    "y": 1649,
+    "x": 390,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9352,8 +9607,8 @@
   },
   "avatar/cheveux-court-haut-saluer-f3.png": {
    "frame": {
-    "x": 1495,
-    "y": 1649,
+    "x": 455,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9369,8 +9624,8 @@
   },
   "avatar/cheveux-court-haut-semer-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 1649,
+    "x": 520,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9386,8 +9641,8 @@
   },
   "avatar/cheveux-court-haut-semer-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 1649,
+    "x": 585,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9403,8 +9658,8 @@
   },
   "avatar/cheveux-court-haut-semer-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 1649,
+    "x": 650,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9420,8 +9675,8 @@
   },
   "avatar/cheveux-court-haut-semer-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 1649,
+    "x": 715,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9437,8 +9692,8 @@
   },
   "avatar/cheveux-long-bas-arret.png": {
    "frame": {
-    "x": 1820,
-    "y": 1649,
+    "x": 780,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9454,8 +9709,8 @@
   },
   "avatar/cheveux-long-bas-arroser-f1.png": {
    "frame": {
-    "x": 1885,
-    "y": 1649,
+    "x": 845,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9471,8 +9726,8 @@
   },
   "avatar/cheveux-long-bas-arroser-f2.png": {
    "frame": {
-    "x": 1950,
-    "y": 1649,
+    "x": 910,
+    "y": 1746,
     "w": 64,
     "h": 96
    },
@@ -9488,7 +9743,7 @@
   },
   "avatar/cheveux-long-bas-arroser-f3.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9505,7 +9760,7 @@
   },
   "avatar/cheveux-long-bas-arroser-f4.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9522,7 +9777,7 @@
   },
   "avatar/cheveux-long-bas-becher-f1.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9539,7 +9794,7 @@
   },
   "avatar/cheveux-long-bas-becher-f2.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9556,7 +9811,7 @@
   },
   "avatar/cheveux-long-bas-becher-f3.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9573,7 +9828,7 @@
   },
   "avatar/cheveux-long-bas-becher-f4.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9590,7 +9845,7 @@
   },
   "avatar/cheveux-long-bas-content-f1.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9607,7 +9862,7 @@
   },
   "avatar/cheveux-long-bas-content-f2.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9624,7 +9879,7 @@
   },
   "avatar/cheveux-long-bas-marche-f1.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9641,7 +9896,7 @@
   },
   "avatar/cheveux-long-bas-marche-f2.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9658,7 +9913,7 @@
   },
   "avatar/cheveux-long-bas-marche-f3.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9675,7 +9930,7 @@
   },
   "avatar/cheveux-long-bas-marche-f4.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9692,7 +9947,7 @@
   },
   "avatar/cheveux-long-bas-observer-f1.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9709,7 +9964,7 @@
   },
   "avatar/cheveux-long-bas-observer-f2.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9726,7 +9981,7 @@
   },
   "avatar/cheveux-long-bas-photo-f1.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9743,7 +9998,7 @@
   },
   "avatar/cheveux-long-bas-photo-f2.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1746,
     "w": 64,
     "h": 96
@@ -9760,8 +10015,8 @@
   },
   "avatar/cheveux-long-bas-planter-f1.png": {
    "frame": {
-    "x": 1040,
-    "y": 1746,
+    "x": 0,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9777,8 +10032,8 @@
   },
   "avatar/cheveux-long-bas-planter-f2.png": {
    "frame": {
-    "x": 1105,
-    "y": 1746,
+    "x": 65,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9794,8 +10049,8 @@
   },
   "avatar/cheveux-long-bas-planter-f3.png": {
    "frame": {
-    "x": 1170,
-    "y": 1746,
+    "x": 130,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9811,8 +10066,8 @@
   },
   "avatar/cheveux-long-bas-planter-f4.png": {
    "frame": {
-    "x": 1235,
-    "y": 1746,
+    "x": 195,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9828,8 +10083,8 @@
   },
   "avatar/cheveux-long-bas-porter-f1.png": {
    "frame": {
-    "x": 1300,
-    "y": 1746,
+    "x": 260,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9845,8 +10100,8 @@
   },
   "avatar/cheveux-long-bas-porter-f2.png": {
    "frame": {
-    "x": 1365,
-    "y": 1746,
+    "x": 325,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9862,8 +10117,8 @@
   },
   "avatar/cheveux-long-bas-porter-f3.png": {
    "frame": {
-    "x": 1430,
-    "y": 1746,
+    "x": 390,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9879,8 +10134,8 @@
   },
   "avatar/cheveux-long-bas-porter-f4.png": {
    "frame": {
-    "x": 1495,
-    "y": 1746,
+    "x": 455,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9896,8 +10151,8 @@
   },
   "avatar/cheveux-long-bas-recolter-f1.png": {
    "frame": {
-    "x": 1560,
-    "y": 1746,
+    "x": 520,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9913,8 +10168,8 @@
   },
   "avatar/cheveux-long-bas-recolter-f2.png": {
    "frame": {
-    "x": 1625,
-    "y": 1746,
+    "x": 585,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9930,8 +10185,8 @@
   },
   "avatar/cheveux-long-bas-recolter-f3.png": {
    "frame": {
-    "x": 1690,
-    "y": 1746,
+    "x": 650,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9947,8 +10202,8 @@
   },
   "avatar/cheveux-long-bas-recolter-f4.png": {
    "frame": {
-    "x": 1755,
-    "y": 1746,
+    "x": 715,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9964,8 +10219,8 @@
   },
   "avatar/cheveux-long-bas-saluer-f1.png": {
    "frame": {
-    "x": 1820,
-    "y": 1746,
+    "x": 780,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9981,8 +10236,8 @@
   },
   "avatar/cheveux-long-bas-saluer-f2.png": {
    "frame": {
-    "x": 1885,
-    "y": 1746,
+    "x": 845,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -9998,8 +10253,8 @@
   },
   "avatar/cheveux-long-bas-saluer-f3.png": {
    "frame": {
-    "x": 1950,
-    "y": 1746,
+    "x": 910,
+    "y": 1843,
     "w": 64,
     "h": 96
    },
@@ -10015,7 +10270,7 @@
   },
   "avatar/cheveux-long-bas-semer-f1.png": {
    "frame": {
-    "x": 0,
+    "x": 975,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10032,7 +10287,7 @@
   },
   "avatar/cheveux-long-bas-semer-f2.png": {
    "frame": {
-    "x": 65,
+    "x": 1040,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10049,7 +10304,7 @@
   },
   "avatar/cheveux-long-bas-semer-f3.png": {
    "frame": {
-    "x": 130,
+    "x": 1105,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10066,7 +10321,7 @@
   },
   "avatar/cheveux-long-bas-semer-f4.png": {
    "frame": {
-    "x": 195,
+    "x": 1170,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10083,7 +10338,7 @@
   },
   "avatar/cheveux-long-droite-arret.png": {
    "frame": {
-    "x": 260,
+    "x": 1235,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10100,7 +10355,7 @@
   },
   "avatar/cheveux-long-droite-arroser-f1.png": {
    "frame": {
-    "x": 325,
+    "x": 1300,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10117,7 +10372,7 @@
   },
   "avatar/cheveux-long-droite-arroser-f2.png": {
    "frame": {
-    "x": 390,
+    "x": 1365,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10134,7 +10389,7 @@
   },
   "avatar/cheveux-long-droite-arroser-f3.png": {
    "frame": {
-    "x": 455,
+    "x": 1430,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10151,7 +10406,7 @@
   },
   "avatar/cheveux-long-droite-arroser-f4.png": {
    "frame": {
-    "x": 520,
+    "x": 1495,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10168,7 +10423,7 @@
   },
   "avatar/cheveux-long-droite-becher-f1.png": {
    "frame": {
-    "x": 585,
+    "x": 1560,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10185,7 +10440,7 @@
   },
   "avatar/cheveux-long-droite-becher-f2.png": {
    "frame": {
-    "x": 650,
+    "x": 1625,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10202,7 +10457,7 @@
   },
   "avatar/cheveux-long-droite-becher-f3.png": {
    "frame": {
-    "x": 715,
+    "x": 1690,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10219,7 +10474,7 @@
   },
   "avatar/cheveux-long-droite-becher-f4.png": {
    "frame": {
-    "x": 780,
+    "x": 1755,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10236,7 +10491,7 @@
   },
   "avatar/cheveux-long-droite-content-f1.png": {
    "frame": {
-    "x": 845,
+    "x": 1820,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10253,7 +10508,7 @@
   },
   "avatar/cheveux-long-droite-content-f2.png": {
    "frame": {
-    "x": 910,
+    "x": 1885,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10270,7 +10525,7 @@
   },
   "avatar/cheveux-long-droite-marche-f1.png": {
    "frame": {
-    "x": 975,
+    "x": 1950,
     "y": 1843,
     "w": 64,
     "h": 96
@@ -10287,261 +10542,6 @@
   },
   "avatar/cheveux-long-droite-marche-f2.png": {
    "frame": {
-    "x": 1040,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-marche-f3.png": {
-   "frame": {
-    "x": 1105,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-marche-f4.png": {
-   "frame": {
-    "x": 1170,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-observer-f1.png": {
-   "frame": {
-    "x": 1235,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-observer-f2.png": {
-   "frame": {
-    "x": 1300,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-photo-f1.png": {
-   "frame": {
-    "x": 1365,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-photo-f2.png": {
-   "frame": {
-    "x": 1430,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-planter-f1.png": {
-   "frame": {
-    "x": 1495,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-planter-f2.png": {
-   "frame": {
-    "x": 1560,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-planter-f3.png": {
-   "frame": {
-    "x": 1625,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-planter-f4.png": {
-   "frame": {
-    "x": 1690,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-porter-f1.png": {
-   "frame": {
-    "x": 1755,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-porter-f2.png": {
-   "frame": {
-    "x": 1820,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-porter-f3.png": {
-   "frame": {
-    "x": 1885,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-porter-f4.png": {
-   "frame": {
-    "x": 1950,
-    "y": 1843,
-    "w": 64,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 64,
-    "h": 96
-   },
-   "anchor": {
-    "x": 0.5,
-    "y": 1.0
-   },
-   "priority": "P3"
-  },
-  "avatar/cheveux-long-droite-recolter-f1.png": {
-   "frame": {
     "x": 0,
     "y": 1940,
     "w": 64,
@@ -10557,7 +10557,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-recolter-f2.png": {
+  "avatar/cheveux-long-droite-marche-f3.png": {
    "frame": {
     "x": 65,
     "y": 1940,
@@ -10574,7 +10574,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-recolter-f3.png": {
+  "avatar/cheveux-long-droite-marche-f4.png": {
    "frame": {
     "x": 130,
     "y": 1940,
@@ -10591,7 +10591,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-recolter-f4.png": {
+  "avatar/cheveux-long-droite-observer-f1.png": {
    "frame": {
     "x": 195,
     "y": 1940,
@@ -10608,7 +10608,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-saluer-f1.png": {
+  "avatar/cheveux-long-droite-observer-f2.png": {
    "frame": {
     "x": 260,
     "y": 1940,
@@ -10625,7 +10625,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-saluer-f2.png": {
+  "avatar/cheveux-long-droite-photo-f1.png": {
    "frame": {
     "x": 325,
     "y": 1940,
@@ -10642,7 +10642,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-saluer-f3.png": {
+  "avatar/cheveux-long-droite-photo-f2.png": {
    "frame": {
     "x": 390,
     "y": 1940,
@@ -10659,7 +10659,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-semer-f1.png": {
+  "avatar/cheveux-long-droite-planter-f1.png": {
    "frame": {
     "x": 455,
     "y": 1940,
@@ -10676,7 +10676,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-semer-f2.png": {
+  "avatar/cheveux-long-droite-planter-f2.png": {
    "frame": {
     "x": 520,
     "y": 1940,
@@ -10693,7 +10693,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-semer-f3.png": {
+  "avatar/cheveux-long-droite-planter-f3.png": {
    "frame": {
     "x": 585,
     "y": 1940,
@@ -10710,7 +10710,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-droite-semer-f4.png": {
+  "avatar/cheveux-long-droite-planter-f4.png": {
    "frame": {
     "x": 650,
     "y": 1940,
@@ -10727,7 +10727,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-arret.png": {
+  "avatar/cheveux-long-droite-porter-f1.png": {
    "frame": {
     "x": 715,
     "y": 1940,
@@ -10744,7 +10744,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-arroser-f1.png": {
+  "avatar/cheveux-long-droite-porter-f2.png": {
    "frame": {
     "x": 780,
     "y": 1940,
@@ -10761,7 +10761,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-arroser-f2.png": {
+  "avatar/cheveux-long-droite-porter-f3.png": {
    "frame": {
     "x": 845,
     "y": 1940,
@@ -10778,7 +10778,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-arroser-f3.png": {
+  "avatar/cheveux-long-droite-porter-f4.png": {
    "frame": {
     "x": 910,
     "y": 1940,
@@ -10795,7 +10795,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-arroser-f4.png": {
+  "avatar/cheveux-long-droite-recolter-f1.png": {
    "frame": {
     "x": 975,
     "y": 1940,
@@ -10812,7 +10812,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-becher-f1.png": {
+  "avatar/cheveux-long-droite-recolter-f2.png": {
    "frame": {
     "x": 1040,
     "y": 1940,
@@ -10829,7 +10829,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-becher-f2.png": {
+  "avatar/cheveux-long-droite-recolter-f3.png": {
    "frame": {
     "x": 1105,
     "y": 1940,
@@ -10846,7 +10846,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-becher-f3.png": {
+  "avatar/cheveux-long-droite-recolter-f4.png": {
    "frame": {
     "x": 1170,
     "y": 1940,
@@ -10863,7 +10863,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-becher-f4.png": {
+  "avatar/cheveux-long-droite-saluer-f1.png": {
    "frame": {
     "x": 1235,
     "y": 1940,
@@ -10880,7 +10880,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-content-f1.png": {
+  "avatar/cheveux-long-droite-saluer-f2.png": {
    "frame": {
     "x": 1300,
     "y": 1940,
@@ -10897,7 +10897,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-content-f2.png": {
+  "avatar/cheveux-long-droite-saluer-f3.png": {
    "frame": {
     "x": 1365,
     "y": 1940,
@@ -10914,7 +10914,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-marche-f1.png": {
+  "avatar/cheveux-long-droite-semer-f1.png": {
    "frame": {
     "x": 1430,
     "y": 1940,
@@ -10931,7 +10931,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-marche-f2.png": {
+  "avatar/cheveux-long-droite-semer-f2.png": {
    "frame": {
     "x": 1495,
     "y": 1940,
@@ -10948,7 +10948,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-marche-f3.png": {
+  "avatar/cheveux-long-droite-semer-f3.png": {
    "frame": {
     "x": 1560,
     "y": 1940,
@@ -10965,7 +10965,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-marche-f4.png": {
+  "avatar/cheveux-long-droite-semer-f4.png": {
    "frame": {
     "x": 1625,
     "y": 1940,
@@ -10982,7 +10982,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-observer-f1.png": {
+  "avatar/cheveux-long-gauche-arret.png": {
    "frame": {
     "x": 1690,
     "y": 1940,
@@ -10999,7 +10999,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-observer-f2.png": {
+  "avatar/cheveux-long-gauche-arroser-f1.png": {
    "frame": {
     "x": 1755,
     "y": 1940,
@@ -11016,7 +11016,7 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-photo-f1.png": {
+  "avatar/cheveux-long-gauche-arroser-f2.png": {
    "frame": {
     "x": 1820,
     "y": 1940,
@@ -11033,9 +11033,26 @@
    },
    "priority": "P3"
   },
-  "avatar/cheveux-long-gauche-photo-f2.png": {
+  "avatar/cheveux-long-gauche-arroser-f3.png": {
    "frame": {
     "x": 1885,
+    "y": 1940,
+    "w": 64,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 96
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "avatar/cheveux-long-gauche-arroser-f4.png": {
+   "frame": {
+    "x": 1950,
     "y": 1940,
     "w": 64,
     "h": 96
@@ -11052,6 +11069,28 @@
   }
  },
  "animations": {
+  "avatar/chaussures-bottes-droite-arroser": [
+   "avatar/chaussures-bottes-droite-arroser-f1.png",
+   "avatar/chaussures-bottes-droite-arroser-f2.png",
+   "avatar/chaussures-bottes-droite-arroser-f3.png",
+   "avatar/chaussures-bottes-droite-arroser-f4.png"
+  ],
+  "avatar/chaussures-bottes-droite-becher": [
+   "avatar/chaussures-bottes-droite-becher-f1.png",
+   "avatar/chaussures-bottes-droite-becher-f2.png",
+   "avatar/chaussures-bottes-droite-becher-f3.png",
+   "avatar/chaussures-bottes-droite-becher-f4.png"
+  ],
+  "avatar/chaussures-bottes-droite-content": [
+   "avatar/chaussures-bottes-droite-content-f1.png",
+   "avatar/chaussures-bottes-droite-content-f2.png"
+  ],
+  "avatar/chaussures-bottes-droite-marche": [
+   "avatar/chaussures-bottes-droite-marche-f1.png",
+   "avatar/chaussures-bottes-droite-marche-f2.png",
+   "avatar/chaussures-bottes-droite-marche-f3.png",
+   "avatar/chaussures-bottes-droite-marche-f4.png"
+  ],
   "avatar/chaussures-bottes-droite-observer": [
    "avatar/chaussures-bottes-droite-observer-f1.png",
    "avatar/chaussures-bottes-droite-observer-f2.png"
@@ -12038,30 +12077,6 @@
    "avatar/cheveux-long-gauche-arroser-f2.png",
    "avatar/cheveux-long-gauche-arroser-f3.png",
    "avatar/cheveux-long-gauche-arroser-f4.png"
-  ],
-  "avatar/cheveux-long-gauche-becher": [
-   "avatar/cheveux-long-gauche-becher-f1.png",
-   "avatar/cheveux-long-gauche-becher-f2.png",
-   "avatar/cheveux-long-gauche-becher-f3.png",
-   "avatar/cheveux-long-gauche-becher-f4.png"
-  ],
-  "avatar/cheveux-long-gauche-content": [
-   "avatar/cheveux-long-gauche-content-f1.png",
-   "avatar/cheveux-long-gauche-content-f2.png"
-  ],
-  "avatar/cheveux-long-gauche-marche": [
-   "avatar/cheveux-long-gauche-marche-f1.png",
-   "avatar/cheveux-long-gauche-marche-f2.png",
-   "avatar/cheveux-long-gauche-marche-f3.png",
-   "avatar/cheveux-long-gauche-marche-f4.png"
-  ],
-  "avatar/cheveux-long-gauche-observer": [
-   "avatar/cheveux-long-gauche-observer-f1.png",
-   "avatar/cheveux-long-gauche-observer-f2.png"
-  ],
-  "avatar/cheveux-long-gauche-photo": [
-   "avatar/cheveux-long-gauche-photo-f1.png",
-   "avatar/cheveux-long-gauche-photo-f2.png"
   ]
  },
  "meta": {

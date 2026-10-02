@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { PageHeader, Stack } from '@/components/ui/Layout';
+import { decorCatalogFor } from '@/features/decor/service';
 import { sceneSnapshot } from '@/features/scene/snapshot';
 import { zoneTypeOptions } from '@/features/zone/queries';
 import { PlanEditor } from '@/game/PlanEditor';
@@ -26,14 +27,15 @@ export default async function PlanPage({ params, searchParams }: PageProps<'/app
   const u = await requireUser();
   const t = await getTranslations('plan');
   const scene = typeof sp.scene === 'string' && uuidSchema.safeParse(sp.scene).success ? sp.scene : null;
-  const [snapshot, types] = await Promise.all([
+  const [snapshot, types, decorCatalog] = await Promise.all([
     sceneSnapshot(db(), scope, { userId: u.id, sceneZoneId: scene, now: appClock().now() }).catch((e: unknown) => { if (e instanceof DomainError && e.code === 'NOT_FOUND') notFound(); throw e; }),
     zoneTypeOptions(db(), scope),
+    decorCatalogFor(db(), u.id),
   ]);
   return (
     <Stack gap="lg">
       <PageHeader title={t('title')} />
-      <PlanEditor snapshot={snapshot} zoneTypes={types.map((z) => ({ id: z.id, code: z.code, label: z.label, isCustom: z.isCustom, hasInteriorDefault: z.hasInteriorDefault, canHostCultures: z.canHostCultures }))} />
+      <PlanEditor snapshot={snapshot} zoneTypes={types.map((z) => ({ id: z.id, code: z.code, label: z.label, isCustom: z.isCustom, hasInteriorDefault: z.hasInteriorDefault, canHostCultures: z.canHostCultures }))} decorCatalog={decorCatalog} />
     </Stack>
   );
 }

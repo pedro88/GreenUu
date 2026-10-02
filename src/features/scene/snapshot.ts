@@ -8,7 +8,9 @@ import {
   botanicalFamily, culture, cultureStage, garden, gardenMember, groupMember, journalEntry, species, terrainElement, ticket, ticketAssignee, userProfile, variety, zone, zoneType,
 } from '@/server/db/schema';
 import type { RectGeometry } from '../zone/tree';
+import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
+import { sceneAvatars } from './avatars';
 import { layoutInRect, sceneBounds } from './grid.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
@@ -21,7 +23,7 @@ const DAY = 86_400_000;
 const shiftDay = (iso: string, days: number) => new Date(Date.parse(`${iso}T12:00:00Z`) + days * DAY).toISOString().slice(0, 10);
 
 export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: string; sceneZoneId: string | null; now: Date }): Promise<SceneSnapshot> {
-  const [g] = await tx.select({ name: garden.name, tileSizeCm: garden.tileSizeCm, planVersion: garden.planVersion, lat: garden.lat, lng: garden.lng, timezone: garden.timezone })
+  const [g] = await tx.select({ name: garden.name, orgType: garden.orgType, tileSizeCm: garden.tileSizeCm, planVersion: garden.planVersion, lat: garden.lat, lng: garden.lng, timezone: garden.timezone })
     .from(garden).where(eq(garden.id, scope.gardenId)).limit(1);
   if (!g) throw notFound();
   const today = localDate(opts.now, g.timezone);
@@ -54,14 +56,19 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
 
   const cultures = await scenesCultures(tx, scope, { zoneIds: inScene.map((z) => z.id), today, userId: opts.userId, byId, south: g.lat < 0 });
   const [prof] = await tx.select({ reducedMotion: userProfile.reducedMotion }).from(userProfile).where(eq(userProfile.userId, opts.userId)).limit(1);
+  const decor = await sceneDecor(tx, scope.gardenId, opts.sceneZoneId);
+  const avatars = await sceneAvatars(tx, { gardenId: scope.gardenId, orgType: g.orgType, sceneZoneId: opts.sceneZoneId, now: opts.now, byId });
   const rects = [...zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...terrain.map((t) => t.geometry)];
   const ambient = ambientFilter(opts.now, g);
 
   return sceneSnapshotSchema.parse({
     gardenId: scope.gardenId, gardenName: g.name, sceneZoneId: opts.sceneZoneId, breadcrumb, planVersion: g.planVersion, tileSizeCm: g.tileSizeCm,
-    bounds: sceneBounds(rects, g.tileSizeCm), zones, terrain, cultures,
+    bounds: sceneBounds(rects, g.tileSizeCm), zones, terrain, cultures, decor, avatars,
     ambient: { period: ambient.period, season: ambient.season, tint: ambient.tint, alpha: ambient.alpha },
-    viewer: { canEditPlan: can(scope, 'plan:edit') && !scope.archived, reducedMotion: prof?.reducedMotion ?? false },
+    viewer: {
+      canEditPlan: can(scope, 'plan:edit') && !scope.archived, canPlaceDecor: can(scope, 'decor:place') && !scope.archived,
+      canDeclarePractice: can(scope, 'garden:update') && !scope.archived, reducedMotion: prof?.reducedMotion ?? false,
+    },
   });
 }
 

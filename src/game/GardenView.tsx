@@ -9,7 +9,12 @@ import { useStore } from 'zustand';
 import { LinkButton } from '@/components/ui/Button';
 import { QuickCapture } from '@/features/culture/ui/QuickCapture';
 import { MAX_VISIBLE_STATES } from '@/features/scene/phase.pure';
-import type { SceneCulture, SceneSnapshot, SceneZone } from '@/features/scene/snapshot.schema';
+import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot, SceneZone } from '@/features/scene/snapshot.schema';
+import { declareDecorPracticeAction } from '@/features/decor/actions';
+import { Button } from '@/components/ui/Button';
+import { FormError } from '@/components/ui/FormError';
+import { useAction } from '@/components/ui/useAction';
+import { tDynamic } from '@/i18n/dynamic';
 import type { CanvasStatus } from './GardenCanvas';
 import { createCameraStore, createDraftStore, createSceneStore, createSelectionStore, type GameStores } from './stores';
 import { ViewToggle } from './ViewToggle';
@@ -70,8 +75,12 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
   const placedZones = scene.zones.filter((z) => z.geometry).sort((a, b) => (a.geometry?.y ?? 0) - (b.geometry?.y ?? 0) || (a.geometry?.x ?? 0) - (b.geometry?.x ?? 0));
   const placedCultures = scene.cultures.filter((c) => c.position).sort((a, b) => (a.position?.y ?? 0) - (b.position?.y ?? 0) || (a.position?.x ?? 0) - (b.position?.x ?? 0));
   const toPlace = { zones: scene.zones.filter((z) => !z.geometry), cultures: scene.cultures.filter((c) => !c.position) };
+  const tDecor = useTranslations('decor');
+  const decorName = (d: SceneDecor) => tDynamic(tDecor, `item_${d.itemCode}`, d.itemCode);
+  const placedDecor = [...scene.decor].sort((a, b) => a.y - b.y || a.x - b.x);
+  const avatarAria = (a: SceneAvatar) => t('avatarNear', { pseudo: a.pseudo, zone: zonesById.get(a.zoneId)?.name ?? '' });
 
-  const open = (kind: 'zone' | 'culture', id: string) => stores.selection.getState().select({ kind, id });
+  const open = (kind: 'zone' | 'culture' | 'decor', id: string) => stores.selection.getState().select({ kind, id });
   const close = () => {
     const id = stores.selection.getState().selected?.id;
     stores.selection.getState().select(null);
@@ -99,6 +108,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
 
   const selectedZone = selected?.kind === 'zone' ? zonesById.get(selected.id) : undefined;
   const selectedCulture = selected?.kind === 'culture' ? scene.cultures.find((c) => c.id === selected.id) : undefined;
+  const selectedDecor = selected?.kind === 'decor' ? scene.decor.find((d) => d.id === selected.id) : undefined;
 
   return (
     <div className={styles.root} data-testid="garden-view" data-canvas={status.canvas} data-ticker={status.ticker ? 'running' : 'stopped'}
@@ -129,6 +139,16 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
               data-phase={c.phase} data-state={c.states.join(' ')} aria-label={cultureAria(c)}
               style={{ left: `calc(${c.position.x * k}px - var(--touch-min) / 2)`, top: `calc(${c.position.y * k}px - var(--touch-min))` }} onFocus={() => reveal(c.position?.x ?? 0, c.position?.y ?? 0)} onClick={() => open('culture', c.id)} />
           ) : null)}
+          {placedDecor.map((d) => (
+            <button key={d.id} type="button" ref={(el) => { if (el) entityRefs.current.set(d.id, el); }} className={`${styles.entity} ${styles.decor}`} data-testid={`decor-${d.id}`}
+              data-item={d.itemCode} data-state={d.practiceDeclared ? 'practice' : ''} aria-label={d.label ? `${decorName(d)} « ${d.label} »` : decorName(d)}
+              style={{ left: `calc(${d.x * k}px - var(--touch-min) / 2)`, top: `calc(${d.y * k}px - var(--touch-min))` }} onFocus={() => reveal(d.x, d.y)} onClick={() => open('decor', d.id)} />
+          ))}
+          {/* Avatars (§9.5) : repères non contrôlables, annoncés par la liste textuelle. */}
+          {scene.avatars.map((a) => (
+            <span key={a.userId} className={`${styles.entity} ${styles.avatar}`} role="img" data-testid={`avatar-${a.userId}`} data-zone-id={a.zoneId} aria-label={avatarAria(a)}
+              style={{ left: `calc(${a.position.x * k}px - var(--touch-min) / 2)`, top: `calc(${a.position.y * k}px - var(--touch-min))`, pointerEvents: 'none' }} />
+          ))}
         </WorldLayer>
         <div className={styles.zoom} role="group" aria-label={t('zoomGroup')}>
           <button type="button" onClick={() => stores.camera.getState().zoomBy(1.5)} aria-label={t('zoomIn')} data-testid="zoom-in">+</button>
@@ -141,6 +161,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
       {selectedCulture ? (
         <CultureSheet c={selectedCulture} zone={zonesById.get(selectedCulture.zoneId)} gardenId={scene.gardenId} problems={problems} onClose={close} />
       ) : null}
+      {selectedDecor ? <DecorSheet d={selectedDecor} name={decorName(selectedDecor)} snapshot={scene} onClose={close} /> : null}
       {selectedZone ? (
         <ZoneSheet z={selectedZone} cultures={scene.cultures.filter((c) => c.zoneId === selectedZone.id || isDescendant(scene.zones, c.zoneId, selectedZone.id))} gardenId={scene.gardenId}
           onEnter={() => goScene(selectedZone.id)} onClose={close} />
@@ -151,6 +172,8 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
         <ul>
           {placedZones.map((z) => <li key={z.id}><button type="button" className={styles.linkish} onClick={() => open('zone', z.id)}>{z.label}</button></li>)}
           {placedCultures.map((c) => <li key={c.id}><button type="button" className={styles.linkish} onClick={() => open('culture', c.id)}>{cultureAria(c)}</button></li>)}
+          {placedDecor.map((d) => <li key={d.id}><button type="button" className={styles.linkish} onClick={() => open('decor', d.id)}>{decorName(d)}</button></li>)}
+          {scene.avatars.map((a) => <li key={a.userId} data-testid={`avatar-item-${a.userId}`}>{avatarAria(a)}</li>)}
         </ul>
       </details>
       {toPlace.zones.length + toPlace.cultures.length > 0 ? (
@@ -224,6 +247,37 @@ function ZoneSheet({ z, cultures, gardenId, onEnter, onClose }: { z: SceneZone; 
         {z.canHostCultures ? <Link href={`${base}/cultures/nouvelle?zone=${z.id}`} data-testid="zone-plant">{t('plantHere')}</Link> : null}
         <Link href={`${base}/tickets/nouveau?zone=${z.id}`}>{t('newTicket')}</Link>
         <Link href={`${base}/zones/${z.id}`}>{t('openZone')}</Link>
+      </div>
+    </aside>
+  );
+}
+
+/** Feuille d'un objet de déco : un objet ★ peut être déclaré comme pratique réelle du jardin (DEC-03). */
+function DecorSheet({ d, name, snapshot, onClose }: { d: SceneDecor; name: string; snapshot: SceneSnapshot; onClose: () => void }) {
+  const t = useTranslations('decor');
+  const ts = useTranslations('scene');
+  const tp = useTranslations('practices');
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { heading.current?.focus(); }, [d.id]);
+  const declare = useAction(declareDecorPracticeAction);
+  const practice = d.practiceCode ? tDynamic(tp, d.practiceCode, d.practiceCode) : '';
+  return (
+    <aside className={styles.sheet} data-testid="scene-sheet" aria-labelledby="scene-sheet-title" onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}>
+      <div className={styles.sheetHead}>
+        <h2 id="scene-sheet-title" ref={heading} tabIndex={-1}>{name}</h2>
+        <button type="button" className={styles.close} onClick={onClose} aria-label={ts('close')} data-testid="sheet-close">×</button>
+      </div>
+      {d.label ? <p>« {d.label} »</p> : null}
+      {d.practiceCode && d.practiceDeclared ? <p data-testid="decor-practice-declared">{t('declared', { practice })}</p> : null}
+      {d.practiceCode && !d.practiceDeclared && snapshot.viewer.canDeclarePractice ? (
+        <>
+          <p className={styles.muted}>{t('declareHelp')}</p>
+          <FormError error={declare.error} />
+          <Button onClick={() => void declare.run({ gardenId: snapshot.gardenId, placementId: d.id })} disabled={declare.pending} data-testid="decor-declare">{t('declare')}</Button>
+        </>
+      ) : null}
+      <div className={styles.sheetLinks}>
+        {snapshot.viewer.canPlaceDecor ? <Link href={`/app/jardins/${snapshot.gardenId}/plan${snapshot.sceneZoneId ? `?scene=${snapshot.sceneZoneId}` : ''}`}>{t('editInPlan')}</Link> : null}
       </div>
     </aside>
   );
