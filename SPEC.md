@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.7 — validée le 2026-10-01, mise à jour en fin de lot 4. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.8 — validée le 2026-10-01, mise à jour après l'audit du lot 4. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -276,7 +276,7 @@ Catalogue V1. Le payload est minimal : des IDs et les valeurs utiles au barème,
 
 - Les instants sont stockés en `timestamptz`. Les dates agronomiques (étapes, récoltes, échéances à la journée) sont des `date`, interprétées dans le **fuseau du jardin** (`garden.timezone`, IANA). Ce fuseau est déduit de la localisation à la création et reste modifiable.
 - Le « jour » des plafonds d'XP et des quêtes est celui du fuseau de **l'utilisateur** (`user_profile.timezone`).
-- Une horloge injectable (`Clock`) est utilisée partout. En test, `APP_NOW` fige la date côté serveur et Playwright fige celle du navigateur (`page.clock`).
+- Une horloge injectable (`Clock`) est utilisée partout. En e2e, `APP_NOW` et `SEED_REFERENCE_DATE` reçoivent le même instant (`E2E_NOW`, `tests/e2e/db.ts`) : la suite ne dépend pas du jour réel. Le navigateur n'est pas figé, car aucun composant client ne décide d'après l'horloge ; `page.clock` serait requis le jour où l'un d'eux le fera. Les dates posées par une bibliothèque tierce (expiration des jetons Better Auth) se comparent à l'horloge système qui les a posées.
 
 ### 3.8 Environnement local
 
@@ -2168,6 +2168,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.8 | 2026-10-02 | Corrections de l'audit du lot 4 : instant de référence unique des e2e et horloge des jetons tiers (§3.7) ; plafonds horaires des contenus communautaires (§6.9). |
 | 0.7 | 2026-10-02 | Fin du lot 4 : tâches de guide relatives à la date réelle de l'étape et réapplication (RG-GUI-05), guides non listés lisibles sans compte et guides illisibles en 404 (RG-GUI-03), rang du fil de tips (RG-TIP-03), pas d'auto-signalement (RG-MOD-01), notifications `content_hidden` et `moderation_decision` (RG-NTF-01), matrice des sols voisins (§7.2), événements de modération (§3.5). Écart : les tâches récurrentes de `GuideCalendarV1` sont reportées (§4.5). Le profil public n'affiche pas encore avatar ni niveau (lots 6 et 8). |
 | 0.6 | 2026-10-02 | Corrections de l'audit du lot 3 : la désinscription par e-mail passe par une confirmation explicite (RG-NTF-04, NTF-04) ; pièces jointes des tickets ponctuels (RG-TCK-01, TCK-19) ; découpage des services volumineux (§3.2). |
 | 0.5 | 2026-10-02 | Fin du lot 3 : tickets d'étape (titre traduisible, rattachés à la culture), occurrences détachées (RG-TCK-09), regroupement des notifications et type `group_archived_unassigned` (RG-NTF-03), menu « Déplacer vers » du kanban, page `/app/taches` et cloche de notifications, page publique `/desinscription/[token]`. Audit du lot 2 (76/100) corrigé : endpoints HTTP d'authentification restreints, en-têtes de sécurité (CSP à nonce), actions de lecture sans revalidation, listes bornées, CI et pre-commit. |

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { guideIdByTitle, tipContext } from './db';
+import { E2E_YEAR, guideIdByTitle, tipContext } from './db';
 import { gardenId } from './ids';
 import { login } from './helpers';
 
@@ -49,7 +49,7 @@ test.describe('guides, tips, modération', () => {
     await page.getByTestId('culture-list').getByRole('link', { name: /Tomate Noire de Crimée/ }).first().click();
     await page.getByTestId('guide-apply-open').click();
     await page.getByTestId('guide-apply-choice').selectOption({ label: 'Tomates en climat océanique (v2)' });
-    await page.getByTestId('guide-apply-anchor').fill(`${new Date().getFullYear()}-03-01`);
+    await page.getByTestId('guide-apply-anchor').fill(`${E2E_YEAR}-03-01`);
     await page.getByTestId('guide-apply-submit').click();
     await expect(page.getByTestId('guide-applied')).toHaveText('Guide appliqué : 2 tâches créées.');
     await page.keyboard.press('Escape');

@@ -1,6 +1,13 @@
 import postgres from 'postgres';
 
 /** Base des e2e, remise à zéro et seedée au démarrage du serveur (SPEC §13). */
+/**
+ * Instant de référence des e2e : serveur (APP_NOW) et seed (SEED_REFERENCE_DATE) partagent cette seule source de
+ * « maintenant » (audit e2e lot 4, C1). Un mercredi de milieu de mois, hors bascule d'heure d'été (25 octobre).
+ */
+export const E2E_NOW = '2026-10-14T10:00:00Z';
+export const E2E_YEAR = 2026;
+
 export const TEST_DB = process.env.DATABASE_URL_TEST ?? 'postgres://greenu:greenu@localhost:5434/greenu_test';
 
 /** Préconditions lues en base plutôt que par l'UI : les tickets du seed n'ont pas d'ID déterministe. */

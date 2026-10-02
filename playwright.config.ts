@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { TEST_DB } from './tests/e2e/db';
+import { E2E_NOW, TEST_DB } from './tests/e2e/db';
 
 const PORT = 3100;
 
@@ -30,6 +30,9 @@ export default defineConfig({
       SMTP_PORT: '1026',
       MAIL_FROM: 'GreenU <no-reply@greenu.test>',
       NEXT_DIST_DIR: '.next-e2e',
+      // Une seule source de « maintenant » pour le seed et le serveur : la suite ne dépend plus du jour réel.
+      APP_NOW: E2E_NOW,
+      SEED_REFERENCE_DATE: E2E_NOW,
       // Serveur Node dans un autre fuseau que le navigateur (Europe/Brussels) et que l'UTC.
       TZ: 'America/New_York',
     },
