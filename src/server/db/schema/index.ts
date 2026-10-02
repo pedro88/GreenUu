@@ -6,3 +6,4 @@ export * from './plant';
 export * from './culture';
 export * from './ticket';
 export * from './content';
+export * from './result';
