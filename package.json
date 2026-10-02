@@ -52,6 +52,7 @@
     "nodemailer": "^10.0.13",
     "nuqs": "^2.10.1",
     "pg-boss": "^12.35.1",
+    "pixi.js": "^8.22.0",
     "postgres": "^3.4.9",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -60,7 +61,8 @@
     "remark-gfm": "^4.0.1",
     "rrule": "^2.8.1",
     "server-only": "^0.0.1",
-    "zod": "4"
+    "zod": "4",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
