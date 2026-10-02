@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { LinkButton } from '@/components/ui/Button';
 import { Badge, Card, Muted, PageHeader, Row, Stack } from '@/components/ui/Layout';
+import { avatarOf } from '@/features/avatar/service';
+import { AvatarThumb } from '@/features/avatar/ui/AvatarThumb';
 import { achievementsOf } from '@/features/progression/achievements';
 import { nextLevelAt, skillLevelOf } from '@/features/progression/rules.pure';
 import { progressOf } from '@/features/progression/service';
@@ -15,20 +17,24 @@ export async function generateMetadata() {
   return { title: (await getTranslations('profile'))('title') };
 }
 
-/** Mon profil (PAGES.md §6) : niveau, compétences, succès récents ; l'avatar arrive au lot 8. */
+/** Mon profil (PAGES.md §6) : avatar, niveau, compétences, succès récents. */
 export default async function ProfilePage() {
   const u = await requireUser();
   const t = await getTranslations('profile');
   const ts = await getTranslations('skills');
   const ta = await getTranslations('achievements');
   const f = await getFormatter();
-  const [p, achievements] = await Promise.all([progressOf(db(), u.id), achievementsOf(db(), u.id, appClock().now())]);
+  const [p, achievements, avatar] = await Promise.all([progressOf(db(), u.id), achievementsOf(db(), u.id, appClock().now()), avatarOf(db(), u.id)]);
   const recent = achievements.filter((a) => a.earnedAt).sort((a, b) => (b.earnedAt?.getTime() ?? 0) - (a.earnedAt?.getTime() ?? 0)).slice(0, 3);
   return (
     <Stack gap="lg">
       <PageHeader title={u.pseudo ?? u.name} actions={<LinkButton variant="secondary" href="/app/parametres/compte">{t('settings')}</LinkButton>} />
       <Card>
         <Stack gap="sm">
+          <Row>
+            <AvatarThumb userId={avatar.userId} config={avatar.config} configHash={avatar.configHash} pseudo={u.pseudo ?? u.name} size={96} />
+            <Link href="/app/profil/avatar" data-testid="edit-avatar">{t('avatar')}</Link>
+          </Row>
           <Row><Badge data-testid="profile-level">{t('level', { level: p.level })}</Badge><strong data-testid="profile-xp">{t('xp', { xp: p.totalXp })}</strong></Row>
           <Muted>{t('next', { xp: Math.max(0, nextLevelAt(p.level) - p.totalXp), level: p.level + 1 })}</Muted>
         </Stack>

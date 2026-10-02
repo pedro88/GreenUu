@@ -17,6 +17,7 @@ import { appClock } from '@/server/clock';
 import { db } from '@/server/db/client';
 import { ContributionsPanel } from '@/features/progression/ui/ContributionsPanel';
 import { getGarden } from '@/features/garden/service';
+import { avatarsOf } from '@/features/avatar/service';
 
 const TABS = ['membres', 'groupes', 'invitations', 'contributions'] as const;
 
@@ -34,6 +35,7 @@ export default async function MembersPage({ params, searchParams }: PageProps<'/
   const f = await getFormatter();
   const { active, former, invitations } = await listMembers(db(), scope, appClock().now());
   const groups = await listGroups(db(), scope);
+  const avatars = await avatarsOf(db(), active.map((m) => m.userId));
   const canInvite = can(scope, 'member:invite');
   const canGroups = can(scope, 'group:manage');
   const base = `/app/jardins/${scope.gardenId}/membres`;
@@ -51,7 +53,7 @@ export default async function MembersPage({ params, searchParams }: PageProps<'/
           <ul className={styles.list} data-testid="member-list">
             {active.map((m) => (
               <MemberRow key={m.id} gardenId={scope.gardenId} isSelf={m.userId === scope.userId}
-                member={{ id: m.id, pseudo: m.pseudo ?? m.name, role: m.role }}
+                member={{ id: m.id, pseudo: m.pseudo ?? m.name, role: m.role }} avatar={avatars.get(m.userId)}
                 assignable={[...assignableRoles(scope.role)].filter((r): r is 'admin' | 'member' | 'observer' => r !== 'owner')}
                 manageable={can(scope, 'member:change_role') && canManageMember(scope.role, m.role)} />
             ))}

@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { Badge, Card, Muted, Row, Stack } from '@/components/ui/Layout';
 import { PixelIcon } from '@/components/ui/PlantIcon';
+import { avatarsOf } from '@/features/avatar/service';
+import { AvatarThumb } from '@/features/avatar/ui/AvatarThumb';
 import { listGroups } from '@/features/group/service';
 import { listMembers } from '@/features/member/service';
 import { ticketDetail } from '@/features/ticket/queries';
@@ -27,6 +29,7 @@ export default async function TicketPage({ params }: PageProps<'/app/jardins/[ja
     if (e instanceof DomainError && e.code === 'NOT_FOUND') notFound();
     throw e;
   });
+  const avatars = await avatarsOf(db(), d.comments.flatMap((c) => (c.authorId ? [c.authorId] : [])));
   const t = await getTranslations();
   const tk = await getTranslations('tickets');
   const ts = await getTranslations('ticketStatus');
@@ -90,7 +93,7 @@ export default async function TicketPage({ params }: PageProps<'/app/jardins/[ja
           <h2>{tk('comments')}</h2>
           {d.comments.length === 0 ? <Muted>{tk('noComments')}</Muted> : (
             <ul style={{ listStyle: 'none', padding: 0 }} data-testid="comments">
-              {d.comments.map((c) => <li key={c.id}><Row><span className={styles.avatar} aria-hidden>{(c.pseudo ?? '?').slice(0, 1)}</span><p><strong>{c.pseudo}</strong> : {c.body}</p></Row></li>)}
+              {d.comments.map((c) => { const a = c.authorId ? avatars.get(c.authorId) : undefined; return <li key={c.id}><Row>{a ? <AvatarThumb userId={a.userId} config={a.config} configHash={a.configHash} pseudo={c.pseudo ?? '?'} /> : <span className={styles.avatar} aria-hidden>{(c.pseudo ?? '?').slice(0, 1)}</span>}<p><strong>{c.pseudo}</strong> : {c.body}</p></Row></li>; })}
             </ul>
           )}
           {can(scope, 'ticket:comment') && !scope.archived ? <CommentForm gardenId={scope.gardenId} ticketId={d.id} /> : null}
