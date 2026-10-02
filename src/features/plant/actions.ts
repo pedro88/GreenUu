@@ -21,12 +21,14 @@ export const moderateVarietyAction = defineAction({
 
 export const searchPlantsAction = defineAction({
   name: 'plant.search',
+  readOnly: true,
   input: z.object({ q: z.string().max(80) }),
   handler: (ctx, input) => service.searchPlants(ctx.tx, ctx.actor.id, input.q, 12),
 });
 
 export const gardenVarietiesAction = defineAction({
   name: 'plant.gardenVarieties',
+  readOnly: true,
   input: z.object({ gardenId: uuidSchema, speciesId: uuidSchema }),
   permission: 'garden:read',
   gardenId: (i) => i.gardenId,

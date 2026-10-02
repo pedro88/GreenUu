@@ -8,6 +8,7 @@ import * as service from './service';
 
 export const previewCultureAction = defineAction({
   name: 'culture.preview',
+  readOnly: true,
   input: culturePreviewSchema.extend({ plannedDates: cultureCreateSchema.shape.plannedDates }),
   permission: 'garden:read',
   gardenId: (i) => i.gardenId,

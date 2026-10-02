@@ -2,7 +2,7 @@ import 'server-only';
 import { revalidatePath } from 'next/cache';
 import type { z } from 'zod';
 import type { ActionResult } from '@/lib/errors';
-import { actionRegistry, runAction, type ActionDefinition, type Actor } from './action-core';
+import { actionRegistry, runAction, shouldRevalidate, type ActionDefinition, type Actor } from './action-core';
 import { getSessionUser } from './auth/session';
 import { appClock } from './clock';
 import { db } from './db/client';
@@ -30,7 +30,7 @@ export function defineAction<S extends z.ZodType, R>(def: ActionDefinition<S, R>
       jobs: transactionalQueue,
     });
     // Toutes les pages connectées sont dynamiques : on rafraîchit l'arbre /app après une mutation réussie.
-    if (result.ok) revalidatePath('/app', 'layout');
+    if (shouldRevalidate(def, result.ok)) revalidatePath('/app', 'layout');
     return result;
   };
 }

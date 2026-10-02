@@ -53,10 +53,17 @@ export type ActionDefinition<S extends z.ZodType, R> = {
   input: S;
   /** RG-AUTH-02 : e-mail vérifié requis. */
   requireVerifiedEmail?: boolean;
+  /** Lecture seule : aucune revalidation du cache après l'appel (recherche, aperçu…). */
+  readOnly?: true;
 } & (
   | (Omit<GardenBound<z.output<S>>, 'handler'> & { handler: (ctx: ScopedCtx, input: z.output<S>) => Promise<R> })
   | (Omit<Unbound<z.output<S>>, 'handler'> & { handler: (ctx: ServiceCtx, input: z.output<S>) => Promise<R> })
 );
+
+/** Une mutation réussie revalide les pages ; une lecture ne revalide jamais (audit M3). */
+export function shouldRevalidate(def: { readOnly?: true }, ok: boolean): boolean {
+  return ok && def.readOnly !== true;
+}
 
 /** Registre de toutes les actions, utilisé par le test AUTHZ-02 (refus systématique aux non-membres). */
 export const actionRegistry = new Map<string, ActionDefinition<z.ZodType, unknown>>();
