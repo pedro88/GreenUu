@@ -1,3 +1,8 @@
+.note {
+  color: var(--color-text-muted);
+  flex-wrap: nowrap;
+}
+
 .wrap {
   overflow-x: auto;
 }
@@ -29,23 +34,99 @@
   vertical-align: top;
 }
 
-.chip {
+.chip,
+.swatch {
+  --family-bg: var(--color-surface);
+
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  margin-bottom: var(--space-1);
-  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
-  border: 1.5px solid var(--color-border);
+  background: var(--family-bg);
+  border: 1.5px solid var(--family-edge);
   color: var(--color-text);
   font-size: var(--font-size-sm);
+  font-weight: 600;
   text-decoration: none;
+
+  &[data-family] {
+    color: var(--family-text);
+  }
+
+  &[data-family="solanaceae"] {
+    --family-bg: var(--family-solanaceae);
+  }
+
+  &[data-family="brassicaceae"] {
+    --family-bg: var(--family-brassicaceae);
+  }
+
+  &[data-family="fabaceae"] {
+    --family-bg: var(--family-fabaceae);
+  }
+
+  &[data-family="apiaceae"] {
+    --family-bg: var(--family-apiaceae);
+  }
+
+  &[data-family="cucurbitaceae"] {
+    --family-bg: var(--family-cucurbitaceae);
+  }
+
+  &[data-family="amaryllidaceae"] {
+    --family-bg: var(--family-amaryllidaceae);
+  }
+
+  &[data-family="asteraceae"] {
+    --family-bg: var(--family-asteraceae);
+  }
+
+  &[data-family="lamiaceae"] {
+    --family-bg: var(--family-lamiaceae);
+  }
+
+  &[data-family="rosaceae"] {
+    --family-bg: var(--family-rosaceae);
+  }
+
+  &[data-family="poaceae"] {
+    --family-bg: var(--family-poaceae);
+  }
+
+  &[data-family="amaranthaceae"] {
+    --family-bg: var(--family-amaranthaceae);
+  }
+}
+
+.chip {
+  margin-bottom: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  box-shadow: var(--shadow-sm);
+
+  &:hover {
+    color: var(--family-text);
+    filter: brightness(1.05);
+  }
 }
 
 .early {
-  border: 2px solid var(--color-danger);
-  background: var(--color-danger-bg);
+  border: 2.5px solid var(--color-text);
+  outline: 2px solid var(--color-honey);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.swatch {
+  padding: 0.125rem var(--space-3);
+  border-radius: var(--radius-full);
 }
 
 .gantt {
@@ -64,11 +145,58 @@
 }
 
 .bar {
+  --family-bg: var(--color-leaf);
+
   position: absolute;
   top: 0;
   bottom: 0;
   border-radius: var(--radius-sm);
-  background: var(--color-leaf);
+  background: var(--family-bg);
+  border: 1.5px solid var(--family-edge);
+
+  &[data-family="solanaceae"] {
+    --family-bg: var(--family-solanaceae);
+  }
+
+  &[data-family="brassicaceae"] {
+    --family-bg: var(--family-brassicaceae);
+  }
+
+  &[data-family="fabaceae"] {
+    --family-bg: var(--family-fabaceae);
+  }
+
+  &[data-family="apiaceae"] {
+    --family-bg: var(--family-apiaceae);
+  }
+
+  &[data-family="cucurbitaceae"] {
+    --family-bg: var(--family-cucurbitaceae);
+  }
+
+  &[data-family="amaryllidaceae"] {
+    --family-bg: var(--family-amaryllidaceae);
+  }
+
+  &[data-family="asteraceae"] {
+    --family-bg: var(--family-asteraceae);
+  }
+
+  &[data-family="lamiaceae"] {
+    --family-bg: var(--family-lamiaceae);
+  }
+
+  &[data-family="rosaceae"] {
+    --family-bg: var(--family-rosaceae);
+  }
+
+  &[data-family="poaceae"] {
+    --family-bg: var(--family-poaceae);
+  }
+
+  &[data-family="amaranthaceae"] {
+    --family-bg: var(--family-amaranthaceae);
+  }
 }
 
 .months {

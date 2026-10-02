@@ -27,6 +27,21 @@
   --color-accent: #d4573b;
   --color-link: #45602b;
 
+  // Familles botaniques (grille des saisons) : fonds moyens, texte foncé lisible dans les deux thèmes
+  --family-text: #2b1d1f;
+  --family-edge: rgb(43 29 31 / 14%);
+  --family-solanaceae: #e8836a;
+  --family-brassicaceae: #8fb86a;
+  --family-fabaceae: #c5d98f;
+  --family-apiaceae: #f0a65a;
+  --family-cucurbitaceae: #f2c94e;
+  --family-amaryllidaceae: #d9c3a5;
+  --family-asteraceae: #b9a2d8;
+  --family-lamiaceae: #9fcfb8;
+  --family-rosaceae: #f0a3b0;
+  --family-poaceae: #e6d27a;
+  --family-amaranthaceae: #d39cbc;
+
   // États
   --color-warning-bg: #fbe3a2;
   --color-warning-text: #5c3d00;

@@ -792,7 +792,8 @@
     "early": "retour trop précoce de la famille",
     "earlyLegend": "Les cases encadrées signalent une famille revenue avant son délai conseillé.",
     "calendarTitle": "Calendrier {year}",
-    "noCurrent": "Aucune culture cette saison."
+    "noCurrent": "Aucune culture cette saison.",
+    "legend": "Légende des familles"
   },
   "plants": {
     "title": "Plantes",

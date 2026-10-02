@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Card, Muted, PageHeader, Stack } from '@/components/ui/Layout';
+import { Card, Muted, PageHeader, Row, Stack } from '@/components/ui/Layout';
 import { PlantIcon } from '@/components/ui/PlantIcon';
 import { listCultures, seasonGrid } from '@/features/culture/queries';
 import { familySpriteOf } from '@/features/culture/ui/CultureList';
@@ -34,10 +34,11 @@ export default async function SeasonsPage({ params }: PageProps<'/app/jardins/[j
   const pct = (d: string | null, fallback: number) => (d ? Math.min(100, Math.max(0, ((new Date(`${d}T00:00:00`).getTime() - start) / span) * 100)) : fallback);
   const months = Array.from({ length: 12 }, (_, i) => new Date(2026, (g.seasonStartMonth - 1 + i) % 12, 1).toLocaleDateString('fr', { month: 'short' }));
   const hasEarly = grid.rows.some((r) => r.cells.some((c) => c.cultures.some((x) => x.early)));
+  const families = [...new Set(grid.rows.flatMap((r) => r.cells.flatMap((c) => c.cultures.map((x) => x.familyCode))))].filter((f) => familySpriteOf(f));
   return (
     <Stack gap="lg">
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
-      {hasEarly ? <Muted><AlertTriangle aria-hidden size={16} /> {t('earlyLegend')}</Muted> : null}
+      {hasEarly ? <Row className={styles.note}><AlertTriangle aria-hidden size={16} /><Muted>{t('earlyLegend')}</Muted></Row> : null}
       <Card className={styles.wrap}>
         <table className={styles.grid} data-testid="season-grid">
           <thead>
@@ -53,7 +54,7 @@ export default async function SeasonsPage({ params }: PageProps<'/app/jardins/[j
                 {r.cells.map((c) => (
                   <td key={c.year} className={styles.cell}>
                     {c.cultures.map((x) => (
-                      <Link key={x.id} href={`/app/jardins/${scope.gardenId}/cultures/${x.id}`} className={`${styles.chip} ${x.early ? styles.early : ''}`}
+                      <Link key={x.id} href={`/app/jardins/${scope.gardenId}/cultures/${x.id}`} className={`${styles.chip} ${x.early ? styles.early : ''}`} data-family={familySpriteOf(x.familyCode) ? x.familyCode : undefined}
                         data-testid={x.early ? 'rotation-early' : 'rotation-ok'} title={tDynamic(tf, x.familyCode, x.familyCode)}>
                         <PlantIcon spriteKey={x.spriteKey} familySprite={familySpriteOf(x.familyCode)} size={32} />
                         <span>{x.label}{x.early ? <><span className="visually-hidden"> — {t('early')}</span> <AlertTriangle aria-hidden size={14} /></> : null}</span>
@@ -65,6 +66,11 @@ export default async function SeasonsPage({ params }: PageProps<'/app/jardins/[j
             ))}
           </tbody>
         </table>
+        {families.length > 0 ? (
+          <ul className={styles.legend} aria-label={t('legend')}>
+            {families.map((f) => <li key={f} className={styles.swatch} data-family={f}>{tDynamic(tf, f, f)}</li>)}
+          </ul>
+        ) : null}
       </Card>
       <Card>
         <Stack>
@@ -79,7 +85,7 @@ export default async function SeasonsPage({ params }: PageProps<'/app/jardins/[j
                   return (
                     <li key={c.id}>
                       <Link href={`/app/jardins/${scope.gardenId}/cultures/${c.id}`}>{c.label}</Link> · {c.zoneName}
-                      <div className={styles.track}><span className={styles.bar} style={{ left: `${left}%`, width: `${Math.max(2, right - left)}%` }} /></div>
+                      <div className={styles.track}><span className={styles.bar} data-family={familySpriteOf(c.familyCode ?? '') ? c.familyCode : undefined} style={{ left: `${left}%`, width: `${Math.max(2, right - left)}%` }} /></div>
                     </li>
                   );
                 })}
