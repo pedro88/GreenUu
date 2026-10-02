@@ -117,3 +117,25 @@ export async function cultureOfTicket(gardenId: string, title: string): Promise<
     await sql.end();
   }
 }
+
+/** Avatar enregistré d'un utilisateur (AVT-01, AVT-02) ; null tant qu'aucun n'a été attribué. */
+export async function avatarRow(userId: string): Promise<{ configHash: string; config: { layers: Record<string, { item: string | null; palettes: string[] }> } } | null> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ config_hash: string; config: { layers: Record<string, { item: string | null; palettes: string[] }> } }[]>`select config_hash, config from user_avatar where user_id = ${userId}`;
+    return row ? { configHash: row.config_hash, config: row.config } : null;
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Pratique déclarée par un objet de déco (DEC-03). */
+export async function decorPracticeCode(placementId: string): Promise<string | null> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ code: string }[]>`select p.code from practice_declaration d join practice p on p.id = d.practice_id where d.decor_placement_id = ${placementId}`;
+    return row?.code ?? null;
+  } finally {
+    await sql.end();
+  }
+}
