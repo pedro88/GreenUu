@@ -20,10 +20,10 @@ La référence fonctionnelle est [SPEC.md](SPEC.md) : périmètre des lots au §
 
 ## Cycle de travail par lot
 
-Chaque lot suit toujours ces quatre étapes, dans cet ordre. On ne passe à l'étape suivante que lorsque la précédente est terminée et committée.
+Chaque lot suit toujours ces cinq étapes, dans cet ordre. On ne passe à l'étape suivante que lorsque la précédente est terminée et committée.
 
 ```
-1. Branche lot-N/<slug>  →  2. Développement du lot N  →  3. /audit-projet-next  →  4. /audit-corrections
+1. Branche lot-N/<slug>  →  2. Développement du lot N  →  3. /audit-projet-next  →  4. /audit-e2e  →  5. /audit-corrections
 ```
 
 ### 1. Création et checkout de la branche
@@ -60,10 +60,21 @@ git switch -c lot-N/<slug>
 - Produit `AUDIT-YYYY-MM-DD.md` à la racine. L'audit **ne modifie pas le code**.
 - Committer le rapport sur la branche du lot : `docs(lot-N): rapport d'audit YYYY-MM-DD`. L'étape suivante exige un working tree propre.
 
-### 4. Corrections — `/audit-corrections`
+### 4. Audit e2e — `/audit-e2e`
 
-- Lancé depuis la branche du lot, rapport committé.
-- Le skill crée `audit-fix/YYYY-MM-DD` à partir de la branche du lot, traite les constats **critiques et majeurs** (un constat = un commit `fix(audit): …`) et met à jour le rapport.
+- Lancé sur la branche du lot, juste après l'audit général.
+- Produit `E2E-AUDIT-YYYY-MM-DD.md` à la racine : couverture Playwright (parcours, rôles, états, dates), hygiène de la suite et specs rédigées pour les manques. **Aucun code de test n'est écrit** à cette étape.
+- Les matrices de rôles s'appuient sur la matrice des permissions (SPEC.md §5.2), et les parcours sur les critères du §12.
+- Committer le rapport : `docs(lot-N): rapport d'audit e2e YYYY-MM-DD`.
+
+### 5. Corrections — `/audit-corrections`
+
+- Lancé depuis la branche du lot, les deux rapports committés.
+- Le skill crée `audit-fix/YYYY-MM-DD` à partir de la branche du lot.
+- **Passe 1 — `AUDIT-*.md`** : constats **critiques et majeurs**, un constat = un commit `fix(audit): …`.
+- **Passe 2 — `E2E-AUDIT-*.md`**, sur la même branche, après la passe 1 : implémenter les specs prioritaires du rapport (trous d'autorisation et transitions refusées d'abord), une spec ou un groupe cohérent = un commit `test(audit-e2e): …`. Les suppressions et fusions de tests proposées sont appliquées dans des commits à part. Un test qui révèle un bug n'est pas « corrigé » en assouplissant le test : le bug est remonté.
+- Après chaque passe : `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm test:e2e`, `pnpm test:spec`, comparés à la baseline.
+- Mettre à jour l'état de chaque constat et de chaque spec dans les deux rapports (commit final séparé).
 - Les constats en attente de décision (migration destructive, règle métier, rupture d'API…) sont remontés, pas tranchés.
 - Fin de cycle, **à faire par l'utilisateur ou sur demande explicite** :
   1. relire le diff `git diff lot-N/<slug>...audit-fix/YYYY-MM-DD` ;
