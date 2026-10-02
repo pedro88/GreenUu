@@ -6,9 +6,9 @@ import { seasonBounds } from '../src/features/season/season.pure';
 import type { Db } from '../src/server/db/client';
 import {
   account, consent, garden, gardenEnvironment, gardenGroup, gardenMember, groupMember, practice, practiceDeclaration,
-  season, user, userProfile, zone, zoneGroupPermission, zoneType,
+  season, terrainElement, user, userProfile, zone, zoneGroupPermission, zoneType,
 } from '../src/server/db/schema';
-import type { Environment, GardenRole, OrgType } from '../src/lib/enums';
+import type { Environment, GardenRole, OrgType, TerrainKind } from '../src/lib/enums';
 import { loadReferenceData } from '../src/features/plant/reference/load';
 import { closeOldSeasons, seedCultures } from './seed-cultures';
 import { seedCommunity, seedOwnResults } from './seed-community';
@@ -90,6 +90,43 @@ export const SEED_GARDENS: GardenSpec[] = [
   },
 ];
 
+/**
+ * Plan des jardins (lot 7, §9) : géométrie en centimètres, [x, y, largeur, hauteur], tuile de 50 cm. Les zones absentes
+ * restent « à placer ». Dans le Potager des Tilleuls, les tuiles (2, 2) à (5, 4) restent libres pour PLN-01.
+ */
+const GEOMETRY: Record<string, Record<string, [number, number, number, number]>> = {
+  tilleuls: {
+    potager: [0, 0, 1200, 600],
+    p1: [450, 100, 150, 300], 'p1-r1': [450, 100, 150, 100], 'p1-r2': [450, 200, 150, 100], 'p1-r3': [450, 300, 150, 100],
+    p2: [650, 100, 150, 300], 'p2-r1': [650, 100, 150, 150], 'p2-r2': [650, 250, 150, 150],
+    p3: [850, 100, 150, 300], p4: [1050, 100, 150, 300],
+    carres: [0, 700, 700, 250], bac1: [50, 750, 150, 150], bac2: [250, 750, 150, 150], bac3: [450, 750, 150, 150],
+    fruits: [800, 750, 800, 100], compost: [1300, 0, 100, 100],
+  },
+  canal: {
+    a: [0, 0, 600, 400], a1: [50, 50, 200, 300], a2: [300, 50, 200, 300],
+    b: [700, 0, 600, 400], b1: [750, 50, 200, 300], b2: [1000, 50, 200, 300],
+    dupont: [0, 500, 400, 300], d1: [50, 550, 300, 200],
+    serre: [700, 500, 400, 300], compost: [1200, 500, 100, 100],
+    // Intérieur de la serre (scène propre) : deux tables, la première avec deux bacs.
+    t1: [50, 50, 300, 100], 't1-b1': [50, 50, 150, 100], 't1-b2': [200, 50, 150, 100], t2: [50, 200, 300, 100],
+  },
+  combes: {
+    serre1: [0, 0, 600, 300], 's1-1': [50, 50, 200, 200], 's1-2': [300, 50, 200, 200],
+    tunnel1: [0, 400, 800, 200], 't1-1': [50, 50, 700, 100],
+    pepiniere: [700, 0, 200, 200], plaque1: [750, 50, 100, 50],
+  },
+};
+const rectOf = (garden: string, key: string) => {
+  const g = GEOMETRY[garden]?.[key];
+  return g ? { v: 1 as const, kind: 'rect' as const, x: g[0], y: g[1], w: g[2], h: g[3] } : null;
+};
+/** Éléments de terrain de la scène extérieure (§9.2) : allées et points d'eau. */
+const TERRAIN: Record<string, { key: string; kind: TerrainKind; at: [number, number, number, number] }[]> = {
+  tilleuls: [{ key: 'allee', kind: 'gravel_path', at: [0, 600, 1200, 100] }, { key: 'robinet', kind: 'water_point', at: [1250, 150, 50, 50] }, { key: 'cuve', kind: 'rain_barrel', at: [1300, 200, 50, 50] }],
+  canal: [{ key: 'allee', kind: 'path', at: [0, 400, 1300, 100] }, { key: 'portail', kind: 'gate', at: [600, 900, 100, 50] }],
+};
+
 /** Seed idempotent : identifiants dérivés des noms, `ON CONFLICT DO NOTHING`. */
 export async function seed(db: Db, referenceDate: Date): Promise<void> {
   const passwordHash = await hashPassword(SEED_PASSWORD);
@@ -128,13 +165,16 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
           const path = parent ? (parent.path ? `${parent.path}/${parent.id}` : parent.id) : '';
           await tx.insert(zone).values({
             id, gardenId: gid, parentId: parent?.id ?? null, zoneTypeId: typeId, name: z.name, path, depth: parent ? parent.depth + 1 : 0,
-            environment: z.env ?? null, lengthCm: z.lengthCm ?? null, widthCm: z.widthCm ?? null, hasInterior: z.interior ?? false,
+            environment: z.env ?? null, lengthCm: z.lengthCm ?? null, widthCm: z.widthCm ?? null, hasInterior: z.interior ?? false, geometry: rectOf(g.key, z.key),
             sceneZoneId: parent ? (parent.interior ? parent.id : parent.scene) : null, sortOrder: i,
           }).onConflictDoNothing();
           if (z.children) await insertZones(z.children, { id, path, depth: parent ? parent.depth + 1 : 0, scene: parent ? (parent.interior ? parent.id : parent.scene) : null, interior: z.interior ?? false });
         }
       };
       await insertZones(g.zones, null);
+      for (const t of TERRAIN[g.key] ?? []) {
+        await tx.insert(terrainElement).values({ id: seedId(`terrain:${g.key}:${t.key}`), gardenId: gid, kind: t.kind, geometry: { v: 1, kind: 'rect', x: t.at[0], y: t.at[1], w: t.at[2], h: t.at[3] } }).onConflictDoNothing();
+      }
       for (const gr of g.groups ?? []) {
         const grId = groupId(g.key, gr.key);
         await tx.insert(gardenGroup).values({ id: grId, gardenId: gid, name: gr.name }).onConflictDoNothing();

@@ -16,6 +16,7 @@ export type DomainEvent =
   | E<'garden.unarchived', 'garden', Record<string, never>>
   | E<'garden.deleted', 'garden', Record<string, never>>
   | E<'garden.ownership_transferred', 'garden', { fromUserId: string; toUserId: string }>
+  | E<'garden.plan_saved', 'garden', { commands: number; planVersion: number }>
   | E<'member.joined', 'member', { userId: string; role: string; via: 'creation' | 'invitation' }>
   | E<'member.left', 'member', { userId: string; removedBy: string | null; unassignedTicketIds: string[] }>
   | E<'member.role_changed', 'member', { userId: string; from: string; to: string }>

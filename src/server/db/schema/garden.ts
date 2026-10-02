@@ -19,7 +19,7 @@ import {
 import { citext, createdAt, id, timestamps, tz } from './_columns';
 import { user } from './auth';
 
-import { ENVIRONMENTS, EXPOSURES, GARDEN_ROLES, NON_OWNER_ROLES, ORG_TYPES, SOIL_TYPES, WATER_ACCESS } from '@/lib/enums';
+import { DEFAULT_VIEWS, ENVIRONMENTS, EXPOSURES, GARDEN_ROLES, NON_OWNER_ROLES, ORG_TYPES, SOIL_TYPES, WATER_ACCESS } from '@/lib/enums';
 
 export { ENVIRONMENTS, EXPOSURES, GARDEN_ROLES, NON_OWNER_ROLES, ORG_TYPES, SOIL_TYPES, WATER_ACCESS };
 
@@ -32,7 +32,7 @@ export const userProfile = pgTable('user_profile', {
   pseudo: citext('pseudo').notNull().unique(),
   locale: text('locale').notNull().default('fr'),
   timezone: text('timezone').notNull().default('Europe/Paris'),
-  defaultView: text('default_view', { enum: ['garden', 'classic'] }).notNull().default('classic'),
+  defaultView: text('default_view', { enum: DEFAULT_VIEWS }).notNull().default('garden'),
   reducedMotion: boolean('reduced_motion').notNull().default(false),
   profileVisibility: text('profile_visibility', { enum: ['public', 'members', 'private'] })
     .notNull()

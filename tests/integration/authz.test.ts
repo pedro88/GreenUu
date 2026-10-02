@@ -86,6 +86,7 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'result.setSharing': { gardenId, enabled: true },
     'goal.create': { gardenId, title: 'Objectif', metric: 'tickets_completed', target: 10, periodStart: '2026-06-01', periodEnd: '2026-06-30' },
     'leaderboard.toggle': { gardenId, enabled: true },
+    'plan.apply': { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'setScale', tileSizeCm: 25 }] },
   };
 }
 

@@ -135,6 +135,26 @@ export async function updateZone(ctx: ScopedCtx, input: ZoneUpdateInput) {
   return { zoneId: current.id };
 }
 
+/**
+ * Éditeur de plan (§9.7) : redimensionner ou déplacer une zone sur le plan. Mêmes invariants que le formulaire
+ * (RG-ZON-05), plus la contenance des enfants dessinés dans la même scène.
+ */
+export async function setZoneGeometry(ctx: ScopedCtx, zoneId: string, geometry: RectGeometry) {
+  const { tx, scope, actor, clock } = ctx;
+  const current = await repo.findZone(tx, scope, zoneId);
+  if (current.archivedAt) throw validation({ zoneId: ['zoneArchived'] });
+  await assertZoneEdit(tx, scope, 'zone:update', chainOf(current));
+  const parent = current.parentId ? await repo.findZone(tx, scope, current.parentId) : null;
+  await assertGeometry(tx, scope, geometry, parent, current.id);
+  if (!current.hasInterior) {
+    const children = await repo.siblingGeometries(tx, scope, current.id, null);
+    if (children.some((c) => checkGeometry(c, geometry, []) !== null)) throw validation({ geometry: ['outside_parent'] });
+  }
+  await tx.update(zone).set({ geometry }).where(and(eq(zone.gardenId, scope.gardenId), eq(zone.id, current.id)));
+  await emit(tx, { type: 'zone.updated', subjectType: 'zone', subjectId: current.id, gardenId: scope.gardenId, actorId: actor.id, payload: { fields: ['geometry'] } }, clock.now());
+  return { zoneId: current.id };
+}
+
 /** RG-ZON-01 : déplacement sous un autre parent (ou à la racine), sans cycle ni dépassement de profondeur. */
 export async function moveZone(ctx: ScopedCtx, input: { zoneId: string; parentId: string | null }) {
   const { tx, scope, actor, clock } = ctx;
