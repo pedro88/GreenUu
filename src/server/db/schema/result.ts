@@ -72,7 +72,7 @@ export const dataExport = pgTable(
   {
     id: id(),
     userId: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
-    status: text('status', { enum: ['pending', 'ready', 'failed'] }).notNull().default('pending'),
+    status: text('status', { enum: ['pending', 'ready', 'expired', 'failed'] }).notNull().default('pending'),
     storageKey: text('storage_key'),
     bytes: integer('bytes'),
     readyAt: tz('ready_at'),

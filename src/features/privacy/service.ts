@@ -88,6 +88,19 @@ export async function buildExport(ctx: Omit<ServiceCtx, 'actor'>, exportId: stri
   if (u) await jobs.enqueue('mail.send', dataExportMail({ to: u.email, url: `${appUrl}/app/parametres/confidentialite/export/${e.id}` }));
 }
 
+/** Efface les archives d'un ensemble d'exports (fichier puis ligne marquée `expired`) : rien ne survit à l'échéance. */
+async function eraseExports(tx: Executor, files: FileStorage, rows: { id: string; storageKey: string | null }[]) {
+  for (const r of rows) if (r.storageKey) await files.remove(r.storageKey);
+  if (rows.length) await tx.update(dataExport).set({ status: 'expired', storageKey: null }).where(inArray(dataExport.id, rows.map((r) => r.id)));
+}
+
+/** Job `privacy.purge` : les archives expirées (7 jours) sont effacées du stockage (§11.4, audit lot 5 M1). */
+export async function purgeExpiredExports(tx: Executor, files: FileStorage, now: Date) {
+  const rows = await tx.select({ id: dataExport.id, storageKey: dataExport.storageKey }).from(dataExport).where(and(eq(dataExport.status, 'ready'), lt(dataExport.expiresAt, now)));
+  await eraseExports(tx, files, rows);
+  return rows.length;
+}
+
 /** Téléchargement : l'utilisateur lui-même, connecté, avant expiration (§11.4). */
 export async function readExport(tx: Executor, userId: string, exportId: string, files: FileStorage, now: Date) {
   const [e] = await tx.select().from(dataExport).where(and(eq(dataExport.id, exportId), eq(dataExport.userId, userId), eq(dataExport.status, 'ready'), gt(dataExport.expiresAt, now))).limit(1);
@@ -164,6 +177,7 @@ export async function purgeDeletedAccounts(tx: Executor, files: FileStorage, now
     const photos = await tx.select({ id: attachment.id, key: attachment.storageKey }).from(attachment).where(eq(attachment.uploadedBy, userId));
     for (const ph of photos) await files.remove(ph.key);
     if (photos.length) await tx.update(attachment).set({ deletedAt: now }).where(inArray(attachment.id, photos.map((ph) => ph.id)));
+    await eraseExports(tx, files, await tx.select({ id: dataExport.id, storageKey: dataExport.storageKey }).from(dataExport).where(eq(dataExport.userId, userId)));
     await tx.delete(tipVote).where(eq(tipVote.userId, userId));
     await tx.update(tip).set({ deletedAt: now }).where(eq(tip.authorId, userId));
     await tx.update(guide).set({ deletedAt: now }).where(and(eq(guide.authorId, userId), isNull(guide.deletedAt)));

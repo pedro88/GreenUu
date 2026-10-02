@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createCulture } from '../../src/features/culture/service';
 import { recordHarvest } from '../../src/features/harvest/service';
 import { createJournalEntry } from '../../src/features/journal/service';
-import { purgeDeletedAccounts, requestDeletion, restoreAccount } from '../../src/features/privacy/service';
+import { buildExport, purgeDeletedAccounts, purgeExpiredExports, readExport, requestDeletion, requestExport, restoreAccount } from '../../src/features/privacy/service';
 import { createEngineV1 } from '../../src/features/reco/engine';
 import { gardenPseudo, refreshSharedFacts, speciesCommunityStats } from '../../src/features/reco/facts';
 import { resultForm, setResultSharing, submitResult } from '../../src/features/result/service';
@@ -212,5 +212,32 @@ describe('contrat du moteur', () => {
       } finally {
         restore();
       }
+    }));
+});
+
+describe('archives d\'export (audit lot 5, M1)', () => {
+  function memFiles() {
+    const files = new Map<string, Uint8Array>();
+    return { files, put: async (k: string, d: Uint8Array) => void files.set(k, d), get: async (k: string) => files.get(k) ?? null, remove: async (k: string) => void files.delete(k) };
+  }
+
+  it('[PRV-07] l\'archive est effacée à l\'expiration (7 jours) et à la purge du compte', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const store = memFiles();
+      const at = (days: number) => fixedClock(new Date(NOW.getTime() + days * 86_400_000));
+      const { exportId } = await requestExport(ctxFor(tx, alice));
+      await buildExport({ tx, clock: at(0), jobs: recordingQueue(), appUrl: 'http://x' }, exportId, store);
+      expect(store.files.size).toBe(1);
+      await expect(readExport(tx, alice.id, exportId, store, new Date(NOW.getTime() + 6 * 86_400_000))).resolves.toBeInstanceOf(Uint8Array);
+      expect(await purgeExpiredExports(tx, store, new Date(NOW.getTime() + 6 * 86_400_000))).toBe(0);
+      expect(await purgeExpiredExports(tx, store, new Date(NOW.getTime() + 8 * 86_400_000))).toBe(1);
+      expect(store.files.size).toBe(0);
+      // Un nouvel export, puis la suppression du compte : l'archive disparaît à la purge, avant toute expiration.
+      const { exportId: second } = await requestExport(ctxFor(tx, alice, { clock: at(9) }));
+      await buildExport({ tx, clock: at(9), jobs: recordingQueue(), appUrl: 'http://x' }, second, store);
+      await requestDeletion(ctxFor(tx, alice, { clock: at(9) }), { confirmTransferToMember: false });
+      await purgeDeletedAccounts(tx, store, new Date(NOW.getTime() + 40 * 86_400_000));
+      expect(store.files.size).toBe(0);
     }));
 });

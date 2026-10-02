@@ -7,7 +7,7 @@ import { BOSS_SCHEMA } from './boss';
 import { dispatchOutbox, housekeeping, sendMail } from './handlers';
 import { dailyDigest, dueReminders, materializeAllSeries } from '../../features/ticket/jobs';
 import { refreshSharedFacts } from '../../features/reco/facts';
-import { buildExport, purgeDeletedAccounts } from '../../features/privacy/service';
+import { buildExport, purgeDeletedAccounts, purgeExpiredExports } from '../../features/privacy/service';
 import { storage } from '../storage/storage';
 import { appClock } from '../clock';
 import { fromDrizzle } from 'pg-boss';
@@ -53,7 +53,12 @@ async function main() {
   await boss.work<{ exportId: string }>('privacy.export', async (jobs) => {
     for (const job of jobs) await db.transaction((tx) => buildExport({ tx, clock: appClock(), jobs: txQueue(tx), appUrl: e.APP_URL }, job.data.exportId, storage()));
   });
-  await boss.work('privacy.purge', async () => { await db.transaction((tx) => purgeDeletedAccounts(tx, storage(), appClock().now())); });
+  await boss.work('privacy.purge', async () => {
+    await db.transaction(async (tx) => {
+      await purgeExpiredExports(tx, storage(), appClock().now());
+      await purgeDeletedAccounts(tx, storage(), appClock().now());
+    });
+  });
 
   await boss.schedule('outbox.dispatch', '* * * * *');
   await boss.schedule('reco.refresh-facts', '10 * * * *');
