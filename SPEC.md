@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.8 — validée le 2026-10-01, mise à jour après l'audit du lot 4. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.9 — validée le 2026-10-01, mise à jour en fin de lot 5. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -1333,8 +1333,8 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 ### 6.10 Bilans et partage (RES)
 
 - **RG-RES-01** Un bilan par culture et par saison. Il est proposé quand la culture passe à `finished` ou `failed`, ou depuis la fiche à tout moment après la première récolte. Pour une vivace, un bilan est proposé par saison.
-- **RG-RES-02** Champs du formulaire en un écran : rendement total en kg (pré-rempli avec la somme des récoltes convertibles, modifiable) ou case « pas de récolte » ; qualité (1 à 5 étoiles) ; taux de réussite (curseur de 0 à 100 %, pré-rempli à partir du nombre de plants si connu) ; problèmes (puces multi-choix tirées du catalogue, pré-cochées depuis le journal, avec sévérité) ; note globale (1 à 5) ; « je recommencerais » (oui / non) ; notes libres (optionnelles).
-- **RG-RES-03** Complétude : 100 % si le rendement (ou « pas de récolte »), la qualité, le taux de réussite, la note globale et « je recommencerais » sont renseignés, et que les problèmes ont été passés en revue (choix explicite « aucun problème » accepté). Sinon, chaque champ requis vaut 20 %.
+- **RG-RES-02** Champs du formulaire en un écran : rendement total en kg (pré-rempli avec la somme des récoltes convertibles, modifiable) ou case « pas de récolte » ; qualité (1 à 5 étoiles) ; taux de réussite (curseur de 0 à 100 %, pré-rempli à partir du nombre de plants si connu) ; problèmes (puces multi-choix tirées du catalogue, pré-cochées depuis le journal, avec sévérité) ; note globale (1 à 5) ; « je recommencerais » (oui / non) ; notes libres (optionnelles). V1 : le taux de réussite n'est pas encore pré-rempli à partir du nombre de plants.
+- **RG-RES-03** Complétude : 100 % si le rendement (ou « pas de récolte »), la qualité, le taux de réussite, la note globale et « je recommencerais » sont renseignés, et que les problèmes ont été passés en revue (choix explicite « aucun problème » accepté). Sinon, chaque champ requis vaut 20 %. Sans revue des problèmes, un bilan dont les cinq champs sont renseignés plafonne à 80 %.
 - **RG-RES-04** `yield_kg_m2 = total_kg / area_m2` si `area_m2` est connue (RG-CUL-06), sinon null.
 - **RG-RES-05** Un bilan est **partagé** (alimente `shared_result_fact`) si et seulement si : le jardin a `share_results = true` (décision de l'owner, avec consentement tracé), la complétude est ≥ 60 %, la variété est `approved` (ou la culture n'a qu'une espèce), et la culture n'est pas supprimée. Révoquer le partage retire les faits au rafraîchissement suivant (au plus 1 heure plus tard).
 
@@ -1392,14 +1392,14 @@ Le contexte d'une zone est son contexte effectif (§6.3) combiné au contexte du
 | Pratiques | 0,10 | distance de Jaccard sur les pratiques effectives qui influencent la culture (`organic`, `no_dig`, `living_soil`, `mulching`, `irrigation_*`, `green_manure`) |
 
 - Sont **similaires** les contextes avec `d ≤ 0,35`. Leur poids de similarité est `s = 1 − d / 0,35`, compris entre 0 et 1.
-- Filtre dur : les environnements `indoor`, `soilless` et `hydroponic` ne sont jamais comparés à `open_air`, quel que soit le reste.
+- Filtres durs : les environnements `indoor`, `soilless` et `hydroponic` ne sont jamais comparés à `open_air`, quel que soit le reste ; les faits de l'hémisphère opposé ne sont pas comparés (RCO-07), le décalage de 182 jours ne servant qu'à aligner le référentiel pour un jardin de l'hémisphère sud.
 - Poids et seuils sont des constantes versionnées (`RECO_WEIGHTS_V1`), testées unitairement, documentées ici, et modifiables uniquement par une mise à jour de la spec.
 
 ### 7.3 Score d'une variété
 
 Pour chaque fait partagé `f` d'une variété (ou d'une espèce, si `varietyId` est absent), dans un contexte similaire :
 
-1. Résultat unitaire `o(f) = 0,5 × success_pct/100 + 0,3 × (rating − 1)/4 + 0,2 × p_yield(f)`. `p_yield` est le rang centile du rendement au m² parmi les faits de la même espèce dans le même environnement. S'il est inconnu, on prend 0,5 et le poids est redistribué.
+1. Résultat unitaire `o(f) = 0,5 × success_pct/100 + 0,3 × (rating − 1)/4 + 0,2 × p_yield(f)`. `p_yield` est le rang centile moyen du rendement au m² parmi les faits de la même espèce dans le même environnement. Une composante inconnue (rendement, réussite ou note) voit son poids redistribué sur les autres.
 2. **Plafond par jardin** : au plus les 3 faits les plus récents par jardin d'origine et par variété. Un jardin très actif ne pèse donc pas plus que 3 faits.
 3. **Lissage bayésien** vers un a priori `μ₀` :
    `score = (Σ s·o + k·μ₀) / (Σ s + k)`, avec `k = 5`. `μ₀` vaut le score moyen de l'espèce dans les contextes similaires, sinon 0,6.
@@ -1407,7 +1407,7 @@ Pour chaque fait partagé `f` d'une variété (ou d'une espèce, si `varietyId` 
    - `high` : `n ≥ 15` et `n_eff ≥ 10` ;
    - `medium` : `n ≥ 8` ;
    - `low` : `5 ≤ n < 8` ;
-   - en dessous de 5 jardins distincts ou de 8 faits : **démarrage à froid** (§7.5).
+   - en dessous de 5 jardins distincts : **démarrage à froid** (§7.5). Le seuil « 8 faits » est retiré : il contredisait RCO-02 (5 jardins et 7 faits donnent `low`).
 5. **Ajustements** :
    - avertissement `rotation` (RG-ROT-01) : × 0,7 ;
    - association défavorable avec une culture voisine : × 0,85 ;
@@ -1436,7 +1436,7 @@ La recommandation porte alors `confidence = 'cold_start'`. L'UI affiche un bande
 ### 7.6 Données et performances
 
 - Source unique : la vue matérialisée `shared_result_fact` (§11.3), qui ne contient ni `user_id` ni `garden_id` en clair, mais un identifiant de jardin pseudonymisé (HMAC avec un secret serveur, renouvelé chaque année) pour le plafond par jardin.
-- Calcul en SQL plus TypeScript, à la demande. Le résultat est mis en cache par `(zoneContextHash, période, speciesId)` pendant 1 heure (`unstable_cache` avec tag `reco`), invalidé au rafraîchissement de la vue.
+- Calcul en SQL plus TypeScript, à la demande. Prévu : mise en cache par `(zoneContextHash, période, speciesId)` pendant 1 heure (`unstable_cache` avec tag `reco`), invalidée au rafraîchissement de la vue ; non implémentée en V1 (volumes du seed), à reprendre avec la mesure de charge.
 - Le service est découpé en fonctions pures (distance, score, percentiles, confiance) testées sans base, et une fonction d'orchestration testée avec des faits seedés.
 - Le module météo (hors MVP) pourra ajouter une composante « climat observé » à la distance, sans changer l'interface.
 
@@ -1689,7 +1689,7 @@ La vue matérialisée ne contient que :
 - `success_pct`, `rating`, `quality`, `yield_kg_m2`, codes des problèmes ;
 - année.
 
-Elle ne contient **aucun** identifiant d'utilisateur, nom de zone, texte libre ni photo.
+Elle ne contient **aucun** identifiant d'utilisateur, nom de zone, texte libre ni photo. L'environnement effectif est celui de la zone, de son ancêtre le plus proche qui en déclare un, sinon le premier du jardin ; les pratiques sont celles déclarées au niveau du jardin. Les jardins supprimés, les cultures supprimées, les bilans sous 60 % et les variétés non validées en sont exclus.
 
 **Seuil de k-anonymat** : aucune statistique n'est affichée si elle repose sur moins de 5 jardins distincts. C'est le même seuil que le démarrage à froid du moteur. Il s'applique aussi aux résultats communautaires des fiches espèces.
 
@@ -1697,9 +1697,9 @@ Elle ne contient **aucun** identifiant d'utilisateur, nom de zone, texte libre n
 
 - **Export** (`/app/parametres/confidentialite`) : job asynchrone qui produit une archive ZIP. Elle contient un JSON du profil, des adhésions, des contenus rédigés, des cultures, du journal, des récoltes et des bilans des jardins dont l'utilisateur est owner ou auteur, du journal d'XP et des consentements, plus les photos qu'il a téléversées. L'utilisateur reçoit un lien par e-mail, valable 7 jours et utilisable seulement par lui, connecté. Une demande au plus par 24 heures.
 - **Suppression du compte** :
-  1. Si l'utilisateur est owner d'un jardin qui a d'autres membres actifs, il doit transférer la propriété. Sinon, elle est transférée automatiquement à l'admin le plus ancien ; à défaut d'admin, au membre le plus ancien après confirmation ; un jardin sans autre membre est supprimé.
+  1. Si l'utilisateur est owner d'un jardin qui a d'autres membres actifs, il doit transférer la propriété. Sinon, elle est transférée automatiquement à l'admin le plus ancien ; à défaut d'admin, au membre le plus ancien après confirmation ; un jardin sans autre membre est supprimé. Ces transferts et suppressions ont lieu **à la purge** (J+30), pour que le rétablissement rende le compte à l'identique (PRV-09).
   2. Le compte est désactivé immédiatement (sessions révoquées), avec un délai de grâce de 30 jours pendant lequel il peut être rétabli par un lien envoyé par e-mail.
-  3. À J+30, purge : e-mail, nom, avatar, profil, préférences, consentements (une preuve minimale est conservée : hash de l'ID, type et date), photos téléversées, tips, votes. Les contributions aux **jardins partagés** (cultures, tickets, commentaires, journal) sont **conservées mais anonymisées**, avec l'auteur affiché « Jardinier·e supprimé·e ». Les guides publics sont supprimés par défaut ; l'utilisateur peut choisir de les laisser sous forme anonyme (§17 Q-11).
+  3. À J+30, purge : e-mail, nom, avatar, profil, préférences, consentements (une preuve minimale est conservée : hash de l'ID, type et date), photos téléversées, tips, votes. Les contributions aux **jardins partagés** (cultures, tickets, commentaires, journal) sont **conservées mais anonymisées**, avec l'auteur affiché « Jardinier·e supprimé·e » (suivi d'un suffixe court, le pseudo restant unique). Les consentements restent rattachés au compte anonymisé, comme preuve minimale. Les guides publics sont supprimés par défaut ; l'utilisateur peut choisir de les laisser sous forme anonyme (§17 Q-11).
 - Les e-mails d'invitation non acceptées sont purgés 30 jours après expiration.
 
 ---
@@ -2169,6 +2169,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.9 | 2026-10-02 | Fin du lot 5 : complétude plafonnée sans revue des problèmes (RG-RES-03) ; démarrage à froid sous 5 jardins seulement, redistribution des poids inconnus et filtre de l'hémisphère opposé (§7.2, §7.3) ; contenu précisé de `shared_result_fact` (§11.3) ; transfert de propriété à la purge (§11.4). Écarts : cache des recommandations et pré-remplissage du taux de réussite reportés ; journal d'XP de l'export vide jusqu'au lot 6. |
 | 0.8 | 2026-10-02 | Corrections de l'audit du lot 4 : instant de référence unique des e2e et horloge des jetons tiers (§3.7) ; plafonds horaires des contenus communautaires (§6.9). |
 | 0.7 | 2026-10-02 | Fin du lot 4 : tâches de guide relatives à la date réelle de l'étape et réapplication (RG-GUI-05), guides non listés lisibles sans compte et guides illisibles en 404 (RG-GUI-03), rang du fil de tips (RG-TIP-03), pas d'auto-signalement (RG-MOD-01), notifications `content_hidden` et `moderation_decision` (RG-NTF-01), matrice des sols voisins (§7.2), événements de modération (§3.5). Écart : les tâches récurrentes de `GuideCalendarV1` sont reportées (§4.5). Le profil public n'affiche pas encore avatar ni niveau (lots 6 et 8). |
 | 0.6 | 2026-10-02 | Corrections de l'audit du lot 3 : la désinscription par e-mail passe par une confirmation explicite (RG-NTF-04, NTF-04) ; pièces jointes des tickets ponctuels (RG-TCK-01, TCK-19) ; découpage des services volumineux (§3.2). |
