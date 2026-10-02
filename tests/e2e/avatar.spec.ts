@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { avatarRow, decorPracticeCode } from './db';
+import { gardenLevelOf } from '../../src/features/progression/rules.pure';
+import { avatarRow, decorPracticeCode, gardenXpOf } from './db';
 import { decorId, gardenId, userId, zoneId } from './ids';
 import { login } from './helpers';
 
@@ -143,8 +144,10 @@ test.describe('jardin collectif (§9.5, §8.7)', () => {
   test('la page de progression montre le niveau du jardin, ses objectifs et les succès des membres', async ({ page }) => {
     await login(page, 'david');
     await page.goto(`/app/jardins/${CANAL}/progression`);
-    await expect(page.getByTestId('garden-level')).toContainText('Niveau');
-    await expect(page.getByTestId('garden-xp')).toContainText('XP');
+    // L'XP affichée est celle du journal, et le niveau suit les seuils × 5 (§8.7).
+    const xp = await gardenXpOf(CANAL);
+    await expect.poll(async () => Number((await page.getByTestId('garden-xp').textContent())?.replace(/\D/g, ''))).toBe(xp);
+    await expect(page.getByTestId('garden-level')).toHaveText(`Niveau ${gardenLevelOf(xp)} du jardin`);
     await expect(page.getByText('Succès collectifs')).toBeVisible();
   });
 });

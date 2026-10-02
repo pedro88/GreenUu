@@ -164,3 +164,14 @@ export async function practiceDeclarations(gardenId: string, code: string): Prom
     await sql.end();
   }
 }
+
+/** XP d'un jardin : somme des gains positifs (§8.7), pour la page de progression. */
+export async function gardenXpOf(gardenId: string): Promise<number> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ n: number }[]>`select coalesce(sum(amount) filter (where amount > 0), 0)::int as n from xp_ledger_entry where garden_id = ${gardenId}`;
+    return row?.n ?? 0;
+  } finally {
+    await sql.end();
+  }
+}
