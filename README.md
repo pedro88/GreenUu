@@ -68,6 +68,19 @@ Le worker (`src/server/jobs/worker.ts`) est un processus permanent, lancé avec 
 
 L'XP est calculée de façon synchrone, dans la transaction de chaque action : l'abonné de `emit` (`src/features/progression/register.ts`) applique le barème pur (`rules.pure.ts`), écrit le journal `xp_ledger_entry` (append-only, garanti par trigger) puis met à jour la projection `user_progress`. Tout point d'entrée qui émet des événements doit importer `register.ts` (c'est le cas des actions, du worker et des tests d'intégration). Le seed, lui, rattrape l'XP en fin de chargement avec le recalcul. Détails : SPEC.md §8.
 
+## Vue jardin et éditeur de plan
+
+La page d'un jardin s'ouvre en vue jardin (PixiJS) ou en vue classique, selon `?vue=jardin|classique` puis la préférence enregistrée (`/app/parametres/affichage`). Le moteur vit dans `src/game/` :
+- `GardenCanvas` est le seul module qui importe PixiJS, chargé par `next/dynamic` sans SSR ;
+- les stores Zustand et la boucle de rendu à la demande sont testés sans navigateur ;
+- la couche DOM accessible porte toute l'interaction (`zone-<id>`, `culture-<id>`, `data-state`).
+
+Le domaine (instantané de scène, phase visuelle, commandes du plan) est dans `src/features/scene/`.
+
+- **Assets** : `pnpm assets:sync` copie l'atlas de la session sprites (`out/atlas.json`, `out/atlas.png`) dans `public/sprites/atlas/`. Sans atlas, le moteur dessine des formes de substitution.
+- **CSP** : la production interdit `eval`. PixiJS est donc chargé avec `pixi.js/unsafe-eval` (shaders précompilés) ; ne pas retirer cet import.
+- **Éditeur** (`/plan`) : les gestes deviennent des commandes, enregistrées par lots tout ou rien avec contrôle de version. En cas de `CONFLICT`, l'éditeur recharge l'instantané et rejoue les commandes non confirmées.
+
 ## Tests et dates
 
 - **Deux fuseaux, exprès** : Vitest et le serveur e2e tournent en `America/New_York` (offset négatif), le navigateur Playwright en `Europe/Brussels`. Un calcul de date qui dépend du fuseau de la machine échoue donc localement comme en CI. `TEST_TZ` permet d'essayer un autre fuseau pour Vitest.
