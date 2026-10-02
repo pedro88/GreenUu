@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createCulture } from '../../src/features/culture/service';
 import { applyPlanCommands } from '../../src/features/scene/plan';
 import { replay, type EditorScene, type ZoneTypeInfo } from '../../src/features/scene/plan.pure';
-import { planCommandSchema, type PlanCommand } from '../../src/features/scene/plan.schema';
+import { applyPlanSchema, planCommandSchema, type PlanCommand } from '../../src/features/scene/plan.schema';
 import { sceneSnapshot } from '../../src/features/scene/snapshot';
 import { createTicket } from '../../src/features/ticket/commands';
 import { garden, zone } from '../../src/server/db/schema';
@@ -77,6 +77,14 @@ describe('éditeur de plan (§9.7)', () => {
       expect(b.planVersion).toBe(9);
       expect(Object.keys(b.ids)).toEqual(['tmp:b2']);
     }));
+
+  it('une géométrie négative ou démesurée est refusée par le schéma des commandes', () => {
+    for (const geometry of [rect(-50, 0, 100, 100), rect(0, 0, 2_000_000, 100)]) {
+      expect(applyPlanSchema.safeParse({ gardenId: crypto.randomUUID(), sceneZoneId: null, baseVersion: 0, commands: [{ op: 'moveZone', zoneId: crypto.randomUUID(), geometry }] }).success).toBe(false);
+      expect(applyPlanSchema.safeParse({ gardenId: crypto.randomUUID(), sceneZoneId: null, baseVersion: 0, commands: [{ op: 'addTerrain', clientId: 'tmp:a', kind: 'path', geometry }] }).success).toBe(false);
+    }
+    expect(applyPlanSchema.safeParse({ gardenId: crypto.randomUUID(), sceneZoneId: null, baseVersion: 0, commands: [{ op: 'moveZone', zoneId: crypto.randomUUID(), geometry: rect(0, 0, 100, 100) }] }).success).toBe(true);
+  });
 
   it('[PLN-08] la gomme sur une zone qui a un historique l\'archive, sans la supprimer', () =>
     inTx(async (tx) => {

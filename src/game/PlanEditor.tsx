@@ -204,10 +204,11 @@ export function PlanEditor({ snapshot, zoneTypes }: { snapshot: SceneSnapshot; z
   };
   const draftFor = (d: NonNullable<typeof drag.current>, tile: Tile): RectGeometry | null => {
     const size = current.tileSizeCm;
-    if (d.mode === 'draw') return tilesToGeometry(d.start, tile, size);
+    if (d.mode === 'draw') return tilesToGeometry({ x: Math.max(0, d.start.x), y: Math.max(0, d.start.y) }, { x: Math.max(0, tile.x), y: Math.max(0, tile.y) }, size);
     const g = d.zone?.geometry;
     if (!g) return null;
-    if (d.mode === 'move') return { ...g, x: g.x + (tile.x - d.start.x) * size, y: g.y + (tile.y - d.start.y) * size };
+    // La scène commence en (0, 0) : un déplacement ne sort pas par le haut ni par la gauche (M5).
+    if (d.mode === 'move') return { ...g, x: Math.max(0, g.x + (tile.x - d.start.x) * size), y: Math.max(0, g.y + (tile.y - d.start.y) * size) };
     return { ...g, w: Math.max(size, g.w + (tile.x - d.start.x) * size), h: Math.max(size, g.h + (tile.y - d.start.y) * size) };
   };
   const onMove = (e: ReactPointerEvent<HTMLDivElement>) => {
