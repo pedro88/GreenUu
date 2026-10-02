@@ -4,7 +4,7 @@ import { seedId } from '../../src/lib/uuid5';
 import { gardenId, zoneId } from './ids';
 import { login } from './helpers';
 
-const PUBLIC = ['/', '/connexion', '/inscription', '/mot-de-passe-oublie'];
+const PUBLIC = ['/', '/connexion', '/inscription', '/mot-de-passe-oublie', '/guides-publics'];
 const APP = [
   '/app', '/app/jardins', '/app/jardins/nouveau', '/app/parametres/compte',
   `/app/jardins/${gardenId('canal')}`, `/app/jardins/${gardenId('canal')}/zones`,
@@ -14,6 +14,7 @@ const APP = [
   '/app/plantes', '/app/plantes/proposer', `/app/plantes/${seedId('species:tomate')}`,
   `/app/jardins/${gardenId('canal')}/tickets`, `/app/jardins/${gardenId('canal')}/tickets?vue=kanban`, `/app/jardins/${gardenId('canal')}/tickets?vue=calendrier`,
   `/app/jardins/${gardenId('canal')}/tickets/nouveau`, '/app/taches', '/app/notifications', '/app/parametres/notifications',
+  '/app/guides', '/app/guides/nouveau', '/app/tips', '/app/jardiniers/alice',
 ];
 
 async function audit(page: Page, path: string) {
@@ -28,7 +29,7 @@ test.describe('accessibilité', () => {
     for (const p of PUBLIC) await audit(page, p);
   });
 
-  test('[A11Y-01] pages du lot 1 sans violation sérieuse (axe)', async ({ page }) => {
+  test('[A11Y-01] pages applicatives sans violation sérieuse (axe)', async ({ page }) => {
     await login(page, 'bruno');
     for (const p of APP) await audit(page, p);
   });

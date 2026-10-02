@@ -4,6 +4,7 @@ import { LinkButton } from '@/components/ui/Button';
 import { Muted, PageHeader, Stack } from '@/components/ui/Layout';
 import { PlantIcon } from '@/components/ui/PlantIcon';
 import { familySpriteOf } from '@/features/culture/ui/CultureList';
+import { KnowledgeTabs } from '@/features/guide/ui/KnowledgeTabs';
 import { listFamilies, listSpecies, searchPlants } from '@/features/plant/service';
 import styles from '@/features/plant/ui/Plant.module.scss';
 import { PlantSearch } from '@/features/plant/ui/PlantSearch';
@@ -27,6 +28,7 @@ export default async function PlantsPage({ searchParams }: PageProps<'/app/plant
   const list = hits ? [] : await listSpecies(db(), { familyCode: typeof famille === 'string' ? famille : undefined });
   return (
     <Stack gap="lg">
+      <KnowledgeTabs active="plants" />
       <PageHeader title={t('title')} actions={<LinkButton href="/app/plantes/proposer" variant="secondary">{t('propose')}</LinkButton>} />
       <PlantSearch families={families.map((f) => ({ code: f.code, label: tDynamic(tf, f.code, f.latinName) }))} />
       {hits ? (

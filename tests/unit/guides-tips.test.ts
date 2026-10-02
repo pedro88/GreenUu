@@ -53,6 +53,12 @@ describe('guides', () => {
     expect(tasks).toEqual([expect.objectContaining({ title: 'Tuteurer', dueOn: '2026-05-07', visibleFrom: '2026-05-04' })]);
   });
 
+  it('[GUI-09] une tâche part de la date réelle de son étape quand elle existe', () => {
+    const t = { v: 1 as const, anchor: 'sowing' as const, stages: [{ stage: 'planting' as const, offsetDays: 60 }], tasks: [{ title: 'Tuteurer', type: 'task' as const, relativeTo: 'planting' as const, offsetDays: 7 }] };
+    expect(computeCalendar(t, '2026-03-01', { actual: { planting: '2026-05-17' } }).tasks[0]?.dueOn).toBe('2026-05-24');
+    expect(computeCalendar(t, '2026-03-01', { planned: { planting: '2026-05-17' } }).tasks[0]?.dueOn).toBe('2026-05-07');
+  });
+
   it('[GUI-06] le slug public est lisible et unique par guide', () => {
     expect(guideSlug('Réussir ses fraisiers en climat océanique', '0199a0b2-3c4d-7e5f-8a9b-0c1d2e3f4a5b')).toBe('reussir-ses-fraisiers-en-climat-oceanique-3f4a5b');
   });

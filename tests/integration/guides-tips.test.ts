@@ -8,7 +8,7 @@ import { createTip, tipFeed, voteTip } from '../../src/features/tip/service';
 import type { Actor } from '../../src/server/action-core';
 import type { Tx } from '../../src/server/db/client';
 import { cultureStage, guide, guideVersion, notification, ticket, tip, tipVote } from '../../src/server/db/schema';
-import type { GuideCalendarV1 } from '../../src/server/db/schema/content';
+import type { GuideCalendarV1 } from '../../src/lib/content-types';
 import { addMember, makeGarden, makeZone, speciesRefId } from './fixtures';
 import { ctxFor, inTx, makeUser, scopedCtx } from './helpers';
 

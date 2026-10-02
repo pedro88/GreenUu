@@ -112,7 +112,7 @@ export async function openReportQueue(tx: Executor, viewer: ServiceCtx['actor'])
   if (!isModerator(viewer)) throw forbidden();
   const rows = await tx.select({
     guideId: contentReport.guideId, tipId: contentReport.tipId, reportedUserId: contentReport.reportedUserId,
-    reports: count(), reasons: sql<ReportReason[]>`array_agg(distinct ${contentReport.reason})`, lastAt: sql<Date>`max(${contentReport.createdAt})`,
+    reports: count(), reasons: sql<ReportReason[]>`array_agg(distinct ${contentReport.reason})`, lastAt: sql<string>`max(${contentReport.createdAt})`,
     guideTitle: sql<string | null>`max(${guideVersion.title})`, tipBody: sql<string | null>`max(${tip.body})`, pseudo: sql<string | null>`max(${userProfile.pseudo})`,
     hidden: sql<boolean>`bool_or(coalesce(${guide.hiddenByModeration}, ${tip.hiddenByModeration}, false))`,
   }).from(contentReport)
@@ -125,5 +125,6 @@ export async function openReportQueue(tx: Executor, viewer: ServiceCtx['actor'])
     ...r,
     target: (r.guideId ? { kind: 'guide' as const, id: r.guideId } : r.tipId ? { kind: 'tip' as const, id: r.tipId } : { kind: 'user' as const, id: r.reportedUserId ?? '' }),
     label: r.guideTitle ?? r.tipBody ?? r.pseudo ?? '',
+    lastAt: new Date(r.lastAt),
   }));
 }

@@ -11,6 +11,8 @@ import { QuickCapture } from '@/features/culture/ui/QuickCapture';
 import { StageEditor } from '@/features/culture/ui/StageEditor';
 import { StageTimeline } from '@/features/culture/ui/StageTimeline';
 import { getGarden } from '@/features/garden/service';
+import { appliedGuide, guidesForSpecies } from '@/features/guide/queries';
+import { ApplyGuideDialog } from '@/features/guide/ui/ApplyGuideDialog';
 import { ticketsOf } from '@/features/ticket/queries';
 import { TicketCard } from '@/features/ticket/ui/TicketCard';
 import ticketStyles from '@/features/ticket/ui/Ticket.module.scss';
@@ -21,6 +23,7 @@ import { localDate } from '@/lib/dates';
 import { DomainError } from '@/lib/errors';
 import { uuidSchema } from '@/lib/zod';
 import { can } from '@/server/authz/scope';
+import { requireUser } from '@/server/auth/session';
 import { appClock } from '@/server/clock';
 import { db } from '@/server/db/client';
 import { requireGardenScope } from '@/server/page-guards';
@@ -54,6 +57,10 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
   const problemCode = new Map(problems.map((p) => [p.id, p.code]));
   const zones = canEdit ? await cultivableZones(db(), scope) : [];
   const tickets = tab === 'taches' ? await ticketsOf(db(), scope, { cultureId }) : [];
+  const canApply = canEdit && can(scope, 'guide:apply');
+  const [guides, applied] = await Promise.all([canApply ? guidesForSpecies(db(), await requireUser(), d.c.speciesId, scope.gardenId) : Promise.resolve([]), appliedGuide(db(), d.c.appliedGuideVersionId)]);
+  const tg = await getTranslations('guides');
+  const tst = await getTranslations('stages');
   const fmtDay = (iso: string) => f.dateTime(new Date(`${iso}T12:00:00`), { day: 'numeric', month: 'short', year: 'numeric' });
   return (
     <Stack gap="lg">
@@ -67,6 +74,11 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
         <Muted>{d.area.m2 !== null ? t(`area_${d.area.source}`, { m2: f.number(d.area.m2, { maximumFractionDigits: 2 }) }) : t('areaUnknown')}{d.totalKg > 0 ? ` · ${t('totalKg', { kg: f.number(d.totalKg, { maximumFractionDigits: 2 }) })}` : ''}</Muted>
       </section>
       <CultureActions gardenId={scope.gardenId} cultureId={cultureId} deleted={deleted} canDelete={can(scope, 'culture:delete', { isOwn: d.c.createdBy === scope.userId })} canEdit={canEdit} ended={['finished', 'failed', 'abandoned'].includes(d.c.status)} />
+      {applied ? <Muted data-testid="culture-applied-guide"><Link href={`/app/guides/${applied.guideId}`}>{tg('appliedVersion', { title: applied.title, number: applied.number })}</Link></Muted> : null}
+      {canApply ? (
+        <ApplyGuideDialog triggerLabel={tg('applyTitle')} anchorLabel={tst('sowing')} today={today}
+          options={guides.map((x) => ({ key: x.id, label: `${x.title} (${tg('versionShort', { number: x.number })})`, gardenId: scope.gardenId, cultureId, guideId: x.id, anchorLabel: tst(x.anchor === 'planting' ? 'planting' : 'sowing') }))} />
+      ) : null}
       <StageTimeline stages={d.stages} />
       <nav className={styles.tabs} aria-label={t('tabs')}>
         {TABS.map((x) => <Link key={x} href={`${base}?onglet=${x}`} aria-current={tab === x ? 'page' : undefined}>{t(`tab_${x}`)}</Link>)}

@@ -113,3 +113,9 @@ export async function myGardensForContext(tx: Executor, userId: string) {
   return tx.select({ id: garden.id, name: garden.name }).from(gardenMember).innerJoin(garden, eq(garden.id, gardenMember.gardenId))
     .where(and(eq(gardenMember.userId, userId), isNull(gardenMember.leftAt), isNull(garden.deletedAt))).orderBy(asc(garden.name));
 }
+
+/** Tags les plus utilisés (puces de filtre du fil). */
+export async function popularTags(tx: Executor, limit = 8) {
+  return (await tx.select({ slug: tag.slug, n: sql<number>`count(*)::int` }).from(tipTag).innerJoin(tag, eq(tag.id, tipTag.tagId)).innerJoin(tip, eq(tip.id, tipTag.tipId))
+    .where(and(isNull(tip.deletedAt), eq(tip.hiddenByModeration, false))).groupBy(tag.slug).orderBy(desc(sql`count(*)`), asc(tag.slug)).limit(limit)).map((r) => r.slug);
+}

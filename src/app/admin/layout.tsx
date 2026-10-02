@@ -14,7 +14,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     <div className={styles.shell}>
       <header className={styles.topbar} style={{ display: 'flex' }}>
         <Link href="/app" className={styles.brand}>{t('brand')}</Link>
-        <nav className={styles.topnav} aria-label={t('nav')}><Link href="/admin/varietes" aria-current="page">{t('varieties')}</Link></nav>
+        <nav className={styles.topnav} aria-label={t('nav')}>
+          <Link href="/admin/varietes">{t('varieties')}</Link>
+          <Link href="/admin/signalements" data-testid="admin-reports">{t('reports')}</Link>
+        </nav>
       </header>
       <main id="contenu" className={styles.main}>{children}</main>
     </div>

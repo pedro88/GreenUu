@@ -24,3 +24,24 @@ export async function ticketCount(gardenId: string, title: string): Promise<numb
     await sql.end();
   }
 }
+
+export async function guideIdByTitle(title: string): Promise<string> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ id: string }[]>`select g.id from guide g join guide_version v on v.id = g.current_version_id where v.title = ${title} and g.deleted_at is null limit 1`;
+    if (!row) throw new Error(`guide « ${title} » introuvable`);
+    return row.id;
+  } finally {
+    await sql.end();
+  }
+}
+
+export async function tipContext(body: string): Promise<{ geohash4: string | null; koppen: string | null } | null> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ geohash4: string | null; koppen: string | null }[]>`select geohash4, koppen from tip where body = ${body} limit 1`;
+    return row ?? null;
+  } finally {
+    await sql.end();
+  }
+}

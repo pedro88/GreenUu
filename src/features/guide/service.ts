@@ -11,7 +11,7 @@ import { applyPlannedDates, type PlannedDatesResult } from '../culture/service';
 import { insertTicket } from '../ticket/shared';
 import { computeCalendar, guideSlug } from './rules.pure';
 import type { GuideApplyInput, GuideCreateInput, GuideUpdateInput } from './schema';
-import { guideFacts, loadGuide } from './queries';
+import { guideFacts, loadGuide, lockedPrivateGarden } from './queries';
 
 const words = (md: string) => md.split(/\s+/).filter(Boolean).length;
 
@@ -36,20 +36,12 @@ export async function createGuide(ctx: ServiceCtx, input: GuideCreateInput) {
   return { guideId: g.id };
 }
 
-/** Le fork d'un guide privé reste privé au même jardin (RG-GUI-04, GUI-07). */
-async function forcedPrivateGarden(tx: Executor, g: typeof guide.$inferSelect): Promise<string | null> {
-  if (!g.forkedFromVersionId) return null;
-  const [origin] = await tx.select({ visibility: guide.visibility, gardenId: guide.gardenId }).from(guideVersion)
-    .innerJoin(guide, eq(guide.id, guideVersion.guideId)).where(eq(guideVersion.id, g.forkedFromVersionId)).limit(1);
-  return origin?.visibility === 'private' ? origin.gardenId : null;
-}
-
 /** Réédition du brouillon et des réglages ; seul l'auteur modifie (§5.2). */
 export async function updateGuide(ctx: ServiceCtx, input: GuideUpdateInput) {
   const { tx, actor } = ctx;
   const g = await loadGuide(tx, input.guideId);
   if (!canEditGuide(actor, { authorId: g.authorId, deleted: g.deletedAt !== null })) throw notFound('guideNotFound');
-  const forced = await forcedPrivateGarden(tx, g);
+  const forced = await lockedPrivateGarden(tx, g);
   if (forced && (input.visibility !== 'private' || input.gardenId !== forced)) throw validation({ visibility: ['forkMustStayPrivate'] });
   await assertPrivateGarden(tx, actor.id, input.gardenId);
   await tx.update(guide).set({ visibility: input.visibility, gardenId: input.gardenId ?? null, varietyId: input.varietyId ?? null, draft: input.draft }).where(eq(guide.id, g.id));
@@ -125,12 +117,13 @@ export async function applyGuide(ctx: ScopedCtx, input: GuideApplyInput): Promis
     .where(and(eq(culture.gardenId, scope.gardenId), eq(culture.id, input.cultureId), isNull(culture.deletedAt))).limit(1);
   if (!c) throw notFound('cultureNotFound');
   if (c.speciesId !== g.speciesId) throw validation({ guideId: ['guideOtherSpecies'] });
-  const known: Partial<Record<Stage, string>> = {};
+  const actual: Partial<Record<Stage, string>> = {};
+  const planned: Partial<Record<Stage, string>> = {};
   for (const r of await tx.select({ stage: cultureStage.stage, actualOn: cultureStage.actualOn, plannedOn: cultureStage.plannedOn }).from(cultureStage).where(eq(cultureStage.cultureId, c.id))) {
-    const on = r.actualOn ?? r.plannedOn;
-    if (on) known[r.stage] = on;
+    if (r.actualOn) actual[r.stage] = r.actualOn;
+    if (r.plannedOn) planned[r.stage] = r.plannedOn;
   }
-  const plan = v.calendarTemplate ? computeCalendar(v.calendarTemplate, input.anchorOn, known) : { stages: {}, tasks: [] };
+  const plan = v.calendarTemplate ? computeCalendar(v.calendarTemplate, input.anchorOn, { actual, planned }) : { stages: {}, tasks: [] };
   const dates = await applyPlannedDates(ctx, c.id, plan.stages, input.overwrite, v.id);
   if (dates.status === 'needsConfirmation') return dates;
   const now = clock.now();

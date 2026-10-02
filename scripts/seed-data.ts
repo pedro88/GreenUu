@@ -11,6 +11,7 @@ import {
 import type { Environment, GardenRole, OrgType } from '../src/lib/enums';
 import { loadReferenceData } from '../src/features/plant/reference/load';
 import { closeOldSeasons, seedCultures } from './seed-cultures';
+import { seedContent } from './seed-content';
 import { seedTickets } from './seed-tickets';
 
 export const SEED_PASSWORD = 'jardin-seed-2026';
@@ -146,6 +147,7 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
     }
     await seedCultures(tx, referenceDate, { gardenId, zoneId, userId });
     await seedTickets(tx, referenceDate, { gardenId, zoneId, userId, groupId, memberId: (g, u) => seedId(`member:${g}:${u}`) });
+    await seedContent(tx, referenceDate, { userId, gardenId });
     // La saison N−2 est close : lecture seule (RG-SEA-02).
     for (const g of SEED_GARDENS) await closeOldSeasons(tx, gardenId(g.key), year - 1);
     // Vérification d'intégrité minimale : un owner par jardin.

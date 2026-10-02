@@ -3,7 +3,7 @@ import { notFound } from '@/lib/errors';
 import { normalizeSearch } from '@/lib/text';
 import { canReadGuide, type GuideFacts, type Viewer } from '@/server/authz/content';
 import type { Executor } from '@/server/db/client';
-import { culture, garden, gardenMember, guide, guideVersion, species, userProfile, variety } from '@/server/db/schema';
+import { culture, garden, gardenMember, guide, guideVersion, species, userProfile, variety, zone } from '@/server/db/schema';
 import { lineDiff, prettyJson } from './rules.pure';
 import type { z } from '@/lib/zod';
 import type { guideFiltersSchema } from './schema';
@@ -141,4 +141,58 @@ export async function compareVersions(tx: Executor, viewer: Viewer, guideId: str
     context: lineDiff(prettyJson(a.context), prettyJson(b.context)),
     calendar: lineDiff(prettyJson(a.calendarTemplate), prettyJson(b.calendarTemplate)),
   };
+}
+
+/** Options de l'éditeur : espèces, variétés validées, jardins où l'on peut créer un guide privé (`guide:create_private`). */
+export async function editorOptions(tx: Executor, userId: string) {
+  const [sp, vars, gardens] = await Promise.all([
+    tx.select({ id: species.id, name: speciesName }).from(species).orderBy(asc(speciesName)),
+    tx.select({ id: variety.id, speciesId: variety.speciesId, name: variety.name }).from(variety).where(eq(variety.status, 'approved')).orderBy(asc(variety.name)),
+    tx.select({ id: garden.id, name: garden.name }).from(gardenMember).innerJoin(garden, eq(garden.id, gardenMember.gardenId))
+      .where(and(eq(gardenMember.userId, userId), isNull(gardenMember.leftAt), sql`${gardenMember.role} <> 'observer'`, isNull(garden.archivedAt), isNull(garden.deletedAt))).orderBy(asc(garden.name)),
+  ]);
+  return { species: sp, varieties: vars, gardens };
+}
+
+/** Jardin imposé à un fork de guide privé (RG-GUI-04), ou null. */
+export async function lockedPrivateGarden(tx: Executor, g: typeof guide.$inferSelect): Promise<string | null> {
+  if (!g.forkedFromVersionId) return null;
+  const [o] = await tx.select({ visibility: guide.visibility, gardenId: guide.gardenId }).from(guideVersion).innerJoin(guide, eq(guide.id, guideVersion.guideId)).where(eq(guideVersion.id, g.forkedFromVersionId)).limit(1);
+  return o?.visibility === 'private' ? o.gardenId : null;
+}
+
+/** Cultures prévues ou en cours de cette espèce, dans les jardins où l'on cultive (hors observateur), pour « appliquer ». */
+export async function applicableCultures(tx: Executor, userId: string, speciesId: string, privateGardenId: string | null) {
+  return tx.select({ cultureId: culture.id, gardenId: culture.gardenId, gardenName: garden.name, label: sql<string>`concat_ws(' ', ${variety.name}, '— ' || ${zone.name})` })
+    .from(culture).innerJoin(garden, eq(garden.id, culture.gardenId)).innerJoin(zone, eq(zone.id, culture.zoneId)).leftJoin(variety, eq(variety.id, culture.varietyId))
+    .innerJoin(gardenMember, and(eq(gardenMember.gardenId, culture.gardenId), eq(gardenMember.userId, userId), isNull(gardenMember.leftAt)))
+    .where(and(eq(culture.speciesId, speciesId), isNull(culture.deletedAt), inArray(culture.status, ['planned', 'active']), sql`${gardenMember.role} <> 'observer'`,
+      isNull(garden.archivedAt), privateGardenId ? eq(culture.gardenId, privateGardenId) : undefined))
+    .orderBy(asc(garden.name), asc(zone.name)).limit(100);
+}
+
+/**
+ * Profil public (PAGES.md §6) selon `profile_visibility` : `public` = toute personne connectée, `members` = personnes
+ * partageant au moins un jardin, `private` = soi seul (§5.2). Null si le profil n'est pas visible.
+ */
+export async function publicProfile(tx: Executor, viewer: NonNullable<Viewer>, pseudo: string) {
+  const [p] = await tx.select({ userId: userProfile.userId, pseudo: userProfile.pseudo, visibility: userProfile.profileVisibility }).from(userProfile).where(eq(userProfile.pseudo, pseudo)).limit(1);
+  if (!p) return null;
+  const self = p.userId === viewer.id;
+  if (!self && p.visibility === 'private') return null;
+  if (!self && p.visibility === 'members') {
+    const mine = tx.select({ id: gardenMember.gardenId }).from(gardenMember).where(and(eq(gardenMember.userId, viewer.id), isNull(gardenMember.leftAt)));
+    const [shared] = await tx.select({ id: gardenMember.id }).from(gardenMember).where(and(eq(gardenMember.userId, p.userId), isNull(gardenMember.leftAt), inArray(gardenMember.gardenId, mine))).limit(1);
+    if (!shared) return null;
+  }
+  const guides = await tx.select({ id: guide.id, title: guideVersion.title, number: guideVersion.number }).from(guide).innerJoin(guideVersion, eq(guideVersion.id, guide.currentVersionId))
+    .where(and(eq(guide.authorId, p.userId), eq(guide.visibility, 'public'), eq(guide.hiddenByModeration, false), isNull(guide.deletedAt))).orderBy(desc(guideVersion.publishedAt)).limit(GUIDE_LIST_LIMIT);
+  return { ...p, self, guides };
+}
+
+/** « Guide appliqué : titre (vN) » sur la fiche culture. */
+export async function appliedGuide(tx: Executor, versionId: string | null) {
+  if (!versionId) return null;
+  const [r] = await tx.select({ guideId: guideVersion.guideId, title: guideVersion.title, number: guideVersion.number }).from(guideVersion).where(eq(guideVersion.id, versionId)).limit(1);
+  return r ?? null;
 }

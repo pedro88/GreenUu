@@ -2,7 +2,7 @@ import { diffLines } from 'diff';
 import type { Stage } from '@/lib/enums';
 import { slugify } from '@/lib/text';
 import { addDaysIso } from '../culture/stages.pure';
-import type { GuideCalendarV1 } from '@/server/db/schema/content';
+import type { GuideCalendarV1 } from '@/lib/content-types';
 
 export const GUIDE_LEAD_DAYS = 3;
 
@@ -14,15 +14,17 @@ export function guideSlug(title: string, id: string): string {
 export type PlannedTask = GuideCalendarV1['tasks'][number] & { dueOn: string; visibleFrom: string };
 
 /**
- * RG-GUI-05 / RG-TCK-11 : dates prévues des étapes à partir de la date d'ancrage, puis échéances des tâches
- * (relatives à une étape : celle calculée, sinon la date connue de la culture). Une tâche dont l'étape de
- * référence n'a aucune date est ignorée.
+ * RG-GUI-05 / RG-TCK-11 : dates prévues des étapes à partir de la date d'ancrage, puis échéances des tâches.
+ * Une tâche part de la date réelle de son étape si elle existe (les dates réelles priment, on ne les recalcule
+ * jamais), sinon de la date calculée, sinon de la date prévue de la culture. Sans aucune date, elle est ignorée.
  */
-export function computeCalendar(t: GuideCalendarV1, anchorOn: string, known: Partial<Record<Stage, string>> = {}): { stages: Partial<Record<Stage, string>>; tasks: PlannedTask[] } {
+export function computeCalendar(
+  t: GuideCalendarV1, anchorOn: string, known: { actual?: Partial<Record<Stage, string>>; planned?: Partial<Record<Stage, string>> } = {},
+): { stages: Partial<Record<Stage, string>>; tasks: PlannedTask[] } {
   const stages: Partial<Record<Stage, string>> = { [t.anchor]: anchorOn };
   for (const s of t.stages) if (s.stage !== t.anchor) stages[s.stage] = addDaysIso(anchorOn, s.offsetDays);
   const tasks = t.tasks.flatMap((task) => {
-    const ref = stages[task.relativeTo] ?? known[task.relativeTo];
+    const ref = known.actual?.[task.relativeTo] ?? stages[task.relativeTo] ?? known.planned?.[task.relativeTo];
     if (!ref) return [];
     const dueOn = addDaysIso(ref, task.offsetDays);
     return [{ ...task, dueOn, visibleFrom: addDaysIso(dueOn, -(task.leadDays ?? GUIDE_LEAD_DAYS)) }];

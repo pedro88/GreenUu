@@ -13,6 +13,9 @@ import '../../src/features/harvest/actions';
 import '../../src/features/plant/actions';
 import '../../src/features/ticket/actions';
 import '../../src/features/notification/actions';
+import '../../src/features/guide/actions';
+import '../../src/features/tip/actions';
+import '../../src/features/moderation/actions';
 import { actionRegistry, runAction, type ActionDeps } from '../../src/server/action-core';
 import { loadScope } from '../../src/server/authz/scope';
 import type { Tx } from '../../src/server/db/client';
@@ -75,6 +78,7 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'ticket.toggleChecklist': { gardenId, itemId: id, done: true },
     'ticket.addChecklist': { gardenId, ticketId: id, label: 'x' },
     'ticket.comment': { gardenId, ticketId: id, body: 'x' },
+    'guide.apply': { gardenId, cultureId: id, guideId: id, anchorOn: '2026-03-01' },
   };
 }
 
