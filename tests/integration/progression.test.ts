@@ -157,5 +157,17 @@ describe('progression collective', () => {
       const [g] = await goalsOf(tx, asBruno.scope);
       expect(g).toMatchObject({ current: 12, target: 30 });
     }));
+
+  it('un objectif ne peut pas cibler le groupe d\'un autre jardin (VALIDATION, rien n\'est écrit)', () =>
+    inTx(async (tx) => {
+      const bruno = await makeUser(tx);
+      const gardenId = await makeGarden(tx, bruno, { orgType: 'collective' });
+      const other = await makeGarden(tx, bruno, { orgType: 'collective' });
+      const foreignGroup = await makeGroup(tx, other, 'Équipe voisine', []);
+      const asBruno = await scopedCtx(tx, bruno, gardenId);
+      await expect(createGoal(asBruno, { gardenId, title: 'Objectif', metric: 'tickets_completed', target: 10, periodStart: '2026-06-01', periodEnd: '2026-06-30', groupId: foreignGroup }))
+        .rejects.toMatchObject({ code: 'VALIDATION' });
+      expect(await goalsOf(tx, asBruno.scope)).toHaveLength(0);
+    }));
 });
 

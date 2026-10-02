@@ -5,7 +5,7 @@ import type { GoalMetric } from '@/lib/enums';
 import type { ScopedCtx } from '@/server/action-core';
 import { can, type Scope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
-import { culture, cultureResult, garden, gardenGoal, gardenMember, groupMember, harvest, journalEntry, ticket, userProfile, xpLedgerEntry } from '@/server/db/schema';
+import { culture, cultureResult, garden, gardenGoal, gardenGroup, gardenMember, groupMember, harvest, journalEntry, ticket, userProfile, xpLedgerEntry } from '@/server/db/schema';
 
 /* Progression collective (SPEC §8.7) : contributions sans rang, classement facultatif, objectifs de groupe. */
 
@@ -58,6 +58,12 @@ export async function createGoal(ctx: ScopedCtx, input: GoalInput) {
   const { tx, scope, actor } = ctx;
   if (scope.archived || !can(scope, 'goal:manage')) throw forbidden();
   if (input.periodStart > input.periodEnd) throw validation({ periodEnd: ['periodOrder'] });
+  if (input.groupId) {
+    // Le groupe ciblé doit appartenir au jardin de l'objectif (même garde que les assignations de tickets).
+    const [grp] = await tx.select({ id: gardenGroup.id }).from(gardenGroup)
+      .where(and(eq(gardenGroup.id, input.groupId), eq(gardenGroup.gardenId, scope.gardenId), isNull(gardenGroup.archivedAt))).limit(1);
+    if (!grp) throw validation({ groupId: ['groupNotFound'] });
+  }
   const [g] = await tx.insert(gardenGoal).values({ gardenId: scope.gardenId, groupId: input.groupId ?? null, title: input.title, metric: input.metric, target: input.target, periodStart: input.periodStart, periodEnd: input.periodEnd, createdBy: actor.id }).returning({ id: gardenGoal.id });
   return { goalId: g?.id ?? '' };
 }
