@@ -1,5 +1,6 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import { addComment, createTicket } from '../src/features/ticket/commands';
+import { gardenToday } from '../src/features/ticket/shared';
 import { addDaysIso } from '../src/features/culture/stages.pure';
 import type { Actor, ScopedCtx } from '../src/server/action-core';
 import { loadScope } from '../src/server/authz/scope';
@@ -15,7 +16,6 @@ type T = {
 };
 
 export async function seedTickets(tx: Tx, ref: Date, ids: { gardenId: (k: string) => string; zoneId: (g: string, z: string) => string; userId: (k: string) => string; memberId: (g: string, u: string) => string; groupId: (g: string, k: string) => string }) {
-  const today = ref.toISOString().slice(0, 10);
   const plan: Record<string, T[]> = {
     canal: [
       { title: 'Arroser la serre', type: 'maintenance', author: 'chloe', zone: 'serre', groups: ['serre'], watering: true, rrule: 'FREQ=DAILY;INTERVAL=2' },
@@ -35,6 +35,8 @@ export async function seedTickets(tx: Tx, ref: Date, ids: { gardenId: (k: string
   };
   for (const [gardenKey, tickets] of Object.entries(plan)) {
     const gardenId = ids.gardenId(gardenKey);
+    // « Aujourd'hui » dans le fuseau du jardin, comme l'application (SPEC §3.7) — pas la date UTC.
+    const today = await gardenToday(tx, gardenId, ref);
     const [existing] = await tx.select({ id: ticket.id }).from(ticket).where(and(eq(ticket.gardenId, gardenId), eq(ticket.source, 'manual'), isNull(ticket.deletedAt))).limit(1);
     if (existing) continue;
     for (const t of tickets) {
