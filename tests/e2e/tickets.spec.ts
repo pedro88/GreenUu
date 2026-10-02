@@ -63,15 +63,23 @@ test.describe.serial('ticketing', () => {
     await expect(page.getByTestId('stage-recorded')).toBeVisible();
   });
 
-  test('[NTF-04] le lien de désinscription d\'un e-mail désactive ce type sans connexion', async ({ browser, page }) => {
-    const mail = await waitForMail('david@greenu.test', unique);
+  test('[NTF-04] le lien de désinscription ne change rien à l\'ouverture, désactive le type à la confirmation, refuse un jeton altéré', async ({ browser, page }) => {
+    const link = linkFrom((await waitForMail('david@greenu.test', unique)).text, '/desinscription/');
     const anonymous = await (await browser.newContext()).newPage();
-    await anonymous.goto(linkFrom(mail.text, '/desinscription/'));
-    await expect(anonymous.getByTestId('unsubscribed')).toContainText('Tâche assignée');
+    await anonymous.goto(link);
+    await expect(anonymous.getByTestId('unsubscribe-confirm')).toContainText('Tâche assignée');
     await login(page, 'david');
     await page.goto('/app/parametres/notifications');
+    await expect(page.getByTestId('pref-assigned-email')).toBeChecked();
+    await anonymous.getByTestId('unsubscribe-submit').click();
+    await expect(anonymous.getByTestId('unsubscribed')).toContainText('Tâche assignée');
+    await page.reload();
     await expect(page.getByTestId('pref-assigned-email')).not.toBeChecked();
     await expect(page.getByTestId('pref-assigned-in_app')).toBeChecked();
+    // Jeton altéré : la signature ne correspond plus.
+    await anonymous.goto(`${link.slice(0, -2)}${link.endsWith('A') ? 'B' : 'A'}${link.slice(-1)}`);
+    await expect(anonymous.getByTestId('unsubscribe-confirm')).toHaveCount(0);
+    await expect(anonymous.getByText("Ce lien de désinscription n'est pas valide.")).toBeVisible();
   });
 
   test('[NTF-07] « tout marquer comme lu » remet le compteur à zéro', async ({ page }) => {

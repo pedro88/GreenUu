@@ -1,6 +1,6 @@
 import { and, desc, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm';
-import { signPayload } from '@/lib/tokens';
-import type { NotificationChannel, NotificationType } from '@/lib/enums';
+import { signPayload, verifyPayload } from '@/lib/tokens';
+import { NOTIFICATION_TYPES, type NotificationChannel, type NotificationType } from '@/lib/enums';
 import type { Executor } from '@/server/db/client';
 import { garden, notification, notificationPreference, user } from '@/server/db/schema';
 import { env } from '@/server/env';
@@ -30,6 +30,13 @@ async function storedPrefs(tx: Executor, userIds: string[], type: NotificationTy
 
 export function unsubscribeUrl(appUrl: string, userId: string, type: NotificationType): string {
   return `${appUrl}/desinscription/${signPayload(`${userId}:${type}`, env().BETTER_AUTH_SECRET)}`;
+}
+
+/** RG-NTF-04 : destinataire et type d'un lien de désinscription, ou null si le jeton n'est pas valide. */
+export function unsubscribeTarget(token: string): { userId: string; type: NotificationType } | null {
+  const [userId, type] = verifyPayload(token, env().BETTER_AUTH_SECRET)?.split(':') ?? [];
+  const known = NOTIFICATION_TYPES.find((x) => x === type);
+  return userId && known ? { userId, type: known } : null;
 }
 
 /**

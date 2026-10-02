@@ -2,7 +2,10 @@
 
 import { uuidSchema, z } from '@/lib/zod';
 import { NOTIFICATION_CHANNELS, NOTIFICATION_TYPES } from '@/lib/enums';
+import type { ActionResult } from '@/lib/errors';
+import type { NotificationType } from '@/lib/enums';
 import { defineAction } from '@/server/action';
+import { db } from '@/server/db/client';
 import * as service from './service';
 
 export const markAllReadAction = defineAction({
@@ -23,3 +26,15 @@ export const setPreferenceAction = defineAction({
     return null;
   },
 });
+
+/**
+ * RG-NTF-04 : désinscription sans connexion, sur confirmation explicite (POST).
+ * Le jeton signé désigne la personne et le type ; ouvrir le lien (GET) ne modifie rien.
+ */
+export async function unsubscribeAction(raw: unknown): Promise<ActionResult<{ type: NotificationType }>> {
+  const parsed = z.object({ token: z.string().min(1).max(512) }).safeParse(raw);
+  const target = parsed.success ? service.unsubscribeTarget(parsed.data.token) : null;
+  if (!target) return { ok: false, error: { code: 'NOT_FOUND', message: 'unsubscribeInvalid' } };
+  await service.setPreference(db(), target.userId, target.type, 'email', false);
+  return { ok: true, data: { type: target.type } };
+}

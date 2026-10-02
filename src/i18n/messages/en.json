@@ -123,6 +123,7 @@
     "checklistFull": "50 éléments au maximum."
   },
   "errors": {
+    "unsubscribeInvalid": "Ce lien de désinscription n'est pas valide.",
     "validation": "Certains champs sont à corriger.",
     "internal": "Oups, quelque chose s'est mal passé. Réessaie dans un instant.",
     "unauthenticated": "Ta session a expiré : reconnecte-toi.",
@@ -816,6 +817,8 @@
   "notifications": {
     "unsubscribeTitle": "Désinscription",
     "unsubscribeInvalid": "Ce lien de désinscription n'est pas valide.",
+    "unsubscribeConfirm": "Ne plus recevoir les e-mails « {type} » ?",
+    "unsubscribeSubmit": "Me désinscrire",
     "unsubscribeDone": "Tu ne recevras plus d'e-mails « {type} ». Tu peux le réactiver dans tes préférences.",
     "title": "Notifications",
     "preferences": "Préférences de notification",

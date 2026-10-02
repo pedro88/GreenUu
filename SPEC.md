@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.5 — validée le 2026-10-01, mise à jour en fin de lot 3. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.6 — validée le 2026-10-01, mise à jour après l'audit du lot 3. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -1311,7 +1311,7 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 - **RG-NTF-01** Types de notification : `assigned` (on m'assigne, directement ou via un groupe au moment de l'assignation), `due_soon` (veille de l'échéance, 8 h heure du jardin), `overdue` (une seule fois), `mentioned`, `commented` (ticket que j'ai créé ou qui m'est assigné), `invited`, `member_left_unassigned` (admins), `digest` (récapitulatif quotidien), `achievement` et `quest` (in-app seulement).
 - **RG-NTF-02** Préférences par type × canal (`email`, `in_app`). Défauts e-mail : `assigned`, `mentioned`, `due_soon` et `invited` activés ; `commented`, `overdue` et `digest` désactivés. In-app : tout activé. `achievement` et `quest` **ne sont jamais envoyés par e-mail** (aucune notification d'incitation).
 - **RG-NTF-03** On n'est jamais notifié de ses propres actions. Les notifications identiques (même type, même ticket, même destinataire) sont regroupées sur une fenêtre de 10 minutes : la notification existante non lue voit son compteur incrémenté, sans nouvel e-mail. Les occurrences d'une série « à sauter » (RG-TCK-08) ne déclenchent pas d'alerte `overdue`. Un type `group_archived_unassigned` prévient le créateur d'un ticket désassigné par l'archivage d'un groupe (RG-GRP-02).
-- **RG-NTF-04** Chaque e-mail contient un lien de désinscription pour son type, qui fonctionne sans connexion (jeton signé).
+- **RG-NTF-04** Chaque e-mail contient un lien de désinscription pour son type, qui fonctionne sans connexion (jeton signé). Ouvrir le lien affiche une confirmation sans rien modifier ; la préférence n'est désactivée qu'au clic sur « Me désinscrire » (POST), pour que les préchargements de liens et les scanners de messagerie ne désinscrivent personne.
 
 ### 6.9 Guides et tips (GUI, TIP, MOD)
 
@@ -1861,7 +1861,7 @@ Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent de
 | NTF-01 | un ticket échu demain, assigné à Paul (e-mail `due_soon` activé) | le job passe à 8 h, heure du jardin | Paul reçoit un e-mail, une seule fois | I |
 | NTF-02 | Paul a désactivé l'e-mail `assigned` | on lui assigne un ticket | notification in-app seulement, aucun e-mail | I |
 | NTF-03 | Paul s'assigne lui-même un ticket | — | aucune notification | I |
-| NTF-04 | un e-mail de notification | on clique sur le lien de désinscription sans être connecté | la préférence de ce type est désactivée et une page de confirmation s'affiche | E |
+| NTF-04 | un e-mail de notification | on ouvre le lien de désinscription sans être connecté, puis on confirme | l'ouverture seule ne change rien ; après confirmation, la préférence de ce type est désactivée et un message le confirme ; un jeton altéré est refusé | E |
 | NTF-05 | un succès obtenu | — | une notification in-app est créée, aucun e-mail n'est envoyé, quelles que soient les préférences | I |
 | NTF-06 | 4 commentaires sur le même ticket en 5 minutes | les notifications `commented` sont émises | une seule notification groupée est créée | I |
 | NTF-07 | le centre de notifications | on clique sur « tout marquer comme lu » | le compteur passe à 0 | E |
@@ -2166,6 +2166,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.6 | 2026-10-02 | Corrections de l'audit du lot 3 : la désinscription par e-mail passe par une confirmation explicite (RG-NTF-04, NTF-04). |
 | 0.5 | 2026-10-02 | Fin du lot 3 : tickets d'étape (titre traduisible, rattachés à la culture), occurrences détachées (RG-TCK-09), regroupement des notifications et type `group_archived_unassigned` (RG-NTF-03), menu « Déplacer vers » du kanban, page `/app/taches` et cloche de notifications, page publique `/desinscription/[token]`. Audit du lot 2 (76/100) corrigé : endpoints HTTP d'authentification restreints, en-têtes de sécurité (CSP à nonce), actions de lecture sans revalidation, listes bornées, CI et pre-commit. |
 | 0.4 | 2026-10-01 | Fin du lot 2 : clôture manuelle des saisons (RG-SEA-02), confirmation explicite des alertes de rotation (RG-ROT-02), archivage d'une zone avec cultures en cours (RG-ZON-06), photos « en attente » et EXIF retiré côté serveur (RG-JRN-03), intervention `transplant`, scripts `db:reference` et `assets:sync`, dossier de build e2e séparé (`NEXT_DIST_DIR`). JRN-05 et les parties « tickets » de CUL-07 / ZON-10 passent au lot 3. |
 | 0.3 | 2026-10-01 | Fin du lot 1 : ports et nom du projet Compose, `no-restricted-imports` au lieu d'`eslint-plugin-boundaries`, Stylelint limité aux couleurs, dépendances ajoutées (`concurrently`, `@axe-core/playwright`, `server-only`), table `garden_group`, ZON-09 / ZON-10 / AUTHZ-08 déplacés au lot 2, choix D-23 à D-26, question Q-24. |
