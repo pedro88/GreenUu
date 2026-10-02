@@ -191,4 +191,23 @@ describe('avatars dans la vue (§9.5)', () => {
       await createTicket(fam.ctx, { ...base, gardenId: fam.gardenId, title: 'Arroser', zoneId: fam.potager });
       expect((await sceneSnapshot(tx, fam.ctx.scope, { userId: alice.id, sceneZoneId: null, now: NOW })).avatars).toEqual([]);
     }));
+
+  it('la fenêtre d\'activité s\'arrête exactement à 24 h (INT-COL-04b)', () =>
+    inTx(async (tx) => {
+      const bruno = await makeUser(tx);
+      const { gardenId, potager } = await setup(tx, bruno, 'collective');
+      const emma = await makeUser(tx);
+      const david = await makeUser(tx);
+      await addMember(tx, gardenId, emma, 'member');
+      await addMember(tx, gardenId, david, 'member');
+      const base = { gardenId, type: 'task' as const, priority: 'normal' as const, checklist: [], memberIds: [], groupIds: [], zoneId: potager };
+      const at = (ms: number) => fixedClock(new Date(NOW.getTime() - ms));
+      await createTicket(await scopedCtx(tx, emma, gardenId, { clock: at(24 * 3_600_000 - 60_000) }), { ...base, title: 'Il y a 23 h 59' });
+      await createTicket(await scopedCtx(tx, david, gardenId, { clock: at(24 * 3_600_000) }), { ...base, title: 'Il y a exactement 24 h' });
+      const snap = await sceneSnapshot(tx, (await scopedCtx(tx, bruno, gardenId)).scope, { userId: bruno.id, sceneZoneId: null, now: NOW });
+      // bruno, qui vient de créer le Potager, apparaît aussi : seules les deux bornes nous intéressent.
+      const users = snap.avatars.map((a) => a.userId);
+      expect(users).toContain(emma.id);
+      expect(users).not.toContain(david.id);
+    }));
 });
