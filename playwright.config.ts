@@ -18,10 +18,11 @@ export default defineConfig({
     { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testMatch: /(a11y|kanban)\.spec\.ts/ },
   ],
   webServer: {
-    command: `tsx scripts/reset.ts ${TEST_DB} && concurrently -k -n next,worker "next dev --port ${PORT}" "tsx src/server/jobs/worker.ts"`,
+    // CI : build de production (pas de compilation à la première visite d'une route) ; local : `next dev`.
+    command: `tsx scripts/reset.ts ${TEST_DB} && ${process.env.CI ? `next build && concurrently -k -n next,worker "next start --port ${PORT}"` : `concurrently -k -n next,worker "next dev --port ${PORT}"`} "tsx src/server/jobs/worker.ts"`,
     url: `http://localhost:${PORT}/connexion`,
     reuseExistingServer: false,
-    timeout: 180_000,
+    timeout: process.env.CI ? 600_000 : 180_000,
     env: {
       DATABASE_URL: TEST_DB,
       APP_URL: `http://localhost:${PORT}`,
