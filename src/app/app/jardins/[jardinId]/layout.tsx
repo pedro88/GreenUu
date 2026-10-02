@@ -4,6 +4,7 @@ import { Alert } from '@/components/ui/Alert';
 import styles from '@/features/garden/ui/GardenHeader.module.scss';
 import { GardenNav } from '@/features/garden/ui/GardenNav';
 import { getGarden } from '@/features/garden/service';
+import { sharingState } from '@/features/result/service';
 import { currentSeasonLabel } from '@/features/season/queries';
 import { requireGardenScope } from '@/server/page-guards';
 import { can } from '@/server/authz/scope';
@@ -15,7 +16,8 @@ export default async function GardenLayout({ children, params }: LayoutProps<'/a
   const scope = await requireGardenScope(jardinId);
   const g = await getGarden(db(), scope);
   const t = await getTranslations('garden');
-  const season = await currentSeasonLabel(db(), scope, appClock().now(), g.timezone);
+  const [season, shared] = await Promise.all([currentSeasonLabel(db(), scope, appClock().now(), g.timezone), sharingState(db(), scope.gardenId)]);
+  const tsh = await getTranslations('sharing');
   return (
     <>
       <header className={styles.header}>
@@ -26,6 +28,7 @@ export default async function GardenLayout({ children, params }: LayoutProps<'/a
         <GardenNav gardenId={scope.gardenId} showSettings={can(scope, 'garden:update') || scope.role === 'owner'} />
       </header>
       {scope.archived ? <Alert tone="warning">{t('archivedBanner')}</Alert> : null}
+      {shared ? <Alert tone="info"><span data-testid="share-banner">{tsh('banner')}</span></Alert> : null}
       {children}
     </>
   );

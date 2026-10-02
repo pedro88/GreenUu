@@ -179,3 +179,38 @@ describe('suppression du compte', () => {
       expect(p).toEqual({ at: null, pseudo: alice.name });
     }));
 });
+
+describe('contrat du moteur', () => {
+  it('[RCO-10] une implémentation factice de RecommendationEngine alimente la vue /recommandations sans modification', () =>
+    inTx(async (tx) => {
+      const { provideEngine, recommendationView } = await import('../../src/features/reco/view');
+      const alice = await makeUser(tx);
+      const gardenId = await makeGarden(tx, alice);
+      const zoneId = await makeZone(tx, alice, gardenId, 'Planche 1');
+      const calls: unknown[] = [];
+      const restore = provideEngine(() => ({
+        version: 'factice-1',
+        async recommendVarieties(q) {
+          calls.push(q);
+          const base = { speciesId: RHUBARBE, speciesName: 'Rhubarbe', score: 0.9 };
+          const summary = { koppen: 'Cfb', environment: 'open_air' as const, altitudeM: 100, practices: [] };
+          return [
+            { ...base, explanation: { source: 'community' as const, confidence: 'high' as const, gardensCount: 20, resultsCount: 40, meanSuccessPct: 78, medianYieldKgM2: 2.1, contextSummary: summary, warnings: [] } },
+            { ...base, speciesId: 'autre', explanation: { source: 'reference' as const, confidence: 'cold_start' as const, gardensCount: 3, resultsCount: 3, contextSummary: summary, warnings: [] } },
+          ];
+        },
+        async adjustedCalendar() { return { reference: null, adjusted: null, offsetDays: null, gardensCount: 0, label: 'reference' as const }; },
+        async compareMethods() { return []; },
+      }));
+      try {
+        const scope = (await scopedCtx(tx, alice, gardenId)).scope;
+        const view = await recommendationView(tx, scope, { zoneId, period: 'spring', year: 2026 });
+        expect(view.version).toBe('factice-1');
+        expect(view.items.map((i) => i.speciesId)).toEqual([RHUBARBE]);
+        expect(view.coldStart.map((i) => i.speciesId)).toEqual(['autre']);
+        expect(calls[0]).toMatchObject({ gardenId, zoneId, from: new Date('2026-03-01T00:00:00Z'), to: new Date('2026-05-31T00:00:00Z') });
+      } finally {
+        restore();
+      }
+    }));
+});

@@ -5,6 +5,7 @@ import { Badge, Card, Muted, Stack } from '@/components/ui/Layout';
 import { PlantIcon } from '@/components/ui/PlantIcon';
 import { familySpriteOf } from '@/features/culture/ui/CultureList';
 import { speciesDetail } from '@/features/plant/service';
+import { speciesCommunityStats } from '@/features/reco/facts';
 import styles from '@/features/plant/ui/Plant.module.scss';
 import { tDynamic } from '@/i18n/dynamic';
 import { DomainError } from '@/lib/errors';
@@ -24,6 +25,9 @@ export default async function SpeciesPage({ params }: PageProps<'/app/plantes/[e
     throw e;
   });
   const t = await getTranslations('plants');
+  const tc = await getTranslations('speciesStats');
+  const tpr = await getTranslations('problems');
+  const stats = await speciesCommunityStats(db(), s.id);
   const tf = await getTranslations('families');
   const tm = await getTranslations('methods');
   const tst = await getTranslations('stages');
@@ -78,6 +82,17 @@ export default async function SpeciesPage({ params }: PageProps<'/app/plantes/[e
           </Stack>
         </Card>
       ) : null}
+      <Card data-testid="species-community">
+        <Stack gap="sm">
+          <h2>{tc('title')}</h2>
+          {stats.shown ? (
+            <>
+              <p>{tc('summary', { gardens: stats.gardens, success: stats.meanSuccessPct ?? 0 })}{stats.medianYieldKgM2 !== null ? ` · ${tc('yield', { value: stats.medianYieldKgM2 })}` : ''}</p>
+              {stats.topProblems.length ? <p>{tc('problems')} : {stats.topProblems.map((p) => `${tDynamic(tpr, p.code, p.code)} (${p.sharePct} %)`).join(', ')}</p> : null}
+            </>
+          ) : <Muted data-testid="species-community-hidden">{tc('notEnough')}</Muted>}
+        </Stack>
+      </Card>
     </Stack>
   );
 }

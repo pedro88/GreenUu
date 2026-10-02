@@ -95,3 +95,9 @@ export async function resultOf(tx: Executor, scope: Scope, cultureId: string) {
     .where(and(eq(cultureResult.gardenId, scope.gardenId), eq(cultureResult.cultureId, cultureId), eq(cultureResult.seasonId, culture.seasonId))).limit(1);
   return r ?? null;
 }
+
+/** Le jardin partage-t-il ses bilans (bandeau des membres, formulaire de bilan, paramètres) ? */
+export async function sharingState(tx: Executor, gardenId: string) {
+  const [g] = await tx.select({ shared: garden.shareResults }).from(garden).where(eq(garden.id, gardenId)).limit(1);
+  return g?.shared ?? false;
+}

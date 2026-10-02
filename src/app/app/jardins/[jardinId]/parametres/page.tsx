@@ -9,6 +9,8 @@ import { listPracticeCatalog, practicesForZone } from '@/features/practice/servi
 import { PracticesEditor } from '@/features/practice/ui/PracticesEditor';
 import { zoneTypeOptions } from '@/features/zone/queries';
 import { ZoneTypesEditor } from '@/features/zone/ui/ZoneTypesEditor';
+import { SHARE_CONSENT_VERSION, sharingState } from '@/features/result/service';
+import { ShareResults } from '@/features/result/ui/ShareResults';
 import { requireGardenScope } from '@/server/page-guards';
 import { can } from '@/server/authz/scope';
 import { appClock } from '@/server/clock';
@@ -29,6 +31,8 @@ export default async function GardenSettingsPage({ params }: PageProps<'/app/jar
   const types = (await zoneTypeOptions(db(), scope)).filter((ty) => ty.isCustom);
   const { active } = await listMembers(db(), scope, appClock().now());
   const editable = can(scope, 'garden:update');
+  const shared = await sharingState(db(), scope.gardenId);
+  const ts = await getTranslations('sharing');
   return (
     <Stack gap="lg">
       {editable ? (
@@ -59,6 +63,12 @@ export default async function GardenSettingsPage({ params }: PageProps<'/app/jar
           </Stack>
         </Card>
       ) : null}
+      <Card>
+        <Stack>
+          <h2>{ts('title')}</h2>
+          {can(scope, 'garden:share_results') ? <ShareResults gardenId={scope.gardenId} initial={shared} consentVersion={SHARE_CONSENT_VERSION} /> : <p>{shared ? ts('banner') : ts('ownerOnly')}</p>}
+        </Stack>
+      </Card>
       {scope.role === 'owner' ? (
         <Card>
           <Stack>

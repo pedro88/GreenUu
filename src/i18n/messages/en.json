@@ -341,7 +341,8 @@
     "settings": "Paramètres",
     "cultures": "Cultures",
     "seasons": "Saisons",
-    "tickets": "Tâches"
+    "tickets": "Tâches",
+    "reco": "Que planter ?"
   },
   "garden": {
     "season": {
@@ -537,7 +538,19 @@
     "consent_share_results": "Partage des résultats",
     "consent_marketing": "Communications",
     "revoked": "révoqué",
-    "comingSoon": "Partage des résultats, export et suppression de tes données arrivent prochainement."
+    "comingSoon": "Partage des résultats, export et suppression de tes données arrivent prochainement.",
+    "exportTitle": "Exporter mes données",
+    "exportIntro": "Une archive ZIP de ton profil, de tes contributions, de ton journal d'XP et de tes photos, envoyée par e-mail. Une demande par jour.",
+    "exportSubmit": "Demander l'export",
+    "exportRequested": "C'est parti : tu recevras un e-mail avec le lien de téléchargement.",
+    "exportReady": "Dernier export prêt, valable jusqu'au {date}.",
+    "exportDownload": "Télécharger",
+    "deleteTitle": "Supprimer mon compte",
+    "deleteIntro": "Ton compte est désactivé tout de suite puis supprimé au bout de 30 jours, sauf si tu le rétablis avec le lien reçu par e-mail. Tes contributions aux jardins partagés restent, signées « Jardinier·e supprimé·e ». La propriété de tes jardins est transférée à l'admin le plus ancien.",
+    "deleteConfirm": "Je confirme la suppression de mon compte",
+    "deleteTransferMember": "Si un jardin n'a pas d'admin, je confirme le transfert de propriété au membre le plus ancien",
+    "deleteSubmit": "Supprimer mon compte",
+    "deleteRequested": "Suppression programmée le {date}. Un e-mail t'a été envoyé pour la rétablir."
   },
   "system": {
     "notFoundTitle": "Rien n'a poussé ici…",
@@ -727,7 +740,8 @@
     "cancel": "Annuler",
     "tab_taches": "Tâches",
     "noTickets": "Aucune tâche en cours.",
-    "newTicket": "Nouvelle tâche"
+    "newTicket": "Nouvelle tâche",
+    "result": "Bilan"
   },
   "quick": {
     "open": "Saisie rapide",
@@ -1176,5 +1190,91 @@
     "noTips": "Aucun tip.",
     "private": "Ce profil n'est pas public.",
     "report": "Signaler ce profil"
+  },
+  "results": {
+    "title": "Bilan de la culture",
+    "intro": "Quelques réponses suffisent : chaque champ compte pour 20 % du bilan.",
+    "open": "Faire le bilan",
+    "edit": "Modifier le bilan",
+    "notYet": "Le bilan sera proposé une fois la culture terminée ou après la première récolte.",
+    "totalKg": "Récolte totale (kg)",
+    "totalKgHint": "Pré-remplie avec la somme des récoltes, modifiable.",
+    "noHarvest": "Pas de récolte",
+    "quality": "Qualité",
+    "stars": "{count, plural, one {# étoile} other {# étoiles}}",
+    "successPct": "Taux de réussite",
+    "successValue": "{value} %",
+    "problems": "Problèmes rencontrés",
+    "noProblem": "Aucun problème",
+    "severity": "Gravité",
+    "rating": "Note globale",
+    "wouldGrowAgain": "Je recommencerais",
+    "yes": "Oui",
+    "no": "Non",
+    "notes": "Notes (facultatif)",
+    "save": "Enregistrer le bilan",
+    "saved": "Bilan enregistré : complétude {completeness} %.",
+    "yield": "Rendement : {value} kg/m².",
+    "noArea": "Renseigne la surface de la culture pour calculer le rendement au m².",
+    "completeness": "Complétude : {value} %",
+    "shared": "Ce bilan sera partagé de façon anonyme (partage activé par le propriétaire).",
+    "notShared": "Ce bilan reste privé au jardin."
+  },
+  "sharing": {
+    "title": "Partage anonyme des bilans",
+    "consentText": "En activant le partage, les bilans complets à 60 % au moins de ce jardin alimentent les recommandations de la communauté. Seuls sont partagés : une zone géographique d'environ 40 × 20 km, le climat, l'altitude arrondie à 100 m, le sol, l'environnement, les pratiques, l'espèce, la variété, la méthode, les jours de l'année des étapes et les résultats chiffrés. Jamais ton nom, celui du jardin, des zones, ni tes notes ou tes photos. Tu peux révoquer le partage à tout moment : il est retiré dans l'heure.",
+    "enable": "Activer le partage",
+    "disable": "Révoquer le partage",
+    "enabled": "Le partage est actif.",
+    "disabled": "Le partage est désactivé.",
+    "banner": "Les bilans de ce jardin sont partagés de façon anonyme pour aider la communauté.",
+    "ownerOnly": "Seul·e le ou la propriétaire décide du partage."
+  },
+  "reco": {
+    "title": "Que planter ?",
+    "intro": "Suggestions pour une zone et une période, d'après les jardins au contexte proche du tien.",
+    "zone": "Zone",
+    "period": "Période",
+    "species": "Espèce (facultatif)",
+    "anySpecies": "Toutes",
+    "spring": "Printemps",
+    "summer": "Été",
+    "autumn": "Automne",
+    "winter": "Hiver",
+    "submit": "Voir les suggestions",
+    "empty": "Aucune suggestion pour cette période.",
+    "explanation": "{gardens} jardins à contexte proche, réussite moyenne {success} %, rendement médian {yield} kg/m²",
+    "explanationNoYield": "{gardens} jardins à contexte proche, réussite moyenne {success} %",
+    "confidence": "Confiance : {level}",
+    "confidence_high": "élevée",
+    "confidence_medium": "moyenne",
+    "confidence_low": "faible",
+    "confidence_cold_start": "démarrage à froid",
+    "coldStart": "Pas encore assez de résultats de jardins proches du tien ({count} sur les 5 nécessaires) ; suggestion issue du {source}.",
+    "source_reference": "référentiel",
+    "source_guide": "guide le plus appliqué",
+    "warning_rotation": "Retour trop précoce de la famille sur cette zone",
+    "warning_unfavorable_companion": "Association défavorable avec une culture voisine",
+    "warning_out_of_window": "Hors de la période conseillée",
+    "warning_environment_mismatch": "Environnement différent",
+    "ownHistory": "Dans ton jardin : {seasons, plural, one {# saison} other {# saisons}}, note moyenne {rating}",
+    "context": "Contexte : {summary}",
+    "bestMethod": "Méthode la plus réussie : {method}",
+    "openGuide": "Voir le guide",
+    "window": "Fenêtre conseillée : du jour {start} au jour {end}"
+  },
+  "speciesStats": {
+    "title": "Résultats de la communauté",
+    "notEnough": "Pas encore assez de jardins pour afficher des résultats (au moins 5 jardins distincts).",
+    "summary": "{gardens} jardins, réussite moyenne {success} %",
+    "yield": "rendement médian {value} kg/m²",
+    "problems": "Problèmes fréquents"
+  },
+  "restore": {
+    "title": "Rétablir ton compte",
+    "confirm": "Ton compte est en cours de suppression. Le rétablir annule la suppression.",
+    "submit": "Rétablir mon compte",
+    "done": "Ton compte est rétabli : tu peux te reconnecter.",
+    "invalid": "Ce lien de rétablissement n'est plus valable."
   }
 }

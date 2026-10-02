@@ -3,17 +3,21 @@ import { Card, Muted, PageHeader, Stack } from '@/components/ui/Layout';
 import { requireUser } from '@/server/auth/session';
 import { db } from '@/server/db/client';
 import { listConsents } from '@/features/account/service';
+import { latestExport } from '@/features/privacy/service';
+import { DeletionRequest, ExportRequest } from '@/features/privacy/ui/PrivacyControls';
+import { appClock } from '@/server/clock';
+import Link from 'next/link';
 
 export async function generateMetadata() {
   return { title: (await getTranslations('privacy'))('title') };
 }
 
-/** Lot 1 : consentements tracés. Partage des résultats, export et suppression : lot 5 (SPEC §11). */
+/** Confidentialité (PAGES.md §7, SPEC §11) : consentements, export et suppression du compte. */
 export default async function PrivacyPage() {
   const u = await requireUser();
   const t = await getTranslations('privacy');
   const f = await getFormatter();
-  const rows = await listConsents(db(), u.id);
+  const [rows, last] = await Promise.all([listConsents(db(), u.id), latestExport(db(), u.id, appClock().now())]);
   return (
     <Stack gap="lg">
       <PageHeader title={t('title')} />
@@ -27,7 +31,21 @@ export default async function PrivacyPage() {
           </ul>
         </Stack>
       </Card>
-      <Muted>{t('comingSoon')}</Muted>
+      <Card>
+        <Stack gap="sm">
+          <h2>{t('exportTitle')}</h2>
+          <Muted>{t('exportIntro')}</Muted>
+          {last ? <p data-testid="export-ready">{t('exportReady', { date: f.dateTime(last.expiresAt, { dateStyle: 'medium' }) })} <Link href={`/app/parametres/confidentialite/export/${last.id}`} prefetch={false}>{t('exportDownload')}</Link></p> : null}
+          <ExportRequest />
+        </Stack>
+      </Card>
+      <Card>
+        <Stack gap="sm">
+          <h2>{t('deleteTitle')}</h2>
+          <Muted>{t('deleteIntro')}</Muted>
+          <DeletionRequest />
+        </Stack>
+      </Card>
     </Stack>
   );
 }

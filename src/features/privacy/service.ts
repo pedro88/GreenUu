@@ -183,3 +183,10 @@ export async function isDeactivated(tx: Executor, userId: string) {
   return p?.at != null;
 }
 
+
+/** Dernier export prêt et encore valable, pour la page de confidentialité. */
+export async function latestExport(tx: Executor, userId: string, now: Date) {
+  const [e] = await tx.select({ id: dataExport.id, expiresAt: dataExport.expiresAt }).from(dataExport)
+    .where(and(eq(dataExport.userId, userId), eq(dataExport.status, 'ready'), gt(dataExport.expiresAt, now))).orderBy(desc(dataExport.createdAt)).limit(1);
+  return e?.expiresAt ? { id: e.id, expiresAt: e.expiresAt } : null;
+}

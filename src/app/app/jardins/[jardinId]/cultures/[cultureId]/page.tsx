@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
+import { LinkButton } from '@/components/ui/Button';
 import { Badge, Card, Muted, Row, Stack } from '@/components/ui/Layout';
 import { PlantIcon } from '@/components/ui/PlantIcon';
 import { cultureDetail } from '@/features/culture/queries';
@@ -74,6 +75,7 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
         <Muted>{d.area.m2 !== null ? t(`area_${d.area.source}`, { m2: f.number(d.area.m2, { maximumFractionDigits: 2 }) }) : t('areaUnknown')}{d.totalKg > 0 ? ` · ${t('totalKg', { kg: f.number(d.totalKg, { maximumFractionDigits: 2 }) })}` : ''}</Muted>
       </section>
       <CultureActions gardenId={scope.gardenId} cultureId={cultureId} deleted={deleted} canDelete={can(scope, 'culture:delete', { isOwn: d.c.createdBy === scope.userId })} canEdit={canEdit} ended={['finished', 'failed', 'abandoned'].includes(d.c.status)} />
+      <LinkButton variant="secondary" href={`${base}/bilan`} data-testid="culture-result">{t('result')}</LinkButton>
       {applied ? <Muted data-testid="culture-applied-guide"><Link href={`/app/guides/${applied.guideId}`}>{tg('appliedVersion', { title: applied.title, number: applied.number })}</Link></Muted> : null}
       {canApply ? (
         <ApplyGuideDialog triggerLabel={tg('applyTitle')} anchorLabel={tst('sowing')} today={today}
