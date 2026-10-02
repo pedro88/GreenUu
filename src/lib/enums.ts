@@ -71,3 +71,9 @@ export type XpReason = (typeof XP_REASONS)[number];
 export type QuestKind = (typeof QUEST_KINDS)[number];
 export type GoalMetric = (typeof GOAL_METRICS)[number];
 export type Skill = (typeof SKILL_DOMAINS)[number];
+
+/* ---------- Lot 7 : vue jardin et éditeur de plan ---------- */
+export const TERRAIN_KINDS = ['path', 'gravel_path', 'stepping_stones', 'water_point', 'rain_barrel', 'hedge', 'existing_tree', 'fence', 'gate'] as const;
+export const DEFAULT_VIEWS = ['garden', 'classic'] as const;
+export type TerrainKind = (typeof TERRAIN_KINDS)[number];
+export type DefaultView = (typeof DEFAULT_VIEWS)[number];
