@@ -117,12 +117,8 @@
   --color-focus: #8cb8ff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    @include dark-tokens;
-  }
-}
-
+// Thème clair par défaut, comme les maquettes (pas de bascule automatique sur le réglage de l'appareil) ;
+// le thème sombre ne s'applique que sur choix explicite (`data-theme="dark"`).
 :root[data-theme="dark"] {
   @include dark-tokens;
 }
