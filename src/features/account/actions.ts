@@ -105,7 +105,9 @@ export async function resetPassword(raw: unknown): Promise<ActionResult<{ redire
   const { token, password } = parsed.data;
   const ctx = await auth().$context;
   const verification = await ctx.internalAdapter.findVerificationValue(`reset-password:${token}`);
-  if (!verification || verification.expiresAt.getTime() < appClock().now().getTime()) return fail('NOT_FOUND', 'linkExpired');
+  // L'expiration est posée par Better Auth avec l'heure système : on la compare à la même horloge, pas à `appClock`
+  // (qui peut être figée en test) — un jeton, une seule source de « maintenant ».
+  if (!verification || verification.expiresAt.getTime() < Date.now()) return fail('NOT_FOUND', 'linkExpired');
   const [u] = await db().select({ email: user.email }).from(user).where(eq(user.id, verification.value)).limit(1);
   if (!u) return fail('NOT_FOUND', 'linkExpired');
   try {
