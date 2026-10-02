@@ -344,7 +344,8 @@
     "cultures": "Cultures",
     "seasons": "Saisons",
     "tickets": "Tâches",
-    "reco": "Que planter ?"
+    "reco": "Que planter ?",
+    "progression": "Progression"
   },
   "garden": {
     "season": {
@@ -1418,7 +1419,14 @@
     "metric_results_complete": "Bilans complets",
     "metric_cultures_started": "Cultures lancées",
     "gardenXp": "XP du jardin : {xp}",
-    "tableLabel": "Contributions des membres sur 30 jours"
+    "tableLabel": "Contributions des membres sur 30 jours",
+    "pageTitle": "Progression du jardin",
+    "gardenLevel": "Niveau {level, number} du jardin",
+    "nextLevel": "Avancement vers le niveau {level, number}",
+    "nextLevelIn": "Encore {xp, number} XP collectifs avant le niveau {level, number}",
+    "achievementsTitle": "Succès collectifs",
+    "noAchievement": "Pas encore de succès parmi les membres du jardin.",
+    "achievedBy": "{count, plural, one {# membre} other {# membres}} : {names}"
   },
   "adminXp": {
     "title": "Saisies en masse",
