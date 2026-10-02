@@ -25,12 +25,16 @@ test.describe('éditeur d\'avatar (§10)', () => {
     expect(after?.config.layers.hair_front).toEqual({ item: hair, palettes: [color] });
     await expect(editor).toHaveAttribute('data-config-hash', after?.configHash ?? '');
 
-    // La vignette des membres est recomposée pour le nouveau hash.
+    // La vignette des membres est recomposée pour le nouveau hash, sans télécharger l'atlas (audit lot 8, M1).
+    const sprites: string[] = [];
+    page.on('request', (r) => { if (r.url().includes('/sprites/')) sprites.push(new URL(r.url()).pathname); });
     await page.goto(`/app/jardins/${CANAL}/membres`);
     const thumb = page.getByTestId('member-emma').getByTestId('avatar-thumb');
     await expect(thumb).toHaveAttribute('data-config-hash', after?.configHash ?? '');
     await expect(thumb).toHaveAttribute('data-state', 'composed');
     await expect(thumb.locator('img')).toHaveCount(1);
+    expect(sprites.filter((p) => p.startsWith('/sprites/atlas/'))).toEqual([]);
+    expect(sprites.some((p) => p.startsWith('/sprites/avatar/'))).toBe(true);
   });
 
   test('[AVT-02] une configuration forgée qui équipe le chapeau de paille verrouillé : LOCKED_ITEM, rien ne change, « Succès Semencier » affiché', async ({ page }) => {

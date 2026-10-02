@@ -77,7 +77,7 @@ La page d'un jardin s'ouvre en vue jardin (PixiJS) ou en vue classique, selon `?
 
 Le domaine (instantané de scène, phase visuelle, commandes du plan) est dans `src/features/scene/`.
 
-- **Assets** : on utilise les sprites **HD** (`out_hd/` : tuile de 64 px, avatar de 64 × 96 px). `pnpm assets:sync` copie l'atlas et toutes ses pages (`atlas.json`, `atlas-1.json`…, listées par `related_multi_packs`) dans `public/sprites/atlas/`, et les objets de déco dans `public/sprites/decor/`. Le moteur affiche les textures à la résolution des assets : la grille logique reste à 32 px. Sans atlas, il dessine des formes de substitution.
+- **Assets** : on utilise les sprites **HD** (`out_hd/` : tuile de 64 px, avatar de 64 × 96 px). `pnpm assets:sync` copie l'atlas et toutes ses pages (`atlas.json`, `atlas-1.json`…, listées par `related_multi_packs`) dans `public/sprites/atlas/`, les objets de déco dans `public/sprites/decor/`, et la frame de face de chaque élément d'avatar dans `public/sprites/avatar/` (les vignettes ne chargent jamais l'atlas). Le moteur affiche les textures à la résolution des assets : la grille logique reste à 32 px. Sans atlas, il dessine des formes de substitution.
 - **Déco** : outil « Déco » de l'éditeur (permission `decor:place`, souvent plus large que `plan:edit`). Un objet verrouillé est refusé côté serveur (`LOCKED_ITEM`). Un objet ★ (hôtel à insectes, nichoir, mare) peut être déclaré comme pratique depuis sa feuille dans la vue jardin.
 - **Avatars** : dans les jardins collectifs, les membres actifs dans les 24 h apparaissent au pied de la zone de leur dernière action.
 - **CSP** : la production interdit `eval`. PixiJS est donc chargé avec `pixi.js/unsafe-eval` (shaders précompilés) ; ne pas retirer cet import.

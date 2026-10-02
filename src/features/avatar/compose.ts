@@ -8,8 +8,10 @@ import { recolorPixels } from './recolor.pure';
 
 /*
  * Composition de l'avatar en Canvas 2D (SPEC §10.2, §10.5), sans PixiJS : calques recolorés dans l'ordre fixe, frames
- * HD de l'atlas (`avatar/<clé>-<direction>-<pose>.png`). Les calques recolorés sont en cache mémoire par
- * (élément, palettes, direction, pose) ; les vignettes, en mémoire et dans Cache Storage sous `avatar:<configHash>`.
+ * HD de l'atlas (`avatar/<clé>-<direction>-<pose>.png`). Les vignettes n'utilisent que la frame de face à l'arrêt,
+ * servie en fichier individuel (`/sprites/avatar/<clé>-bas-arret.png`) : elles ne chargent jamais l'atlas complet.
+ * Les calques recolorés sont en cache mémoire par (source, élément, palettes, direction, pose) ; les vignettes, en
+ * mémoire et dans Cache Storage sous `avatar:<configHash>`.
  */
 
 export const DIRECTIONS = ['bas', 'gauche', 'haut', 'droite'] as const;
@@ -45,17 +47,31 @@ function image(url: string) {
 
 const canvas = (w: number, h: number) => Object.assign(document.createElement('canvas'), { width: w, height: h });
 
-/** Un calque recoloré (§10.2), ou null si l'atlas n'a pas la frame (repli sans erreur, §9.2). */
-function layer(item: string, palettes: string[], dir: Direction, pose: Pose): Promise<HTMLCanvasElement | null> {
-  const key = `${item}|${palettes.join(',')}|${dir}|${pose}`;
+/** Source des frames : l'atlas complet (éditeur, vue jardin) ou les frames de face individuelles (vignettes). */
+type Source = 'atlas' | 'single';
+type Frame = { img: HTMLImageElement; x: number; y: number; w: number; h: number };
+
+async function frameOf(spriteKey: string, dir: Direction, pose: Pose, source: Source): Promise<Frame | null> {
+  if (source === 'single') {
+    const img = await image(`/sprites/avatar/${spriteKey}-bas-arret.png`);
+    return img ? { img, x: 0, y: 0, w: img.naturalWidth, h: img.naturalHeight } : null;
+  }
+  const a = await atlas();
+  const f = a ? a.frames.get(`avatar/${spriteKey}-${dir}-${pose}.png`) ?? a.frames.get(`avatar/${spriteKey}-${dir}-arret.png`) : undefined;
+  const img = f ? await image(f.page) : null;
+  return f && img ? { img, x: f.x, y: f.y, w: f.w, h: f.h } : null;
+}
+
+/** Un calque recoloré (§10.2), ou null si la frame manque (repli sans erreur, §9.2). */
+function layer(item: string, palettes: string[], dir: Direction, pose: Pose, source: Source = 'atlas'): Promise<HTMLCanvasElement | null> {
+  const key = `${source}|${item}|${palettes.join(',')}|${dir}|${pose}`;
   let p = layers.get(key);
   if (!p) {
     p = (async () => {
       const def = AVATAR_ITEM_BY_CODE.get(item);
-      const a = await atlas();
-      const f = def && a ? a.frames.get(`avatar/${def.spriteKey}-${dir}-${pose}.png`) ?? a.frames.get(`avatar/${def.spriteKey}-${dir}-arret.png`) : undefined;
-      const img = f ? await image(f.page) : null;
-      if (!f || !img) return null;
+      const f = def ? await frameOf(def.spriteKey, dir, pose, source) : null;
+      if (!f) return null;
+      const img = f.img;
       const c = canvas(f.w, f.h);
       const ctx = c.getContext('2d', { willReadFrequently: true });
       if (!ctx) return null;
@@ -74,10 +90,10 @@ function layer(item: string, palettes: string[], dir: Direction, pose: Pose): Pr
 }
 
 /** Dessine l'avatar complet dans `target` (taille du sprite), calques de l'arrière vers l'avant (§10.1). */
-export async function drawAvatar(target: CanvasRenderingContext2D, config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret'): Promise<boolean> {
+export async function drawAvatar(target: CanvasRenderingContext2D, config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret', source: Source = 'atlas'): Promise<boolean> {
   const parts = await Promise.all(AVATAR_LAYERS.map((l) => {
     const e = config.layers[l];
-    return e?.item ? layer(e.item, e.palettes, dir, pose) : Promise.resolve(null);
+    return e?.item ? layer(e.item, e.palettes, dir, pose, source) : Promise.resolve(null);
   }));
   target.clearRect(0, 0, target.canvas.width, target.canvas.height);
   target.imageSmoothingEnabled = false;
@@ -93,10 +109,10 @@ export async function drawAvatar(target: CanvasRenderingContext2D, config: Avata
 }
 
 /** Sprite composé hors écran, à la taille native (pour la vue jardin). */
-export async function avatarCanvas(config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret'): Promise<HTMLCanvasElement | null> {
+export async function avatarCanvas(config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret', source: Source = 'atlas'): Promise<HTMLCanvasElement | null> {
   const c = canvas(SPRITE.w, SPRITE.h);
   const ctx = c.getContext('2d');
-  return ctx && (await drawAvatar(ctx, config, dir, pose)) ? c : null;
+  return ctx && (await drawAvatar(ctx, config, dir, pose, source)) ? c : null;
 }
 
 const CACHE = 'greenu-avatars';
@@ -113,7 +129,7 @@ export function avatarThumbnail(config: AvatarConfigV1, configHash: string): Pro
       const store = typeof caches !== 'undefined' ? await caches.open(CACHE).catch(() => null) : null;
       const hit = await store?.match(key);
       if (hit) return URL.createObjectURL(await hit.blob());
-      const full = await avatarCanvas(config);
+      const full = await avatarCanvas(config, 'bas', 'arret', 'single');
       if (!full) return null;
       const c = canvas(THUMB_PX, THUMB_PX);
       const ctx = c.getContext('2d');

@@ -46,6 +46,12 @@ for (const [sub, to] of [['ui', 'ui'], ['bulles', 'bulles'], ['deco', 'decor']] 
   await mkdir(path.join(DEST, to), { recursive: true });
   for (const f of (await readdir(dir)).filter((x) => x.endsWith('.png'))) await copyFile(path.join(dir, f), path.join(DEST, to, f));
 }
+// Vignettes d'avatar (§10.5) : la frame de face, à l'arrêt, de chaque élément, en fichiers individuels. Une vignette
+// n'a pas à télécharger l'atlas complet (audit lot 8, M1).
+if (existsSync(path.join(SRC, 'avatar'))) {
+  await mkdir(path.join(DEST, 'avatar'), { recursive: true });
+  for (const f of (await readdir(path.join(SRC, 'avatar'))).filter((x) => x.endsWith('-bas-arret.png'))) await copyFile(path.join(SRC, 'avatar', f), path.join(DEST, 'avatar', f));
+}
 // Atlas de la vue jardin (§9.2, format TexturePacker, éventuellement en plusieurs pages) : copié tel quel, validé par
 // Zod au chargement. Les pages d'une livraison précédente sont retirées.
 if (existsSync(path.join(SRC, 'atlas.json'))) {
