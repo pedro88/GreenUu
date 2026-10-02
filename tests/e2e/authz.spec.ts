@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { ticketCount, ticketIdByTitle } from './db';
-import { gardenId } from './ids';
+import { gardenId, zoneId } from './ids';
 import { login } from './helpers';
 
 const CANAL = gardenId('canal');
@@ -15,7 +15,7 @@ test.describe('contrôle d\'accès par URL directe', () => {
   test('[AUTHZ-01] un non-membre voit la page 403 sur chaque page du jardin, sans aucune donnée', async ({ page }) => {
     const ticketId = await ticketIdByTitle(CANAL, TICKET);
     await login(page, 'hugo');
-    for (const path of ['', '/zones', '/membres', '/parametres', '/cultures', '/saisons', '/tickets', `/tickets/${ticketId}`]) {
+    for (const path of ['', '/plan', '/zones', '/membres', '/parametres', '/cultures', '/saisons', '/tickets', `/tickets/${ticketId}`]) {
       await page.goto(`/app/jardins/${CANAL}${path}`);
       await expect(page.getByTestId('page-403'), path).toBeVisible();
       await expect(page.locator('body'), path).not.toContainText('Canal');
@@ -54,6 +54,14 @@ test.describe('contrôle d\'accès par URL directe', () => {
     await page.getByTestId('culture-list').getByRole('link', { name: /Tomate Noire de Crimée/ }).first().click();
     await expect(page.getByTestId('culture-title')).toHaveText('Tomate Noire de Crimée');
     await expect(page.getByTestId('quick-open')).toHaveCount(0);
+  });
+
+  test('[AUTHZ-01] une scène intérieure d\'un autre jardin donne 404, sans rien révéler de ce jardin (E2E-AUTHZ-01b)', async ({ page }) => {
+    await login(page, 'bruno');
+    await page.goto(`/app/jardins/${CANAL}?vue=jardin&scene=${zoneId('combes', 'serre1')}`);
+    await expect(page.getByTestId('page-404')).toBeVisible();
+    await expect(page.locator('body')).not.toContainText('Serre 1');
+    await expect(page.locator('body')).not.toContainText('Maraîchage des Combes');
   });
 
   test('[AUTHZ-05] hors du groupe d\'une zone restreinte : lecture et commentaire, ni statut ni assignation, création refusée', async ({ page }) => {
