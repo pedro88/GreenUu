@@ -141,6 +141,7 @@ test.describe('éditeur de plan', () => {
   /** Glisser sur la grille, d'une tuile à une autre, à partir des attributs exposés par la couche (§9.6). */
   async function dragTiles(page: Page, from: { x: number; y: number }, to: { x: number; y: number }) {
     const grid = page.getByTestId('plan-grid');
+    await grid.scrollIntoViewIfNeeded();
     const box = await grid.boundingBox();
     if (!box) throw new Error('grille absente');
     const tile = Number(await grid.getAttribute('data-tile-px'));
@@ -190,6 +191,30 @@ test.describe('éditeur de plan', () => {
     await expect(editor).toHaveAttribute('data-plan-version', String(version + 3));
     const typed = await zoneAt(TILLEULS, geometry);
     expect(typed).toMatchObject({ name: drawn?.name, type: drawn?.type, parent: drawn?.parent, geometry: drawn?.geometry });
+  });
+
+  test('un geste fait pendant un enregistrement lent est enregistré ensuite, sans faux conflit (audit lot 7, M3)', async ({ page }) => {
+    const COMBES = gardenId('combes');
+    await login(page, 'gaelle');
+    await page.goto(`/app/jardins/${COMBES}/plan`);
+    await sceneReady(page, 'plan-editor');
+    const editor = page.getByTestId('plan-editor');
+    const version = Number(await editor.getAttribute('data-plan-version'));
+    // Chaque appel d'action met 2,5 s à partir : le second geste tombe pendant le premier enregistrement.
+    await page.route('**/*', async (route) => {
+      if (route.request().method() === 'POST' && route.request().headers()['next-action']) await new Promise((r) => setTimeout(r, 2500));
+      await route.continue();
+    });
+    await page.getByTestId('tool-zone').click();
+    await page.getByTestId('zone-type').selectOption({ label: 'Planche' });
+    // Bande libre sous le tunnel (y = 600 à 650 cm) : deux planches qui ne se touchent pas.
+    await dragTiles(page, { x: 0, y: 12 }, { x: 1, y: 12 });
+    await expect(editor).toHaveAttribute('data-status', 'saving');
+    await dragTiles(page, { x: 4, y: 12 }, { x: 5, y: 12 });
+    await expect(editor).toHaveAttribute('data-plan-version', String(version + 2), { timeout: 20_000 });
+    await expect(page.getByTestId('plan-conflicts')).toHaveCount(0);
+    expect(await zoneAt(COMBES, { x: 0, y: 600, w: 100, h: 50 })).not.toBeNull();
+    expect(await zoneAt(COMBES, { x: 200, y: 600, w: 100, h: 50 })).not.toBeNull();
   });
 
   test('[PLN-06] un membre d\'un jardin collectif (édition réservée aux admins) voit les outils désactivés, avec une explication', async ({ page }) => {

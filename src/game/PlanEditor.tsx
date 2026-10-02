@@ -72,9 +72,16 @@ export function PlanEditor({ snapshot, zoneTypes }: { snapshot: SceneSnapshot; z
   const [canvas, setCanvas] = useState<CanvasStatus>({ canvas: 'loading', ticker: false });
   const viewport = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  const pendingAfterSave = useRef<PlanCommand[] | null>(null);
+  /** Dernier enregistrement confirmé : nombre de commandes envoyées et identifiants attribués aux `tmp:`. */
+  const confirmed = useRef<{ count: number; ids: Record<string, string> } | null>(null);
   const conflictPending = useRef(false);
   const saveTimer = useRef<number | null>(null);
+  /**
+   * Enregistrement en cours, ou en attente de l'instantané qui en résulte (pendant ce temps, `done` contient encore les
+   * commandes envoyées). Lu à l'exécution, pas dans une fermeture : un seul enregistrement à la fois (audit lot 7, M3).
+   */
+  const inFlight = useRef(false);
+  const resaveAfter = useRef(false);
   const drag = useRef<{ start: Tile; mode: 'draw' | 'move' | 'resize'; zone?: SceneZone } | null>(null);
 
   // L'état local (base + commandes non confirmées) alimente le canvas comme un instantané.
@@ -104,13 +111,19 @@ export function PlanEditor({ snapshot, zoneTypes }: { snapshot: SceneSnapshot; z
   const save = async () => {
     if (saveTimer.current) window.clearTimeout(saveTimer.current);
     const h = history.getState();
-    if (!h.done.length || status === 'saving') return;
+    if (!h.done.length) return;
+    if (inFlight.current) {
+      // Un geste pendant un enregistrement : on réenregistre quand la nouvelle base sera arrivée.
+      resaveAfter.current = true;
+      return;
+    }
+    inFlight.current = true;
     const sent = h.done;
     setStatus('saving');
     const res = await applyPlanCommandsAction({ gardenId: snapshot.gardenId, sceneZoneId: snapshot.sceneZoneId, baseVersion: h.baseVersion, commands: sent });
     if (res.ok) {
-      pendingAfterSave.current = remap(history.getState().done.slice(sent.length), res.data.ids);
-      setStatus(pendingAfterSave.current.length ? 'pending' : 'saved');
+      confirmed.current = { count: sent.length, ids: res.data.ids };
+      setStatus(history.getState().done.length > sent.length ? 'pending' : 'saved');
       setConflicts(0);
       router.refresh();
     } else if (res.error.code === 'CONFLICT' && res.error.message === 'planVersionConflict') {
@@ -119,6 +132,7 @@ export function PlanEditor({ snapshot, zoneTypes }: { snapshot: SceneSnapshot; z
       setStatus('conflict');
       router.refresh();
     } else {
+      inFlight.current = false;
       setStatus('error');
     }
   };
@@ -142,8 +156,10 @@ export function PlanEditor({ snapshot, zoneTypes }: { snapshot: SceneSnapshot; z
   // Nouvel instantané du serveur (après enregistrement ou rechargement) : nouvelle base, commandes restantes rejouées.
   useEffect(() => {
     if (snapshot.planVersion === history.getState().baseVersion && !conflictPending.current) return;
+    inFlight.current = false;
     if (conflictPending.current) {
       conflictPending.current = false;
+      resaveAfter.current = false;
       const r = replay(baseOf(snapshot), history.getState().done, types);
       setConflicts(r.conflicts.length);
       history.getState().reset(baseOf(snapshot), snapshot.planVersion, r.kept);
@@ -151,8 +167,15 @@ export function PlanEditor({ snapshot, zoneTypes }: { snapshot: SceneSnapshot; z
       if (r.kept.length) schedule();
       return;
     }
-    history.getState().reset(baseOf(snapshot), snapshot.planVersion, pendingAfterSave.current ?? []);
-    pendingAfterSave.current = null;
+    // Gestes faits pendant l'enregistrement (jusqu'à l'arrivée de cet instantané) : rejoués sur la nouvelle base.
+    const c = confirmed.current;
+    const pending = c ? remap(history.getState().done.slice(c.count), c.ids) : [];
+    history.getState().reset(baseOf(snapshot), snapshot.planVersion, pending);
+    confirmed.current = null;
+    if (pending.length || resaveAfter.current) {
+      resaveAfter.current = false;
+      if (pending.length) schedule();
+    }
   }, [snapshot]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sceneZones = current.zones;
