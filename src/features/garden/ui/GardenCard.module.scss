@@ -17,14 +17,29 @@
 }
 
 .thumb {
-  display: grid;
-  place-items: center;
-  height: 6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  height: 7rem;
   border-radius: var(--radius-md);
   border: 1.5px solid var(--color-border);
   background: var(--color-leaf);
   background-image: radial-gradient(var(--color-leaf-soft) 1px, transparent 1.5px);
   background-size: 12px 12px;
+}
+
+.bed {
+  display: flex;
+  justify-content: space-around;
+  border: 3px solid var(--color-earth-hover);
+  border-radius: var(--radius-sm);
+  background: var(--color-earth);
+
+  > span {
+    background: transparent;
+  }
 }
 
 .name {
