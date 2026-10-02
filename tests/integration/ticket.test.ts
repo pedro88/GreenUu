@@ -344,6 +344,33 @@ describe('notifications', () => {
       void ticketId;
     }));
 
+  // Fin de l'heure d'été à Bruxelles le 2026-10-25 (calculée) : 8 h locales = 06:00 Z la veille, 07:00 Z le jour même.
+  it('[NTF-01] le jour du changement d\'heure, le rappel part à 8 h heure du jardin, pas à 8 h d\'hier', () =>
+    inTx(async (tx) => {
+      const s = await setup(tx);
+      await createTicket(await scopedCtx(tx, s.bruno, s.gardenId), { ...base(s.gardenId), dueOn: '2026-10-26', memberIds: [s.davidM] });
+      const jobs = recordingQueue();
+      const toDavid = () => jobs.jobs.filter((j) => j.data.to === s.david.email);
+      await dueReminders(tx, jobs, 'http://x', new Date('2026-10-25T06:00:00Z')); // 7 h à Bruxelles (UTC+1)
+      expect(toDavid()).toHaveLength(0);
+      await dueReminders(tx, jobs, 'http://x', new Date('2026-10-25T07:00:00Z')); // 8 h
+      await dueReminders(tx, jobs, 'http://x', new Date('2026-10-25T08:00:00Z'));
+      expect(toDavid()).toHaveLength(1);
+    }));
+
+  // 22:30 Z le 2 octobre = 00:30 le 3 octobre à Bruxelles : la journée du jardin a basculé avant la journée UTC.
+  it('[TCK-08] « mes tâches du jour » suit minuit dans le fuseau du jardin, pas minuit UTC', () =>
+    inTx(async (tx) => {
+      const s = await setup(tx);
+      const asBruno = await scopedCtx(tx, s.bruno, s.gardenId);
+      for (const [title, dueOn] of [['Hier local', '2026-10-02'], ['Aujourd\'hui local', '2026-10-03'], ['Demain local', '2026-10-04']] as const) {
+        await createTicket(asBruno, { ...base(s.gardenId), title, dueOn, memberIds: [s.davidM] });
+      }
+      const [g] = (await myTasksToday(tx, s.david.id, new Date('2026-10-02T22:30:00Z'))).filter((x) => x.gardenId === s.gardenId);
+      expect(g?.today).toBe('2026-10-03');
+      expect(g?.tasks.map((t) => t.title)).toEqual(['Hier local', 'Aujourd\'hui local']);
+    }));
+
   it('[NTF-02] e-mail « assigné » désactivé : notification in-app seulement', () =>
     inTx(async (tx) => {
       const s = await setup(tx);

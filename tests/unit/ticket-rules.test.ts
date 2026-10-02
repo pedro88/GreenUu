@@ -12,6 +12,14 @@ describe('règles du ticketing', () => {
     expect(canTransition('blocked', 'in_progress')).toBe(true);
   });
 
+  // Bascules de l'heure d'été à Bruxelles en 2026 : dimanche 29 mars et dimanche 25 octobre (calculées).
+  it('[RCR-01] aux changements d\'heure, une occurrence quotidienne garde sa date : ni doublon ni trou', () => {
+    expect(occurrencesBetween('FREQ=DAILY', '2026-10-23', null, '2026-10-23', '2026-10-27')).toEqual(['2026-10-23', '2026-10-24', '2026-10-25', '2026-10-26', '2026-10-27']);
+    expect(occurrencesBetween('FREQ=DAILY', '2026-03-27', null, '2026-03-27', '2026-03-31')).toEqual(['2026-03-27', '2026-03-28', '2026-03-29', '2026-03-30', '2026-03-31']);
+    expect(occurrencesBetween('FREQ=WEEKLY;BYDAY=SU', '2026-03-01', '2026-11-01', '2026-03-22', '2026-04-05')).toEqual(['2026-03-22', '2026-03-29', '2026-04-05']);
+    expect(occurrencesBetween('FREQ=WEEKLY;BYDAY=SU', '2026-03-01', '2026-11-01', '2026-10-18', '2026-11-01')).toEqual(['2026-10-18', '2026-10-25', '2026-11-01']);
+  });
+
   it('[RCR-01] tous les 2 jours en juillet : 01, 03 … 15/07, rien en juin ni en août', () => {
     const rule = validateRrule('FREQ=DAILY;INTERVAL=2;BYMONTH=7') ?? '';
     expect(occurrencesBetween(rule, '2026-07-01', null, '2026-07-01', '2026-07-15')).toEqual(
