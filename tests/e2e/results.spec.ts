@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import { zipEntryNames } from '../../src/lib/zip';
+import { z } from 'zod';
+import { zipEntries, zipEntryNames } from '../../src/lib/zip';
 import { gardenId, zoneId } from './ids';
 import { clearMail, linkFrom, login, waitForMail } from './helpers';
 import { TEST_DB } from './db';
@@ -61,8 +62,16 @@ test.describe('bilans, recommandations, confidentialité', () => {
     const res = await page.request.get(link);
     expect(res.status()).toBe(200);
     expect(res.headers()['content-type']).toBe('application/zip');
-    const names = zipEntryNames(new Uint8Array(await res.body()));
+    const archive = new Uint8Array(await res.body());
+    const names = zipEntryNames(archive);
     for (const n of ['profil.json', 'adhesions.json', 'cultures.json', 'journal.json', 'tips.json', 'xp.json', 'consentements.json']) expect(names, n).toContain(n);
+    // Le journal d'XP est réel (E2E-PRV-07b) : non vide, et sa somme est le total affiché sur le profil.
+    const xpFile = zipEntries(archive).find((e) => e.name === 'xp.json');
+    const xp = z.array(z.object({ code: z.string(), amount: z.number(), reason: z.string(), createdAt: z.string() })).parse(JSON.parse(new TextDecoder().decode(xpFile?.data)));
+    expect(xp.length).toBeGreaterThan(0);
+    await page.goto('/app/profil');
+    const shown = Number((await page.getByTestId('profile-xp').innerText()).replace(/\D/g, ''));
+    expect(shown).toBe(xp.reduce((a, r) => a + r.amount, 0));
     expect(names.some((n) => n.startsWith('photos/'))).toBe(true);
     // Le lien ne sert qu'à son titulaire.
     const other = await (await page.context().browser()?.newContext())?.newPage();

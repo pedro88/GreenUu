@@ -67,17 +67,22 @@ export function zip(entries: ZipEntry[]): Uint8Array {
   return out;
 }
 
-/** Relecture des noms d'une archive produite par `zip` (tests et vérifications). */
-export function zipEntryNames(data: Uint8Array): string[] {
+/** Relecture des entrées d'une archive produite par `zip` (stockées sans compression ; tests et vérifications). */
+export function zipEntries(data: Uint8Array): ZipEntry[] {
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-  const names: string[] = [];
+  const entries: ZipEntry[] = [];
   const dec = new TextDecoder();
   let pos = 0;
   while (pos + 30 <= data.length && view.getUint32(pos, true) === 0x04034b50) {
     const size = view.getUint32(pos + 18, true);
     const nameLen = view.getUint16(pos + 26, true);
-    names.push(dec.decode(data.subarray(pos + 30, pos + 30 + nameLen)));
+    entries.push({ name: dec.decode(data.subarray(pos + 30, pos + 30 + nameLen)), data: data.subarray(pos + 30 + nameLen, pos + 30 + nameLen + size) });
     pos += 30 + nameLen + size;
   }
-  return names;
+  return entries;
+}
+
+/** Relecture des noms d'une archive produite par `zip` (tests et vérifications). */
+export function zipEntryNames(data: Uint8Array): string[] {
+  return zipEntries(data).map((e) => e.name);
 }
