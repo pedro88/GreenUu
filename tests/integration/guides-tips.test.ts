@@ -10,7 +10,8 @@ import type { Tx } from '../../src/server/db/client';
 import { cultureStage, guide, guideVersion, notification, ticket, tip, tipVote } from '../../src/server/db/schema';
 import type { GuideCalendarV1 } from '../../src/lib/content-types';
 import { addMember, makeGarden, makeZone, speciesRefId } from './fixtures';
-import { ctxFor, inTx, makeUser, scopedCtx } from './helpers';
+import { fixedClock } from '../../src/server/clock';
+import { ctxFor, inTx, makeUser, NOW, scopedCtx } from './helpers';
 
 const TOMATE = speciesRefId('tomate');
 const draft = (title: string, bodyMd = 'Semer au chaud, repiquer, tuteurer.', calendarTemplate: GuideCalendarV1 | null = null) => ({ title, bodyMd, context: { v: 1 as const }, calendarTemplate });
@@ -197,6 +198,15 @@ describe('tips', () => {
       expect(votes).toHaveLength(1);
       expect(votes[0]?.value).toBe(-1);
       expect(await voteTip(ctxFor(tx, bob), tipId, 0)).toMatchObject({ useful: 0, notUseful: 0 });
+    }));
+
+  it('limitation de débit : au-delà de 10 tips par heure, RATE_LIMITED ; la fenêtre suivante repart', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const at = (min: number) => ctxFor(tx, alice, { clock: fixedClock(new Date(NOW.getTime() + min * 60_000)) });
+      for (let i = 0; i < 10; i += 1) await createTip(at(i), { body: `Astuce numéro ${i} pour le potager.`, tags: ['test'] });
+      await expect(createTip(at(30), { body: 'Une astuce de trop pour cette heure.', tags: ['test'] })).rejects.toMatchObject({ code: 'RATE_LIMITED' });
+      await expect(createTip(at(61), { body: 'Une heure plus tard, ça repasse.', tags: ['test'] })).resolves.toMatchObject({ tipId: expect.any(String) });
     }));
 
   it('[MOD-01] 3 signalements distincts masquent le tip, préviennent l\'auteur et alimentent la file de modération', () =>

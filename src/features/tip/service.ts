@@ -2,6 +2,7 @@ import { and, asc, desc, eq, inArray, isNull, like, sql } from 'drizzle-orm';
 import { forbidden, notFound } from '@/lib/errors';
 import type { Environment } from '@/lib/enums';
 import type { ServiceCtx } from '@/server/action-core';
+import { consume, contentLimit } from '@/server/auth/rate-limit';
 import { loadScope } from '@/server/authz/scope';
 import type { Viewer } from '@/server/authz/content';
 import type { Executor } from '@/server/db/client';
@@ -35,6 +36,7 @@ async function upsertTags(tx: Executor, slugs: string[]) {
 export async function createTip(ctx: ServiceCtx, input: TipCreateInput) {
   const { tx, actor, clock } = ctx;
   if (!actor.emailVerified) throw forbidden('emailNotVerified');
+  await consume(tx, contentLimit('tip', actor.id), clock.now().getTime());
   let context: { geohash4: string | null; koppen: string | null; environment: Environment | null } = { geohash4: null, koppen: null, environment: null };
   if (input.contextGardenId) {
     const scope = await loadScope(tx, actor.id, input.contextGardenId);
@@ -68,6 +70,7 @@ export async function voteTip(ctx: ServiceCtx, tipId: string, value: 1 | -1 | 0)
   const [t] = await tx.select({ id: tip.id, authorId: tip.authorId }).from(tip).where(and(eq(tip.id, tipId), isNull(tip.deletedAt), eq(tip.hiddenByModeration, false))).limit(1);
   if (!t) throw notFound();
   if (t.authorId === actor.id) throw forbidden('ownTip');
+  await consume(tx, contentLimit('vote', actor.id), clock.now().getTime());
   const [prev] = await tx.select({ value: tipVote.value }).from(tipVote).where(and(eq(tipVote.tipId, t.id), eq(tipVote.userId, actor.id))).limit(1);
   if (value === 0) await tx.delete(tipVote).where(and(eq(tipVote.tipId, t.id), eq(tipVote.userId, actor.id)));
   else await tx.insert(tipVote).values({ tipId: t.id, userId: actor.id, value }).onConflictDoUpdate({ target: [tipVote.tipId, tipVote.userId], set: { value } });

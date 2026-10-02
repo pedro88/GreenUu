@@ -3,6 +3,7 @@ import { forbidden, notFound, validation } from '@/lib/errors';
 import type { Stage } from '@/lib/enums';
 import type { ScopedCtx, ServiceCtx } from '@/server/action-core';
 import { canEditGuide, canForkGuide, canReadGuide } from '@/server/authz/content';
+import { consume, contentLimit } from '@/server/auth/rate-limit';
 import { can, loadScope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
 import { culture, cultureStage, guide, guideVersion, ticket, ticketEvent } from '@/server/db/schema';
@@ -24,8 +25,9 @@ async function assertPrivateGarden(tx: Executor, userId: string, gardenId: strin
 
 /** RG-GUI-01 : création d'un brouillon (privé à l'auteur jusqu'à la publication). */
 export async function createGuide(ctx: ServiceCtx, input: GuideCreateInput) {
-  const { tx, actor } = ctx;
+  const { tx, actor, clock } = ctx;
   if (!actor.emailVerified) throw forbidden('emailNotVerified');
+  await consume(tx, contentLimit('guide', actor.id), clock.now().getTime());
   await assertPrivateGarden(tx, actor.id, input.gardenId);
   const [g] = await tx.insert(guide).values({
     authorId: actor.id, gardenId: input.gardenId ?? null, speciesId: input.speciesId, varietyId: input.varietyId ?? null,
@@ -74,8 +76,9 @@ export async function publishGuide(ctx: ServiceCtx, guideId: string) {
 
 /** RG-GUI-04 : le fork est un brouillon copié de la version courante ; privé au même jardin si l'original l'est. */
 export async function forkGuide(ctx: ServiceCtx, guideId: string) {
-  const { tx, actor } = ctx;
+  const { tx, actor, clock } = ctx;
   if (!actor.emailVerified) throw forbidden('emailNotVerified');
+  await consume(tx, contentLimit('guide', actor.id), clock.now().getTime());
   const g = await loadGuide(tx, guideId);
   if (!canForkGuide(actor, await guideFacts(tx, actor, g)) || !g.currentVersionId) throw notFound('guideNotFound');
   const [v] = await tx.select().from(guideVersion).where(eq(guideVersion.id, g.currentVersionId)).limit(1);

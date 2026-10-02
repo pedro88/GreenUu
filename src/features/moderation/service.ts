@@ -2,6 +2,7 @@ import { and, count, countDistinct, desc, eq, inArray, isNull, sql } from 'drizz
 import { DomainError, forbidden, notFound } from '@/lib/errors';
 import type { ReportReason } from '@/lib/enums';
 import type { ServiceCtx } from '@/server/action-core';
+import { consume, contentLimit } from '@/server/auth/rate-limit';
 import { canReadGuide, isModerator } from '@/server/authz/content';
 import type { Executor } from '@/server/db/client';
 import { contentReport, guide, guideVersion, tip, user, userProfile } from '@/server/db/schema';
@@ -48,6 +49,7 @@ export async function reportContent(ctx: ServiceCtx, input: ReportInput) {
   if (!actor.emailVerified) throw forbidden('emailNotVerified');
   const target = await targetAuthor(tx, ctx, input.target);
   if (target.authorId === actor.id) throw forbidden('ownContent');
+  await consume(tx, contentLimit('report', actor.id), clock.now().getTime());
   const col = targetColumn(input.target);
   const [already] = await tx.select({ id: contentReport.id }).from(contentReport).where(and(eq(contentReport.reporterId, actor.id), eq(col, input.target.id))).limit(1);
   if (already) throw new DomainError('CONFLICT', 'alreadyReported');

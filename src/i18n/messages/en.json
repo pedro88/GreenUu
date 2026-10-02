@@ -168,7 +168,8 @@
     "forkMustStayPrivate": "Un guide adapté d'un guide privé reste privé au même jardin.",
     "privateNeedsGarden": "Un guide privé doit être rattaché à un jardin.",
     "guideOtherSpecies": "Ce guide concerne une autre espèce.",
-    "noOpenReport": "Aucun signalement ouvert pour ce contenu."
+    "noOpenReport": "Aucun signalement ouvert pour ce contenu.",
+    "contentRateLimited": "Tu as beaucoup publié ces derniers temps : réessaie dans une heure."
   },
   "nav": {
     "label": "Navigation principale",
