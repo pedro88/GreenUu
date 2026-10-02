@@ -128,10 +128,11 @@ test.describe('guides, tips, modération', () => {
     await expect(anonymous).toHaveURL(/\/connexion\?next=%2Fadmin%2Fsignalements/);
     const alice = await (await browser.newContext()).newPage();
     await login(alice, 'alice');
-    for (const path of ['/admin', '/admin/signalements', '/admin/varietes']) {
+    for (const path of ['/admin', '/admin/signalements', '/admin/varietes', '/admin/xp']) {
       await alice.goto(path);
       await expect(alice.getByTestId('page-403'), path).toBeVisible();
       await expect(alice.getByTestId('report-queue'), path).toHaveCount(0);
+      await expect(alice.getByTestId('xp-flags'), path).toHaveCount(0);
     }
     const basil = await guideIdByTitle('Basilic en serre froide');
     await login(page, 'modo');
