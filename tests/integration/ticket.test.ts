@@ -90,6 +90,23 @@ describe('tickets', () => {
       expect(events.map((e) => e.diff)).toEqual(expect.arrayContaining([{ from: 'done', to: 'todo' }]));
     }));
 
+  it('[AUTHZ-05] zone restreinte : un membre hors groupe ne peut ni assigner ni cocher un ticket qui ne lui est pas assigné, mais commente', () =>
+    inTx(async (tx) => {
+      const s = await setup(tx);
+      const asBruno = await scopedCtx(tx, s.bruno, s.gardenId);
+      const { ticketId } = await createTicket(asBruno, { ...base(s.gardenId), zoneId: s.serre, checklist: ['Ouvrir la vanne'] });
+      const { setZoneRestrictions } = await import('../../src/features/zone/service');
+      const other = await makeGroup(tx, s.gardenId, 'Famille Dupont', [s.emmaM]);
+      await setZoneRestrictions(asBruno, s.serre, [{ groupId: other, level: 'contribute' }]);
+      const [item] = await tx.select({ id: ticketChecklistItem.id }).from(ticketChecklistItem).where(eq(ticketChecklistItem.ticketId, ticketId ?? ''));
+      const asDavid = await scopedCtx(tx, s.david, s.gardenId);
+      await expect(assignTicket(asDavid, ticketId ?? '', [s.davidM], [])).rejects.toMatchObject({ code: 'FORBIDDEN' });
+      await expect(toggleChecklistItem(asDavid, item?.id ?? '', true)).rejects.toMatchObject({ code: 'FORBIDDEN' });
+      await expect(addComment(asDavid, ticketId ?? '', 'Je peux quand même commenter')).resolves.toBeDefined();
+      await assignTicket(asBruno, ticketId ?? '', [s.davidM], []);
+      await expect(toggleChecklistItem(await scopedCtx(tx, s.david, s.gardenId), item?.id ?? '', true)).resolves.toEqual({ itemId: item?.id });
+    }));
+
   it('[TCK-12] checklist : 2 éléments cochés sur 3 → 2/3', () =>
     inTx(async (tx) => {
       const s = await setup(tx);

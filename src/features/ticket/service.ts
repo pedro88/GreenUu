@@ -213,7 +213,9 @@ export async function updateTicket(ctx: ScopedCtx, input: TicketUpdateInput) {
   const { tx, scope, actor } = ctx;
   if (scope.archived) throw forbidden('gardenArchived');
   const t = await loadTicket(tx, scope, input.ticketId);
-  if (!can(scope, 'ticket:update', await factsFor(tx, scope, t))) throw forbidden();
+  const facts = await factsFor(tx, scope, t);
+  if (!can(scope, 'ticket:update', facts)) throw forbidden();
+  await assertZoneForTicket(tx, scope, t, facts.isAssigned);
   const fields = { type: input.type, actionTag: input.actionTag ?? null, title: input.title, description: input.description ?? null, priority: input.priority };
   if (t.seriesId && !t.detached && input.applyTo === 'following') {
     const [s] = await tx.select().from(ticketSeries).where(eq(ticketSeries.id, t.seriesId)).limit(1);
@@ -234,6 +236,7 @@ export async function assignTicket(ctx: ScopedCtx, ticketId: string, memberIds: 
   const { tx, scope, actor, clock } = ctx;
   if (scope.archived || !can(scope, 'ticket:assign')) throw forbidden();
   const t = await loadTicket(tx, scope, ticketId);
+  await assertZoneForTicket(tx, scope, t, (await factsFor(tx, scope, t)).isAssigned);
   const before = await assigneesOf(tx, t.id);
   const next = await assertAssignees(tx, scope, memberIds, groupIds);
   await tx.delete(ticketAssignee).where(eq(ticketAssignee.ticketId, t.id));
@@ -251,6 +254,7 @@ export async function deleteTicket(ctx: ScopedCtx, ticketId: string) {
   const { tx, scope, actor, clock } = ctx;
   const t = await loadTicket(tx, scope, ticketId);
   if (scope.archived || !can(scope, 'ticket:delete', { isOwn: t.createdBy === actor.id })) throw forbidden();
+  await assertZoneForTicket(tx, scope, t, (await factsFor(tx, scope, t)).isAssigned);
   await tx.update(ticket).set({ deletedAt: clock.now() }).where(eq(ticket.id, t.id));
   await emit(tx, { type: 'ticket.deleted', subjectType: 'ticket', subjectId: t.id, gardenId: scope.gardenId, actorId: actor.id, payload: {} }, clock.now());
   return { ticketId: t.id };
@@ -273,9 +277,11 @@ export async function stopSeries(ctx: ScopedCtx, seriesId: string) {
 export async function toggleChecklistItem(ctx: ScopedCtx, itemId: string, done: boolean) {
   const { tx, scope } = ctx;
   if (scope.archived || !can(scope, 'checklist:toggle')) throw forbidden();
-  const [row] = await tx.select({ id: ticketChecklistItem.id }).from(ticketChecklistItem).innerJoin(ticket, eq(ticket.id, ticketChecklistItem.ticketId))
+  const [row] = await tx.select({ id: ticketChecklistItem.id, ticketId: ticketChecklistItem.ticketId }).from(ticketChecklistItem).innerJoin(ticket, eq(ticket.id, ticketChecklistItem.ticketId))
     .where(and(eq(ticketChecklistItem.id, itemId), eq(ticket.gardenId, scope.gardenId), isNull(ticket.deletedAt))).limit(1);
   if (!row) throw notFound();
+  const t = await loadTicket(tx, scope, row.ticketId);
+  await assertZoneForTicket(tx, scope, t, (await factsFor(tx, scope, t)).isAssigned);
   await tx.update(ticketChecklistItem).set({ done }).where(eq(ticketChecklistItem.id, row.id));
   return { itemId };
 }
@@ -283,7 +289,9 @@ export async function toggleChecklistItem(ctx: ScopedCtx, itemId: string, done: 
 export async function addChecklistItem(ctx: ScopedCtx, ticketId: string, label: string) {
   const { tx, scope } = ctx;
   const t = await loadTicket(tx, scope, ticketId);
-  if (scope.archived || !can(scope, 'ticket:update', await factsFor(tx, scope, t))) throw forbidden();
+  const facts = await factsFor(tx, scope, t);
+  if (scope.archived || !can(scope, 'ticket:update', facts)) throw forbidden();
+  await assertZoneForTicket(tx, scope, t, facts.isAssigned);
   const [{ n } = { n: 0 }] = await tx.select({ n: sql<number>`count(*)::int` }).from(ticketChecklistItem).where(eq(ticketChecklistItem.ticketId, t.id));
   if (n >= 50) throw validation({ label: ['checklistFull'] });
   await tx.insert(ticketChecklistItem).values({ ticketId: t.id, label, sortOrder: n });
