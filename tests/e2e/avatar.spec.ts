@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { gardenLevelOf } from '../../src/features/progression/rules.pure';
-import { avatarRow, decorPracticeCode, gardenXpOf } from './db';
+import { addExclusiveAvatarItem, avatarRow, decorPracticeCode, EXCLUSIVE_ITEM, gardenXpOf, removeExclusiveAvatarItem } from './db';
 import { decorId, gardenId, userId, zoneId } from './ids';
 import { login } from './helpers';
 
@@ -38,33 +38,39 @@ test.describe('éditeur d\'avatar (§10)', () => {
     expect(sprites.some((p) => p.startsWith('/sprites/avatar/'))).toBe(true);
   });
 
-  test('[AVT-02] une configuration forgée qui équipe le chapeau de paille verrouillé : LOCKED_ITEM, rien ne change, « Succès Semencier » affiché', async ({ page }) => {
-    const before = await avatarRow(userId('alice'));
-    await login(page, 'alice');
-    await page.goto('/app/profil/avatar');
-    await page.getByTestId('avatar-tab-headwear').click();
-    const straw = page.getByTestId('avatar-item-hat_straw');
-    await expect(straw).toHaveAttribute('aria-disabled', 'true');
-    await expect(page.getByTestId('avatar-lock-hat_straw')).toHaveText('Succès Semencier');
-    // Le tap n'équipe rien : il explique la condition.
-    await straw.click({ force: true }); // aria-disabled : Playwright refuse sinon le tap qui affiche la condition
-    await expect(straw).toHaveAttribute('aria-pressed', 'false');
-    await expect(page.getByTestId('avatar-hint')).toContainText('Succès Semencier');
+  test('[AVT-02] une configuration forgée qui équipe un couvre-chef verrouillé : LOCKED_ITEM, rien ne change, « Succès Semencier » affiché', async ({ page }) => {
+    // Tout le catalogue est disponible : le test apporte son propre contenu exclusif, retiré à la fin.
+    await addExclusiveAvatarItem();
+    try {
+      const before = await avatarRow(userId('alice'));
+      await login(page, 'alice');
+      await page.goto('/app/profil/avatar');
+      await page.getByTestId('avatar-tab-headwear').click();
+      const straw = page.getByTestId(`avatar-item-${EXCLUSIVE_ITEM}`);
+      await expect(straw).toHaveAttribute('aria-disabled', 'true');
+      await expect(page.getByTestId(`avatar-lock-${EXCLUSIVE_ITEM}`)).toHaveText('Succès Semencier');
+      // Le tap n'équipe rien : il explique la condition.
+      await straw.click({ force: true }); // aria-disabled : Playwright refuse sinon le tap qui affiche la condition
+      await expect(straw).toHaveAttribute('aria-pressed', 'false');
+      await expect(page.getByTestId('avatar-hint')).toContainText('Succès Semencier');
 
-    // Configuration forgée : l'appel de l'action est réécrit pour équiper le chapeau verrouillé.
-    await page.route('**/app/profil/avatar', async (route) => {
-      const req = route.request();
-      if (req.method() !== 'POST' || !req.headers()['next-action']) return route.continue();
-      const body = JSON.parse(req.postData() ?? '[]') as [{ config: { layers: Record<string, unknown> } }]; // as: arguments sérialisés de la Server Action
-      body[0].config.layers.headwear = { item: 'hat_straw', palettes: ['straw'] };
-      return route.continue({ postData: JSON.stringify(body) });
-    });
-    await page.getByTestId('avatar-item-hat_beanie').click();
-    await page.getByTestId('avatar-save').click();
-    await expect(page.getByText('Cet élément n’est pas encore débloqué : rien n’a été enregistré.')).toBeVisible();
-    expect((await avatarRow(userId('alice')))?.configHash).toBe(before?.configHash);
-    await expect(page.getByTestId('avatar-editor')).toHaveAttribute('data-config-hash', before?.configHash ?? '');
-    await expect(page.getByTestId('avatar-lock-hat_straw')).toHaveText('Succès Semencier');
+      // Configuration forgée : l'appel de l'action est réécrit pour équiper le chapeau verrouillé.
+      await page.route('**/app/profil/avatar', async (route) => {
+        const req = route.request();
+        if (req.method() !== 'POST' || !req.headers()['next-action']) return route.continue();
+        const body = JSON.parse(req.postData() ?? '[]') as [{ config: { layers: Record<string, unknown> } }]; // as: arguments sérialisés de la Server Action
+        body[0].config.layers.headwear = { item: EXCLUSIVE_ITEM, palettes: ['straw'] };
+        return route.continue({ postData: JSON.stringify(body) });
+      });
+      await page.getByTestId('avatar-item-hat_beanie').click();
+      await page.getByTestId('avatar-save').click();
+      await expect(page.getByText('Cet élément n’est pas encore débloqué : rien n’a été enregistré.')).toBeVisible();
+      expect((await avatarRow(userId('alice')))?.configHash).toBe(before?.configHash);
+      await expect(page.getByTestId('avatar-editor')).toHaveAttribute('data-config-hash', before?.configHash ?? '');
+      await expect(page.getByTestId(`avatar-lock-${EXCLUSIVE_ITEM}`)).toHaveText('Succès Semencier');
+    } finally {
+      await removeExclusiveAvatarItem();
+    }
   });
 
   test('[AVT-07] « Annuler » rétablit la dernière configuration enregistrée', async ({ page }) => {

@@ -4,7 +4,8 @@ import { createProfile } from '../../src/features/account/service';
 import { defaultAvatar, normalizeConfig, type AvatarConfigV1 } from '../../src/features/avatar/config.pure';
 import { avatarCatalog, avatarOf, configHash, saveAvatar } from '../../src/features/avatar/service';
 import { unlockFactsOf } from '../../src/features/progression/unlock';
-import { user, userAchievement, userAvatar } from '../../src/server/db/schema';
+import { paletteRefId } from '../../src/features/avatar/load';
+import { avatarItem, avatarItemPalette, user, userAchievement, userAvatar } from '../../src/server/db/schema';
 import { ctxFor, inTx, makeUser, NOW } from './helpers';
 
 const withLayer = (c: AvatarConfigV1, layer: keyof AvatarConfigV1['layers'], item: string | null, palettes: string[] = []): AvatarConfigV1 =>
@@ -16,9 +17,10 @@ describe('avatar (§10)', () => {
       const alice = await makeUser(tx);
       const c = await avatarCatalog(tx, await unlockFactsOf(tx, alice.id));
       expect(c.palettes.filter((p) => p.slot === 'skin').length).toBeGreaterThanOrEqual(12);
-      // Aucun attribut de genre, ni dans le catalogue ni dans les codes ; une seule silhouette de corps, neutre.
+      // Aucun attribut de genre, ni dans le catalogue ni dans les codes : les silhouettes ne varient que par la corpulence
+      // et la taille (et la silhouette d'origine).
       expect(JSON.stringify(c)).not.toMatch(/gender|genre|\b(male|female|homme|femme)\b/i);
-      expect(c.items.filter((i) => i.layer === 'body')).toHaveLength(1);
+      expect(c.items.filter((i) => i.layer === 'body').map((i) => i.code).every((code) => /^body(_(slim|average|round)_(short|medium|tall))?$/.test(code))).toBe(true);
       // Le corps accepte toutes les teintes de peau.
       expect(c.items.find((i) => i.code === 'body')?.allowed[0]?.length).toBe(c.palettes.filter((p) => p.slot === 'skin').length);
     }));
@@ -40,14 +42,18 @@ describe('avatar (§10)', () => {
       const alice = await makeUser(tx);
       const ctx = ctxFor(tx, alice);
       const saved = await saveAvatar(ctx, withLayer((await avatarOf(tx, alice.id)).config, 'hair_front', 'hair_long', ['hair_copper']));
-      const straw = withLayer(saved.config, 'headwear', 'hat_straw', ['straw']);
+      // Le catalogue actuel est entièrement disponible : le test crée son propre contenu exclusif.
+      const [item] = await tx.insert(avatarItem).values({ code: 'exclusive_straw_hat', layer: 'headwear', spriteKey: 'couvre-chef-chapeau-paille', paletteSlots: ['material'],
+        unlockCondition: { v: 1, kind: 'achievement', code: 'seed_saver' }, defaultUnlocked: false }).returning();
+      await tx.insert(avatarItemPalette).values({ avatarItemId: item?.id ?? '', paletteId: paletteRefId('straw') });
+      const straw = withLayer(saved.config, 'headwear', 'exclusive_straw_hat', ['straw']);
       await expect(saveAvatar(ctx, straw)).rejects.toMatchObject({ code: 'LOCKED_ITEM' });
       expect((await avatarOf(tx, alice.id)).configHash).toBe(saved.configHash);
       // Succès « Semencier » obtenu : le chapeau de paille est débloqué au moment de l'enregistrement.
       await tx.insert(userAchievement).values({ userId: alice.id, achievementCode: 'seed_saver', earnedAt: NOW });
       const after = await saveAvatar(ctx, straw);
       expect(after.configHash).not.toBe(saved.configHash);
-      expect(after.config.layers.headwear).toEqual({ item: 'hat_straw', palettes: ['straw'] });
+      expect(after.config.layers.headwear).toEqual({ item: 'exclusive_straw_hat', palettes: ['straw'] });
     }));
 
   it('l\'inscription attribue l\'avatar par défaut déterministe ; un enregistrement change le config_hash', () =>

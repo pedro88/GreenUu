@@ -80,7 +80,15 @@ export type DefaultView = (typeof DEFAULT_VIEWS)[number];
 
 /* ---------- Lot 8 : décoration et avatar ---------- */
 /** Calques de l'avatar, de l'arrière vers l'avant : c'est l'ordre de composition (SPEC §10.1). */
-export const AVATAR_LAYERS = ['shadow', 'body', 'face_eyes', 'face_brows', 'hair_back', 'bottom', 'top', 'apron', 'shoes', 'hair_front', 'headwear', 'held_item'] as const;
+export const AVATAR_LAYERS = ['shadow', 'body', 'head', 'face_details', 'face_eyes', 'face_brows', 'hair_back', 'bottom', 'top', 'apron', 'shoes', 'hair_front', 'headwear', 'held_item'] as const;
+/** Calques portés par la tête : décalés selon le gabarit du corps (taille, posture). */
+export const HEAD_LAYERS = ['head', 'face_details', 'face_eyes', 'face_brows', 'hair_back', 'hair_front', 'headwear'] as const;
+/** Calques ajustés au corps : une variante par gabarit (`<clé>@<gabarit>`), sinon la variante de base. */
+export const FITTED_LAYERS = ['bottom', 'top', 'apron', 'shoes', 'held_item'] as const;
+/** Calques recolorés avec la teinte de peau du corps (pas de choix séparé). */
+export const SKIN_LINKED_LAYERS = ['head', 'face_details'] as const;
+export const AVATAR_BUILDS = ['slim', 'average', 'round'] as const;
+export const AVATAR_HEIGHTS = ['short', 'medium', 'tall'] as const;
 /** Calques qui n'acceptent pas « aucun ». */
 export const REQUIRED_AVATAR_LAYERS = ['shadow', 'body', 'face_eyes'] as const;
 export const PALETTE_SLOTS = ['skin', 'hair', 'eyes', 'cloth', 'material'] as const;

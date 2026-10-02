@@ -7,6 +7,8 @@ import { avatarItem, avatarItemPalette, palette, userAvatar } from '@/server/db/
 import { emit } from '@/server/events/emit';
 import { unlockFactsOf } from '../progression/unlock';
 import { isUnlocked, type UnlockFacts } from '../progression/unlock.pure';
+import { AVATAR_SPRITES } from '@/generated/avatar-sprites';
+import { AVATAR_ITEM_BY_CODE } from './catalog';
 import { canonicalJson, checkConfig, defaultAvatar, normalizeConfig, type AvatarConfigV1, type CatalogView } from './config.pure';
 
 /* Avatar (SPEC §10) : catalogue avec déblocages, lecture des avatars, enregistrement revalidé côté serveur. */
@@ -27,6 +29,8 @@ export async function avatarCatalog(tx: Executor, facts: UnlockFacts) {
       return {
         code: i.code, layer: i.layer, spriteKey: i.spriteKey, slots: i.paletteSlots, condition: i.unlockCondition,
         unlocked: i.defaultUnlocked || isUnlocked(i.unlockCondition, facts),
+        // Contrat d'assets, défini en code : sprites livrés et corps qui comprend la tête.
+        available: AVATAR_SPRITES.has(i.spriteKey), includesHead: AVATAR_ITEM_BY_CODE.get(i.code)?.includesHead ?? false,
         // Palettes autorisées par emplacement : celles de la table de liaison, du bon type d'emplacement.
         allowed: i.paletteSlots.map((slot) => allowed.filter((code) => palettes.find((p) => p.code === code)?.slot === slot)),
       };
@@ -39,7 +43,7 @@ export type AvatarCatalog = Awaited<ReturnType<typeof avatarCatalog>>;
 
 function viewOf(c: AvatarCatalog): CatalogView {
   return {
-    items: new Map(c.items.map((i) => [i.code, { layer: i.layer, slots: i.slots, unlocked: i.unlocked, allowed: i.allowed.map((a) => new Set(a)) }])),
+    items: new Map(c.items.map((i) => [i.code, { layer: i.layer, slots: i.slots, unlocked: i.unlocked, allowed: i.allowed.map((a) => new Set(a)), available: i.available, includesHead: i.includesHead }])),
     palettes: new Map(c.palettes.map((p) => [p.code, p.slot])),
   };
 }

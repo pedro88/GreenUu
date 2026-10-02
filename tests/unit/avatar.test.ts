@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { AVATAR_ITEMS, PALETTES } from '@/features/avatar/catalog';
 import { canonicalJson, checkConfig, codeCatalogView, defaultAvatar, mulberry32, normalizeConfig, randomAvatar } from '@/features/avatar/config.pure';
 import { hexToRgb, recolorPixels, RESERVED_GREYS } from '@/features/avatar/recolor.pure';
+import { frameCandidates, gabaritsSchema, headOffset } from '@/features/avatar/frames.pure';
 import { startPreview } from '@/features/avatar/ui/preview';
 import { isUnlocked, NO_PROGRESS } from '@/features/progression/unlock.pure';
 import { AVATAR_LAYERS, REQUIRED_AVATAR_LAYERS } from '@/lib/enums';
@@ -28,10 +29,35 @@ describe('configuration d\'avatar (§10.3)', () => {
   });
 
   it('un élément verrouillé donne LOCKED_ITEM, sauf s\'il était déjà équipé', () => {
+    // Le catalogue actuel est entièrement disponible : on simule un contenu exclusif.
+    const exclusive = new Map(view.items);
+    const straw = view.items.get('hat_straw');
+    if (straw) exclusive.set('hat_straw', { ...straw, unlocked: false });
+    const lockedView = { ...view, items: exclusive };
     const c = base();
     const forged = { ...c, layers: { ...c.layers, headwear: { item: 'hat_straw', palettes: ['straw'] } } };
-    expect(checkConfig(forged, view)).toEqual({ ok: false, code: 'LOCKED_ITEM', items: ['hat_straw'] });
-    expect(checkConfig(forged, view, normalizeConfig(forged)).ok).toBe(true);
+    expect(checkConfig(forged, lockedView)).toEqual({ ok: false, code: 'LOCKED_ITEM', items: ['hat_straw'] });
+    expect(checkConfig(forged, lockedView, normalizeConfig(forged)).ok).toBe(true);
+  });
+
+  it('tout le catalogue actuel est disponible dès le départ', () => {
+    expect(AVATAR_ITEMS.filter((i) => i.unlock.kind !== 'none').map((i) => i.code)).toEqual([]);
+  });
+
+  it('un élément dont les sprites ne sont pas livrés est refusé (itemUnavailable)', () => {
+    const c = base();
+    const r = checkConfig({ ...c, layers: { ...c.layers, face_eyes: { item: 'eyes_almond', palettes: ['eye_green'] } } }, codeCatalogView(NO_PROGRESS, new Set(['ombre-base', 'corps-base', 'yeux-base'])));
+    expect(r).toMatchObject({ ok: false, code: 'VALIDATION', fields: { 'layers.face_eyes.item': ['itemUnavailable'] } });
+  });
+
+  it('un corps sans tête exige une forme de visage ; un corps qui comprend la tête n\'en accepte pas', () => {
+    const all = new Set(AVATAR_ITEMS.map((i) => i.spriteKey));
+    const v = codeCatalogView(NO_PROGRESS, all);
+    const c = base();
+    const headless = { ...c, layers: { ...c.layers, body: { item: 'body_round_tall', palettes: ['skin_07'] }, head: { item: null, palettes: [] } } };
+    expect(checkConfig(headless, v)).toMatchObject({ code: 'VALIDATION', fields: { 'layers.head.item': ['required'] } });
+    expect(checkConfig({ ...headless, layers: { ...headless.layers, head: { item: 'head_heart', palettes: [] } } }, v).ok).toBe(true);
+    expect(checkConfig({ ...c, layers: { ...c.layers, head: { item: 'head_oval', palettes: [] } } }, v)).toMatchObject({ fields: { 'layers.head.item': ['headIncludedInBody'] } });
   });
 
   it('le JSON canonique ne dépend pas de l\'ordre des clés', () => {
@@ -97,6 +123,20 @@ describe('tirages (§10.3, §10.4)', () => {
     expect(new Set(ids.map((id) => canonicalJson(defaultAvatar(id)))).size).toBeGreaterThan(1);
   });
 
+  it('avec les variantes livrées, tirages et avatar par défaut restent valides (tête cohérente avec le corps)', () => {
+    const all = new Set(AVATAR_ITEMS.map((i) => i.spriteKey));
+    const v = codeCatalogView(NO_PROGRESS, all);
+    const rnd = mulberry32(11);
+    const bodies = new Set<string>();
+    for (let k = 0; k < 60; k += 1) {
+      const c = randomAvatar(() => true, rnd, all);
+      bodies.add(c.layers.body?.item ?? '');
+      expect(checkConfig(c, v).ok, JSON.stringify(c.layers.body) + JSON.stringify(c.layers.head)).toBe(true);
+    }
+    expect(bodies.size).toBeGreaterThan(3);
+    expect(checkConfig(defaultAvatar('0199a0b0-0000-7000-8000-00000000000d', all), v).ok).toBe(true);
+  });
+
   it('le catalogue propose au moins 12 teintes de peau', () => {
     expect(PALETTES.filter((p) => p.slot === 'skin').length).toBeGreaterThanOrEqual(12);
   });
@@ -137,5 +177,26 @@ describe('aperçu de l\'éditeur (§10.4, audit lot 8 M2)', () => {
     expect(draws).toEqual(['marche-f1', 'marche-f2', 'marche-f3', 'marche-f4', 'marche-f1']);
     stop();
     expect(t.cleared()).toBe(1);
+  });
+});
+
+describe('variantes de silhouette (§10.1, demande de sprites)', () => {
+  const available = new Set(['haut-tshirt', 'haut-tshirt@ronde-grande', 'bas-pantalon']);
+  it('un calque ajusté prend la variante du gabarit si elle est livrée, sinon la variante de base', () => {
+    expect(frameCandidates({ layer: 'top', spriteKey: 'haut-tshirt', gabarit: 'ronde-grande', dir: 'bas', pose: 'marche-f2', available })).toEqual([
+      'avatar/haut-tshirt@ronde-grande-bas-marche-f2.png', 'avatar/haut-tshirt@ronde-grande-bas-arret.png', 'avatar/haut-tshirt-bas-marche-f2.png', 'avatar/haut-tshirt-bas-arret.png',
+    ]);
+    expect(frameCandidates({ layer: 'bottom', spriteKey: 'bas-pantalon', gabarit: 'ronde-grande', dir: 'bas', pose: 'arret', available })).toEqual(['avatar/bas-pantalon-bas-arret.png']);
+    // Un calque de tête n'a pas de variante par gabarit : il est décalé.
+    expect(frameCandidates({ layer: 'hair_front', spriteKey: 'cheveux-court', gabarit: 'ronde-grande', dir: 'bas', pose: 'arret', available: new Set(['cheveux-court@ronde-grande']) })).toEqual(['avatar/cheveux-court-bas-arret.png']);
+  });
+
+  it('les calques de tête sont décalés selon le gabarit, par pose puis par défaut ; jamais pour le gabarit de base', () => {
+    const table = gabaritsSchema.parse({ v: 1, gabarits: { 'mince-grande': { '*': [0, -6], 'bas-marche-f2': [0, -7] } } });
+    expect(headOffset(table, 'head', 'mince-grande', 'bas', 'marche-f2')).toEqual([0, -7]);
+    expect(headOffset(table, 'headwear', 'mince-grande', 'gauche', 'arret')).toEqual([0, -6]);
+    expect(headOffset(table, 'top', 'mince-grande', 'bas', 'arret')).toEqual([0, 0]);
+    expect(headOffset(table, 'head', 'moyenne-moyenne', 'bas', 'arret')).toEqual([0, 0]);
+    expect(headOffset(null, 'head', 'mince-grande', 'bas', 'arret')).toEqual([0, 0]);
   });
 });

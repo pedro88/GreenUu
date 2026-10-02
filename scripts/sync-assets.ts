@@ -48,10 +48,18 @@ for (const [sub, to] of [['ui', 'ui'], ['bulles', 'bulles'], ['deco', 'decor']] 
 }
 // Vignettes d'avatar (§10.5) : la frame de face, à l'arrêt, de chaque élément, en fichiers individuels. Une vignette
 // n'a pas à télécharger l'atlas complet (audit lot 8, M1).
+// Les clés livrées (`<clé>` ou `<clé>@<gabarit>`, d'après la frame de face) fixent la disponibilité des éléments, côté
+// serveur comme côté client ; la table des décalages de tête par gabarit (`gabarits.json`) est copiée si elle existe.
+const avatarSprites: string[] = [];
 if (existsSync(path.join(SRC, 'avatar'))) {
   await mkdir(path.join(DEST, 'avatar'), { recursive: true });
-  for (const f of (await readdir(path.join(SRC, 'avatar'))).filter((x) => x.endsWith('-bas-arret.png'))) await copyFile(path.join(SRC, 'avatar', f), path.join(DEST, 'avatar', f));
+  for (const f of (await readdir(path.join(SRC, 'avatar'))).filter((x) => x.endsWith('-bas-arret.png'))) {
+    await copyFile(path.join(SRC, 'avatar', f), path.join(DEST, 'avatar', f));
+    avatarSprites.push(f.replace(/-bas-arret\.png$/, ''));
+  }
+  if (existsSync(path.join(SRC, 'avatar', 'gabarits.json'))) await copyFile(path.join(SRC, 'avatar', 'gabarits.json'), path.join(DEST, 'avatar', 'gabarits.json'));
 }
+await writeFile('src/generated/avatar-sprites.ts', `// Généré par \`pnpm assets:sync\` — ne pas modifier à la main.\nexport const AVATAR_SPRITES: ReadonlySet<string> = new Set(${JSON.stringify(avatarSprites.sort(), null, 2)});\n`);
 // Atlas de la vue jardin (§9.2, format TexturePacker, éventuellement en plusieurs pages) : copié tel quel, validé par
 // Zod au chargement. Les pages d'une livraison précédente sont retirées.
 if (existsSync(path.join(SRC, 'atlas.json'))) {

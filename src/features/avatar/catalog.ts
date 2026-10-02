@@ -1,10 +1,13 @@
-import type { AvatarLayer, PaletteSlot } from '@/lib/enums';
+import { AVATAR_BUILDS, AVATAR_HEIGHTS, type AvatarLayer, type PaletteSlot } from '@/lib/enums';
 import type { UnlockConditionV1 } from '../progression/unlock.pure';
 
 /*
  * Catalogue d'avatar (SPEC §10), défini en code et chargé en base avec le référentiel (`loadCatalogs`). Le client le lit
  * aussi pour composer les calques sans requête. Les clés de sprites suivent les frames livrées dans l'atlas
  * (`avatar/<clé>-<direction>-<pose>.png`). Aucun élément n'est restreint à un genre : silhouettes neutres (§10.2).
+ *
+ * Tout le catalogue actuel est disponible dès le départ (condition `none`) ; le mécanisme de déblocage reste en place
+ * pour de futurs contenus exclusifs. Un élément n'est proposé que si ses sprites sont livrés (`AVATAR_SPRITES`).
  */
 
 export type AvatarItemDef = {
@@ -16,35 +19,68 @@ export type AvatarItemDef = {
   unlock: UnlockConditionV1;
   /** Palettes autorisées ; à défaut, toutes celles du type d'emplacement. */
   palettes?: string[];
+  /** Corps : gabarit (`<corpulence>-<taille>` des noms de sprites) et présence de la tête dans le sprite. */
+  gabarit?: string;
+  includesHead?: boolean;
 };
 
 export type PaletteDef = { code: string; slot: PaletteSlot; ramp: [string, string, string, string] };
 
 const none: UnlockConditionV1 = { v: 1, kind: 'none' };
-const level = (min: number): UnlockConditionV1 => ({ v: 1, kind: 'level', min });
+
+/** Corpulence et taille → mots des noms de sprites (`corps-<corpulence>-<taille>`). */
+export const BUILD_WORDS: Record<(typeof AVATAR_BUILDS)[number], string> = { slim: 'mince', average: 'moyenne', round: 'ronde' };
+export const HEIGHT_WORDS: Record<(typeof AVATAR_HEIGHTS)[number], string> = { short: 'petite', medium: 'moyenne', tall: 'grande' };
+/** Gabarit des sprites livrés jusqu'ici (`corps-base`) : tous les décalages sont relatifs à lui. */
+export const BASE_GABARIT = 'moyenne-moyenne';
+
+const silhouettes: AvatarItemDef[] = AVATAR_BUILDS.flatMap((b) => AVATAR_HEIGHTS.map((h) => {
+  const gabarit = `${BUILD_WORDS[b]}-${HEIGHT_WORDS[h]}`;
+  return { code: `body_${b}_${h}`, layer: 'body' as const, spriteKey: `corps-${gabarit}`, slots: ['skin' as const], unlock: none, gabarit, includesHead: false };
+}));
 
 export const AVATAR_ITEMS: readonly AvatarItemDef[] = [
   { code: 'shadow', layer: 'shadow', spriteKey: 'ombre-base', slots: [], unlock: none },
-  { code: 'body', layer: 'body', spriteKey: 'corps-base', slots: ['skin'], unlock: none },
+  // Corps d'origine, tête comprise ; les silhouettes sans tête se combinent avec une forme de visage.
+  { code: 'body', layer: 'body', spriteKey: 'corps-base', slots: ['skin'], unlock: none, gabarit: BASE_GABARIT, includesHead: true },
+  ...silhouettes,
+  // Formes de visage : recolorées avec la peau du corps (calque lié, sans palette propre).
+  { code: 'head_round', layer: 'head', spriteKey: 'tete-ronde', slots: [], unlock: none },
+  { code: 'head_oval', layer: 'head', spriteKey: 'tete-ovale', slots: [], unlock: none },
+  { code: 'head_square', layer: 'head', spriteKey: 'tete-carree', slots: [], unlock: none },
+  { code: 'head_heart', layer: 'head', spriteKey: 'tete-coeur', slots: [], unlock: none },
+  { code: 'head_long', layer: 'head', spriteKey: 'tete-longue', slots: [], unlock: none },
+  // Signes de l'âge, sur la peau du corps.
+  { code: 'age_child', layer: 'face_details', spriteKey: 'age-enfant', slots: [], unlock: none },
+  { code: 'age_mature', layer: 'face_details', spriteKey: 'age-mur', slots: [], unlock: none },
+  { code: 'age_senior', layer: 'face_details', spriteKey: 'age-aine', slots: [], unlock: none },
   { code: 'eyes', layer: 'face_eyes', spriteKey: 'yeux-base', slots: [], unlock: none },
+  { code: 'eyes_round', layer: 'face_eyes', spriteKey: 'yeux-ronds', slots: ['eyes'], unlock: none },
+  { code: 'eyes_almond', layer: 'face_eyes', spriteKey: 'yeux-amande', slots: ['eyes'], unlock: none },
+  { code: 'eyes_narrow', layer: 'face_eyes', spriteKey: 'yeux-fins', slots: ['eyes'], unlock: none },
+  { code: 'eyes_wide', layer: 'face_eyes', spriteKey: 'yeux-grands', slots: ['eyes'], unlock: none },
+  { code: 'eyes_lashes', layer: 'face_eyes', spriteKey: 'yeux-cils', slots: ['eyes'], unlock: none },
+  { code: 'eyes_sleepy', layer: 'face_eyes', spriteKey: 'yeux-mi-clos', slots: ['eyes'], unlock: none },
+  { code: 'brows_thin', layer: 'face_brows', spriteKey: 'sourcils-fins', slots: ['hair'], unlock: none },
+  { code: 'brows_thick', layer: 'face_brows', spriteKey: 'sourcils-epais', slots: ['hair'], unlock: none },
   // Un seul choix « cheveux » pour l'utilisateur (§10.1) : les assets V1 n'ont pas de partie arrière séparée.
   { code: 'hair_short', layer: 'hair_front', spriteKey: 'cheveux-court', slots: ['hair'], unlock: none },
   { code: 'hair_long', layer: 'hair_front', spriteKey: 'cheveux-long', slots: ['hair'], unlock: none },
   { code: 'hair_curly', layer: 'hair_front', spriteKey: 'cheveux-boucle', slots: ['hair'], unlock: none },
-  { code: 'hair_bun', layer: 'hair_front', spriteKey: 'cheveux-chignon', slots: ['hair'], unlock: level(3) },
+  { code: 'hair_bun', layer: 'hair_front', spriteKey: 'cheveux-chignon', slots: ['hair'], unlock: none },
   { code: 'top_tshirt', layer: 'top', spriteKey: 'haut-tshirt', slots: ['cloth'], unlock: none },
-  { code: 'top_sweater', layer: 'top', spriteKey: 'haut-pull', slots: ['cloth'], unlock: { v: 1, kind: 'season_active', season: 'autumn' } },
+  { code: 'top_sweater', layer: 'top', spriteKey: 'haut-pull', slots: ['cloth'], unlock: none },
   { code: 'bottom_trousers', layer: 'bottom', spriteKey: 'bas-pantalon', slots: ['cloth'], unlock: none },
-  { code: 'bottom_shorts', layer: 'bottom', spriteKey: 'bas-short', slots: ['cloth'], unlock: { v: 1, kind: 'season_active', season: 'summer' } },
-  { code: 'apron_gardener', layer: 'apron', spriteKey: 'tablier-jardinier', slots: ['cloth'], unlock: level(2) },
+  { code: 'bottom_shorts', layer: 'bottom', spriteKey: 'bas-short', slots: ['cloth'], unlock: none },
+  { code: 'apron_gardener', layer: 'apron', spriteKey: 'tablier-jardinier', slots: ['cloth'], unlock: none },
   { code: 'shoes_sneakers', layer: 'shoes', spriteKey: 'chaussures-baskets', slots: ['cloth'], unlock: none },
-  { code: 'shoes_boots', layer: 'shoes', spriteKey: 'chaussures-bottes', slots: ['material'], unlock: { v: 1, kind: 'skill', skill: 'vegetable', min: 2 }, palettes: ['rubber_green', 'leather', 'charcoal_rubber'] },
+  { code: 'shoes_boots', layer: 'shoes', spriteKey: 'chaussures-bottes', slots: ['material'], unlock: none, palettes: ['rubber_green', 'leather', 'charcoal_rubber'] },
   { code: 'hat_beanie', layer: 'headwear', spriteKey: 'couvre-chef-bonnet', slots: ['cloth'], unlock: none },
-  { code: 'hat_bucket', layer: 'headwear', spriteKey: 'couvre-chef-bob', slots: ['cloth'], unlock: level(5) },
-  { code: 'hat_straw', layer: 'headwear', spriteKey: 'couvre-chef-chapeau-paille', slots: ['material'], unlock: { v: 1, kind: 'achievement', code: 'seed_saver' }, palettes: ['straw', 'wood', 'leather'] },
+  { code: 'hat_bucket', layer: 'headwear', spriteKey: 'couvre-chef-bob', slots: ['cloth'], unlock: none },
+  { code: 'hat_straw', layer: 'headwear', spriteKey: 'couvre-chef-chapeau-paille', slots: ['material'], unlock: none, palettes: ['straw', 'wood', 'leather'] },
   { code: 'held_watering_can', layer: 'held_item', spriteKey: 'accessoire-arrosoir', slots: ['material'], unlock: none, palettes: ['steel', 'terracotta', 'rubber_green'] },
-  { code: 'held_basket', layer: 'held_item', spriteKey: 'accessoire-panier', slots: ['material'], unlock: { v: 1, kind: 'achievement', code: 'first_harvest' }, palettes: ['straw', 'wood'] },
-  { code: 'held_spade', layer: 'held_item', spriteKey: 'accessoire-beche', slots: ['material'], unlock: { v: 1, kind: 'skill', skill: 'vegetable', min: 3 }, palettes: ['wood', 'steel'] },
+  { code: 'held_basket', layer: 'held_item', spriteKey: 'accessoire-panier', slots: ['material'], unlock: none, palettes: ['straw', 'wood'] },
+  { code: 'held_spade', layer: 'held_item', spriteKey: 'accessoire-beche', slots: ['material'], unlock: none, palettes: ['wood', 'steel'] },
 ];
 
 /** Rampes de 4 couleurs, de la plus claire à la plus sombre. 14 teintes de peau couvrent toute l'échelle (AVT-08). */
@@ -74,6 +110,13 @@ export const PALETTES: readonly PaletteDef[] = [
   { code: 'hair_white', slot: 'hair', ramp: ['#ffffff', '#e8e8ee', '#c8c8d2', '#a2a2b0'] },
   { code: 'hair_teal', slot: 'hair', ramp: ['#7fd6c8', '#4fb0a2', '#36877c', '#235e56'] },
   { code: 'hair_violet', slot: 'hair', ramp: ['#c8a2e8', '#a07ac8', '#7a56a2', '#543a72'] },
+  { code: 'eye_brown', slot: 'eyes', ramp: ['#a8754f', '#7a4f31', '#56351f', '#3a2314'] },
+  { code: 'eye_hazel', slot: 'eyes', ramp: ['#c9a25c', '#9a7a3e', '#6f5a2b', '#4a3c1c'] },
+  { code: 'eye_green', slot: 'eyes', ramp: ['#9fcf8a', '#6f9f5a', '#4c7a3e', '#33532a'] },
+  { code: 'eye_blue', slot: 'eyes', ramp: ['#a8d0f0', '#6fa3d0', '#4a78a8', '#2f527a'] },
+  { code: 'eye_grey', slot: 'eyes', ramp: ['#cfd6dc', '#9aa4ad', '#6e7880', '#4a5258'] },
+  { code: 'eye_black', slot: 'eyes', ramp: ['#6a6070', '#463e4a', '#2c262f', '#1a161c'] },
+  { code: 'eye_amber', slot: 'eyes', ramp: ['#f2c46a', '#d0973a', '#a06c22', '#704914'] },
   { code: 'leaf', slot: 'cloth', ramp: ['#b9e08a', '#8fbf63', '#6a9a45', '#4a7030'] },
   { code: 'moss', slot: 'cloth', ramp: ['#a9b77a', '#838f55', '#626b3b', '#434a28'] },
   { code: 'sky', slot: 'cloth', ramp: ['#bfe3f4', '#8cc5e3', '#5f9fc4', '#3f789c'] },
@@ -105,9 +148,12 @@ export function allowedPalettes(item: AvatarItemDef, slotIndex: number): Palette
   return PALETTES.filter((p) => p.slot === slot && (!item.palettes || item.palettes.includes(p.code)));
 }
 
-/** Catégories de l'éditeur (§10.4) : chacune pilote un calque, « Cheveux » couvre les deux calques de cheveux. */
+/**
+ * Catégories de l'éditeur (§10.4). Chaque onglet regroupe une ou plusieurs sections, une par calque : « Visage » porte
+ * la forme, les yeux, les sourcils et l'âge. « Cheveux » couvre les deux calques de cheveux.
+ */
 export const AVATAR_TABS = [
-  { key: 'body', layer: 'body' }, { key: 'face', layer: 'face_eyes' }, { key: 'hair', layer: 'hair_front' }, { key: 'top', layer: 'top' },
-  { key: 'bottom', layer: 'bottom' }, { key: 'apron', layer: 'apron' }, { key: 'shoes', layer: 'shoes' }, { key: 'headwear', layer: 'headwear' },
-  { key: 'held', layer: 'held_item' },
-] as const satisfies readonly { key: string; layer: AvatarLayer }[];
+  { key: 'body', sections: ['body'] }, { key: 'face', sections: ['head', 'face_eyes', 'face_brows', 'face_details'] }, { key: 'hair', sections: ['hair_front'] },
+  { key: 'top', sections: ['top'] }, { key: 'bottom', sections: ['bottom'] }, { key: 'apron', sections: ['apron'] }, { key: 'shoes', sections: ['shoes'] },
+  { key: 'headwear', sections: ['headwear'] }, { key: 'held', sections: ['held_item'] },
+] as const satisfies readonly { key: string; sections: readonly AvatarLayer[] }[];

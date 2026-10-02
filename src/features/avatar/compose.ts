@@ -1,8 +1,10 @@
 'use client';
 
-import { AVATAR_LAYERS } from '@/lib/enums';
+import { AVATAR_SPRITES } from '@/generated/avatar-sprites';
+import { AVATAR_LAYERS, SKIN_LINKED_LAYERS, type AvatarLayer } from '@/lib/enums';
 import { fetchAtlas, type LoadedAtlas } from '@/game/manifest';
-import { AVATAR_ITEM_BY_CODE, PALETTE_BY_CODE } from './catalog';
+import { AVATAR_ITEM_BY_CODE, BASE_GABARIT, PALETTE_BY_CODE } from './catalog';
+import { frameCandidates, gabaritsSchema, headOffset, type GabaritTable } from './frames.pure';
 import type { AvatarConfigV1 } from './config.pure';
 import { recolorPixels } from './recolor.pure';
 
@@ -10,8 +12,8 @@ import { recolorPixels } from './recolor.pure';
  * Composition de l'avatar en Canvas 2D (SPEC §10.2, §10.5), sans PixiJS : calques recolorés dans l'ordre fixe, frames
  * HD de l'atlas (`avatar/<clé>-<direction>-<pose>.png`). Les vignettes n'utilisent que la frame de face à l'arrêt,
  * servie en fichier individuel (`/sprites/avatar/<clé>-bas-arret.png`) : elles ne chargent jamais l'atlas complet.
- * Les calques recolorés sont en cache mémoire par (source, élément, palettes, direction, pose) ; les vignettes, en
- * mémoire et dans Cache Storage sous `avatar:<configHash>`.
+ * Les calques recolorés sont en cache mémoire par (source, élément, rampes, gabarit, direction, pose) ; les vignettes,
+ * en mémoire et dans Cache Storage sous `avatar:<configHash>`.
  */
 
 export const DIRECTIONS = ['bas', 'gauche', 'haut', 'droite'] as const;
@@ -51,35 +53,43 @@ const canvas = (w: number, h: number) => Object.assign(document.createElement('c
 type Source = 'atlas' | 'single';
 type Frame = { img: HTMLImageElement; x: number; y: number; w: number; h: number };
 
-async function frameOf(spriteKey: string, dir: Direction, pose: Pose, source: Source): Promise<Frame | null> {
+const SKIN_LINKED: ReadonlySet<AvatarLayer> = new Set(SKIN_LINKED_LAYERS);
+
+let gabaritsP: Promise<GabaritTable | null> | null = null;
+/** Décalages de tête par gabarit (`gabarits.json`, livré avec les sprites) ; absents tant qu'il n'y a qu'un gabarit. */
+const gabarits = () => (gabaritsP ??= fetch('/sprites/avatar/gabarits.json').then(async (r) => (r.ok ? gabaritsSchema.safeParse(await r.json()).data ?? null : null)).catch(() => null));
+
+async function frameOf(names: string[], source: Source): Promise<Frame | null> {
   if (source === 'single') {
-    const img = await image(`/sprites/avatar/${spriteKey}-bas-arret.png`);
-    return img ? { img, x: 0, y: 0, w: img.naturalWidth, h: img.naturalHeight } : null;
+    // Fichiers individuels : seulement la frame de face à l'arrêt (`avatar/<clé>-bas-arret.png`).
+    for (const n of names.filter((x) => x.endsWith('-bas-arret.png'))) {
+      const img = await image(`/sprites/${n}`);
+      if (img) return { img, x: 0, y: 0, w: img.naturalWidth, h: img.naturalHeight };
+    }
+    return null;
   }
   const a = await atlas();
-  const f = a ? a.frames.get(`avatar/${spriteKey}-${dir}-${pose}.png`) ?? a.frames.get(`avatar/${spriteKey}-${dir}-arret.png`) : undefined;
+  const f = a ? names.map((n) => a.frames.get(n)).find(Boolean) : undefined;
   const img = f ? await image(f.page) : null;
   return f && img ? { img, x: f.x, y: f.y, w: f.w, h: f.h } : null;
 }
 
 /** Un calque recoloré (§10.2), ou null si la frame manque (repli sans erreur, §9.2). */
-function layer(item: string, palettes: string[], dir: Direction, pose: Pose, source: Source = 'atlas'): Promise<HTMLCanvasElement | null> {
-  const key = `${source}|${item}|${palettes.join(',')}|${dir}|${pose}`;
+function layer(o: { layer: AvatarLayer; item: string; ramps: (readonly string[] | null)[]; gabarit: string; dir: Direction; pose: Pose; source: Source }): Promise<HTMLCanvasElement | null> {
+  const key = `${o.source}|${o.item}|${o.ramps.map((r) => r?.join('') ?? '-').join(',')}|${o.gabarit}|${o.dir}|${o.pose}`;
   let p = layers.get(key);
   if (!p) {
     p = (async () => {
-      const def = AVATAR_ITEM_BY_CODE.get(item);
-      const f = def ? await frameOf(def.spriteKey, dir, pose, source) : null;
+      const def = AVATAR_ITEM_BY_CODE.get(o.item);
+      const f = def ? await frameOf(frameCandidates({ layer: o.layer, spriteKey: def.spriteKey, gabarit: o.gabarit, dir: o.dir, pose: o.pose, available: AVATAR_SPRITES }), o.source) : null;
       if (!f) return null;
-      const img = f.img;
       const c = canvas(f.w, f.h);
       const ctx = c.getContext('2d', { willReadFrequently: true });
       if (!ctx) return null;
-      ctx.drawImage(img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
-      const ramps = palettes.map((code) => PALETTE_BY_CODE.get(code)?.ramp ?? null);
-      if (ramps.some(Boolean)) {
+      ctx.drawImage(f.img, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
+      if (o.ramps.some(Boolean)) {
         const data = ctx.getImageData(0, 0, f.w, f.h);
-        recolorPixels(data.data, ramps);
+        recolorPixels(data.data, o.ramps);
         ctx.putImageData(data, 0, 0);
       }
       return c;
@@ -89,11 +99,23 @@ function layer(item: string, palettes: string[], dir: Direction, pose: Pose, sou
   return p;
 }
 
-/** Dessine l'avatar complet dans `target` (taille du sprite), calques de l'arrière vers l'avant (§10.1). */
+/**
+ * Dessine l'avatar complet dans `target` (taille du sprite), calques de l'arrière vers l'avant (§10.1). Le gabarit du
+ * corps choisit les variantes des vêtements et décale les calques de tête ; la peau du corps recolore la tête.
+ */
 export async function drawAvatar(target: CanvasRenderingContext2D, config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret', source: Source = 'atlas'): Promise<boolean> {
-  const parts = await Promise.all(AVATAR_LAYERS.map((l) => {
+  const body = config.layers.body?.item ? AVATAR_ITEM_BY_CODE.get(config.layers.body.item) : undefined;
+  const gabarit = body?.gabarit ?? BASE_GABARIT;
+  const skin = config.layers.body?.palettes[0];
+  const skinRamp = skin ? PALETTE_BY_CODE.get(skin)?.ramp ?? null : null;
+  const table = gabarit === BASE_GABARIT ? null : await gabarits();
+  const parts = await Promise.all(AVATAR_LAYERS.map(async (l) => {
     const e = config.layers[l];
-    return e?.item ? layer(e.item, e.palettes, dir, pose, source) : Promise.resolve(null);
+    if (!e?.item) return null;
+    const linked = SKIN_LINKED.has(l);
+    const ramps = linked ? [skinRamp] : e.palettes.map((code) => PALETTE_BY_CODE.get(code)?.ramp ?? null);
+    const c = await layer({ layer: l, item: e.item, ramps, gabarit, dir, pose, source });
+    return c ? { c, offset: headOffset(table, l, gabarit, dir, pose) } : null;
   }));
   target.clearRect(0, 0, target.canvas.width, target.canvas.height);
   target.imageSmoothingEnabled = false;
@@ -102,7 +124,7 @@ export async function drawAvatar(target: CanvasRenderingContext2D, config: Avata
   let drawn = false;
   for (const p of parts) {
     if (!p) continue;
-    target.drawImage(p, 0, 0, p.width * sx, p.height * sy);
+    target.drawImage(p.c, p.offset[0] * sx, p.offset[1] * sy, p.c.width * sx, p.c.height * sy);
     drawn = true;
   }
   return drawn;

@@ -53,19 +53,25 @@ export function AvatarEditor({ catalog, avatar, footer }: { catalog: AvatarCatal
   const unlocked = useMemo(() => new Set(catalog.items.filter((i) => i.unlocked).map((i) => i.code)), [catalog]);
   const ramps = useMemo(() => new Map(catalog.palettes.map((p) => [p.code, p.ramp])), [catalog]);
   const current = AVATAR_TABS.find((x) => x.key === tab) ?? AVATAR_TABS[0];
-  const layer: AvatarLayer = current.layer;
-  const items = catalog.items.filter((i) => i.layer === layer);
-  const selected = draft.layers[layer];
-  const selectedItem = items.find((i) => i.code === selected?.item);
-  const optional = layer !== 'body' && layer !== 'face_eyes';
+  // Seuls les éléments dont les sprites sont livrés sont proposés.
+  const available = catalog.items.filter((i) => i.available);
+  const bodyItem = available.find((i) => i.code === draft.layers.body?.item);
 
-  const choose = (i: Item) => {
+  const choose = (layer: AvatarLayer, i: Item) => {
     if (!i.unlocked) { setHint(t('lockedHint', { condition: unlockLabel(i.condition) })); return; }
     setHint(null);
     // On garde les couleurs choisies si elles restent autorisées pour le nouvel élément.
-    const prev = selected?.palettes ?? [];
+    const prev = draft.layers[layer]?.palettes ?? [];
     store.getState().setItem(layer, i.code, i.allowed.map((a, k) => (prev[k] && a.includes(prev[k]) ? prev[k] : a[0] ?? '')));
+    // Corps sans tête : une forme de visage est requise ; corps qui comprend la tête : aucune.
+    if (layer === 'body' && i.includesHead) store.getState().setItem('head', null, []);
+    if (layer === 'body' && !i.includesHead && !draft.layers.head?.item) {
+      const head = available.find((h) => h.layer === 'head');
+      if (head) store.getState().setItem('head', head.code, []);
+    }
   };
+  // Une section n'apparaît que si elle a des éléments livrés ; la forme du visage, seulement pour un corps sans tête.
+  const sections = current.sections.filter((l) => available.some((i) => i.layer === l) && (l !== 'head' || (bodyItem !== undefined && !bodyItem.includesHead)));
 
   return (
     <div className={styles.root} data-testid="avatar-editor" data-config-hash={savedHash} data-dirty={dirty ? 'true' : 'false'}>
@@ -83,31 +89,10 @@ export function AvatarEditor({ catalog, avatar, footer }: { catalog: AvatarCatal
       </div>
 
       <div role="tabpanel" aria-label={t(`tab_${current.key}`)} className={styles.panel}>
-        <ul className={styles.grid} data-testid="avatar-items">
-          {optional ? (
-            <li><button type="button" className={styles.item} aria-pressed={!selected?.item} onClick={() => { setHint(null); store.getState().setItem(layer, null, []); }} data-testid="avatar-item-none">
-              <span className={styles.none} aria-hidden>∅</span><span className={styles.itemLabel}>{t('none')}</span>
-            </button></li>
-          ) : null}
-          {items.map((i) => (
-            <li key={i.code}>
-              <button type="button" className={styles.item} aria-pressed={selected?.item === i.code} aria-disabled={!i.unlocked} data-locked={i.unlocked ? 'false' : 'true'}
-                onClick={() => choose(i)} data-testid={`avatar-item-${i.code}`}>
-                <ItemPreview draft={draft} layer={layer} item={i} />
-                <span className={styles.itemLabel}>{tDynamic(t, `item_${i.code}`, i.code)}</span>
-                {i.unlocked ? null : <span className={styles.lock} data-testid={`avatar-lock-${i.code}`}><Lock aria-hidden size={14} />{unlockLabel(i.condition)}</span>}
-              </button>
-            </li>
-          ))}
-        </ul>
-        {selectedItem?.slots.map((slot, k) => (
-          <fieldset key={`${slot}-${k}`} className={styles.swatches} data-testid={`avatar-swatches-${k}`}>
-            <legend>{t(`slot_${slot}`)}</legend>
-            {selectedItem.allowed[k]?.map((code) => (
-              <button key={code} type="button" className={styles.swatch} aria-pressed={selected?.palettes[k] === code} aria-label={tDynamic(t, `palette_${code}`, code)}
-                style={{ background: ramps.get(code)?.[1] }} onClick={() => store.getState().setPalette(layer, k, code)} data-testid={`avatar-palette-${code}`} />
-            ))}
-          </fieldset>
+        {sections.map((layer) => (
+          <Section key={layer} layer={layer} titled={sections.length > 1} items={available.filter((i) => i.layer === layer)} draft={draft} ramps={ramps}
+            optional={!REQUIRED.includes(layer)} onChoose={(i) => choose(layer, i)} onNone={() => { setHint(null); store.getState().setItem(layer, null, []); }}
+            onPalette={(k, code) => store.getState().setPalette(layer, k, code)} unlockLabel={unlockLabel} />
         ))}
       </div>
 
@@ -120,6 +105,50 @@ export function AvatarEditor({ catalog, avatar, footer }: { catalog: AvatarCatal
         {footer}
       </div>
     </div>
+  );
+}
+
+/** Calques qui n'acceptent pas « aucun » dans l'éditeur (la tête suit le corps, voir `choose`). */
+const REQUIRED: readonly AvatarLayer[] = ['body', 'head', 'face_eyes'];
+
+/** Une section : grille des éléments d'un calque, puis nuancier de l'élément choisi. */
+function Section({ layer, titled, items, draft, ramps, optional, onChoose, onNone, onPalette, unlockLabel }: {
+  layer: AvatarLayer; titled: boolean; items: Item[]; draft: AvatarConfigV1; ramps: Map<string, string[]>; optional: boolean;
+  onChoose: (i: Item) => void; onNone: () => void; onPalette: (slot: number, code: string) => void; unlockLabel: (c: Item['condition']) => string;
+}) {
+  const t = useTranslations('avatar');
+  const selected = draft.layers[layer];
+  const selectedItem = items.find((i) => i.code === selected?.item);
+  return (
+    <section className={styles.section} data-testid={`avatar-section-${layer}`} aria-label={tDynamic(t, `section_${layer}`, layer)}>
+      {titled ? <h3 className={styles.sectionTitle}>{tDynamic(t, `section_${layer}`, layer)}</h3> : null}
+      <ul className={styles.grid} data-testid="avatar-items">
+        {optional ? (
+          <li><button type="button" className={styles.item} aria-pressed={!selected?.item} onClick={onNone} data-testid={`avatar-item-none-${layer}`}>
+            <span className={styles.none} aria-hidden>∅</span><span className={styles.itemLabel}>{t('none')}</span>
+          </button></li>
+        ) : null}
+        {items.map((i) => (
+          <li key={i.code}>
+            <button type="button" className={styles.item} aria-pressed={selected?.item === i.code} aria-disabled={!i.unlocked} data-locked={i.unlocked ? 'false' : 'true'}
+              onClick={() => onChoose(i)} data-testid={`avatar-item-${i.code}`}>
+              <ItemPreview draft={draft} layer={layer} item={i} />
+              <span className={styles.itemLabel}>{tDynamic(t, `item_${i.code}`, i.code)}</span>
+              {i.unlocked ? null : <span className={styles.lock} data-testid={`avatar-lock-${i.code}`}><Lock aria-hidden size={14} />{unlockLabel(i.condition)}</span>}
+            </button>
+          </li>
+        ))}
+      </ul>
+      {selectedItem?.slots.map((slot, k) => (
+        <fieldset key={`${slot}-${k}`} className={styles.swatches} data-testid={`avatar-swatches-${layer}-${k}`}>
+          <legend>{t(`slot_${slot}`)}</legend>
+          {selectedItem.allowed[k]?.map((code) => (
+            <button key={code} type="button" className={styles.swatch} aria-pressed={selected?.palettes[k] === code} aria-label={tDynamic(t, `palette_${code}`, code)}
+              style={{ background: ramps.get(code)?.[1] }} onClick={() => onPalette(k, code)} data-testid={`avatar-palette-${code}`} />
+          ))}
+        </fieldset>
+      ))}
+    </section>
   );
 }
 

@@ -175,3 +175,29 @@ export async function gardenXpOf(gardenId: string): Promise<number> {
     await sql.end();
   }
 }
+
+/**
+ * Contenu exclusif propre au test AVT-02 : le catalogue réel est entièrement disponible. L'élément reprend le sprite
+ * du chapeau de paille et exige le succès « Semencier ». Retiré par `removeExclusiveAvatarItem`.
+ */
+export const EXCLUSIVE_ITEM = 'exclusive_straw_hat';
+export async function addExclusiveAvatarItem(): Promise<void> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    await sql`insert into avatar_item (code, layer, sprite_key, palette_slots, unlock_condition, default_unlocked, sort_order)
+      values (${EXCLUSIVE_ITEM}, 'headwear', 'couvre-chef-chapeau-paille', '["material"]'::jsonb, '{"v":1,"kind":"achievement","code":"seed_saver"}'::jsonb, false, 999)
+      on conflict (code) do nothing`;
+    await sql`insert into avatar_item_palette (avatar_item_id, palette_id)
+      select i.id, p.id from avatar_item i, palette p where i.code = ${EXCLUSIVE_ITEM} and p.code = 'straw' on conflict do nothing`;
+  } finally {
+    await sql.end();
+  }
+}
+export async function removeExclusiveAvatarItem(): Promise<void> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    await sql`delete from avatar_item where code = ${EXCLUSIVE_ITEM}`;
+  } finally {
+    await sql.end();
+  }
+}
