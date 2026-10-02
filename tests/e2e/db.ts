@@ -14,3 +14,13 @@ export async function ticketIdByTitle(gardenId: string, title: string): Promise<
     await sql.end();
   }
 }
+
+export async function ticketCount(gardenId: string, title: string): Promise<number> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ n: number }[]>`select count(*)::int as n from ticket where garden_id = ${gardenId} and title = ${title}`;
+    return row?.n ?? 0;
+  } finally {
+    await sql.end();
+  }
+}
