@@ -24,7 +24,7 @@ export async function MyTasks({ groups }: { groups: Awaited<ReturnType<typeof my
                   <span className={styles.icon}><PixelIcon name={ticketIcon(task)} size={32} /></span>
                   <TaskCheck gardenId={g.gardenId} ticketId={task.id} label={ticketTitle(t, task)} />
                   <Link href={`/app/jardins/${g.gardenId}/tickets/${task.id}`}>{ticketTitle(t, task)}</Link>
-                  {task.dueOn !== null && task.dueOn < g.today ? <strong>{t('tickets.late')}</strong> : null}
+                  {task.dueOn !== null && task.dueOn < g.today ? <strong className={styles.lateTag}>{t('tickets.late')}</strong> : null}
                 </li>
               ))}
             </ul>

@@ -46,6 +46,12 @@
   gap: var(--space-2);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
 }
 
 .place {
@@ -212,9 +218,45 @@
   }
 
   a {
+    flex: 1;
     color: var(--color-text);
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: none;
+  }
+}
+
+.lateTag {
+  flex: none;
+  padding: 0.125rem var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+// Filtres en pastilles sur une ligne, défilables sur mobile (maquette Kanban).
+.filters {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+
+  @include from($bp-md) {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  select {
+    flex: none;
+    width: auto;
+    max-width: 14rem;
+    padding-inline: var(--space-4) var(--space-5);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background-color: var(--color-surface);
+    font-weight: 500;
   }
 }
 
