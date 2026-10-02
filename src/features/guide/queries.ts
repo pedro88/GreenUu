@@ -42,13 +42,16 @@ const speciesName = sql<string>`${species.commonNames}->'fr'->>0`;
 /** Fiche d'un guide : version courante (ou brouillon pour l'auteur), auteur, origine du fork, compteurs. */
 export async function guideDetail(tx: Executor, viewer: Viewer, guideId: string) {
   const g = await readableGuide(tx, viewer, guideId);
-  const [v] = g.currentVersionId ? await tx.select().from(guideVersion).where(eq(guideVersion.id, g.currentVersionId)).limit(1) : [];
-  const [author] = await tx.select({ pseudo: userProfile.pseudo }).from(userProfile).where(eq(userProfile.userId, g.authorId)).limit(1);
-  const [sp] = await tx.select({ name: speciesName, varietyName: variety.name }).from(species)
-    .leftJoin(variety, and(eq(variety.id, sql`${g.varietyId}`), eq(variety.speciesId, species.id))).where(eq(species.id, g.speciesId)).limit(1);
-  const origin = g.forkedFromVersionId ? await forkOrigin(tx, viewer, g.forkedFromVersionId) : null;
-  const [usage] = await tx.select({ n: sql<number>`count(distinct ${culture.gardenId})::int` }).from(culture)
-    .innerJoin(guideVersion, eq(guideVersion.id, culture.appliedGuideVersionId)).where(and(eq(guideVersion.guideId, g.id), isNull(culture.deletedAt)));
+  // Lectures indépendantes en parallèle (audit lot 4, M3).
+  const [[v], [author], [sp], origin, [usage]] = await Promise.all([
+    g.currentVersionId ? tx.select().from(guideVersion).where(eq(guideVersion.id, g.currentVersionId)).limit(1) : Promise.resolve([]),
+    tx.select({ pseudo: userProfile.pseudo }).from(userProfile).where(eq(userProfile.userId, g.authorId)).limit(1),
+    tx.select({ name: speciesName, varietyName: variety.name }).from(species)
+      .leftJoin(variety, and(eq(variety.id, sql`${g.varietyId}`), eq(variety.speciesId, species.id))).where(eq(species.id, g.speciesId)).limit(1),
+    g.forkedFromVersionId ? forkOrigin(tx, viewer, g.forkedFromVersionId) : Promise.resolve(null),
+    tx.select({ n: sql<number>`count(distinct ${culture.gardenId})::int` }).from(culture)
+      .innerJoin(guideVersion, eq(guideVersion.id, culture.appliedGuideVersionId)).where(and(eq(guideVersion.guideId, g.id), isNull(culture.deletedAt))),
+  ]);
   return {
     guide: g, version: v ?? null, authorPseudo: author?.pseudo ?? '', speciesName: sp?.name ?? '', varietyName: sp?.varietyName ?? null,
     origin, gardensUsing: usage?.n ?? 0, isAuthor: viewer?.id === g.authorId,

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { Alert } from '@/components/ui/Alert';
 import { LinkButton } from '@/components/ui/Button';
@@ -19,7 +20,8 @@ import { requireUser } from '@/server/auth/session';
 import { appClock } from '@/server/clock';
 import { db } from '@/server/db/client';
 
-async function load(guideId: string) {
+/** Partagé par generateMetadata et la page : une seule lecture par requête (audit lot 4, M3). */
+const load = cache(async (guideId: string) => {
   const u = await requireUser();
   if (!uuidSchema.safeParse(guideId).success) notFound();
   const d = await guideDetail(db(), u, guideId).catch((e: unknown) => {
@@ -27,7 +29,7 @@ async function load(guideId: string) {
     throw e;
   });
   return { u, d };
-}
+});
 
 export async function generateMetadata({ params }: PageProps<'/app/guides/[guideId]'>) {
   const { d } = await load((await params).guideId);

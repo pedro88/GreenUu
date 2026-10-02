@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { LinkButton } from '@/components/ui/Button';
 import { Card, Stack } from '@/components/ui/Layout';
@@ -9,13 +10,14 @@ import { tDynamic } from '@/i18n/dynamic';
 import { DomainError } from '@/lib/errors';
 import { db } from '@/server/db/client';
 
-async function load(slug: string) {
+/** Partagé par generateMetadata et la page : une seule lecture par requête (audit lot 4, M3). */
+const load = cache(async (slug: string) => {
   if (!/^[a-z0-9-]{1,80}$/.test(slug)) notFound();
   return publicGuideBySlug(db(), slug).catch((e: unknown) => {
     if (e instanceof DomainError && e.code === 'NOT_FOUND') notFound();
     throw e;
   });
-}
+});
 
 export async function generateMetadata({ params }: PageProps<'/guides-publics/[slug]'>) {
   const d = await load((await params).slug);
