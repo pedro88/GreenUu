@@ -271,14 +271,15 @@ export async function openFlags(tx: Executor) {
 export type RecomputeReport = { events: number; users: number; differences: { userId: string; key: string; expected: number; actual: number }[] };
 
 const baseKey = (k: string) => k.split('#recompute')[0] ?? k;
+const RECOMPUTE_PAGE = 1000;
 
 /**
  * Rejoue tous les événements dans l'ordre avec le barème courant, dans une table fantôme (en mémoire), compare au
  * journal clé par clé et, si `apply`, ajoute des lignes `recompute` de correction (le journal reste append-only).
  * Un second recalcul donne un écart nul (XP-14).
  */
-export async function recomputeXp(tx: Executor, opts: { userId?: string; apply: boolean; now: Date }): Promise<RecomputeReport> {
-  const events = await tx.select().from(domainEvent).orderBy(asc(domainEvent.occurredAt), asc(domainEvent.id));
+export async function recomputeXp(tx: Executor, opts: { userId?: string; apply: boolean; now: Date; pageSize?: number }): Promise<RecomputeReport> {
+  let eventCount = 0;
   const shadow = new Map<string, { draft: LedgerDraft | null; amount: number; eventId: string; reversesKey?: string; userId: string }>();
   const histories = new Map<string, XpHistory>();
   const historyOf = (u: string): XpHistory => {
@@ -287,38 +288,70 @@ export async function recomputeXp(tx: Executor, opts: { userId?: string; apply: 
     return h;
   };
   const tz = new Map<string, string>();
-  for (const e of events) {
-    const reversible = REVERSIBLE[e.type];
-    const reverseWhere = (pred: (d: LedgerDraft) => boolean) => {
-      for (const [k, v] of [...shadow.entries()]) {
-        if (!v.draft || v.amount <= 0 || !pred(v.draft) || shadow.has(`reversal:${k}`)) continue;
-        shadow.set(`reversal:${k}`, { draft: null, amount: -v.amount, eventId: e.id, reversesKey: k, userId: v.userId });
+  // Index de la table fantôme : une suppression ne parcourt que les gains de son contenu, pas toute la table.
+  const byCulture = new Map<string, string[]>();
+  const bySubject = new Map<string, string[]>();
+  const indexDraft = (d: LedgerDraft) => {
+    for (const [index, id] of [[byCulture, d.cultureId], [bySubject, d.subjectId]] as const) {
+      if (!id) continue;
+      const keys = index.get(id) ?? [];
+      keys.push(d.key);
+      index.set(id, keys);
+    }
+  };
+  // Lecture par pages, dans l'ordre (occurred_at, id) : l'historique n'est jamais chargé d'un bloc.
+  let cursor: { at: string; id: string } | null = null;
+  for (;;) {
+    // Curseur relu en texte depuis la base : un `Date` JS tronquerait les microsecondes de `occurred_at`.
+    const rows: { e: typeof domainEvent.$inferSelect; at: string }[] = await tx.select({ e: domainEvent, at: sql<string>`${domainEvent.occurredAt}::text` }).from(domainEvent)
+      .where(cursor ? sql`(${domainEvent.occurredAt}, ${domainEvent.id}) > (${cursor.at}::timestamptz, ${cursor.id}::uuid)` : undefined)
+      .orderBy(asc(domainEvent.occurredAt), asc(domainEvent.id)).limit(opts.pageSize ?? RECOMPUTE_PAGE);
+    const last = rows[rows.length - 1];
+    if (!last) break;
+    cursor = { at: last.at, id: last.e.id };
+    const page = rows.map((r) => r.e);
+    eventCount += page.length;
+    for (const e of page) {
+      const reversible = REVERSIBLE[e.type];
+      const reverseKeys = (keys: string[]) => {
+        for (const k of keys) {
+          const v = shadow.get(k);
+          if (!v?.draft || v.amount <= 0 || shadow.has(`reversal:${k}`)) continue;
+          shadow.set(`reversal:${k}`, { draft: null, amount: -v.amount, eventId: e.id, reversesKey: k, userId: v.userId });
+        }
+      };
+      if (reversible === 'culture') reverseKeys(byCulture.get(e.subjectId) ?? []);
+      else if (reversible === 'subject') reverseKeys(bySubject.get(e.subjectId) ?? []);
+      else if (e.type === 'tip.voted' && Number(e.payload.previous) === 1 && Number(e.payload.value) !== 1) reverseKeys([`tip.useful_vote:${e.subjectId}:${e.actorId ?? ''}`]);
+      const xe = await enrich(tx, e);
+      const scope = `${xe.ctx.cultureId ?? ''}:${xe.ctx.seasonId ?? ''}`;
+      const prev = xe.type.startsWith('result.') ? [`result.partial:${scope}`, `result.complete:${scope}`].reduce((a, k) => a + (shadow.get(k)?.amount ?? 0), 0) : 0;
+      for (const c of candidatesFor(xe, prev)) {
+        if (!tz.has(c.recipientId)) tz.set(c.recipientId, await timezoneOf(tx, c.recipientId));
+        const day = localDate(e.occurredAt, tz.get(c.recipientId) ?? 'Europe/Paris');
+        for (const d of applyRules([c], historyOf(c.recipientId), e.occurredAt, day)) {
+          shadow.set(d.key, { draft: d, amount: d.amount, eventId: e.id, userId: d.recipientId });
+          indexDraft(d);
+        }
       }
-    };
-    if (reversible === 'culture') reverseWhere((d) => d.cultureId === e.subjectId);
-    else if (reversible === 'subject') reverseWhere((d) => d.subjectId === e.subjectId);
-    else if (e.type === 'tip.voted' && Number(e.payload.previous) === 1 && Number(e.payload.value) !== 1) reverseWhere((d) => d.key === `tip.useful_vote:${e.subjectId}:${e.actorId ?? ''}`);
-    const xe = await enrich(tx, e);
-    const scope = `${xe.ctx.cultureId ?? ''}:${xe.ctx.seasonId ?? ''}`;
-    const prev = xe.type.startsWith('result.') ? [`result.partial:${scope}`, `result.complete:${scope}`].reduce((a, k) => a + (shadow.get(k)?.amount ?? 0), 0) : 0;
-    for (const c of candidatesFor(xe, prev)) {
-      if (!tz.has(c.recipientId)) tz.set(c.recipientId, await timezoneOf(tx, c.recipientId));
-      const day = localDate(e.occurredAt, tz.get(c.recipientId) ?? 'Europe/Paris');
-      for (const d of applyRules([c], historyOf(c.recipientId), e.occurredAt, day)) shadow.set(d.key, { draft: d, amount: d.amount, eventId: e.id, userId: d.recipientId });
     }
   }
   const scoped = [...shadow.entries()].filter(([, v]) => !opts.userId || v.userId === opts.userId);
   const ledger = await tx.select({ key: xpLedgerEntry.idempotencyKey, amount: xpLedgerEntry.amount, userId: xpLedgerEntry.userId }).from(xpLedgerEntry)
     .where(opts.userId ? eq(xpLedgerEntry.userId, opts.userId) : undefined);
   const actual = new Map<string, number>();
-  for (const l of ledger) actual.set(baseKey(l.key), (actual.get(baseKey(l.key)) ?? 0) + l.amount);
+  const owners = new Map<string, string>();
+  for (const l of ledger) {
+    actual.set(baseKey(l.key), (actual.get(baseKey(l.key)) ?? 0) + l.amount);
+    if (!owners.has(baseKey(l.key))) owners.set(baseKey(l.key), l.userId);
+  }
   const differences: RecomputeReport['differences'] = [];
   for (const [k, v] of scoped) {
     const a = actual.get(k);
     if (a === undefined || a !== v.amount) differences.push({ userId: v.userId, key: k, expected: v.amount, actual: a ?? 0 });
   }
   for (const [k, a] of actual) {
-    const owner = ledger.find((l) => baseKey(l.key) === k)?.userId ?? '';
+    const owner = owners.get(k) ?? '';
     if (!shadow.has(k) && a !== 0 && !k.startsWith('quest:')) differences.push({ userId: owner, key: k, expected: 0, actual: a });
   }
   if (opts.apply && differences.length) {
@@ -340,6 +373,6 @@ export async function recomputeXp(tx: Executor, opts: { userId?: string; apply: 
       await tx.update(userProgress).set({ recomputedAt: opts.now }).where(eq(userProgress.userId, u));
     }
   }
-  return { events: events.length, users: new Set(scoped.map(([, v]) => v.userId)).size, differences };
+  return { events: eventCount, users: new Set(scoped.map(([, v]) => v.userId)).size, differences };
 }
 

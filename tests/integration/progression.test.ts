@@ -68,8 +68,10 @@ describe('journal d\'XP', () => {
       const first = await recomputeXp(tx, { userId: alice.id, apply: true, now: NOW });
       expect(first.differences.length).toBeGreaterThanOrEqual(2);
       expect((await progressOf(tx, alice.id)).totalXp).toBe(before + 8 + 3);
-      const second = await recomputeXp(tx, { userId: alice.id, apply: true, now: new Date(NOW.getTime() + 60_000) });
+      // Lecture page par page (un événement par page) : même résultat que d'un bloc.
+      const second = await recomputeXp(tx, { userId: alice.id, apply: true, now: new Date(NOW.getTime() + 60_000), pageSize: 1 });
       expect(second.differences).toEqual([]);
+      expect(second.events).toBe(first.events);
     }));
 });
 
