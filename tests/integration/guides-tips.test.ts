@@ -1,13 +1,13 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { createCulture } from '../../src/features/culture/service';
-import { compareVersions, guideDetail, listGuidesFor, listPublicGuides, publicGuideBySlug, readableGuide } from '../../src/features/guide/queries';
-import { applyGuide, createGuide, forkGuide, publicForkCount, publishGuide, updateGuide } from '../../src/features/guide/service';
+import { compareVersions, guideDetail, listGuidesFor, listPublicGuides, publicGuideBySlug, publicProfile, readableGuide } from '../../src/features/guide/queries';
+import { applyGuide, createGuide, deleteGuide, forkGuide, publicForkCount, publishGuide, updateGuide } from '../../src/features/guide/service';
 import { decideReports, openReportQueue, reportContent } from '../../src/features/moderation/service';
 import { createTip, tipFeed, voteTip } from '../../src/features/tip/service';
 import type { Actor } from '../../src/server/action-core';
 import type { Tx } from '../../src/server/db/client';
-import { cultureStage, guide, guideVersion, notification, ticket, tip, tipVote } from '../../src/server/db/schema';
+import { cultureStage, guide, guideVersion, notification, ticket, tip, tipVote, userProfile } from '../../src/server/db/schema';
 import type { GuideCalendarV1 } from '../../src/lib/content-types';
 import { addMember, makeGarden, makeZone, speciesRefId } from './fixtures';
 import { fixedClock } from '../../src/server/clock';
@@ -246,5 +246,72 @@ describe('tips', () => {
       const [row] = await tx.select({ hidden: tip.hiddenByModeration }).from(tip).where(eq(tip.id, tipId));
       expect(row?.hidden).toBe(false);
       expect((await tipFeed(tx, null, { authorId: alice.id }, null)).map((t) => t.id)).toContain(tipId);
+    }));
+});
+
+describe('refus hors jardin (audit lot 4, M1)', () => {
+  it('[AUTHZ-02] un tiers ne modifie, ne publie ni ne supprime le guide d\'autrui (NOT_FOUND, aucune écriture)', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const bob = await makeUser(tx);
+      const guideId = await published(tx, alice, { title: 'Guide d’Alice' });
+      const g = await readableGuide(tx, alice, guideId);
+      const asBob = ctxFor(tx, bob);
+      const attempts: [string, () => Promise<unknown>][] = [
+        ['updateGuide', () => updateGuide(asBob, { guideId, visibility: 'public', draft: { ...g.draft, title: 'Piraté' } })],
+        ['publishGuide', () => publishGuide(asBob, guideId)],
+        ['deleteGuide', () => deleteGuide(asBob, guideId)],
+      ];
+      for (const [name, run] of attempts) await expect(run(), name).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      const [row] = await tx.select({ title: sql<string>`${guide.draft}->>'title'`, deletedAt: guide.deletedAt }).from(guide).where(eq(guide.id, guideId));
+      expect(row).toEqual({ title: 'Guide d’Alice', deletedAt: null });
+      expect(await tx.select().from(guideVersion).where(eq(guideVersion.guideId, guideId))).toHaveLength(1);
+    }));
+
+  it('[AUTHZ-02] un compte à l\'e-mail non vérifié ne crée, n\'adapte, ne vote ni ne signale (FORBIDDEN)', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const nina = await makeUser(tx, { verified: false });
+      const guideId = await published(tx, alice);
+      const { tipId } = await createTip(ctxFor(tx, alice), { body: 'Un paillage épais garde la fraîcheur.', tags: ['paillage'] });
+      const asNina = ctxFor(tx, nina);
+      const attempts: [string, () => Promise<unknown>][] = [
+        ['createGuide', () => createGuide(asNina, { speciesId: TOMATE, visibility: 'public', draft: draft('Guide de Nina') })],
+        ['forkGuide', () => forkGuide(asNina, guideId)],
+        ['createTip', () => createTip(asNina, { body: 'Un tip sans e-mail vérifié.', tags: ['test'] })],
+        ['voteTip', () => voteTip(asNina, tipId, 1)],
+        ['reportContent', () => reportContent(asNina, { target: { kind: 'tip', id: tipId }, reason: 'spam' })],
+      ];
+      for (const [name, run] of attempts) await expect(run(), name).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    }));
+
+  it('[GUI-04] un guide masqué n\'est lisible que de son auteur et de la modération', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const bob = await makeUser(tx);
+      const guideId = await published(tx, alice);
+      await tx.update(guide).set({ hiddenByModeration: true }).where(eq(guide.id, guideId));
+      await expect(guideDetail(tx, bob, guideId)).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      await expect(guideDetail(tx, null, guideId)).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      await expect(guideDetail(tx, alice, guideId)).resolves.toMatchObject({ guide: { id: guideId } });
+      await expect(guideDetail(tx, asModerator(bob), guideId)).resolves.toMatchObject({ guide: { id: guideId } });
+    }));
+
+  it('profil public : `public` pour tous, `members` pour les jardins partagés, `private` pour soi seul', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const bob = await makeUser(tx);
+      const hugo = await makeUser(tx);
+      const gardenId = await makeGarden(tx, alice);
+      await addMember(tx, gardenId, bob, 'member');
+      const set = (v: 'public' | 'members' | 'private') => tx.update(userProfile).set({ profileVisibility: v }).where(eq(userProfile.userId, alice.id));
+      await set('public');
+      expect(await publicProfile(tx, hugo, alice.name)).not.toBeNull();
+      await set('members');
+      expect(await publicProfile(tx, bob, alice.name)).not.toBeNull();
+      expect(await publicProfile(tx, hugo, alice.name)).toBeNull();
+      await set('private');
+      expect(await publicProfile(tx, bob, alice.name)).toBeNull();
+      expect(await publicProfile(tx, alice, alice.name)).toMatchObject({ self: true });
     }));
 });
