@@ -31,7 +31,8 @@ export default function GardenCanvas({ stores, reducedMotion, grid = false, onSt
     const unsubs: (() => void)[] = [];
     void (async () => {
       try {
-        view = await createSceneView(el);
+        // Les avatars sont composés après coup (Canvas 2D) : un rendu est redemandé quand ils sont prêts.
+        view = await createSceneView(el, { onChange: () => loopRef.current?.requestRender() });
       } catch {
         // Pas de WebGL : la couche accessible reste utilisable, avec un rendu de repli en CSS.
         if (!disposed) statusRef.current({ canvas: 'unavailable', ticker: false });

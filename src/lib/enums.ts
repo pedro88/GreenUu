@@ -77,3 +77,13 @@ export const TERRAIN_KINDS = ['path', 'gravel_path', 'stepping_stones', 'water_p
 export const DEFAULT_VIEWS = ['garden', 'classic'] as const;
 export type TerrainKind = (typeof TERRAIN_KINDS)[number];
 export type DefaultView = (typeof DEFAULT_VIEWS)[number];
+
+/* ---------- Lot 8 : décoration et avatar ---------- */
+/** Calques de l'avatar, de l'arrière vers l'avant : c'est l'ordre de composition (SPEC §10.1). */
+export const AVATAR_LAYERS = ['shadow', 'body', 'face_eyes', 'face_brows', 'hair_back', 'bottom', 'top', 'apron', 'shoes', 'hair_front', 'headwear', 'held_item'] as const;
+/** Calques qui n'acceptent pas « aucun ». */
+export const REQUIRED_AVATAR_LAYERS = ['shadow', 'body', 'face_eyes'] as const;
+export const PALETTE_SLOTS = ['skin', 'hair', 'eyes', 'cloth', 'material'] as const;
+export const ASTRONOMICAL_SEASONS = ['spring', 'summer', 'autumn', 'winter'] as const;
+export type AvatarLayer = (typeof AVATAR_LAYERS)[number];
+export type PaletteSlot = (typeof PALETTE_SLOTS)[number];

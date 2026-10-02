@@ -228,6 +228,10 @@ export function skillLevelOf(total: number): number {
   return l;
 }
 
+/** Niveau d'un jardin (§8.7) : seuils des niveaux individuels multipliés par 5. */
+export const gardenLevelOf = (xp: number) => levelOf(Math.floor(xp / 5));
+export const gardenNextLevelAt = (level: number) => nextLevelAt(level) * 5;
+
 /** XP restante jusqu'au niveau suivant (affichage du profil). */
 export const nextLevelAt = (level: number) => 50 * (level + 1) * level;
 

@@ -117,3 +117,61 @@ export async function cultureOfTicket(gardenId: string, title: string): Promise<
     await sql.end();
   }
 }
+
+/** Avatar enregistré d'un utilisateur (AVT-01, AVT-02) ; null tant qu'aucun n'a été attribué. */
+export async function avatarRow(userId: string): Promise<{ configHash: string; config: { layers: Record<string, { item: string | null; palettes: string[] }> } } | null> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ config_hash: string; config: { layers: Record<string, { item: string | null; palettes: string[] }> } }[]>`select config_hash, config from user_avatar where user_id = ${userId}`;
+    return row ? { configHash: row.config_hash, config: row.config } : null;
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Pratique déclarée par un objet de déco (DEC-03). */
+export async function decorPracticeCode(placementId: string): Promise<string | null> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ code: string }[]>`select p.code from practice_declaration d join practice p on p.id = d.practice_id where d.decor_placement_id = ${placementId}`;
+    return row?.code ?? null;
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Objet de déco posé à une position (E2E-DEC-01b). */
+export async function decorAtPosition(gardenId: string, itemCode: string, x: number, y: number): Promise<{ id: string; placedBy: string | null } | null> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ id: string; placed_by: string | null }[]>`
+      select p.id, p.placed_by from decor_placement p join decor_item i on i.id = p.decor_item_id
+      where p.garden_id = ${gardenId} and i.code = ${itemCode} and p.x_cm = ${x} and p.y_cm = ${y} limit 1`;
+    return row ? { id: row.id, placedBy: row.placed_by } : null;
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Déclarations d'une pratique au niveau du jardin, avec l'objet éventuellement lié (E2E-DEC-01b). */
+export async function practiceDeclarations(gardenId: string, code: string): Promise<{ decorPlacementId: string | null }[]> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const rows = await sql<{ decor_placement_id: string | null }[]>`
+      select d.decor_placement_id from practice_declaration d join practice p on p.id = d.practice_id where d.garden_id = ${gardenId} and p.code = ${code}`;
+    return rows.map((r) => ({ decorPlacementId: r.decor_placement_id }));
+  } finally {
+    await sql.end();
+  }
+}
+
+/** XP d'un jardin : somme des gains positifs (§8.7), pour la page de progression. */
+export async function gardenXpOf(gardenId: string): Promise<number> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ n: number }[]>`select coalesce(sum(amount) filter (where amount > 0), 0)::int as n from xp_ledger_entry where garden_id = ${gardenId}`;
+    return row?.n ?? 0;
+  } finally {
+    await sql.end();
+  }
+}

@@ -1,14 +1,16 @@
-import { copyFile, mkdir, readdir, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 /**
- * Copie les assets livrés par la session sprites (dossier `out/`, hors de ce dépôt) vers `public/sprites`.
+ * Copie les assets livrés par la session sprites (dossier `out_hd/` par défaut : version HD, tuile de 64 px pour une
+ * tuile logique de 32 px) vers `public/sprites`.
  * Une vignette par espèce et par famille : stade récolte, sinon fruits, floraison, ou le dernier stade.
- * Copie aussi l'atlas de la vue jardin (`atlas.json`, `atlas.png`) dans `public/sprites/atlas`.
+ * Copie aussi l'atlas de la vue jardin et de l'avatar (`atlas.json`, `atlas.png` et ses pages `related_multi_packs`)
+ * dans `public/sprites/atlas`.
  * Génère `src/generated/sprites.ts` (liste des vignettes disponibles, pour le repli à la compilation).
  */
-const SRC = process.argv[2] ?? 'out';
+const SRC = process.argv[2] ?? 'out_hd';
 const DEST = 'public/sprites';
 const PREFERRED = ['recolte', 'fruits', 'floraison', 'feuillage', 'croissance'];
 
@@ -37,16 +39,30 @@ async function pickIcons(dir: string, prefix = ''): Promise<Map<string, string>>
 await mkdir(path.join(DEST, 'icons'), { recursive: true });
 const icons = new Map([...(await pickIcons(path.join(SRC, 'cultures'))), ...(await pickIcons(path.join(SRC, 'fleurs'))), ...(await pickIcons(path.join(SRC, 'familles'), 'family-'))]);
 for (const [key, file] of icons) await copyFile(file, path.join(DEST, 'icons', `${key}.png`));
-for (const sub of ['ui', 'bulles']) {
+// Icônes d'interface, bulles d'état et objets de déco (vignettes de la palette de l'éditeur).
+for (const [sub, to] of [['ui', 'ui'], ['bulles', 'bulles'], ['deco', 'decor']] as const) {
   const dir = path.join(SRC, sub);
   if (!existsSync(dir)) continue;
-  await mkdir(path.join(DEST, sub), { recursive: true });
-  for (const f of (await readdir(dir)).filter((x) => x.endsWith('.png'))) await copyFile(path.join(dir, f), path.join(DEST, sub, f));
+  await mkdir(path.join(DEST, to), { recursive: true });
+  for (const f of (await readdir(dir)).filter((x) => x.endsWith('.png'))) await copyFile(path.join(dir, f), path.join(DEST, to, f));
 }
-// Atlas de la vue jardin (§9.2, format TexturePacker) : copié tel quel, validé par Zod au chargement par le moteur.
-if (existsSync(path.join(SRC, 'atlas.json')) && existsSync(path.join(SRC, 'atlas.png'))) {
-  await mkdir(path.join(DEST, 'atlas'), { recursive: true });
-  for (const f of ['atlas.json', 'atlas.png']) await copyFile(path.join(SRC, f), path.join(DEST, 'atlas', f));
+// Vignettes d'avatar (§10.5) : la frame de face, à l'arrêt, de chaque élément, en fichiers individuels. Une vignette
+// n'a pas à télécharger l'atlas complet (audit lot 8, M1).
+if (existsSync(path.join(SRC, 'avatar'))) {
+  await mkdir(path.join(DEST, 'avatar'), { recursive: true });
+  for (const f of (await readdir(path.join(SRC, 'avatar'))).filter((x) => x.endsWith('-bas-arret.png'))) await copyFile(path.join(SRC, 'avatar', f), path.join(DEST, 'avatar', f));
+}
+// Atlas de la vue jardin (§9.2, format TexturePacker, éventuellement en plusieurs pages) : copié tel quel, validé par
+// Zod au chargement. Les pages d'une livraison précédente sont retirées.
+if (existsSync(path.join(SRC, 'atlas.json'))) {
+  const dir = path.join(DEST, 'atlas');
+  await rm(dir, { recursive: true, force: true });
+  await mkdir(dir, { recursive: true });
+  const main = JSON.parse(await readFile(path.join(SRC, 'atlas.json'), 'utf8')) as { meta: { image: string; related_multi_packs?: string[] } }; // as: format TexturePacker
+  for (const json of ['atlas.json', ...(main.meta.related_multi_packs ?? [])]) {
+    const page = JSON.parse(await readFile(path.join(SRC, json), 'utf8')) as { meta: { image: string } }; // as: format TexturePacker
+    for (const f of [json, page.meta.image]) await copyFile(path.join(SRC, f), path.join(dir, f));
+  }
 }
 const keys = [...icons.keys()].sort();
 await writeFile('src/generated/sprites.ts', `// Généré par \`pnpm assets:sync\` — ne pas modifier à la main.\nexport const SPRITE_ICONS: ReadonlySet<string> = new Set(${JSON.stringify(keys, null, 2)});\n`);

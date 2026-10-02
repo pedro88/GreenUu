@@ -103,7 +103,7 @@ describe('grille du plan (§9.6, §9.7)', () => {
 const BED = '00000000-0000-4000-8000-0000000000be';
 const types = new Map<string, ZoneTypeInfo>([[BED, { id: BED, code: 'bed', label: 'Planche', canHostCultures: true, hasInteriorDefault: false }]]);
 const base: EditorScene = {
-  tileSizeCm: 50, terrain: [],
+  tileSizeCm: 50, terrain: [], decor: [],
   zones: [{ id: '00000000-0000-4000-8000-000000000001', name: 'Potager', typeCode: 'plot', parentId: null, depth: 0, geometry: { v: 1, kind: 'rect', x: 0, y: 0, w: 1000, h: 600 }, hasInterior: false, canHostCultures: true, label: 'Potager' }],
 };
 const create = (id: string, x: number): PlanCommand => planCommandSchema.parse({ op: 'createZone', clientId: `tmp:${id}`, name: id, zoneTypeId: BED, parentId: base.zones[0]?.id, geometry: { v: 1, kind: 'rect', x, y: 100, w: 200, h: 150 } });

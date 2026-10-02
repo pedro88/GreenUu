@@ -45,7 +45,7 @@ Les e-mails envoyés (vérification, invitations, réinitialisation) arrivent da
 | `pnpm test:spec` | Vérifie que chaque critère d'acceptation du lot courant a un test au vert |
 | `pnpm db:generate` / `db:migrate` / `db:seed` / `db:reset` | Migrations Drizzle, seed déterministe, remise à zéro (dev) |
 | `pnpm db:reference` | Charge le référentiel végétal commun (espèces, variétés) ; à lancer aussi en production après les migrations |
-| `pnpm assets:sync` | Copie les assets livrés par la session sprites (hors de ce dépôt) vers `public/sprites` |
+| `pnpm assets:sync [dossier]` | Copie les assets HD livrés par la session sprites (`out_hd/` par défaut, hors de ce dépôt) vers `public/sprites` |
 | `pnpm xp:recompute [--user <id>] [--apply]` | Rejoue l'historique avec le barème d'XP courant (RG-XP-08). Sans `--apply`, rapport des écarts seulement ; avec, lignes de correction ajoutées au journal (append-only) |
 
 ## Worker et tâches planifiées
@@ -77,9 +77,15 @@ La page d'un jardin s'ouvre en vue jardin (PixiJS) ou en vue classique, selon `?
 
 Le domaine (instantané de scène, phase visuelle, commandes du plan) est dans `src/features/scene/`.
 
-- **Assets** : `pnpm assets:sync` copie l'atlas de la session sprites (`out/atlas.json`, `out/atlas.png`) dans `public/sprites/atlas/`. Sans atlas, le moteur dessine des formes de substitution.
+- **Assets** : on utilise les sprites **HD** (`out_hd/` : tuile de 64 px, avatar de 64 × 96 px). `pnpm assets:sync` copie l'atlas et toutes ses pages (`atlas.json`, `atlas-1.json`…, listées par `related_multi_packs`) dans `public/sprites/atlas/`, les objets de déco dans `public/sprites/decor/`, et la frame de face de chaque élément d'avatar dans `public/sprites/avatar/` (les vignettes ne chargent jamais l'atlas). Le moteur affiche les textures à la résolution des assets : la grille logique reste à 32 px. Sans atlas, il dessine des formes de substitution.
+- **Déco** : outil « Déco » de l'éditeur (permission `decor:place`, souvent plus large que `plan:edit`). Un objet verrouillé est refusé côté serveur (`LOCKED_ITEM`). Un objet ★ (hôtel à insectes, nichoir, mare) peut être déclaré comme pratique depuis sa feuille dans la vue jardin.
+- **Avatars** : dans les jardins collectifs, les membres actifs dans les 24 h apparaissent au pied de la zone de leur dernière action.
 - **CSP** : la production interdit `eval`. PixiJS est donc chargé avec `pixi.js/unsafe-eval` (shaders précompilés) ; ne pas retirer cet import.
 - **Éditeur** (`/plan`) : les gestes deviennent des commandes, enregistrées par lots tout ou rien avec contrôle de version. En cas de `CONFLICT`, l'éditeur recharge l'instantané et rejoue les commandes non confirmées.
+
+## Avatar
+
+L'éditeur est sur `/app/profil/avatar` (et en première étape de `/bienvenue`). Le catalogue (éléments, palettes, conditions de déblocage) est défini en code (`src/features/avatar/catalog.ts`) et chargé en base avec le référentiel (`pnpm db:reference`). Les calques HD sont en niveaux de gris réservés (224, 168, 112, 64) et recolorés en Canvas 2D, sans PixiJS ; les vignettes (`AvatarThumb`) sont mises en cache par `configHash` (mémoire et Cache Storage). Le serveur revalide toute la configuration à l'enregistrement.
 
 ## Tests et dates
 

@@ -70,7 +70,7 @@ describe('éditeur de plan (§9.7)', () => {
       // Le client recharge l'instantané et rejoue ses commandes non confirmées.
       const snap = await sceneSnapshot(tx, ctx.scope, { userId: alice.id, sceneZoneId: null, now: NOW });
       const types = new Map<string, ZoneTypeInfo>([[bed, { id: bed, code: 'bed', label: 'Planche', canHostCultures: true, hasInteriorDefault: false }]]);
-      const scene: EditorScene = { tileSizeCm: snap.tileSizeCm, zones: snap.zones, terrain: snap.terrain };
+      const scene: EditorScene = { tileSizeCm: snap.tileSizeCm, zones: snap.zones, terrain: snap.terrain, decor: snap.decor };
       const r = replay(scene, mine, types);
       expect(r.conflicts.map((c) => c.issue)).toEqual(['overlaps_sibling']);
       const b = await applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: snap.planVersion, commands: r.kept });

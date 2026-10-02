@@ -6,9 +6,11 @@ import { seasonBounds } from '../src/features/season/season.pure';
 import type { Db } from '../src/server/db/client';
 import {
   account, consent, garden, gardenEnvironment, gardenGroup, gardenMember, groupMember, practice, practiceDeclaration,
-  season, terrainElement, user, userProfile, zone, zoneGroupPermission, zoneType,
+  decorPlacement, season, terrainElement, user, userProfile, zone, zoneGroupPermission, zoneType,
 } from '../src/server/db/schema';
 import type { Environment, GardenRole, OrgType, TerrainKind } from '../src/lib/enums';
+import { assignDefaultAvatar } from '../src/features/avatar/service';
+import { decorItemRefId } from '../src/features/decor/load';
 import { loadReferenceData } from '../src/features/plant/reference/load';
 import { closeOldSeasons, seedCultures } from './seed-cultures';
 import { seedCommunity, seedOwnResults } from './seed-community';
@@ -127,6 +129,23 @@ const TERRAIN: Record<string, { key: string; kind: TerrainKind; at: [number, num
   canal: [{ key: 'allee', kind: 'path', at: [0, 400, 1300, 100] }, { key: 'portail', kind: 'gate', at: [600, 900, 100, 50] }],
 };
 
+/**
+ * Déco posée (§14, lot 8) : pied de l'objet en centimètres. L'hôtel à insectes des Tilleuls est déclaré comme pratique
+ * (DEC-03) ; le nichoir du Canal ne l'est pas, pour qu'un test puisse le déclarer.
+ */
+const DECOR: Record<string, { key: string; item: string; at: [number, number]; by: string; label?: string; practice?: string }[]> = {
+  tilleuls: [
+    { key: 'hotel', item: 'insect_hotel', at: [1225, 450], by: 'alice', practice: 'biodiversity_insect_hotel' },
+    { key: 'banc', item: 'bench', at: [1450, 650], by: 'alice' },
+    { key: 'epouvantail', item: 'scarecrow', at: [925, 550], by: 'alice' },
+  ],
+  canal: [
+    { key: 'panneau', item: 'sign', at: [650, 950], by: 'bruno', label: 'Jardin du Canal' },
+    { key: 'nichoir', item: 'birdhouse', at: [1250, 350], by: 'chloe' },
+    { key: 'brouette', item: 'wheelbarrow', at: [650, 480], by: 'david' },
+  ],
+};
+
 /** Seed idempotent : identifiants dérivés des noms, `ON CONFLICT DO NOTHING`. */
 export async function seed(db: Db, referenceDate: Date): Promise<void> {
   const passwordHash = await hashPassword(SEED_PASSWORD);
@@ -139,6 +158,7 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
       await tx.insert(userProfile).values({ userId: id, pseudo: u.name, timezone: 'Europe/Brussels' }).onConflictDoNothing();
       await tx.insert(account).values({ id: seedId(`account:${u.key}`), userId: id, accountId: id, providerId: 'credential', password: passwordHash }).onConflictDoNothing();
       await tx.insert(consent).values({ id: seedId(`consent:${u.key}`), userId: id, kind: 'terms', version: 'cgu-2026-10' }).onConflictDoNothing();
+      await assignDefaultAvatar(tx, id);
     }
     const types = new Map((await tx.select({ id: zoneType.id, code: zoneType.code }).from(zoneType).where(sql`${zoneType.gardenId} is null`)).map((t) => [t.code, t.id]));
     const practices = new Map((await tx.select({ id: practice.id, code: practice.code }).from(practice)).map((p) => [p.code, p.id]));
@@ -174,6 +194,12 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
       await insertZones(g.zones, null);
       for (const t of TERRAIN[g.key] ?? []) {
         await tx.insert(terrainElement).values({ id: seedId(`terrain:${g.key}:${t.key}`), gardenId: gid, kind: t.kind, geometry: { v: 1, kind: 'rect', x: t.at[0], y: t.at[1], w: t.at[2], h: t.at[3] } }).onConflictDoNothing();
+      }
+      for (const d of DECOR[g.key] ?? []) {
+        const id = seedId(`decor:${g.key}:${d.key}`);
+        await tx.insert(decorPlacement).values({ id, gardenId: gid, decorItemId: decorItemRefId(d.item), xCm: d.at[0], yCm: d.at[1], label: d.label ?? null, placedBy: userId(d.by) }).onConflictDoNothing();
+        const pid = d.practice ? practices.get(d.practice) : undefined;
+        if (pid) await tx.insert(practiceDeclaration).values({ id: seedId(`practice:${g.key}:decor:${d.key}`), gardenId: gid, practiceId: pid, decorPlacementId: id }).onConflictDoNothing();
       }
       for (const gr of g.groups ?? []) {
         const grId = groupId(g.key, gr.key);

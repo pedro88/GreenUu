@@ -14,10 +14,13 @@ import {
   unique,
   uniqueIndex,
   uuid,
+  type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import type { RectGeometry } from '@/features/zone/tree';
 import { createdAt, id, timestamps, tz } from './_columns';
 import { ENVIRONMENTS, garden, gardenGroup, season } from './garden';
+// Cycle d'import volontaire : la référence est paresseuse (`() => decorPlacement.id`).
+import { decorPlacement } from './scene';
 
 export const zoneType = pgTable(
   'zone_type',
@@ -124,8 +127,8 @@ export const practiceDeclaration = pgTable(
     seasonId: uuid('season_id'),
     details: jsonb('details').$type<Record<string, string | number | boolean>>(),
     excluded: boolean('excluded').notNull().default(false),
-    /** Renseigné au lot 8 quand la pratique est déclarée via un objet de déco */
-    decorPlacementId: uuid('decor_placement_id'),
+    /** Objet de déco à l'origine de la déclaration (DEC-03) ; retirer l'objet sans retirer la pratique la détache. */
+    decorPlacementId: uuid('decor_placement_id').references((): AnyPgColumn => decorPlacement.id, { onDelete: 'set null' }),
     ...timestamps(),
   },
   (t) => [
@@ -140,5 +143,6 @@ export const practiceDeclaration = pgTable(
     index('practice_declaration_garden_zone_idx').on(t.gardenId, t.zoneId),
     index('practice_declaration_practice_idx').on(t.practiceId),
     index('practice_declaration_season_idx').on(t.seasonId),
+    uniqueIndex('practice_declaration_decor_uq').on(t.decorPlacementId).where(sql`${t.decorPlacementId} is not null`),
   ],
 );

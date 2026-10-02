@@ -9,12 +9,57 @@ import type { VisualPhase, VisualState } from '@/features/scene/phase.pure';
  */
 
 const rect = z.object({ x: z.number(), y: z.number(), w: z.number(), h: z.number() });
+/* Les sprites HD (`out_hd/`, SPRITES.md) sont livrés en plusieurs pages ; la première liste les suivantes. */
 export const atlasSchema = z.object({
   frames: z.record(z.string(), z.object({ frame: rect, sourceSize: z.object({ w: z.number(), h: z.number() }).optional(), anchor: z.object({ x: z.number(), y: z.number() }).optional() })),
   animations: z.record(z.string(), z.array(z.string())).optional(),
-  meta: z.object({ image: z.string(), size: z.object({ w: z.number(), h: z.number() }) }),
+  meta: z.object({ image: z.string(), size: z.object({ w: z.number(), h: z.number() }), related_multi_packs: z.array(z.string().regex(/^[\w-]+\.json$/)).optional() }),
 });
 export type Atlas = z.infer<typeof atlasSchema>;
+
+/** Taille logique d'une tuile (§9.2) ; les assets HD la dessinent en 64 px. */
+export const LOGICAL_TILE_PX = 32;
+const REFERENCE_TILE = 'tuiles/herbe-1.png';
+
+/**
+ * Résolution des assets livrés : 2 pour les sprites HD (tuile de référence de 64 px), 1 sinon. Les textures sont
+ * affichées à leur taille logique, donc plus nettes au zoom, sans changer la grille.
+ */
+export function assetResolution(frames: Atlas['frames']): number {
+  const w = frames[REFERENCE_TILE]?.frame.w;
+  return w && w > LOGICAL_TILE_PX ? Math.max(1, Math.round(w / LOGICAL_TILE_PX)) : 1;
+}
+
+export const ATLAS_URL = '/sprites/atlas/atlas.json';
+
+export type AtlasFrame = { page: string; x: number; y: number; w: number; h: number };
+export type LoadedAtlas = { frames: Map<string, AtlasFrame>; pages: string[]; resolution: number; index: PhaseIndex };
+
+/**
+ * Lit l'atlas et toutes ses pages (`related_multi_packs`), validés par Zod. Sans atlas lisible : null, et le moteur
+ * dessine des assets de substitution (§9.2). Partagé par PixiJS et la composition Canvas 2D de l'avatar.
+ */
+export async function fetchAtlas(url = ATLAS_URL): Promise<LoadedAtlas | null> {
+  try {
+    const base = url.replace(/[^/]+$/, '');
+    const read = async (name: string) => {
+      const res = await fetch(base + name);
+      if (!res.ok) return null;
+      const parsed = atlasSchema.safeParse(await res.json());
+      return parsed.success ? parsed.data : null;
+    };
+    const main = await read(url.slice(base.length));
+    if (!main) return null;
+    const rest = await Promise.all((main.meta.related_multi_packs ?? []).map(read));
+    const pages = [main, ...rest.filter((a): a is Atlas => a !== null)];
+    const frames = new Map<string, AtlasFrame>();
+    for (const a of pages) for (const [k, f] of Object.entries(a.frames)) if (!frames.has(k)) frames.set(k, { page: base + a.meta.image, ...f.frame });
+    const all = Object.assign({}, ...pages.map((a) => a.frames)) as Atlas['frames']; // as: union des frames des pages
+    return { frames, pages: pages.map((a) => base + a.meta.image), resolution: assetResolution(all), index: buildPhaseIndex({ frames: all, meta: main.meta }) };
+  } catch {
+    return null;
+  }
+}
 
 /** Mot d'étape des noms de frames (SPRITES.md §1) → phase visuelle générique. */
 const STAGE_WORDS: Record<string, VisualPhase> = {

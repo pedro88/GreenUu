@@ -10,8 +10,8 @@ import type { SceneSnapshot } from '@/features/scene/snapshot.schema';
 
 export const UNDO_LEVELS = 50;
 
-export type Selection = { kind: 'zone' | 'culture'; id: string } | null;
-export type Tool = 'select' | 'zone' | 'terrain' | 'eraser';
+export type Selection = { kind: 'zone' | 'culture' | 'decor' | 'avatar'; id: string } | null;
+export type Tool = 'select' | 'zone' | 'terrain' | 'decor' | 'eraser';
 
 export function createSceneStore(snapshot: SceneSnapshot) {
   return createStore<{ snapshot: SceneSnapshot; setSnapshot: (s: SceneSnapshot) => void }>()((set) => ({ snapshot, setSnapshot: (s) => set({ snapshot: s }) }));

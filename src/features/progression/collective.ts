@@ -5,7 +5,7 @@ import type { GoalMetric } from '@/lib/enums';
 import type { ScopedCtx } from '@/server/action-core';
 import { can, type Scope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
-import { culture, cultureResult, garden, gardenGoal, gardenGroup, gardenMember, groupMember, harvest, journalEntry, ticket, userProfile, xpLedgerEntry } from '@/server/db/schema';
+import { culture, cultureResult, garden, gardenGoal, gardenGroup, gardenMember, groupMember, harvest, journalEntry, ticket, userAchievement, userProfile, xpLedgerEntry } from '@/server/db/schema';
 
 /* Progression collective (SPEC §8.7) : contributions sans rang, classement facultatif, objectifs de groupe. */
 
@@ -90,4 +90,18 @@ export async function goalsOf(tx: Executor, scope: Scope) {
     out.push({ ...g, current: Math.round(current * 10) / 10 });
   }
   return out;
+}
+
+/**
+ * Succès collectifs (PAGES.md §4 `/progression`) : succès obtenus par les membres actifs du jardin, avec le nombre de
+ * membres qui les ont et leurs pseudos (pas de rang). Un succès est personnel et vaut pour tous ses jardins (§8.5).
+ */
+export async function collectiveAchievements(tx: Executor, scope: Scope) {
+  const rows = await tx.select({ code: userAchievement.achievementCode, pseudo: userProfile.pseudo, earnedAt: userAchievement.earnedAt }).from(userAchievement)
+    .innerJoin(gardenMember, and(eq(gardenMember.userId, userAchievement.userId), eq(gardenMember.gardenId, scope.gardenId), isNull(gardenMember.leftAt)))
+    .innerJoin(userProfile, eq(userProfile.userId, userAchievement.userId))
+    .orderBy(asc(userAchievement.earnedAt)).limit(500);
+  const by = new Map<string, string[]>();
+  for (const r of rows) by.set(r.code, [...(by.get(r.code) ?? []), r.pseudo]);
+  return [...by].map(([code, members]) => ({ code, members: [...members].sort() }));
 }

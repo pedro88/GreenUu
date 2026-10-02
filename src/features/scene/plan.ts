@@ -5,13 +5,16 @@ import { can } from '@/server/authz/scope';
 import { garden, terrainElement, zone } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import { zoneCreateSchema } from '../zone/schema';
+import { moveDecor, placeDecor, removeDecor, type FactsLoader } from '../decor/service';
+import { unlockFactsOf } from '../progression/unlock';
+import type { UnlockFacts } from '../progression/unlock.pure';
 import { createZone, setZoneArchived, setZoneGeometry } from '../zone/service';
 import { TMP_PREFIX, type ApplyPlanInput, type PlanCommand } from './plan.schema';
 
 /*
  * `applyPlanCommands` (SPEC §9.7) : un lot de commandes de l'éditeur, appliqué tout ou rien. Les commandes de zone
  * passent par les services de zone (permissions, restrictions de zone, RG-ZON-05, événements) ; le terrain et l'échelle
- * exigent `plan:edit`. Une version de plan différente de `baseVersion` donne `CONFLICT` sans rien appliquer.
+ * exigent `plan:edit`, la déco `decor:place`. Une version de plan différente de `baseVersion` donne `CONFLICT` sans rien appliquer.
  */
 
 export type ApplyPlanResult = { planVersion: number; ids: Record<string, string> };
@@ -37,14 +40,16 @@ export async function applyPlanCommands(ctx: ScopedCtx, input: ApplyPlanInput): 
       if (!id) throw validation({ commands: ['unknownReference'] });
       return id;
     };
-    for (const cmd of input.commands) await applyOne(c, input.sceneZoneId, cmd, ids, resolve);
+    let facts: Promise<UnlockFacts> | null = null;
+    const loadFacts: FactsLoader = () => (facts ??= unlockFactsOf(sp, ctx.actor.id));
+    for (const cmd of input.commands) await applyOne(c, input.sceneZoneId, cmd, ids, resolve, loadFacts);
     const [v] = await sp.update(garden).set({ planVersion: sql`${garden.planVersion} + 1` }).where(eq(garden.id, scope.gardenId)).returning({ v: garden.planVersion });
     await emit(sp, { type: 'garden.plan_saved', subjectType: 'garden', subjectId: scope.gardenId, gardenId: scope.gardenId, actorId: ctx.actor.id, payload: { commands: input.commands.length, planVersion: v?.v ?? 0 } }, ctx.clock.now());
     return { planVersion: v?.v ?? input.baseVersion + 1, ids: Object.fromEntries(ids) };
   });
 }
 
-async function applyOne(c: ScopedCtx, sceneZoneId: string | null, cmd: PlanCommand, ids: Map<string, string>, resolve: (ref: string) => string) {
+async function applyOne(c: ScopedCtx, sceneZoneId: string | null, cmd: PlanCommand, ids: Map<string, string>, resolve: (ref: string) => string, facts: FactsLoader) {
   const { tx, scope } = c;
   switch (cmd.op) {
     case 'createZone': {
@@ -89,6 +94,15 @@ async function applyOne(c: ScopedCtx, sceneZoneId: string | null, cmd: PlanComma
       await tx.update(garden).set({ tileSizeCm: cmd.tileSizeCm }).where(eq(garden.id, scope.gardenId));
       return;
     }
+    case 'placeDecor':
+      ids.set(cmd.clientId, await placeDecor(c, sceneZoneId, cmd, facts));
+      return;
+    case 'moveDecor':
+      await moveDecor(c, sceneZoneId, resolve(cmd.decorId), cmd.x, cmd.y);
+      return;
+    case 'removeDecor':
+      await removeDecor(c, sceneZoneId, resolve(cmd.decorId), cmd.removePractice);
+      return;
   }
 }
 

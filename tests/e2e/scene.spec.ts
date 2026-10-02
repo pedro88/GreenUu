@@ -1,6 +1,6 @@
-import { expect, test, type Page } from '@playwright/test';
-import { cultureOfTicket, placedEntities, zoneAt } from './db';
-import { gardenId, zoneId } from './ids';
+import { devices, expect, test, type Page } from '@playwright/test';
+import { cultureOfTicket, decorAtPosition, placedEntities, practiceDeclarations, zoneAt } from './db';
+import { gardenId, userId, zoneId } from './ids';
 import { login } from './helpers';
 
 const TILLEULS = gardenId('tilleuls');
@@ -197,7 +197,7 @@ test.describe('éditeur de plan', () => {
     await sceneReady(page, 'plan-editor');
     await page.getByTestId('tool-eraser').click();
     const grid = page.getByTestId('plan-grid');
-    // Comme dragTiles : un clic par coordonnées doit viser une case visible, pas sous la barre d'onglets.
+    // La grille doit être à l'écran : sinon le clic tombe sur la navigation fixe du bas (mobile).
     await grid.scrollIntoViewIfNeeded();
     const box = await grid.boundingBox();
     const tile = Number(await grid.getAttribute('data-tile-px'));
@@ -264,12 +264,45 @@ test.describe('éditeur de plan', () => {
     expect(await zoneAt(COMBES, { x: 600, y: 200, w: 100, h: 100 })).not.toBeNull();
   });
 
-  test('[PLN-06] un membre d\'un jardin collectif (édition réservée aux admins) voit les outils désactivés, avec une explication', async ({ page }) => {
+  test('[PLN-06] un membre d\'un jardin collectif (édition réservée aux admins) voit les outils de zone et de terrain désactivés, avec une explication', async ({ page }) => {
     await login(page, 'david');
     await page.goto(`/app/jardins/${CANAL}/plan`);
     await sceneReady(page, 'plan-editor');
     await expect(page.getByTestId('plan-readonly')).toBeVisible();
-    for (const tool of ['tool-zone', 'tool-terrain', 'tool-eraser', 'plan-scale', 'zone-type']) await expect(page.getByTestId(tool), tool).toBeDisabled();
+    for (const tool of ['tool-zone', 'tool-terrain', 'plan-scale', 'zone-type']) await expect(page.getByTestId(tool), tool).toBeDisabled();
+    // La déco a sa propre permission (`decor:place`, membres compris) : l'outil Déco et la gomme (sur la déco) restent actifs.
+    await expect(page.getByTestId('tool-decor')).toBeEnabled();
+    await expect(page.getByTestId('tool-eraser')).toBeEnabled();
     await expect(page.getByTestId('zone-form-dims')).toHaveCount(0);
+  });
+
+  test('un membre sans plan:edit pose un banc avec l\'outil Déco ; la gomme sur un objet déclaré propose de garder la pratique (E2E-DEC-01b)', async ({ page, browser }) => {
+    // Canal : decor_min_role = member, plan_edit_min_role = admin. La tuile (12, 2) est libre, entre les parcelles A et B.
+    await login(page, 'david');
+    await page.goto(`/app/jardins/${CANAL}/plan`);
+    await sceneReady(page, 'plan-editor');
+    const editor = page.getByTestId('plan-editor');
+    const version = Number(await editor.getAttribute('data-plan-version'));
+    await page.getByTestId('tool-decor').click();
+    await page.getByTestId('decor-item-bench').click();
+    await dragTiles(page, { x: 12, y: 2 }, { x: 12, y: 2 });
+    await expect(editor).toHaveAttribute('data-plan-version', String(version + 1));
+    // Pied du banc : bas de la tuile, centré sur son emprise d'une tuile de 50 cm.
+    expect(await decorAtPosition(CANAL, 'bench', 625, 150)).toMatchObject({ placedBy: userId('david') });
+
+    // Tilleuls : l'hôtel à insectes du seed est déclaré comme pratique ; la gomme propose de la garder.
+    const alice = await (await browser.newContext({ ...devices['Pixel 7'] })).newPage();
+    await login(alice, 'alice');
+    await alice.goto(`/app/jardins/${TILLEULS}/plan`);
+    await sceneReady(alice, 'plan-editor');
+    const aliceEditor = alice.getByTestId('plan-editor');
+    const v2 = Number(await aliceEditor.getAttribute('data-plan-version'));
+    await alice.getByTestId('tool-eraser').click();
+    await dragTiles(alice, { x: 24, y: 8 }, { x: 24, y: 8 });
+    await expect(alice.getByRole('dialog')).toContainText('Hôtel à insectes');
+    await alice.getByTestId('decor-remove-keep').click();
+    await expect(aliceEditor).toHaveAttribute('data-plan-version', String(v2 + 1));
+    expect(await decorAtPosition(TILLEULS, 'insect_hotel', 1225, 450)).toBeNull();
+    expect(await practiceDeclarations(TILLEULS, 'biodiversity_insect_hotel')).toEqual([{ decorPlacementId: null }]);
   });
 });
