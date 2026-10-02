@@ -207,3 +207,15 @@ describe('rotations et associations', () => {
       expect(preview.companions).toEqual([expect.objectContaining({ effect: 'unfavorable', speciesName: 'Haricot', zoneName: 'Nord' })]);
     }));
 });
+
+describe('listes bornées', () => {
+  it('[CUL-01] la liste des cultures est paginée et comptée', () =>
+    inTx(async (tx) => {
+      const { alice, gardenId, plancheId, ctx } = await setup(tx);
+      for (let i = 0; i < 3; i++) await plant(tx, alice, gardenId, plancheId, 'laitue', `2026-0${4 + i}-01`);
+      const { countCultures } = await import('../../src/features/culture/service');
+      expect(await listCultures(tx, ctx.scope, {}, { limit: 2 })).toHaveLength(2);
+      expect(await listCultures(tx, ctx.scope, {}, { limit: 2, offset: 2 })).toHaveLength(1);
+      expect(await countCultures(tx, ctx.scope, {})).toBe(3);
+    }));
+});

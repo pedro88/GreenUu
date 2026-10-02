@@ -20,6 +20,8 @@ import type { CultureCreateInput, CultureFilters, CulturePreviewInput, StageReco
 import { cultureArea, deriveStatus, firstDate, occupation, orderWarnings, planStages, stageOrder, stagesFor, type StageRow } from './stages.pure';
 
 export const CULTURE_RESTORE_DAYS = 30;
+/** Délai de retour le plus long du référentiel (solanacées, brassicacées…) : borne de la frise. */
+const MAX_RETURN_YEARS = 4;
 
 type GardenInfo = { timezone: string; seasonStartMonth: number; tileSizeCm: number };
 
@@ -270,8 +272,11 @@ export async function restoreCulture(ctx: ScopedCtx, cultureId: string) {
 
 const cultureLabel = sql<string>`concat_ws(' ', ${species.commonNames}->'fr'->>0, ${variety.name})`;
 
-/** Liste filtrable (saison, zone avec sous-zones, espèce, statut). */
-export async function listCultures(tx: Executor, scope: Scope, f: CultureFilters) {
+export const CULTURE_PAGE_SIZE = 50;
+export const JOURNAL_LIMIT = 100;
+
+/** Liste filtrable (saison, zone avec sous-zones, espèce, statut), bornée (audit M5). */
+export async function listCultures(tx: Executor, scope: Scope, f: CultureFilters, page: { limit?: number; offset?: number } = {}) {
   let zoneIds: string[] | null = null;
   if (f.zone) {
     const z = await findZone(tx, scope, f.zone);
@@ -288,7 +293,34 @@ export async function listCultures(tx: Executor, scope: Scope, f: CultureFilters
       f.season ? eq(season.year, f.season) : undefined, zoneIds ? inArray(culture.zoneId, zoneIds) : undefined,
       f.species ? eq(culture.speciesId, f.species) : undefined, f.status ? eq(culture.status, f.status) : undefined,
     ))
-    .orderBy(desc(season.year), asc(culture.occupiedFrom), asc(zone.name));
+    .orderBy(desc(season.year), asc(culture.occupiedFrom), asc(zone.name), asc(culture.id))
+    .limit(Math.min(page.limit ?? CULTURE_PAGE_SIZE, 500))
+    .offset(page.offset ?? 0);
+}
+
+/** Nombre de cultures correspondant aux filtres (pour « voir plus »). */
+export async function countCultures(tx: Executor, scope: Scope, f: CultureFilters) {
+  let zoneIds: string[] | null = null;
+  if (f.zone) {
+    const z = await findZone(tx, scope, f.zone);
+    zoneIds = [z.id, ...(await findDescendants(tx, scope, z)).map((d) => d.id)];
+  }
+  const [r] = await tx.select({ n: sql<number>`count(*)::int` }).from(culture).innerJoin(season, eq(season.id, culture.seasonId))
+    .where(and(
+      eq(culture.gardenId, scope.gardenId), isNull(culture.deletedAt),
+      f.season ? eq(season.year, f.season) : undefined, zoneIds ? inArray(culture.zoneId, zoneIds) : undefined,
+      f.species ? eq(culture.speciesId, f.species) : undefined, f.status ? eq(culture.status, f.status) : undefined,
+    ));
+  return r?.n ?? 0;
+}
+
+/** Espèces cultivées dans le jardin (options du filtre), sans charger toutes les cultures. */
+export async function cultureSpeciesOptions(tx: Executor, scope: Scope) {
+  return tx.selectDistinct({ id: species.id, label: sql<string>`${species.commonNames}->'fr'->>0` }).from(culture)
+    .innerJoin(species, eq(species.id, culture.speciesId))
+    .where(and(eq(culture.gardenId, scope.gardenId), isNull(culture.deletedAt)))
+    .orderBy(sql`${species.commonNames}->'fr'->>0`)
+    .limit(200);
 }
 
 export type CultureListRow = Awaited<ReturnType<typeof listCultures>>[number];
@@ -301,7 +333,7 @@ export async function cultureDetail(tx: Executor, scope: Scope, cultureId: strin
     .where(and(eq(culture.gardenId, scope.gardenId), eq(culture.id, cultureId))).limit(1);
   if (!row) throw notFound('cultureNotFound');
   const stages = (await tx.select().from(cultureStage).where(eq(cultureStage.cultureId, cultureId))).sort((a, b) => stageOrder(a.stage) - stageOrder(b.stage));
-  const entries = await tx.select().from(journalEntry).where(and(eq(journalEntry.cultureId, cultureId), isNull(journalEntry.deletedAt))).orderBy(desc(journalEntry.observedAt));
+  const entries = await tx.select().from(journalEntry).where(and(eq(journalEntry.cultureId, cultureId), isNull(journalEntry.deletedAt))).orderBy(desc(journalEntry.observedAt)).limit(JOURNAL_LIMIT);
   const photos = entries.length === 0 ? [] : await tx.select({ id: attachment.id, entryId: attachment.journalEntryId, width: attachment.width, height: attachment.height }).from(attachment)
     .where(and(inArray(attachment.journalEntryId, entries.map((e) => e.id)), isNull(attachment.deletedAt)));
   const harvests = await tx.select().from(harvest).where(and(eq(harvest.cultureId, cultureId), isNull(harvest.deletedAt))).orderBy(desc(harvest.harvestedOn));
@@ -358,7 +390,11 @@ export async function seasonGrid(tx: Executor, scope: Scope, lastYear: number, s
   const rows = await tx.select({ id: culture.id, zoneId: culture.zoneId, from: culture.occupiedFrom, to: culture.occupiedTo, seasonYear: season.year, familyCode: botanicalFamily.code, familyId: botanicalFamily.id, returnYears: botanicalFamily.rotationReturnYears, perennial: species.perennial, greenManure: species.greenManure, label: cultureLabel, spriteKey: species.spriteKey })
     .from(culture).innerJoin(species, eq(species.id, culture.speciesId)).innerJoin(botanicalFamily, eq(botanicalFamily.id, species.familyId))
     .leftJoin(variety, eq(variety.id, culture.varietyId)).innerJoin(season, eq(season.id, culture.seasonId))
-    .where(and(eq(culture.gardenId, scope.gardenId), isNull(culture.deletedAt), isNotNull(culture.occupiedFrom)));
+    .where(and(
+      eq(culture.gardenId, scope.gardenId), isNull(culture.deletedAt), isNotNull(culture.occupiedFrom),
+      // Bornée aux saisons affichées (et au délai de retour maximal pour juger des retours précoces).
+      or(isNull(culture.occupiedTo), sql`${culture.occupiedTo} >= ${`${lastYear - span - MAX_RETURN_YEARS}-01-01`}`),
+    ));
   const yearsOf = (r: (typeof rows)[number]) => (r.from ? seasonYearsTouched(r.from, r.to, g.seasonStartMonth) : [r.seasonYear]);
   // Une culture compte pour sa zone, ses ancêtres et ses descendants (même logique que les alertes).
   const zoneChain = new Map(zones.map((z) => [z.id, [...(z.path ? z.path.split('/') : []), z.id]]));

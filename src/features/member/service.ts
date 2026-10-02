@@ -12,6 +12,7 @@ import { invitationMail, memberLeftMail } from '@/server/mail/templates';
 import type { InviteInput } from './schema';
 
 export const INVITATION_TTL_DAYS = 7;
+export const MEMBER_LIST_LIMIT = 1000;
 
 const ROLE_LABELS: Record<Role, string> = { owner: 'propriétaire', admin: 'admin', member: 'membre', observer: 'observateur·rice' };
 
@@ -181,7 +182,9 @@ export async function listMembers(tx: Executor, scope: Scope, now: Date) {
     id: gardenMember.id, userId: gardenMember.userId, role: gardenMember.role, joinedAt: gardenMember.joinedAt, leftAt: gardenMember.leftAt,
     pseudo: userProfile.pseudo, name: user.name,
   }).from(gardenMember).innerJoin(user, eq(user.id, gardenMember.userId)).leftJoin(userProfile, eq(userProfile.userId, user.id))
-    .where(eq(gardenMember.gardenId, scope.gardenId)).orderBy(asc(userProfile.pseudo));
+    .where(eq(gardenMember.gardenId, scope.gardenId)).orderBy(asc(userProfile.pseudo))
+    // Plafond de sécurité : un jardin collectif compte quelques dizaines de membres (audit M5).
+    .limit(MEMBER_LIST_LIMIT);
   const memberships = await tx.select({ memberId: groupMember.memberId, groupId: groupMember.groupId }).from(groupMember)
     .where(eq(groupMember.gardenId, scope.gardenId));
   const invitations = scope.role === 'owner' || scope.role === 'admin'

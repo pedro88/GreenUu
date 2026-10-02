@@ -619,7 +619,9 @@
     "allStatuses": "Tous les statuts",
     "empty": "Aucune culture pour l'instant. Plante ta première culture !",
     "noMatch": "Aucune culture ne correspond aux filtres.",
-    "line": "{zone} · saison {season} · {from} → {to}"
+    "line": "{zone} · saison {season} · {from} → {to}",
+    "shown": "{shown} sur {total} cultures affichées",
+    "showMore": "Voir plus"
   },
   "newCulture": {
     "title": "Nouvelle culture",
