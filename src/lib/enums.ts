@@ -59,3 +59,15 @@ export const REPORT_STATUSES = ['open', 'dismissed', 'actioned'] as const;
 export type GuideVisibility = (typeof GUIDE_VISIBILITIES)[number];
 export type ReportReason = (typeof REPORT_REASONS)[number];
 export type ReportStatus = (typeof REPORT_STATUSES)[number];
+
+/* ---------- Lot 6 : progression ---------- */
+export const XP_REASONS = ['award', 'cap_reached', 'reversal', 'quest', 'recompute'] as const;
+export const QUEST_KINDS = ['daily', 'weekly', 'seasonal'] as const;
+export const QUEST_SOURCES = ['ticket', 'stage', 'result', 'template'] as const;
+export const QUEST_STATUSES = ['open', 'done', 'expired'] as const;
+export const GOAL_METRICS = ['tickets_completed', 'harvest_kg', 'observations', 'results_complete', 'cultures_started'] as const;
+
+export type XpReason = (typeof XP_REASONS)[number];
+export type QuestKind = (typeof QUEST_KINDS)[number];
+export type GoalMetric = (typeof GOAL_METRICS)[number];
+export type Skill = (typeof SKILL_DOMAINS)[number];

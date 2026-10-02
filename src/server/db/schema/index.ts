@@ -7,3 +7,4 @@ export * from './culture';
 export * from './ticket';
 export * from './content';
 export * from './result';
+export * from './progression';

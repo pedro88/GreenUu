@@ -38,6 +38,8 @@ export const userProfile = pgTable('user_profile', {
     .notNull()
     .default('members'),
   deletionRequestedAt: tz('deletion_requested_at'),
+  /** Exclusion volontaire du classement d'un jardin (§8.7). */
+  leaderboardOptOut: boolean('leaderboard_opt_out').notNull().default(false),
   ...timestamps(),
 });
 
