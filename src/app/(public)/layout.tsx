@@ -1,8 +1,8 @@
-import { Sprout } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { LinkButton } from '@/components/ui/Button';
+import { PixelIcon } from '@/components/ui/PlantIcon';
 import styles from './layout.module.scss';
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
@@ -10,7 +10,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <Link href="/" className={styles.brand}><Sprout aria-hidden />{t('brand')}</Link>
+        <Link href="/" className={styles.brand}><PixelIcon name="ui/action-planter" size={32} />{t('brand')}</Link>
         <nav className={styles.nav} aria-label={t('nav')}>
           <Link href="/guides-publics">{t('guides')}</Link>
           <Link href="/connexion">{t('signIn')}</Link>
