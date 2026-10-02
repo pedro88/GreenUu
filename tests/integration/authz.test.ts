@@ -1,24 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
-import '../../src/features/account/actions';
-import '../../src/features/garden/actions';
-import '../../src/features/group/actions';
-import '../../src/features/member/actions';
-import '../../src/features/practice/actions';
-import '../../src/features/zone/actions';
-import '../../src/features/culture/actions';
-import '../../src/features/journal/actions';
-import '../../src/features/harvest/actions';
-import '../../src/features/plant/actions';
-import '../../src/features/ticket/actions';
-import '../../src/features/notification/actions';
-import '../../src/features/guide/actions';
-import '../../src/features/tip/actions';
-import '../../src/features/moderation/actions';
-import '../../src/features/result/actions';
-import '../../src/features/privacy/actions';
-import '../../src/features/progression/actions';
+// Toutes les actions de l'application, sans liste à tenir à jour : une action ajoutée sans entrée d'exemple fait échouer AUTHZ-02.
+import.meta.glob('../../src/features/*/actions.ts', { eager: true });
 import { actionRegistry, runAction, type ActionDeps } from '../../src/server/action-core';
 import { loadScope } from '../../src/server/authz/scope';
 import type { Tx } from '../../src/server/db/client';
@@ -86,6 +70,7 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'result.setSharing': { gardenId, enabled: true },
     'goal.create': { gardenId, title: 'Objectif', metric: 'tickets_completed', target: 10, periodStart: '2026-06-01', periodEnd: '2026-06-30' },
     'leaderboard.toggle': { gardenId, enabled: true },
+    'decor.declarePractice': { gardenId, placementId: id },
     'plan.apply': { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'setScale', tileSizeCm: 25 }] },
   };
 }
@@ -104,6 +89,8 @@ describe('autorisation centralisée', () => {
       const gardenId = await makeGarden(tx, alice);
       const bound = [...actionRegistry.values()].filter((d) => d.permission !== undefined);
       expect(bound.length).toBeGreaterThan(15);
+      // Les modules chargés par import.meta.glob sont bien dans le registre (lots 7 et 8 compris).
+      expect(bound.map((d) => d.name)).toEqual(expect.arrayContaining(['plan.apply', 'decor.declarePractice']));
       const inputs = samples(gardenId);
       for (const def of bound) {
         const input = inputs[def.name];
