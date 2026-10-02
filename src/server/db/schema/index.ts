@@ -5,3 +5,4 @@ export * from './event';
 export * from './plant';
 export * from './culture';
 export * from './ticket';
+export * from './content';

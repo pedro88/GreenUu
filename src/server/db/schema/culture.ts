@@ -1,8 +1,9 @@
 import { sql } from 'drizzle-orm';
-import { boolean, check, date, foreignKey, index, integer, jsonb, numeric, pgTable, smallint, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { type AnyPgColumn, boolean, check, date, foreignKey, index, integer, jsonb, numeric, pgTable, smallint, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { CULTURE_STATUSES, HARVEST_UNITS, INTERVENTIONS, JOURNAL_KINDS, METHODS, SEED_SOURCES, STAGES } from '@/lib/enums';
 import { createdAt, id, timestamps, tz } from './_columns';
 import { user } from './auth';
+import { guideVersion } from './content';
 import { garden, season } from './garden';
 import { problem, species, variety } from './plant';
 import { zone } from './zone';
@@ -25,8 +26,8 @@ export const culture = pgTable(
     seedSource: text('seed_source', { enum: SEED_SOURCES }).notNull().default('unknown'),
     seedParentCultureId: uuid('seed_parent_culture_id'),
     rotationOverride: boolean('rotation_override').notNull().default(false),
-    /** Renseigné au lot 4 (application d'un guide). */
-    appliedGuideVersionId: uuid('applied_guide_version_id'),
+    /** Dernière version de guide appliquée (RG-GUI-05). */
+    appliedGuideVersionId: uuid('applied_guide_version_id').references((): AnyPgColumn => guideVersion.id, { onDelete: 'set null' }),
     notes: text('notes'),
     createdBy: uuid('created_by').notNull().references(() => user.id),
     occupiedFrom: date('occupied_from', { mode: 'string' }),

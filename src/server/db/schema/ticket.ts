@@ -3,6 +3,7 @@ import { boolean, check, date, foreignKey, index, integer, jsonb, pgTable, prima
 import { ACTION_TAGS, NOTIFICATION_CHANNELS, NOTIFICATION_TYPES, TICKET_PRIORITIES, TICKET_SOURCES, TICKET_STATUSES, TICKET_TYPES } from '@/lib/enums';
 import { createdAt, id, timestamps, tz } from './_columns';
 import { user } from './auth';
+import { guideVersion } from './content';
 import { culture, cultureStage } from './culture';
 import { garden, gardenGroup, gardenMember } from './garden';
 import { zone } from './zone';
@@ -72,7 +73,7 @@ export const ticket = pgTable(
     /** Occurrence modifiée seule : la série ne la touche plus (RG-TCK-09). */
     detached: boolean('detached').notNull().default(false),
     sourceStageId: uuid('source_stage_id').references(() => cultureStage.id, { onDelete: 'set null' }),
-    sourceGuideVersionId: uuid('source_guide_version_id'),
+    sourceGuideVersionId: uuid('source_guide_version_id').references(() => guideVersion.id, { onDelete: 'set null' }),
     createdBy: uuid('created_by').notNull().references(() => user.id),
     completedAt: tz('completed_at'),
     completedBy: uuid('completed_by').references(() => user.id),
