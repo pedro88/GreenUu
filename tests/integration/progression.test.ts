@@ -5,11 +5,12 @@ import { recordHarvest } from '../../src/features/harvest/service';
 import { exportEntries } from '../../src/features/privacy/service';
 import { createGoal, goalsOf, leaderboard, setLeaderboard, setLeaderboardOptOut } from '../../src/features/progression/collective';
 import { generateQuests } from '../../src/features/progression/quests';
-import { progressOf, recomputeXp, xpForSubject } from '../../src/features/progression/service';
+import { enrich, progressOf, recomputeXp, xpForSubject } from '../../src/features/progression/service';
 import { createTicket, transitionTicket } from '../../src/features/ticket/commands';
 import { fixedClock } from '../../src/server/clock';
 import type { Tx } from '../../src/server/db/client';
-import { domainEvent, notification, quest, species, userAchievement, xpLedgerEntry } from '../../src/server/db/schema';
+import type { EmittedEvent } from '../../src/server/events/emit';
+import { domainEvent, notification, quest, species, user, userAchievement, userProfile, xpLedgerEntry } from '../../src/server/db/schema';
 import type { Actor } from '../../src/server/action-core';
 import { addMember, makeGarden, makeGroup, makeZone, speciesRefId } from './fixtures';
 import { memoryStorage } from './files';
@@ -216,3 +217,48 @@ describe('progression collective', () => {
     }));
 });
 
+
+describe('bascules de dates (E2E-AUDIT lot 6, D2 à D5)', () => {
+  it('[XP-04] le jour des plafonds est celui du fuseau de l\'utilisateur : 23:30 à New York compte encore pour la veille', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      await tx.update(userProfile).set({ timezone: 'America/New_York' }).where(eq(userProfile.userId, alice.id));
+      const { gardenId, cultureId } = await gardenWithCulture(tx, alice);
+      // 10 récoltes le 14 octobre à 11:00 à New York, puis une 11e à 23:30 le même jour local (le 15 en UTC).
+      for (let i = 0; i < 10; i += 1) {
+        await recordHarvest(await scopedCtx(tx, alice, gardenId, { clock: fixedClock(new Date('2026-10-14T15:00:00Z')) }), { gardenId, cultureId, quantity: 1, unit: 'kg', seedSaving: false });
+      }
+      const late = await recordHarvest(await scopedCtx(tx, alice, gardenId, { clock: fixedClock(new Date('2026-10-15T03:30:00Z')) }), { gardenId, cultureId, quantity: 1, unit: 'kg', seedSaving: false });
+      const [row] = await tx.select().from(xpLedgerEntry).where(eq(xpLedgerEntry.subjectId, late.harvestId));
+      expect(row).toMatchObject({ reason: 'cap_reached', amount: 0, localDay: '2026-10-14' });
+    }));
+
+  it('[XP-09] un votant n\'est éligible qu\'au-delà de 7 jours d\'ancienneté exactement', () =>
+    inTx(async (tx) => {
+      const author = await makeUser(tx);
+      const voter = await makeUser(tx);
+      const created = new Date('2026-10-01T10:00:00Z');
+      await tx.update(user).set({ createdAt: created }).where(eq(user.id, voter.id));
+      const DAY = 86_400_000;
+      const at = async (ms: number) => {
+        const e: EmittedEvent = { id: crypto.randomUUID(), type: 'tip.voted', actorId: voter.id, gardenId: null, subjectType: 'tip', subjectId: crypto.randomUUID(), payload: { authorId: author.id, value: 1, previous: 0 }, occurredAt: new Date(created.getTime() + ms), dispatchedAt: null, createdAt: new Date(created.getTime() + ms) };
+        return (await enrich(tx, e)).ctx.actorEligible;
+      };
+      expect(await at(7 * DAY - 1)).toBe(false);
+      expect(await at(7 * DAY)).toBe(false);
+      expect(await at(7 * DAY + 1)).toBe(true);
+    }));
+
+  it('[QST-03] l\'heure doublée du 25 octobre (02:02 deux fois à Bruxelles) ne crée qu\'une quête par tâche', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      await tx.update(userProfile).set({ timezone: 'Europe/Brussels' }).where(eq(userProfile.userId, alice.id));
+      const gardenId = await makeGarden(tx, alice);
+      const ctx = await scopedCtx(tx, alice, gardenId);
+      await createTicket(ctx, { gardenId, type: 'task', title: 'Rentrer les potirons', priority: 'normal', checklist: [], memberIds: [], groupIds: [], dueOn: '2026-10-25' });
+      await generateQuests(tx, alice.id, new Date('2026-10-25T00:02:00Z'));
+      await generateQuests(tx, alice.id, new Date('2026-10-25T01:02:00Z'));
+      const rows = await tx.select().from(quest).where(and(eq(quest.userId, alice.id), eq(quest.kind, 'daily')));
+      expect(rows.map((r) => r.periodStart)).toEqual(['2026-10-25']);
+    }));
+});

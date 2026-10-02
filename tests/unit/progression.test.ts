@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate, rotationStreak } from '@/features/progression/achievements.pure';
-import { astronomicalSeason, pickDaily, seasonalTemplates, type TaskCandidate } from '@/features/progression/quests.pure';
+import { astronomicalSeason, pickDaily, seasonalTemplates, type TaskCandidate, weekBounds } from '@/features/progression/quests.pure';
 import { applyRules, candidatesFor, emptyHistory, levelOf, project, reversalsFor, score, type XpEvent } from '@/features/progression/rules.pure';
 
 const AT = new Date('2026-06-17T10:00:00Z');
@@ -177,5 +177,13 @@ describe('succès et quêtes', () => {
   it('[QST-05] sans tâche ni étape à venir : aucune quête quotidienne ni hebdomadaire ; pas de modèle sans zone concernée', () => {
     expect(pickDaily([], '2026-06-17')).toEqual([]);
     expect(seasonalTemplates('autumn', { beds: false, cultures: false })).toEqual([]);
+  });
+});
+
+describe('bornes de semaine (D3, audit e2e du lot 6)', () => {
+  it('[QST-01] le vendredi 1er janvier 2027 (semaine ISO 53 de 2026) appartient à la semaine du lundi 28 décembre au dimanche 3 janvier', () => {
+    expect(weekBounds('2027-01-01')).toEqual({ start: '2026-12-28', end: '2027-01-03' });
+    expect(weekBounds('2026-12-28')).toEqual({ start: '2026-12-28', end: '2027-01-03' });
+    expect(weekBounds('2027-01-04')).toEqual({ start: '2027-01-04', end: '2027-01-10' });
   });
 });
