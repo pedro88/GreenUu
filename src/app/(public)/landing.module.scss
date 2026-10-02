@@ -1,0 +1,123 @@
+@use "../../styles/mixins" as *;
+
+.landing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.hero {
+  display: grid;
+  gap: var(--space-6);
+  align-items: center;
+
+  @include from($bp-md) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.pitch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+    line-height: 1.1;
+
+    @include from($bp-md) {
+      font-size: 3.25rem;
+    }
+  }
+
+  p {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+// Fenêtre façon navigateur qui encadre l'illustration (maquette landing).
+.window {
+  border: 3px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.chrome {
+  display: flex;
+  gap: 6px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-primary);
+
+  i {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-honey);
+  }
+}
+
+.garden {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--color-leaf);
+  background-image: radial-gradient(var(--color-leaf-soft) 1px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+
+.bed {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-2);
+  border: 4px solid var(--color-earth-hover);
+  border-radius: var(--radius-sm);
+  background: var(--color-earth);
+
+  > span {
+    background: transparent;
+  }
+}
+
+.features {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  list-style: none;
+
+  @include from($bp-md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.featureIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}

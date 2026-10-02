@@ -7,7 +7,11 @@
     "brand": "GreenU",
     "terms": "Conditions d'utilisation",
     "privacy": "Confidentialité",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "nav": "Navigation du site",
+    "guides": "Guides",
+    "signIn": "Connexion",
+    "signUp": "Commencer gratuitement"
   },
   "home": {
     "title": "Ton jardin, saison après saison",

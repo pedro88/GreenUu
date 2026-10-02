@@ -7,10 +7,47 @@
 }
 
 .header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
   padding: var(--space-3) var(--space-4);
 }
 
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+
+  > a:not(.cta) {
+    display: none;
+    color: var(--color-text);
+    font-weight: 500;
+    text-decoration: none;
+
+    @include from($bp-md) {
+      display: inline;
+    }
+  }
+}
+
+.cta {
+  display: none;
+  min-height: 2.5rem;
+
+  @include from($bp-md) {
+    display: inline-flex;
+  }
+}
+
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: 800;
   font-size: var(--font-size-lg);
   color: var(--color-primary);
