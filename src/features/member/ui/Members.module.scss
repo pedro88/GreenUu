@@ -2,22 +2,25 @@
 
 .tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  gap: 0 var(--space-5);
+  overflow-x: auto;
+  border-bottom: 1.5px solid var(--color-border);
 
   a {
     @include touch-target;
 
     display: inline-flex;
     align-items: center;
-    color: var(--color-text);
-    font-weight: 600;
+    color: var(--color-text-muted);
+    font-weight: 500;
     text-decoration: none;
+    white-space: nowrap;
     border-bottom: 3px solid transparent;
   }
 
   a[aria-current="page"] {
+    color: var(--color-text);
+    font-weight: 700;
     border-bottom-color: var(--color-honey);
   }
 }
@@ -34,16 +37,20 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2) var(--space-3);
   min-height: var(--touch-primary);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .avatar {
   display: grid;
   place-items: center;
+  flex: none;
   width: 3rem;
   height: 3rem;
   border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
   background: var(--color-honey-soft);
   font-weight: 800;
   text-transform: uppercase;
@@ -57,7 +64,12 @@
   margin-left: auto;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
+
+  select {
+    width: auto;
+  }
 }
 
 .groupGrid {
