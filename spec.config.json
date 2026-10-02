@@ -1,5 +1,5 @@
 {
-  "currentLot": 3,
+  "currentLot": 4,
   "transverseByLot": {
     "1": ["A11Y-01", "A11Y-02", "I18N-01", "I18N-02", "ENV-01"],
     "5": ["PRV-07", "PRV-08", "PRV-09"],
