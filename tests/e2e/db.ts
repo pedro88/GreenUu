@@ -73,3 +73,35 @@ export async function hideGuide(title: string): Promise<void> {
     await sql.end();
   }
 }
+
+/**
+ * Vue jardin (MAP-02) : zones placées de la scène extérieure et cultures en cours qui y sont placées (leur zone ou un
+ * ancêtre a une géométrie), lues en base au moment du test.
+ */
+export async function placedEntities(gardenId: string): Promise<{ zones: string[]; cultures: string[] }> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const zones = await sql<{ id: string }[]>`select id from zone where garden_id = ${gardenId} and archived_at is null and scene_zone_id is null and geometry is not null`;
+    const cultures = await sql<{ id: string }[]>`
+      select c.id from culture c join zone z on z.id = c.zone_id
+      where c.garden_id = ${gardenId} and c.deleted_at is null and c.status = 'active' and z.scene_zone_id is null and z.archived_at is null
+        and exists (select 1 from zone a where a.garden_id = z.garden_id and a.geometry is not null and (a.id = z.id or a.id::text = any (string_to_array(z.path, '/'))))`;
+    return { zones: zones.map((r) => r.id), cultures: cultures.map((r) => r.id) };
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Zone non archivée d'un jardin à une géométrie donnée (PLN-01, PLN-02). */
+export async function zoneAt(gardenId: string, g: { x: number; y: number; w: number; h: number }) {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ id: string; name: string; type: string; parent: string | null; geometry: unknown }[]>`
+      select z.id, z.name, t.code as type, p.name as parent, z.geometry from zone z join zone_type t on t.id = z.zone_type_id left join zone p on p.id = z.parent_id
+      where z.garden_id = ${gardenId} and z.archived_at is null and (z.geometry->>'x')::int = ${g.x} and (z.geometry->>'y')::int = ${g.y}
+        and (z.geometry->>'w')::int = ${g.w} and (z.geometry->>'h')::int = ${g.h} limit 1`;
+    return row ?? null;
+  } finally {
+    await sql.end();
+  }
+}

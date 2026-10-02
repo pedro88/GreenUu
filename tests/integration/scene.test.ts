@@ -93,7 +93,7 @@ describe('éditeur de plan (§9.7)', () => {
       expect(row?.archivedAt).not.toBeNull();
     }));
 
-  it('terrain et échelle exigent plan:edit ; un membre d\'un jardin collectif est refusé', () =>
+  it('[PLN-06] terrain et échelle exigent plan:edit : l\'appel direct d\'un membre d\'un jardin collectif renvoie FORBIDDEN', () =>
     inTx(async (tx) => {
       const bruno = await makeUser(tx);
       const david = await makeUser(tx);

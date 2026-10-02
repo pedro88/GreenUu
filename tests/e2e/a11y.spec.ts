@@ -17,6 +17,7 @@ const APP = [
   '/app/guides', '/app/guides/nouveau', '/app/tips', '/app/jardiniers/alice',
   `/app/jardins/${gardenId('canal')}/recommandations`, '/app/parametres/confidentialite',
   '/app/profil', '/app/profil/xp', '/app/profil/succes', '/app/profil/quetes', `/app/jardins/${gardenId('canal')}/membres?onglet=contributions`,
+  `/app/jardins/${gardenId('canal')}?vue=classique`, `/app/jardins/${gardenId('canal')}/plan`, `/app/jardins/${gardenId('canal')}?vue=jardin&scene=${zoneId('canal', 'serre')}`, '/app/parametres/affichage',
 ];
 
 async function audit(page: Page, path: string) {
@@ -32,6 +33,8 @@ test.describe('accessibilité', () => {
   });
 
   test('[A11Y-01] pages applicatives sans violation sérieuse (axe)', async ({ page }) => {
+    // Une quarantaine de pages, compilées à la première visite en dev : le délai par défaut ne suffit plus.
+    test.setTimeout(180_000);
     await login(page, 'bruno');
     for (const p of APP) await audit(page, p);
   });
