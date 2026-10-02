@@ -88,6 +88,11 @@
   border-radius: var(--radius-md);
   background: var(--color-surface-muted);
   color: var(--color-earth);
+
+  img {
+    width: 60%;
+    height: 80%;
+  }
 }
 
 .check {

@@ -59,6 +59,7 @@
 }
 
 .dot {
+  position: relative;
   display: grid;
   place-items: center;
   width: 3rem;
@@ -69,10 +70,33 @@
   color: var(--color-text-muted);
 }
 
+.dot img {
+  opacity: 0.45;
+}
+
 .done .dot {
   border: 0;
   background: var(--color-primary);
   color: var(--color-primary-contrast);
+}
+
+.done .dot img,
+.current .dot img {
+  opacity: 1;
+}
+
+.doneMark {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--radius-full);
+  background: var(--color-leaf);
+  color: var(--color-earth-contrast);
+  border: 2px solid var(--color-bg);
 }
 
 .current .dot {

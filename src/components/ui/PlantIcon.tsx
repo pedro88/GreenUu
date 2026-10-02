@@ -12,7 +12,7 @@ export function PlantIcon({ spriteKey, familySprite, size = 48 }: { spriteKey: s
   );
 }
 
-/** Icône d'interface pixel art (16 px, affichée à l'échelle entière). */
-export function PixelIcon({ name, size = 32 }: { name: string; size?: 16 | 32 | 48 }) {
-  return <img src={`/sprites/${name}.png`} alt="" aria-hidden width={size} height={size} style={{ imageRendering: 'pixelated' }} />;
+/** Icône d'interface pixel art (sprites HD de 48 px), proportions conservées. */
+export function PixelIcon({ name, size = 32 }: { name: string; size?: 16 | 24 | 32 | 48 | 64 }) {
+  return <img src={`/sprites/${name}.png`} alt="" aria-hidden width={size} height={size} style={{ objectFit: 'contain', imageRendering: size >= 48 ? 'pixelated' : 'auto' }} />;
 }

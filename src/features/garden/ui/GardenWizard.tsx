@@ -1,10 +1,11 @@
 'use client';
 
 import { tDynamic } from '@/i18n/dynamic';
-import { ArrowLeft, Check, GraduationCap, Landmark, LocateFixed, Tractor, User, Users, UsersRound } from 'lucide-react';
+import { ArrowLeft, Check, LocateFixed } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useState, type ComponentType } from 'react';
+import { useState } from 'react';
+import { PixelIcon } from '@/components/ui/PlantIcon';
 import { Button } from '@/components/ui/Button';
 import { ChipGroup, Field, NativeSelect, TextInput } from '@/components/ui/Field';
 import { FormError } from '@/components/ui/FormError';
@@ -19,8 +20,9 @@ import styles from './GardenWizard.module.scss';
 type OrgType = (typeof ORG_TYPES)[number];
 type Env = (typeof ENVIRONMENTS)[number];
 
-const ORG_ICONS: Record<OrgType, ComponentType<{ size?: number }>> = {
-  individual: User, family: Users, collective: UsersRound, association: Landmark, professional: Tractor, educational: GraduationCap,
+/** Illustrations pixel art des types de jardin (sprites HD, cf. scripts/nav-icons.py). */
+const ORG_ART: Record<OrgType, string> = {
+  individual: 'nav/profil', family: 'ui/groupe', collective: 'ui/competence-potager', association: 'art/table-chaises', professional: 'art/tracteur', educational: 'nav/savoirs',
 };
 
 type WizardValues = {
@@ -99,11 +101,10 @@ export function GardenWizard({ practices }: { practices: { code: string }[] }) {
           <h1 className={styles.title}>{t('typeTitle')}</h1>
           <div className={styles.typeGrid} role="radiogroup" aria-label={t('typeTitle')}>
             {ORG_TYPES.map((o) => {
-              const Icon = ORG_ICONS[o];
               return (
                 <label key={o} className={styles.typeCard} data-testid={`org-${o}`}>
                   <input type="radio" name="orgType" value={o} checked={v.orgType === o} onChange={() => set('orgType', o)} />
-                  <span className={styles.typeArt} aria-hidden><Icon size={44} /></span>
+                  <span className={styles.typeArt} aria-hidden><PixelIcon name={ORG_ART[o]} size={64} /></span>
                   {to(o)}
                   {v.orgType === o ? <span className={styles.check} aria-hidden><Check size={18} /></span> : null}
                 </label>

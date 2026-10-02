@@ -12,11 +12,16 @@
 .art {
   display: grid;
   place-items: center;
-  width: 9rem;
-  height: 9rem;
+  width: 12rem;
+  height: 12rem;
   border-radius: var(--radius-lg);
   background: var(--color-surface-muted);
   color: var(--color-earth);
+
+  img {
+    width: 75%;
+    height: 75%;
+  }
 }
 
 .actions {

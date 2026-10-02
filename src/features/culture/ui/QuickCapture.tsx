@@ -77,7 +77,7 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
   const actions = asActions ? (
     <div className={actionsClassName} role="group" aria-label={t('modes')}>
       {MODES.map(([m, icon]) => (
-        <Button key={m} variant="secondary" onClick={() => openIn(m)} data-testid={`sheet-${m}`}><PixelIcon name={icon} size={16} /> {t(m)}</Button>
+        <Button key={m} variant="secondary" onClick={() => openIn(m)} data-testid={`sheet-${m}`}><PixelIcon name={icon} size={24} /> {t(m)}</Button>
       ))}
     </div>
   ) : null;
@@ -91,7 +91,7 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
         <div className={styles.tiles} role="group" aria-label={t('modes')}>
           {MODES.map(([m, icon]) => (
             <button key={m} type="button" className={styles.tile} aria-pressed={mode === m} onClick={() => { setMode(m); setDone(null); if (m === 'photo') fileInput.current?.click(); }} data-testid={`quick-${m}`}>
-              <span className={styles.tileIcon}><PixelIcon name={icon} size={32} /></span>
+              <span className={styles.tileIcon}><PixelIcon name={icon} size={48} /></span>
               {t(m)}
             </button>
           ))}
