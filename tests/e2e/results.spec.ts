@@ -121,3 +121,32 @@ test.describe('suppression du compte', () => {
     await expect(other).toHaveURL(/\/app/);
   });
 });
+
+test.describe('partage anonymisé', () => {
+  test('[PRV-02] texte de consentement avant activation pour l\'owner, aucun bouton pour l\'admin, bandeau pour les membres', async ({ page, browser }) => {
+    const settings = `/app/jardins/${CANAL}/parametres`;
+    const chloe = await (await browser.newContext()).newPage();
+    await login(chloe, 'chloe');
+    await chloe.goto(settings);
+    await expect(chloe.getByText('Seul·e le ou la propriétaire décide du partage.')).toBeVisible();
+    await expect(chloe.getByTestId('share-toggle')).toHaveCount(0);
+
+    const emma = await (await browser.newContext()).newPage();
+    await login(emma, 'emma');
+    await emma.goto(`/app/jardins/${CANAL}`);
+    await expect(emma.getByTestId('share-banner')).toHaveCount(0);
+
+    await login(page, 'bruno');
+    await page.goto(settings);
+    await expect(page.getByTestId('share-consent-text')).toContainText('Jamais ton nom');
+    await page.getByTestId('share-toggle').click();
+    await expect(page.getByTestId('share-state')).toHaveText('Le partage est actif.');
+    await emma.reload();
+    await expect(emma.getByTestId('share-banner')).toBeVisible();
+    // Révocation : retour à l'état du seed.
+    await page.getByTestId('share-toggle').click();
+    await expect(page.getByTestId('share-state')).toHaveText('Le partage est désactivé.');
+    await emma.reload();
+    await expect(emma.getByTestId('share-banner')).toHaveCount(0);
+  });
+});
