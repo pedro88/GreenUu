@@ -1328,6 +1328,7 @@ Chaque règle a un identifiant `RG-<DOMAINE>-nn`, repris par les critères d'acc
 - **RG-MOD-01** Signalement : motif (spam, inexact ou dangereux, inapproprié, droits d'auteur, autre) et détail optionnel. Un seul signalement par utilisateur et par contenu. On ne signale pas son propre contenu ; on ne signale qu'un contenu qu'on peut lire.
 - **RG-MOD-02** Un contenu qui reçoit 3 signalements ouverts d'utilisateurs distincts est **masqué automatiquement** en attendant la décision de la modération. L'auteur en est notifié.
 - **RG-MOD-03** Décisions de modération : `dismissed` (le contenu est réaffiché) ou `actioned` (le contenu reste masqué, l'auteur est notifié avec le motif). Les décisions sont tracées.
+- **RG-MOD-04** Plafonds horaires par utilisateur (anti-spam) : 10 tips, 5 guides ou forks, 120 votes, 20 signalements ; au-delà, `RATE_LIMITED`. Le seuil de masquage automatique (RG-MOD-02) compte pour l'instant tous les comptes vérifiés ; le restreindre aux comptes de plus de 7 jours est en attente de décision.
 
 ### 6.10 Bilans et partage (RES)
 
