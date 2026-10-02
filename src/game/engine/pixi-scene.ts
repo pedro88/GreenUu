@@ -14,6 +14,15 @@ import { atlasSchema, buildPhaseIndex, grassFrame, resolvePlantFrame, STATE_FRAM
 
 TextureStyle.defaultOptions.scaleMode = 'nearest';
 
+/**
+ * Vide un calque en détruisant ses objets (géométries GPU comprises) : `removeChildren()` seul les détache sans les
+ * libérer, et la scène est reconstruite à chaque instantané et à chaque geste de l'éditeur (audit lot 7, M2). Les
+ * textures de l'atlas sont partagées : on ne les détruit pas.
+ */
+function clearLayer(layer: Container) {
+  for (const child of layer.removeChildren()) child.destroy({ children: true, texture: false, textureSource: false });
+}
+
 export const ATLAS_URL = '/sprites/atlas/atlas.json';
 
 type Atlas = { index: PhaseIndex; textures: Map<string, Texture> } | null;
@@ -96,7 +105,7 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   const px = (cm: number) => cm * scale;
 
   function drawGround(s: SceneSnapshot) {
-    ground.removeChildren();
+    clearLayer(ground);
     const w = px(s.bounds.w);
     const h = px(s.bounds.h);
     const grass = s.sceneZoneId ? tex('tuiles/sol-serre-carrelage-1.png') : tex(grassFrame(s.ambient.season, 1));
@@ -108,7 +117,7 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   }
 
   function drawZones(s: SceneSnapshot) {
-    zoneLayer.removeChildren();
+    clearLayer(zoneLayer);
     for (const z of [...s.zones].sort((a, b) => a.depth - b.depth)) {
       if (!z.geometry) continue;
       const { x, y, w, h } = z.geometry;
@@ -122,7 +131,7 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   }
 
   function drawTerrain(s: SceneSnapshot) {
-    terrainLayer.removeChildren();
+    clearLayer(terrainLayer);
     for (const t of s.terrain) {
       const { x, y, w, h } = t.geometry;
       const frame = tex(TERRAIN_FRAMES[t.kind]);
@@ -145,8 +154,8 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   }
 
   function drawPlants(s: SceneSnapshot) {
-    plantLayer.removeChildren();
-    bubbleLayer.removeChildren();
+    clearLayer(plantLayer);
+    clearLayer(bubbleLayer);
     plants.length = 0;
     for (const c of s.cultures) {
       if (!c.position) continue;
