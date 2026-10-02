@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { adjust, adjustedWindow, capPerGarden, confidenceOf, partitionOwn, scoreGroup, similarity, smoothedScore, type Fact } from '@/features/reco/score.pure';
 import { completeness, yieldKgM2 } from '@/features/result/rules.pure';
+import { periodRange } from '@/features/reco/view';
 
 const ctx = { koppen: 'Cfb', environment: 'open_air' as const, geohash4: 'u0hq', altitudeM: 100, soilType: 'loam', soilPh: 6.5, hardinessZone: '8a', practices: ['organic'] };
 let seq = 0;
@@ -75,5 +76,13 @@ describe('moteur de recommandation', () => {
     const { community, own } = partitionOwn(facts, 'MOI');
     expect(community.map((f) => f.gardenPseudo)).toEqual(['X']);
     expect(own).toHaveLength(2);
+  });
+});
+
+describe('périodes de « Que planter ? » (délégation D5)', () => {
+  it('[RCO-04] l\'hiver 2027 se termine le 29 février 2028 (année bissextile), le printemps commence le 1er mars', () => {
+    expect(periodRange('winter', 2027).to.toISOString().slice(0, 10)).toBe('2028-02-29');
+    expect(periodRange('winter', 2026).to.toISOString().slice(0, 10)).toBe('2027-02-28');
+    expect(periodRange('spring', 2028).from.toISOString().slice(0, 10)).toBe('2028-03-01');
   });
 });

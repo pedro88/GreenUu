@@ -273,3 +273,25 @@ describe('alertes groupées du moteur (audit lot 5, M2)', () => {
       expect(batch.get(`${speciesRefId('tomate')}|bought_plants`)?.rotation).toBe(true);
     }));
 });
+
+describe('bornes de date du RGPD (délégations D1 et D3)', () => {
+  const DAY = 86_400_000;
+  it('[PRV-09] le rétablissement est accepté à J+30 − 1 ms et refusé à J+30 + 1 ms', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const jobs = recordingQueue();
+      await requestDeletion(ctxFor(tx, alice, { jobs }), { confirmTransferToMember: false });
+      const token = jobs.jobs[0]?.data.text.match(/\/retablissement\/(\S+)/)?.[1] ?? '';
+      await expect(restoreAccount(tx, token, new Date(NOW.getTime() + 30 * DAY + 1))).rejects.toMatchObject({ code: 'NOT_FOUND' });
+      await expect(restoreAccount(tx, token, new Date(NOW.getTime() + 30 * DAY - 1))).resolves.toMatchObject({ userId: alice.id });
+    }));
+
+  it('[PRV-07] un export par 24 heures : refusé à 24 h − 1 ms, accepté à 24 h', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const at = (ms: number) => ctxFor(tx, alice, { clock: fixedClock(new Date(NOW.getTime() + ms)) });
+      await requestExport(at(0));
+      await expect(requestExport(at(DAY - 1))).rejects.toMatchObject({ code: 'RATE_LIMITED' });
+      await expect(requestExport(at(DAY))).resolves.toMatchObject({ exportId: expect.any(String) });
+    }));
+});
