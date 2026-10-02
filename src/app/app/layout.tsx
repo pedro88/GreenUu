@@ -20,15 +20,16 @@ function NotificationBell({ count, label }: { count: number; label: string }) {
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const u = await requireUser();
   const t = await getTranslations('nav');
+  const unread = await unreadCount(db(), u.id);
   return (
     <div className={styles.shell}>
       <a href="#contenu" className={styles.skip}>{t('skip')}</a>
       <header className={styles.topbar}>
         <Link href="/app" className={styles.brand}><Sprout aria-hidden />{t('brand')}</Link>
         <AppNav variant="top" />
-        <NotificationBell count={await unreadCount(db(), u.id)} label={t('notifications')} />
+        <NotificationBell count={unread} label={t('notifications')} />
       </header>
-      <div className={styles.mobileBell}><NotificationBell count={await unreadCount(db(), u.id)} label={t('notifications')} /></div>
+      <div className={styles.mobileBell}><NotificationBell count={unread} label={t('notifications')} /></div>
       <main id="contenu" className={styles.main}>{children}</main>
       <AppNav variant="bottom" />
     </div>

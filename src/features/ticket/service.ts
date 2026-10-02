@@ -424,7 +424,7 @@ async function orphanedOpen(tx: Executor, ticketIds: string[]) {
 /* ---------- Lectures ---------- */
 
 const listColumns = {
-  id: ticket.id, title: ticket.title, titleKey: ticket.titleKey, titleParams: ticket.titleParams, type: ticket.type, actionTag: ticket.actionTag,
+  id: ticket.id, gardenId: ticket.gardenId, title: ticket.title, titleKey: ticket.titleKey, titleParams: ticket.titleParams, type: ticket.type, actionTag: ticket.actionTag,
   status: ticket.status, priority: ticket.priority, dueOn: ticket.dueOn, visibleFrom: ticket.visibleFrom, level: ticket.level,
   zoneId: ticket.zoneId, cultureId: ticket.cultureId, seriesId: ticket.seriesId, createdBy: ticket.createdBy, sourceStageId: ticket.sourceStageId,
   zoneName: zone.name, cultureLabel: sql<string | null>`(select concat_ws(' ', s.common_names->'fr'->>0, v.name) from culture c join species s on s.id = c.species_id left join variety v on v.id = c.variety_id where c.id = ${ticket.cultureId})`,
@@ -499,23 +499,27 @@ export type TicketDetail = Awaited<ReturnType<typeof ticketDetail>>;
  * ou créées par moi sans assignation ; échues aujourd'hui ou avant et visibles. Triées puis groupées par jardin.
  */
 export async function myTasksToday(tx: Executor, userId: string, now: Date) {
-  const memberships = await tx.select({ memberId: gardenMember.id, gardenId: gardenMember.gardenId, gardenName: garden.name, timezone: garden.timezone })
+  const memberships = (await tx.select({ memberId: gardenMember.id, gardenId: gardenMember.gardenId, gardenName: garden.name, timezone: garden.timezone })
     .from(gardenMember).innerJoin(garden, eq(garden.id, gardenMember.gardenId))
-    .where(and(eq(gardenMember.userId, userId), isNull(gardenMember.leftAt), isNull(garden.deletedAt), isNull(garden.archivedAt)));
-  const out: { gardenId: string; gardenName: string; today: string; tasks: TicketListRow[] }[] = [];
-  for (const m of memberships) {
-    const today = localDate(now, m.timezone);
-    const rows = await tx.select(listColumns).from(ticket).leftJoin(zone, eq(zone.id, ticket.zoneId)).where(and(
-      eq(ticket.gardenId, m.gardenId), isNull(ticket.deletedAt), inArray(ticket.status, ['todo', 'in_progress', 'blocked']),
-      lte(ticket.dueOn, today), or(isNull(ticket.visibleFrom), lte(ticket.visibleFrom, today)),
+    .where(and(eq(gardenMember.userId, userId), isNull(gardenMember.leftAt), isNull(garden.deletedAt), isNull(garden.archivedAt))))
+    .map((m) => ({ ...m, today: localDate(now, m.timezone) }));
+  if (memberships.length === 0) return [];
+  // Une seule requête pour tous les jardins : « aujourd'hui » dépend du fuseau de chacun (§3.7).
+  const rows = await tx.select(listColumns).from(ticket).leftJoin(zone, eq(zone.id, ticket.zoneId)).where(and(
+    isNull(ticket.deletedAt), inArray(ticket.status, ['todo', 'in_progress', 'blocked']),
+    or(...memberships.map((m) => and(
+      eq(ticket.gardenId, m.gardenId), lte(ticket.dueOn, m.today), or(isNull(ticket.visibleFrom), lte(ticket.visibleFrom, m.today)),
       or(
         sql`exists (select 1 from ticket_assignee ta where ta.ticket_id = ${ticket.id} and (ta.member_id = ${m.memberId} or ta.group_id in (select gm.group_id from group_member gm join garden_group gg on gg.id = gm.group_id where gm.member_id = ${m.memberId} and gg.archived_at is null)))`,
         and(eq(ticket.createdBy, userId), sql`not exists (select 1 from ticket_assignee ta where ta.ticket_id = ${ticket.id})`),
       ),
-    )).limit(TICKET_LIST_LIMIT);
-    if (rows.length) out.push({ gardenId: m.gardenId, gardenName: m.gardenName, today, tasks: (await decorate(tx, rows)).sort(compareTodayTasks(today)) });
-  }
-  return out;
+    ))),
+  )).orderBy(asc(ticket.dueOn)).limit(TICKET_LIST_LIMIT * memberships.length);
+  const decorated = await decorate(tx, rows);
+  return memberships.flatMap((m) => {
+    const tasks = decorated.filter((r) => r.gardenId === m.gardenId).sort(compareTodayTasks(m.today)).slice(0, TICKET_LIST_LIMIT);
+    return tasks.length ? [{ gardenId: m.gardenId, gardenName: m.gardenName, today: m.today, tasks }] : [];
+  });
 }
 
 export type CalendarItem = { id: string | null; title: string; titleKey: string | null; titleParams: Record<string, string> | null; dueOn: string; status: TicketStatus; virtual: boolean };

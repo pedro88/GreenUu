@@ -50,37 +50,37 @@ export async function notify(tx: Executor, jobs: JobQueue, appUrl: string, input
   const users = await tx.select({ id: user.id, email: user.email }).from(user).where(inArray(user.id, recipients));
   const emailOf = new Map(users.map((u) => [u.id, u.email]));
   const [g] = input.gardenId ? await tx.select({ name: garden.name }).from(garden).where(eq(garden.id, input.gardenId)).limit(1) : [];
-  let sent = 0;
-  for (const userId of recipients) {
+  const wanted = recipients.flatMap((userId) => {
     const p = prefs.get(userId) ?? {};
     const inApp = effectivePreference(input.type, 'in_app', p.in_app);
     const email = effectivePreference(input.type, 'email', p.email);
-    if (!inApp && !email) continue;
-    const since = new Date(input.now.getTime() - GROUP_WINDOW_MS);
-    const [recent] = await tx.select({ id: notification.id, emailedAt: notification.emailedAt }).from(notification).where(and(
-      eq(notification.userId, userId), eq(notification.type, input.type), eq(notification.groupKey, input.groupKey),
-      gt(notification.createdAt, since), isNull(notification.readAt),
-    )).orderBy(desc(notification.createdAt)).limit(1);
-    if (recent) {
-      // Regroupement : on incrémente, sans nouvel e-mail dans la fenêtre.
-      await tx.update(notification).set({ count: sql`${notification.count} + 1`, payload: input.payload }).where(eq(notification.id, recent.id));
-      sent += 1;
-      continue;
-    }
-    const to = emailOf.get(userId);
-    const [n] = await tx.insert(notification).values({
-      userId, gardenId: input.gardenId, type: input.type, groupKey: input.groupKey, payload: input.payload,
-      readAt: inApp ? null : input.now, emailedAt: email && to ? input.now : null, createdAt: input.now,
-    }).returning({ id: notification.id });
-    if (n && email && to) {
-      await jobs.enqueue('mail.send', notificationMail({
-        to, type: input.type, gardenName: g?.name ?? '', title: input.payload.title, actorName: input.payload.actorName ?? '', excerpt: input.payload.excerpt ?? '',
-        url: `${appUrl}${input.payload.url}`, unsubscribeUrl: unsubscribeUrl(appUrl, userId, input.type),
-      }));
-    }
-    sent += 1;
+    return inApp || email ? [{ userId, inApp, email }] : [];
+  });
+  if (wanted.length === 0) return 0;
+  // Regroupement (RG-NTF-03) : la notification non lue la plus récente de chaque destinataire, en une requête.
+  const since = new Date(input.now.getTime() - GROUP_WINDOW_MS);
+  const recent = await tx.selectDistinctOn([notification.userId], { id: notification.id, userId: notification.userId }).from(notification).where(and(
+    inArray(notification.userId, wanted.map((w) => w.userId)), eq(notification.type, input.type), eq(notification.groupKey, input.groupKey),
+    gt(notification.createdAt, since), isNull(notification.readAt),
+  )).orderBy(notification.userId, desc(notification.createdAt));
+  const grouped = new Set(recent.map((r) => r.userId));
+  // On incrémente, sans nouvel e-mail dans la fenêtre.
+  if (recent.length) await tx.update(notification).set({ count: sql`${notification.count} + 1`, payload: input.payload }).where(inArray(notification.id, recent.map((r) => r.id)));
+  const fresh = wanted.filter((w) => !grouped.has(w.userId));
+  const inserted = fresh.length === 0 ? [] : await tx.insert(notification).values(fresh.map((w) => ({
+    userId: w.userId, gardenId: input.gardenId, type: input.type, groupKey: input.groupKey, payload: input.payload,
+    readAt: w.inApp ? null : input.now, emailedAt: w.email && emailOf.get(w.userId) ? input.now : null, createdAt: input.now,
+  }))).returning({ userId: notification.userId });
+  const created = new Set(inserted.map((n) => n.userId));
+  for (const w of fresh) {
+    const to = emailOf.get(w.userId);
+    if (!created.has(w.userId) || !w.email || !to) continue;
+    await jobs.enqueue('mail.send', notificationMail({
+      to, type: input.type, gardenName: g?.name ?? '', title: input.payload.title, actorName: input.payload.actorName ?? '', excerpt: input.payload.excerpt ?? '',
+      url: `${appUrl}${input.payload.url}`, unsubscribeUrl: unsubscribeUrl(appUrl, w.userId, input.type),
+    }));
   }
-  return sent;
+  return wanted.length;
 }
 
 export async function setPreference(tx: Executor, userId: string, type: NotificationType, channel: NotificationChannel, enabled: boolean) {
