@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { LinkButton } from '@/components/ui/Button';
 import { Badge, Card, Muted, Row, Stack } from '@/components/ui/Layout';
-import { PlantIcon } from '@/components/ui/PlantIcon';
+import { PixelIcon, PlantIcon } from '@/components/ui/PlantIcon';
 import { cultureDetail } from '@/features/culture/queries';
 import { CultureActions } from '@/features/culture/ui/CultureActions';
 import styles from '@/features/culture/ui/CultureDetail.module.scss';
@@ -21,6 +21,7 @@ import { listProblems } from '@/features/journal/queries';
 import { cultivableZones } from '@/features/zone/service';
 import { tDynamic } from '@/i18n/dynamic';
 import { localDate } from '@/lib/dates';
+import type { JournalKind } from '@/lib/enums';
 import { DomainError } from '@/lib/errors';
 import { uuidSchema } from '@/lib/zod';
 import { can } from '@/server/authz/scope';
@@ -30,6 +31,11 @@ import { db } from '@/server/db/client';
 import { requireGardenScope } from '@/server/page-guards';
 
 const TABS = ['journal', 'recoltes', 'taches', 'etapes'] as const;
+
+/** Vignette pixel art d'une entrée du journal (maquette fiche culture). */
+const ENTRY_ICON: Record<JournalKind, string> = {
+  note: 'ui/action-observer', weather: 'ui/meteo-nuages', disease: 'bulles/maladie', pest: 'bulles/ravageur', intervention: 'ui/action-arroser', photo: 'ui/action-photo',
+};
 
 export default async function CulturePage({ params, searchParams }: PageProps<'/app/jardins/[jardinId]/cultures/[cultureId]'>) {
   const { jardinId, cultureId } = await params;
@@ -63,6 +69,7 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
   const tg = await getTranslations('guides');
   const tst = await getTranslations('stages');
   const fmtDay = (iso: string) => f.dateTime(new Date(`${iso}T12:00:00`), { day: 'numeric', month: 'short', year: 'numeric' });
+  const actions = <CultureActions gardenId={scope.gardenId} cultureId={cultureId} deleted={deleted} canDelete={can(scope, 'culture:delete', { isOwn: d.c.createdBy === scope.userId })} canEdit={canEdit} ended={['finished', 'failed', 'abandoned'].includes(d.c.status)} />;
   return (
     <Stack gap="lg">
       <section className={styles.hero}>
@@ -74,13 +81,8 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
         <Row><Badge data-testid="culture-status">{ts(d.c.status)}</Badge><Badge>{tm(d.c.method)}</Badge>{d.varietyStatus === 'pending' ? <Badge>{t('varietyPending')}</Badge> : null}{d.c.rotationOverride ? <Badge>{t('rotationOverride')}</Badge> : null}</Row>
         <Muted>{d.area.m2 !== null ? t(`area_${d.area.source}`, { m2: f.number(d.area.m2, { maximumFractionDigits: 2 }) }) : t('areaUnknown')}{d.totalKg > 0 ? ` · ${t('totalKg', { kg: f.number(d.totalKg, { maximumFractionDigits: 2 }) })}` : ''}</Muted>
       </section>
-      <CultureActions gardenId={scope.gardenId} cultureId={cultureId} deleted={deleted} canDelete={can(scope, 'culture:delete', { isOwn: d.c.createdBy === scope.userId })} canEdit={canEdit} ended={['finished', 'failed', 'abandoned'].includes(d.c.status)} />
-      <LinkButton variant="secondary" href={`${base}/bilan`} data-testid="culture-result">{t('result')}</LinkButton>
+      {deleted ? actions : null}
       {applied ? <Muted data-testid="culture-applied-guide"><Link href={`/app/guides/${applied.guideId}`}>{tg('appliedVersion', { title: applied.title, number: applied.number })}</Link></Muted> : null}
-      {canApply ? (
-        <ApplyGuideDialog triggerLabel={tg('applyTitle')} anchorLabel={tst('sowing')} today={today}
-          options={guides.map((x) => ({ key: x.id, label: `${x.title} (${tg('versionShort', { number: x.number })})`, gardenId: scope.gardenId, cultureId, guideId: x.id, anchorLabel: tst(x.anchor === 'planting' ? 'planting' : 'sowing') }))} />
-      ) : null}
       <StageTimeline stages={d.stages} />
       <nav className={styles.tabs} aria-label={t('tabs')}>
         {TABS.map((x) => <Link key={x} href={`${base}?onglet=${x}`} aria-current={tab === x ? 'page' : undefined}>{t(`tab_${x}`)}</Link>)}
@@ -91,6 +93,7 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
           <ul className={styles.entries} data-testid="journal">
             {d.journal.map((e) => (
               <li key={e.id} className={styles.entry} data-testid={`entry-${e.kind}`}>
+                <span className={styles.entryIcon}><PixelIcon name={ENTRY_ICON[e.kind]} size={32} /></span>
                 <div>
                   <strong>{f.dateTime(e.observedAt, { day: 'numeric', month: 'short' })}</strong>{' — '}
                   {e.kind === 'intervention' && e.intervention ? ti(e.intervention) : null}
@@ -133,6 +136,15 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
         canEdit ? <StageEditor gardenId={scope.gardenId} cultureId={cultureId} stages={d.stages} today={today} zones={zones} currentZoneId={d.c.zoneId} readOnly={!canEdit} />
           : <Muted>{d.seasonStatus === 'closed' ? t('seasonClosed') : t('readOnly')}</Muted>
       ) : null}
+
+      <footer className={styles.footer}>
+        <LinkButton variant="secondary" href={`${base}/bilan`} data-testid="culture-result">{t('result')}</LinkButton>
+        {canApply ? (
+          <ApplyGuideDialog triggerLabel={tg('applyTitle')} anchorLabel={tst('sowing')} today={today}
+            options={guides.map((x) => ({ key: x.id, label: `${x.title} (${tg('versionShort', { number: x.number })})`, gardenId: scope.gardenId, cultureId, guideId: x.id, anchorLabel: tst(x.anchor === 'planting' ? 'planting' : 'sowing') }))} />
+        ) : null}
+        {deleted ? null : actions}
+      </footer>
 
       {canEdit && can(scope, 'journal:create') ? (
         <QuickCapture gardenId={scope.gardenId} cultureId={cultureId} title={label} problems={problems.map((p) => ({ code: p.code, category: p.category }))} triggerClassName={styles.fab} />
