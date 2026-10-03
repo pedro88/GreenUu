@@ -85,7 +85,7 @@ Le domaine (instantané de scène, phase visuelle, commandes du plan) est dans `
 
 ## Avatar
 
-L'éditeur est sur `/app/profil/avatar` (et en première étape de `/bienvenue`). Le catalogue (éléments, palettes, conditions de déblocage) est défini en code (`src/features/avatar/catalog.ts`) et chargé en base avec le référentiel (`pnpm db:reference`). Les calques HD sont en niveaux de gris réservés (224, 168, 112, 64) et recolorés en Canvas 2D, sans PixiJS ; les vignettes (`AvatarThumb`) sont mises en cache par `configHash` (mémoire et Cache Storage). Le serveur revalide toute la configuration à l'enregistrement.
+L'éditeur est sur `/app/profil/avatar` (et en première étape de `/bienvenue`). Le catalogue (éléments, palettes, conditions de déblocage) est défini en code (`src/features/avatar/catalog.ts`) et chargé en base avec le référentiel (`pnpm db:reference`). Les calques HD sont en niveaux de gris réservés (224, 168, 112, 64) et recolorés en Canvas 2D, sans PixiJS ; les vignettes (`AvatarThumb`) sont mises en cache par `configHash` (mémoire et Cache Storage). Le serveur revalide toute la configuration à l'enregistrement. Tout le catalogue est disponible dès le départ. Les variantes (silhouettes, formes de visage, yeux, âge) n'apparaissent que lorsque leurs sprites sont livrés : `pnpm assets:sync` régénère `src/generated/avatar-sprites.ts`. La demande à la session sprites est décrite dans [DEMANDE-SPRITES-AVATAR.md](DEMANDE-SPRITES-AVATAR.md).
 
 ## Tests et dates
 
