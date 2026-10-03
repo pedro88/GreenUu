@@ -1,0 +1,5 @@
+#!/bin/sh
+# Pre-push (audit 2026-10-03, M3) : rien ne part vers le dépôt distant (et donc le CI) sans typecheck, lint et tests au vert.
+set -e
+echo "pre-push : pnpm verify"
+pnpm verify

@@ -23,6 +23,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:spec": "tsx scripts/spec-coverage.ts",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "db:reference": "tsx --env-file=.env scripts/reference.ts",
     "assets:sync": "tsx scripts/sync-assets.ts",
     "prepare": "git config core.hooksPath .githooks || true"

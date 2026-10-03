@@ -42,7 +42,8 @@ Les e-mails envoyés (vérification, invitations, réinitialisation) arrivent da
 | `pnpm lint` | ESLint + Stylelint |
 | `pnpm test` | Vitest : unitaires et intégration (base `greenu_test`) |
 | `pnpm test:e2e` | Playwright (réinitialise et seede `greenu_test`, serveur sur le port 3100) |
-| `pnpm test:spec` | Vérifie que chaque critère d'acceptation du lot courant a un test au vert |
+| `pnpm test:spec` | Vérifie que chaque critère d'acceptation du lot courant a un test au vert ; échoue si un rapport (`reports/`) manque, contient un échec ou est antérieur au dernier commit |
+| `pnpm verify` | Types, lint et tests : à lancer avant tout merge dans `main` (le hook `pre-push` le lance aussi) |
 | `pnpm db:generate` / `db:migrate` / `db:seed` / `db:reset` | Migrations Drizzle, seed déterministe, remise à zéro (dev) |
 | `pnpm db:reference` | Charge le référentiel végétal commun (espèces, variétés) ; à lancer aussi en production après les migrations |
 | `pnpm assets:sync [dossier]` | Copie les assets HD livrés par la session sprites (`out_hd/` par défaut, hors de ce dépôt) vers `public/sprites` |
