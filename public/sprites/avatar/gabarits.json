@@ -50,6 +50,14 @@
     0,
     5
    ],
+   "bas-assis-f1": [
+    0,
+    3
+   ],
+   "bas-assis-f2": [
+    0,
+    3
+   ],
    "haut-semer-f1": [
     0,
     4
@@ -93,6 +101,14 @@
    "haut-observer-f2": [
     0,
     5
+   ],
+   "haut-assis-f1": [
+    0,
+    3
+   ],
+   "haut-assis-f2": [
+    0,
+    3
    ],
    "gauche-semer-f1": [
     0,
@@ -138,6 +154,14 @@
     0,
     5
    ],
+   "gauche-assis-f1": [
+    0,
+    3
+   ],
+   "gauche-assis-f2": [
+    0,
+    3
+   ],
    "droite-semer-f1": [
     0,
     4
@@ -181,6 +205,14 @@
    "droite-observer-f2": [
     0,
     5
+   ],
+   "droite-assis-f1": [
+    0,
+    3
+   ],
+   "droite-assis-f2": [
+    0,
+    3
    ]
   },
   "mince-moyenne": {
@@ -246,6 +278,14 @@
     0,
     -6
    ],
+   "bas-assis-f1": [
+    0,
+    -4
+   ],
+   "bas-assis-f2": [
+    0,
+    -4
+   ],
    "haut-semer-f1": [
     0,
     -6
@@ -297,6 +337,14 @@
    "haut-observer-f2": [
     0,
     -6
+   ],
+   "haut-assis-f1": [
+    0,
+    -4
+   ],
+   "haut-assis-f2": [
+    0,
+    -4
    ],
    "gauche-becher-f4": [
     0,
@@ -354,6 +402,14 @@
     0,
     -6
    ],
+   "gauche-assis-f1": [
+    0,
+    -4
+   ],
+   "gauche-assis-f2": [
+    0,
+    -4
+   ],
    "droite-becher-f4": [
     0,
     -7
@@ -409,6 +465,14 @@
    "droite-observer-f2": [
     0,
     -6
+   ],
+   "droite-assis-f1": [
+    0,
+    -4
+   ],
+   "droite-assis-f2": [
+    0,
+    -4
    ]
   },
   "moyenne-petite": {
@@ -460,6 +524,14 @@
     0,
     5
    ],
+   "bas-assis-f1": [
+    0,
+    3
+   ],
+   "bas-assis-f2": [
+    0,
+    3
+   ],
    "haut-semer-f1": [
     0,
     4
@@ -503,6 +575,14 @@
    "haut-observer-f2": [
     0,
     5
+   ],
+   "haut-assis-f1": [
+    0,
+    3
+   ],
+   "haut-assis-f2": [
+    0,
+    3
    ],
    "gauche-semer-f1": [
     0,
@@ -548,6 +628,14 @@
     0,
     5
    ],
+   "gauche-assis-f1": [
+    0,
+    3
+   ],
+   "gauche-assis-f2": [
+    0,
+    3
+   ],
    "droite-semer-f1": [
     0,
     4
@@ -591,6 +679,14 @@
    "droite-observer-f2": [
     0,
     5
+   ],
+   "droite-assis-f1": [
+    0,
+    3
+   ],
+   "droite-assis-f2": [
+    0,
+    3
    ]
   },
   "moyenne-grande": {
@@ -650,6 +746,14 @@
     0,
     -6
    ],
+   "bas-assis-f1": [
+    0,
+    -4
+   ],
+   "bas-assis-f2": [
+    0,
+    -4
+   ],
    "haut-semer-f1": [
     0,
     -6
@@ -701,6 +805,14 @@
    "haut-observer-f2": [
     0,
     -6
+   ],
+   "haut-assis-f1": [
+    0,
+    -4
+   ],
+   "haut-assis-f2": [
+    0,
+    -4
    ],
    "gauche-becher-f4": [
     0,
@@ -758,6 +870,14 @@
     0,
     -6
    ],
+   "gauche-assis-f1": [
+    0,
+    -4
+   ],
+   "gauche-assis-f2": [
+    0,
+    -4
+   ],
    "droite-becher-f4": [
     0,
     -7
@@ -813,6 +933,14 @@
    "droite-observer-f2": [
     0,
     -6
+   ],
+   "droite-assis-f1": [
+    0,
+    -4
+   ],
+   "droite-assis-f2": [
+    0,
+    -4
    ]
   },
   "ronde-petite": {
@@ -864,6 +992,14 @@
     0,
     5
    ],
+   "bas-assis-f1": [
+    0,
+    3
+   ],
+   "bas-assis-f2": [
+    0,
+    3
+   ],
    "haut-semer-f1": [
     0,
     4
@@ -907,6 +1043,14 @@
    "haut-observer-f2": [
     0,
     5
+   ],
+   "haut-assis-f1": [
+    0,
+    3
+   ],
+   "haut-assis-f2": [
+    0,
+    3
    ],
    "gauche-semer-f1": [
     0,
@@ -952,6 +1096,14 @@
     0,
     5
    ],
+   "gauche-assis-f1": [
+    0,
+    3
+   ],
+   "gauche-assis-f2": [
+    0,
+    3
+   ],
    "droite-semer-f1": [
     0,
     4
@@ -995,6 +1147,14 @@
    "droite-observer-f2": [
     0,
     5
+   ],
+   "droite-assis-f1": [
+    0,
+    3
+   ],
+   "droite-assis-f2": [
+    0,
+    3
    ]
   },
   "ronde-moyenne": {
@@ -1060,6 +1220,14 @@
     0,
     -6
    ],
+   "bas-assis-f1": [
+    0,
+    -4
+   ],
+   "bas-assis-f2": [
+    0,
+    -4
+   ],
    "haut-semer-f1": [
     0,
     -6
@@ -1111,6 +1279,14 @@
    "haut-observer-f2": [
     0,
     -6
+   ],
+   "haut-assis-f1": [
+    0,
+    -4
+   ],
+   "haut-assis-f2": [
+    0,
+    -4
    ],
    "gauche-becher-f4": [
     0,
@@ -1168,6 +1344,14 @@
     0,
     -6
    ],
+   "gauche-assis-f1": [
+    0,
+    -4
+   ],
+   "gauche-assis-f2": [
+    0,
+    -4
+   ],
    "droite-becher-f4": [
     0,
     -7
@@ -1223,6 +1407,14 @@
    "droite-observer-f2": [
     0,
     -6
+   ],
+   "droite-assis-f1": [
+    0,
+    -4
+   ],
+   "droite-assis-f2": [
+    0,
+    -4
    ]
   }
  }
