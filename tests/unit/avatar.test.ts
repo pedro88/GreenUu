@@ -8,7 +8,10 @@ import { isUnlocked, NO_PROGRESS } from '@/features/progression/unlock.pure';
 import { AVATAR_LAYERS, REQUIRED_AVATAR_LAYERS } from '@/lib/enums';
 
 const view = codeCatalogView(NO_PROGRESS);
-const base = () => normalizeConfig(defaultAvatar('00000000-0000-7000-8000-000000000001'));
+// Jeu de sprites figé (corps qui comprend la tête, sans formes de visage) : les cas construits sur `base()` ne dépendent
+// pas de la dernière livraison (`src/generated/avatar-sprites.ts`).
+const BASE_SPRITES = new Set(AVATAR_ITEMS.filter((i) => (i.layer === 'body' ? i.includesHead : !['head', 'face_brows', 'face_details'].includes(i.layer))).map((i) => i.spriteKey));
+const base = () => normalizeConfig(defaultAvatar('00000000-0000-7000-8000-000000000001', BASE_SPRITES));
 
 describe('configuration d\'avatar (§10.3)', () => {
   it('[AVT-04] un calque obligatoire (body) mis à null est refusé en VALIDATION', () => {
@@ -57,7 +60,8 @@ describe('configuration d\'avatar (§10.3)', () => {
     const headless = { ...c, layers: { ...c.layers, body: { item: 'body_round_tall', palettes: ['skin_07'] }, head: { item: null, palettes: [] } } };
     expect(checkConfig(headless, v)).toMatchObject({ code: 'VALIDATION', fields: { 'layers.head.item': ['required'] } });
     expect(checkConfig({ ...headless, layers: { ...headless.layers, head: { item: 'head_heart', palettes: [] } } }, v).ok).toBe(true);
-    expect(checkConfig({ ...c, layers: { ...c.layers, head: { item: 'head_oval', palettes: [] } } }, v)).toMatchObject({ fields: { 'layers.head.item': ['headIncludedInBody'] } });
+    const withHead = { ...c, layers: { ...c.layers, body: { item: 'body', palettes: ['skin_07'] }, head: { item: 'head_oval', palettes: [] } } };
+    expect(checkConfig(withHead, v)).toMatchObject({ fields: { 'layers.head.item': ['headIncludedInBody'] } });
   });
 
   it('le JSON canonique ne dépend pas de l\'ordre des clés', () => {
