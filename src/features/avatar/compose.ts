@@ -2,7 +2,7 @@
 
 import { AVATAR_SPRITES } from '@/generated/avatar-sprites';
 import { AVATAR_LAYERS, SKIN_LINKED_LAYERS, type AvatarLayer } from '@/lib/enums';
-import { fetchAtlas, type LoadedAtlas } from '@/game/manifest';
+import { AVATAR_ATLAS_URL, fetchAtlas, type LoadedAtlas } from '@/game/manifest';
 import { AVATAR_ITEM_BY_CODE, BASE_GABARIT, PALETTE_BY_CODE } from './catalog';
 import { frameCandidates, gabaritsSchema, headOffset, type GabaritTable } from './frames.pure';
 import type { AvatarConfigV1 } from './config.pure';
@@ -31,7 +31,7 @@ const images = new Map<string, Promise<HTMLImageElement | null>>();
 const layers = new Map<string, Promise<HTMLCanvasElement | null>>();
 const thumbs = new Map<string, Promise<string | null>>();
 
-const atlas = () => (atlasP ??= fetchAtlas());
+const atlas = () => (atlasP ??= fetchAtlas(AVATAR_ATLAS_URL));
 
 function image(url: string) {
   let p = images.get(url);

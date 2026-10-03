@@ -35,12 +35,15 @@ async function loadAtlas(): Promise<Atlas> {
   const atlas = await fetchAtlas();
   if (!atlas) return null;
   try {
+    // Pages chargées en parallèle, pas l'une après l'autre.
+    const loaded = await Promise.all(atlas.pages.map((page) => Assets.load<Texture>(page)));
     const sources = new Map<string, Texture>();
-    for (const page of atlas.pages) {
-      const t = await Assets.load<Texture>(page);
+    atlas.pages.forEach((page, k) => {
+      const t = loaded[k];
+      if (!t) return;
       t.source.resolution = atlas.resolution;
       sources.set(page, t);
-    }
+    });
     const r = atlas.resolution;
     const textures = new Map<string, Texture>();
     for (const [name, f] of atlas.frames) {

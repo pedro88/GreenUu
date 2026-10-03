@@ -31,13 +31,16 @@ export function assetResolution(frames: Atlas['frames']): number {
 }
 
 export const ATLAS_URL = '/sprites/atlas/atlas.json';
+/** Atlas de l'avatar, séparé de celui de la scène : seulement les poses composées (arrêt, marche). */
+export const AVATAR_ATLAS_URL = '/sprites/atlas/avatar-atlas.json';
 
 export type AtlasFrame = { page: string; x: number; y: number; w: number; h: number };
 export type LoadedAtlas = { frames: Map<string, AtlasFrame>; pages: string[]; resolution: number; index: PhaseIndex };
 
 /**
- * Lit l'atlas et toutes ses pages (`related_multi_packs`), validés par Zod. Sans atlas lisible : null, et le moteur
- * dessine des assets de substitution (§9.2). Partagé par PixiJS et la composition Canvas 2D de l'avatar.
+ * Lit un atlas et toutes ses pages (`related_multi_packs`), validés par Zod. Sans atlas lisible : null, et le moteur
+ * dessine des assets de substitution (§9.2). La scène PixiJS lit `ATLAS_URL`, la composition Canvas 2D de l'avatar
+ * `AVATAR_ATLAS_URL` : aucun des deux ne télécharge les frames de l'autre.
  */
 export async function fetchAtlas(url = ATLAS_URL): Promise<LoadedAtlas | null> {
   try {

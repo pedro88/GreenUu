@@ -37,6 +37,21 @@ test.describe('vue jardin', () => {
     await expect.poll(() => scripts.some((b) => b.includes(PIXI_SIGNATURE))).toBe(true);
   });
 
+  test('la vue jardin ne télécharge que l\'atlas de la scène et celui de l\'avatar, sous 3 Mo (audit 2026-10-03, M1)', async ({ page }) => {
+    const atlas: { name: string; bytes: number }[] = [];
+    page.on('response', (r) => {
+      const { pathname } = new URL(r.url());
+      if (pathname.startsWith('/sprites/atlas/')) void r.body().then((b) => atlas.push({ name: pathname.slice('/sprites/atlas/'.length), bytes: b.length }), () => undefined);
+    });
+    await login(page, 'alice');
+    await page.goto(`/app/jardins/${TILLEULS}?vue=jardin`);
+    await sceneReady(page);
+    await page.waitForLoadState('networkidle');
+    expect(atlas.length).toBeGreaterThan(0);
+    for (const a of atlas) expect(a.name).toMatch(/^(avatar-)?atlas(-\d+)?\.(json|png)$/);
+    expect(atlas.reduce((t, a) => t + a.bytes, 0)).toBeLessThan(3 * 1024 * 1024);
+  });
+
   test('[MAP-02] [A11Y-03] chaque zone placée et chaque culture active a un bouton ; tout est atteignable au clavier, avec un focus visible, et Entrée ouvre la feuille', async ({ page }) => {
     const expected = await placedEntities(TILLEULS);
     expect(expected.zones.length).toBeGreaterThan(5);
