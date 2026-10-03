@@ -1,0 +1,8116 @@
+{
+ "frames": {
+  "ambiance/abeille-f1.png": {
+   "frame": {
+    "x": 1503,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/abeille-f2.png": {
+   "frame": {
+    "x": 1536,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/coccinelle-f1.png": {
+   "frame": {
+    "x": 1569,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/coccinelle-f2.png": {
+   "frame": {
+    "x": 1602,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/feuilles-f1.png": {
+   "frame": {
+    "x": 1635,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/feuilles-f2.png": {
+   "frame": {
+    "x": 1668,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/feuilles-f3.png": {
+   "frame": {
+    "x": 1701,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/feuilles-f4.png": {
+   "frame": {
+    "x": 1734,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/oiseau-f1.png": {
+   "frame": {
+    "x": 1767,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/oiseau-f2.png": {
+   "frame": {
+    "x": 1800,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/oiseau-f3.png": {
+   "frame": {
+    "x": 1833,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/oiseau-f4.png": {
+   "frame": {
+    "x": 1866,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/papillon-f1.png": {
+   "frame": {
+    "x": 1899,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/papillon-f2.png": {
+   "frame": {
+    "x": 1932,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/papillon-f3.png": {
+   "frame": {
+    "x": 1965,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/papillon-f4.png": {
+   "frame": {
+    "x": 1998,
+    "y": 845,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/petales-f1.png": {
+   "frame": {
+    "x": 0,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/petales-f2.png": {
+   "frame": {
+    "x": 33,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/petales-f3.png": {
+   "frame": {
+    "x": 66,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/petales-f4.png": {
+   "frame": {
+    "x": 99,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/poussiere-f1.png": {
+   "frame": {
+    "x": 132,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/poussiere-f2.png": {
+   "frame": {
+    "x": 165,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/poussiere-f3.png": {
+   "frame": {
+    "x": 198,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ambiance/poussiere-f4.png": {
+   "frame": {
+    "x": 231,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "bulles/maladie.png": {
+   "frame": {
+    "x": 264,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "bulles/observation.png": {
+   "frame": {
+    "x": 297,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "bulles/ravageur.png": {
+   "frame": {
+    "x": 330,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "bulles/recolte.png": {
+   "frame": {
+    "x": 363,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "bulles/soif.png": {
+   "frame": {
+    "x": 396,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "bulles/ticket-assigne.png": {
+   "frame": {
+    "x": 429,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "bulles/ticket-retard.png": {
+   "frame": {
+    "x": 462,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/basilic-5-montee-graine.png": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/betterave-1-graine.png": {
+   "frame": {
+    "x": 65,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/betterave-2-levee.png": {
+   "frame": {
+    "x": 130,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/betterave-3-croissance.png": {
+   "frame": {
+    "x": 195,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/betterave-4-recolte.png": {
+   "frame": {
+    "x": 260,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/betterave-5-montee-graine.png": {
+   "frame": {
+    "x": 325,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/blette-1-graine.png": {
+   "frame": {
+    "x": 390,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/blette-2-levee.png": {
+   "frame": {
+    "x": 455,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/blette-3-croissance.png": {
+   "frame": {
+    "x": 520,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/blette-4-recolte.png": {
+   "frame": {
+    "x": 585,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/blette-5-montee-graine.png": {
+   "frame": {
+    "x": 650,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/carotte-1-graine.png": {
+   "frame": {
+    "x": 715,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/carotte-2-levee.png": {
+   "frame": {
+    "x": 780,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/carotte-3-croissance.png": {
+   "frame": {
+    "x": 845,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/carotte-4-recolte.png": {
+   "frame": {
+    "x": 910,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/carotte-5-montee-graine.png": {
+   "frame": {
+    "x": 975,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/celeri-1-graine.png": {
+   "frame": {
+    "x": 1040,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/celeri-2-levee.png": {
+   "frame": {
+    "x": 1105,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/celeri-3-croissance.png": {
+   "frame": {
+    "x": 1170,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/celeri-4-recolte.png": {
+   "frame": {
+    "x": 1235,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/celeri-5-montee-graine.png": {
+   "frame": {
+    "x": 1300,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/chou-1-graine.png": {
+   "frame": {
+    "x": 1365,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/chou-2-levee.png": {
+   "frame": {
+    "x": 1430,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/chou-3-croissance.png": {
+   "frame": {
+    "x": 1495,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/chou-4-recolte.png": {
+   "frame": {
+    "x": 1560,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/chou-5-montee-graine.png": {
+   "frame": {
+    "x": 1625,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/ciboulette-1-dormance.png": {
+   "frame": {
+    "x": 1690,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/ciboulette-2-debourrement.png": {
+   "frame": {
+    "x": 1755,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/ciboulette-3-feuillage.png": {
+   "frame": {
+    "x": 1820,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/ciboulette-4-floraison.png": {
+   "frame": {
+    "x": 1885,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/ciboulette-5-fruits.png": {
+   "frame": {
+    "x": 1950,
+    "y": 0,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/ciboulette-6-automne.png": {
+   "frame": {
+    "x": 0,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/courge-1-graine.png": {
+   "frame": {
+    "x": 65,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/courge-2-levee.png": {
+   "frame": {
+    "x": 130,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/courge-3-croissance.png": {
+   "frame": {
+    "x": 195,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/courge-4-floraison.png": {
+   "frame": {
+    "x": 260,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/courge-5-fruits-verts.png": {
+   "frame": {
+    "x": 325,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/courge-6-recolte.png": {
+   "frame": {
+    "x": 390,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/courgette-1-graine.png": {
+   "frame": {
+    "x": 455,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/courgette-2-levee.png": {
+   "frame": {
+    "x": 520,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/courgette-3-croissance.png": {
+   "frame": {
+    "x": 585,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/courgette-4-floraison.png": {
+   "frame": {
+    "x": 650,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/courgette-5-fruits-verts.png": {
+   "frame": {
+    "x": 715,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/courgette-6-recolte.png": {
+   "frame": {
+    "x": 780,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/epinard-1-graine.png": {
+   "frame": {
+    "x": 845,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/epinard-2-levee.png": {
+   "frame": {
+    "x": 910,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/epinard-3-croissance.png": {
+   "frame": {
+    "x": 975,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/epinard-4-recolte.png": {
+   "frame": {
+    "x": 1040,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/epinard-5-montee-graine.png": {
+   "frame": {
+    "x": 1105,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/fraisier-1-dormance.png": {
+   "frame": {
+    "x": 1170,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/fraisier-2-debourrement.png": {
+   "frame": {
+    "x": 1235,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/fraisier-3-feuillage.png": {
+   "frame": {
+    "x": 1300,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/fraisier-4-floraison.png": {
+   "frame": {
+    "x": 1365,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/fraisier-5-fruits.png": {
+   "frame": {
+    "x": 1430,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/fraisier-6-automne.png": {
+   "frame": {
+    "x": 1495,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/laitue-1-graine.png": {
+   "frame": {
+    "x": 1560,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/laitue-2-levee.png": {
+   "frame": {
+    "x": 1625,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/laitue-3-croissance.png": {
+   "frame": {
+    "x": 1690,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/laitue-4-recolte.png": {
+   "frame": {
+    "x": 1755,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/laitue-5-montee-graine.png": {
+   "frame": {
+    "x": 1820,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/melon-1-graine.png": {
+   "frame": {
+    "x": 1885,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/melon-2-levee.png": {
+   "frame": {
+    "x": 1950,
+    "y": 65,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/melon-3-croissance.png": {
+   "frame": {
+    "x": 0,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/melon-4-floraison.png": {
+   "frame": {
+    "x": 65,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/melon-5-fruits-verts.png": {
+   "frame": {
+    "x": 130,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/melon-6-recolte.png": {
+   "frame": {
+    "x": 195,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/menthe-1-dormance.png": {
+   "frame": {
+    "x": 260,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/menthe-2-debourrement.png": {
+   "frame": {
+    "x": 325,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/menthe-3-feuillage.png": {
+   "frame": {
+    "x": 390,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/menthe-4-floraison.png": {
+   "frame": {
+    "x": 455,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/menthe-5-fruits.png": {
+   "frame": {
+    "x": 520,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/menthe-6-automne.png": {
+   "frame": {
+    "x": 585,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/oignon-1-graine.png": {
+   "frame": {
+    "x": 650,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/oignon-2-levee.png": {
+   "frame": {
+    "x": 715,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/oignon-3-croissance.png": {
+   "frame": {
+    "x": 780,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/oignon-4-recolte.png": {
+   "frame": {
+    "x": 845,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/oignon-5-montee-graine.png": {
+   "frame": {
+    "x": 910,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/persil-1-graine.png": {
+   "frame": {
+    "x": 975,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/persil-2-levee.png": {
+   "frame": {
+    "x": 1040,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/persil-3-croissance.png": {
+   "frame": {
+    "x": 1105,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/persil-4-recolte.png": {
+   "frame": {
+    "x": 1170,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/persil-5-montee-graine.png": {
+   "frame": {
+    "x": 1235,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poireau-1-graine.png": {
+   "frame": {
+    "x": 1300,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poireau-2-levee.png": {
+   "frame": {
+    "x": 1365,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poireau-3-croissance.png": {
+   "frame": {
+    "x": 1430,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poireau-4-recolte.png": {
+   "frame": {
+    "x": 1495,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poireau-5-montee-graine.png": {
+   "frame": {
+    "x": 1560,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poivron-1-graine.png": {
+   "frame": {
+    "x": 1625,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poivron-2-levee.png": {
+   "frame": {
+    "x": 1690,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poivron-3-croissance.png": {
+   "frame": {
+    "x": 1755,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poivron-4-floraison.png": {
+   "frame": {
+    "x": 1820,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poivron-5-fruits-verts.png": {
+   "frame": {
+    "x": 1885,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/poivron-6-recolte.png": {
+   "frame": {
+    "x": 1950,
+    "y": 130,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "cultures/pomme-de-terre-1-plantation.png": {
+   "frame": {
+    "x": 0,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/pomme-de-terre-2-levee.png": {
+   "frame": {
+    "x": 65,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/pomme-de-terre-3-croissance.png": {
+   "frame": {
+    "x": 130,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/pomme-de-terre-4-floraison.png": {
+   "frame": {
+    "x": 195,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/pomme-de-terre-5-recolte.png": {
+   "frame": {
+    "x": 260,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/radis-1-graine.png": {
+   "frame": {
+    "x": 325,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/radis-2-levee.png": {
+   "frame": {
+    "x": 390,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/radis-3-croissance.png": {
+   "frame": {
+    "x": 455,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/radis-4-recolte.png": {
+   "frame": {
+    "x": 520,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/radis-5-montee-graine.png": {
+   "frame": {
+    "x": 585,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "cultures/romarin-1-dormance.png": {
+   "frame": {
+    "x": 650,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/romarin-2-debourrement.png": {
+   "frame": {
+    "x": 715,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/romarin-3-feuillage.png": {
+   "frame": {
+    "x": 780,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/romarin-4-floraison.png": {
+   "frame": {
+    "x": 845,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/romarin-5-fruits.png": {
+   "frame": {
+    "x": 910,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/romarin-6-automne.png": {
+   "frame": {
+    "x": 975,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/thym-1-dormance.png": {
+   "frame": {
+    "x": 1040,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/thym-2-debourrement.png": {
+   "frame": {
+    "x": 1105,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/thym-3-feuillage.png": {
+   "frame": {
+    "x": 1170,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/thym-4-floraison.png": {
+   "frame": {
+    "x": 1235,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/thym-5-fruits.png": {
+   "frame": {
+    "x": 1300,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "cultures/thym-6-automne.png": {
+   "frame": {
+    "x": 1365,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "deco/arrosoir.png": {
+   "frame": {
+    "x": 1430,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "deco/bain-oiseaux.png": {
+   "frame": {
+    "x": 1495,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/lanterne-allumee.png": {
+   "frame": {
+    "x": 1560,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/lanterne-eteinte.png": {
+   "frame": {
+    "x": 1625,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/panneau.png": {
+   "frame": {
+    "x": 1690,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "deco/pot-fleurs-1.png": {
+   "frame": {
+    "x": 1755,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "deco/pot-fleurs-2.png": {
+   "frame": {
+    "x": 1820,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "deco/pot-fleurs-3.png": {
+   "frame": {
+    "x": 1885,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "deco/rocaille-1.png": {
+   "frame": {
+    "x": 1950,
+    "y": 195,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/rocaille-2.png": {
+   "frame": {
+    "x": 0,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/rocaille-3.png": {
+   "frame": {
+    "x": 65,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/ruche.png": {
+   "frame": {
+    "x": 130,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "deco/statue.png": {
+   "frame": {
+    "x": 195,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "deco/tas-bois.png": {
+   "frame": {
+    "x": 260,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "familles/amaranthacees-1-graine.png": {
+   "frame": {
+    "x": 325,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaranthacees-2-levee.png": {
+   "frame": {
+    "x": 390,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaranthacees-3-croissance.png": {
+   "frame": {
+    "x": 455,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaranthacees-4-recolte.png": {
+   "frame": {
+    "x": 520,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaranthacees-5-montee-graine.png": {
+   "frame": {
+    "x": 585,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaryllidacees-1-graine.png": {
+   "frame": {
+    "x": 650,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaryllidacees-2-levee.png": {
+   "frame": {
+    "x": 715,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaryllidacees-3-croissance.png": {
+   "frame": {
+    "x": 780,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaryllidacees-4-recolte.png": {
+   "frame": {
+    "x": 845,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/amaryllidacees-5-montee-graine.png": {
+   "frame": {
+    "x": 910,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/apiacees-1-graine.png": {
+   "frame": {
+    "x": 975,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/apiacees-2-levee.png": {
+   "frame": {
+    "x": 1040,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/apiacees-3-croissance.png": {
+   "frame": {
+    "x": 1105,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/apiacees-4-recolte.png": {
+   "frame": {
+    "x": 1170,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/apiacees-5-montee-graine.png": {
+   "frame": {
+    "x": 1235,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/asteracees-1-graine.png": {
+   "frame": {
+    "x": 1300,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/asteracees-2-levee.png": {
+   "frame": {
+    "x": 1365,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/asteracees-3-croissance.png": {
+   "frame": {
+    "x": 1430,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/asteracees-4-recolte.png": {
+   "frame": {
+    "x": 1495,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/asteracees-5-montee-graine.png": {
+   "frame": {
+    "x": 1560,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/brassicacees-1-graine.png": {
+   "frame": {
+    "x": 1625,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/brassicacees-2-levee.png": {
+   "frame": {
+    "x": 1690,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/brassicacees-3-croissance.png": {
+   "frame": {
+    "x": 1755,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/brassicacees-4-recolte.png": {
+   "frame": {
+    "x": 1820,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/brassicacees-5-montee-graine.png": {
+   "frame": {
+    "x": 1885,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/cucurbitacees-1-graine.png": {
+   "frame": {
+    "x": 1950,
+    "y": 260,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/cucurbitacees-2-levee.png": {
+   "frame": {
+    "x": 0,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/cucurbitacees-3-croissance.png": {
+   "frame": {
+    "x": 65,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/cucurbitacees-4-floraison.png": {
+   "frame": {
+    "x": 130,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/cucurbitacees-5-fruits-verts.png": {
+   "frame": {
+    "x": 195,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/cucurbitacees-6-recolte.png": {
+   "frame": {
+    "x": 260,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/inconnue-1-graine.png": {
+   "frame": {
+    "x": 325,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/inconnue-2-levee.png": {
+   "frame": {
+    "x": 390,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/inconnue-3-croissance.png": {
+   "frame": {
+    "x": 455,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/inconnue-4-recolte.png": {
+   "frame": {
+    "x": 520,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/inconnue-5-montee-graine.png": {
+   "frame": {
+    "x": 585,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/lamiacees-1-dormance.png": {
+   "frame": {
+    "x": 650,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/lamiacees-2-debourrement.png": {
+   "frame": {
+    "x": 715,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/lamiacees-3-feuillage.png": {
+   "frame": {
+    "x": 780,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/lamiacees-4-floraison.png": {
+   "frame": {
+    "x": 845,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/lamiacees-5-fruits.png": {
+   "frame": {
+    "x": 910,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/lamiacees-6-automne.png": {
+   "frame": {
+    "x": 975,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/rosacees-1-dormance.png": {
+   "frame": {
+    "x": 1040,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/rosacees-2-debourrement.png": {
+   "frame": {
+    "x": 1105,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/rosacees-3-feuillage.png": {
+   "frame": {
+    "x": 1170,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/rosacees-4-floraison.png": {
+   "frame": {
+    "x": 1235,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/rosacees-5-fruits.png": {
+   "frame": {
+    "x": 1300,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "familles/rosacees-6-automne.png": {
+   "frame": {
+    "x": 1365,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "fleurs/bourrache-1-graine.png": {
+   "frame": {
+    "x": 1430,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/bourrache-2-levee.png": {
+   "frame": {
+    "x": 1495,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/bourrache-3-croissance.png": {
+   "frame": {
+    "x": 1560,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/bourrache-4-recolte.png": {
+   "frame": {
+    "x": 1625,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/bourrache-5-montee-graine.png": {
+   "frame": {
+    "x": 1690,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/capucine-1-graine.png": {
+   "frame": {
+    "x": 1755,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/capucine-2-levee.png": {
+   "frame": {
+    "x": 1820,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/capucine-3-croissance.png": {
+   "frame": {
+    "x": 1885,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/capucine-4-recolte.png": {
+   "frame": {
+    "x": 1950,
+    "y": 325,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/capucine-5-montee-graine.png": {
+   "frame": {
+    "x": 0,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/cosmos-1-graine.png": {
+   "frame": {
+    "x": 65,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/cosmos-2-levee.png": {
+   "frame": {
+    "x": 130,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/cosmos-3-croissance.png": {
+   "frame": {
+    "x": 195,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/cosmos-4-recolte.png": {
+   "frame": {
+    "x": 260,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/cosmos-5-montee-graine.png": {
+   "frame": {
+    "x": 325,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/phacelie-1-graine.png": {
+   "frame": {
+    "x": 390,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/phacelie-2-levee.png": {
+   "frame": {
+    "x": 455,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/phacelie-3-croissance.png": {
+   "frame": {
+    "x": 520,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/phacelie-4-recolte.png": {
+   "frame": {
+    "x": 585,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/phacelie-5-montee-graine.png": {
+   "frame": {
+    "x": 650,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/souci-1-graine.png": {
+   "frame": {
+    "x": 715,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/souci-2-levee.png": {
+   "frame": {
+    "x": 780,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/souci-3-croissance.png": {
+   "frame": {
+    "x": 845,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/souci-4-recolte.png": {
+   "frame": {
+    "x": 910,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "fleurs/souci-5-montee-graine.png": {
+   "frame": {
+    "x": 975,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/arrosoir.png": {
+   "frame": {
+    "x": 1040,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/beche.png": {
+   "frame": {
+    "x": 1755,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/binette.png": {
+   "frame": {
+    "x": 1788,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/cordeau.png": {
+   "frame": {
+    "x": 495,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/croc.png": {
+   "frame": {
+    "x": 1821,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/fourche-beche.png": {
+   "frame": {
+    "x": 1854,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/gants.png": {
+   "frame": {
+    "x": 528,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/griffe.png": {
+   "frame": {
+    "x": 561,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/plantoir.png": {
+   "frame": {
+    "x": 1887,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/rateau.png": {
+   "frame": {
+    "x": 1920,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/sarcloir.png": {
+   "frame": {
+    "x": 1953,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/seau.png": {
+   "frame": {
+    "x": 594,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/secateur.png": {
+   "frame": {
+    "x": 627,
+    "y": 910,
+    "w": 32,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 32
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/serfouette.png": {
+   "frame": {
+    "x": 1986,
+    "y": 780,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/transplantoir.png": {
+   "frame": {
+    "x": 0,
+    "y": 845,
+    "w": 32,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 32,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "outils/tuyau.png": {
+   "frame": {
+    "x": 1105,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/bac-1x1.png": {
+   "frame": {
+    "x": 1170,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/bac-hydroponique.png": {
+   "frame": {
+    "x": 1235,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/carre-1x1.png": {
+   "frame": {
+    "x": 1300,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-1xn-debut.png": {
+   "frame": {
+    "x": 1365,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-1xn-fin.png": {
+   "frame": {
+    "x": 1430,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-1xn-milieu.png": {
+   "frame": {
+    "x": 1495,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-centre.png": {
+   "frame": {
+    "x": 1560,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-e.png": {
+   "frame": {
+    "x": 1625,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-n.png": {
+   "frame": {
+    "x": 1690,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-ne.png": {
+   "frame": {
+    "x": 1755,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-no.png": {
+   "frame": {
+    "x": 1820,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-nx1-bas.png": {
+   "frame": {
+    "x": 1885,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-nx1-haut.png": {
+   "frame": {
+    "x": 1950,
+    "y": 390,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-nx1-milieu.png": {
+   "frame": {
+    "x": 0,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-o.png": {
+   "frame": {
+    "x": 65,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-s.png": {
+   "frame": {
+    "x": 130,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-se.png": {
+   "frame": {
+    "x": 195,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/carre-so.png": {
+   "frame": {
+    "x": 260,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/chassis-ferme.png": {
+   "frame": {
+    "x": 325,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/chassis-ouvert.png": {
+   "frame": {
+    "x": 390,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cloture-coin-ne.png": {
+   "frame": {
+    "x": 455,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cloture-coin-no.png": {
+   "frame": {
+    "x": 520,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cloture-coin-se.png": {
+   "frame": {
+    "x": 585,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cloture-coin-so.png": {
+   "frame": {
+    "x": 650,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cloture-h.png": {
+   "frame": {
+    "x": 715,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cloture-poteau.png": {
+   "frame": {
+    "x": 780,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/cloture-v.png": {
+   "frame": {
+    "x": 845,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/composteur-mur.png": {
+   "frame": {
+    "x": 910,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/composteur-plein.png": {
+   "frame": {
+    "x": 975,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/composteur-vide.png": {
+   "frame": {
+    "x": 1040,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/composteurs-debut.png": {
+   "frame": {
+    "x": 1105,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/composteurs-fin.png": {
+   "frame": {
+    "x": 1170,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/composteurs-milieu.png": {
+   "frame": {
+    "x": 1235,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/composteurs-milieu-mur.png": {
+   "frame": {
+    "x": 1300,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/composteurs-milieu-plein.png": {
+   "frame": {
+    "x": 1365,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/godets-levee.png": {
+   "frame": {
+    "x": 1430,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/godets-vide.png": {
+   "frame": {
+    "x": 1495,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/haie-coin-ne.png": {
+   "frame": {
+    "x": 1560,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "structures/haie-coin-no.png": {
+   "frame": {
+    "x": 1625,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "structures/haie-coin-se.png": {
+   "frame": {
+    "x": 1690,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "structures/haie-coin-so.png": {
+   "frame": {
+    "x": 1755,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "structures/haie-h.png": {
+   "frame": {
+    "x": 1820,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "structures/haie-seule.png": {
+   "frame": {
+    "x": 1885,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "structures/haie-v.png": {
+   "frame": {
+    "x": 1950,
+    "y": 455,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P3"
+  },
+  "structures/jardiniere.png": {
+   "frame": {
+    "x": 0,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-centre.png": {
+   "frame": {
+    "x": 65,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-e.png": {
+   "frame": {
+    "x": 130,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-n.png": {
+   "frame": {
+    "x": 195,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-ne.png": {
+   "frame": {
+    "x": 260,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-no.png": {
+   "frame": {
+    "x": 325,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-o.png": {
+   "frame": {
+    "x": 390,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-s.png": {
+   "frame": {
+    "x": 455,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-se.png": {
+   "frame": {
+    "x": 520,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/planche-so.png": {
+   "frame": {
+    "x": 585,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/plaque-alveolee-levee.png": {
+   "frame": {
+    "x": 650,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/plaque-alveolee-semee.png": {
+   "frame": {
+    "x": 715,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/plaque-alveolee-vide.png": {
+   "frame": {
+    "x": 780,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/portail-ferme.png": {
+   "frame": {
+    "x": 845,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/portail-ouvert.png": {
+   "frame": {
+    "x": 910,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/pot.png": {
+   "frame": {
+    "x": 975,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/recuperateur-eau.png": {
+   "frame": {
+    "x": 1040,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/robinet.png": {
+   "frame": {
+    "x": 1105,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/table-centre.png": {
+   "frame": {
+    "x": 1170,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-e.png": {
+   "frame": {
+    "x": 1235,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-n.png": {
+   "frame": {
+    "x": 1300,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-ne.png": {
+   "frame": {
+    "x": 1365,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-no.png": {
+   "frame": {
+    "x": 1430,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-o.png": {
+   "frame": {
+    "x": 1495,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-s.png": {
+   "frame": {
+    "x": 1560,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-se.png": {
+   "frame": {
+    "x": 1625,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/table-so.png": {
+   "frame": {
+    "x": 1690,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "structures/tunnel-debut.png": {
+   "frame": {
+    "x": 1755,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/tunnel-fin.png": {
+   "frame": {
+    "x": 1820,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "structures/tunnel-milieu.png": {
+   "frame": {
+    "x": 1885,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-chemin-00.png": {
+   "frame": {
+    "x": 1950,
+    "y": 520,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-01.png": {
+   "frame": {
+    "x": 0,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-02.png": {
+   "frame": {
+    "x": 65,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-03.png": {
+   "frame": {
+    "x": 130,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-04.png": {
+   "frame": {
+    "x": 195,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-05.png": {
+   "frame": {
+    "x": 260,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-06.png": {
+   "frame": {
+    "x": 325,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-07.png": {
+   "frame": {
+    "x": 390,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-08.png": {
+   "frame": {
+    "x": 455,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-09.png": {
+   "frame": {
+    "x": 520,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-10.png": {
+   "frame": {
+    "x": 585,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-11.png": {
+   "frame": {
+    "x": 650,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-12.png": {
+   "frame": {
+    "x": 715,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-13.png": {
+   "frame": {
+    "x": 780,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-14.png": {
+   "frame": {
+    "x": 845,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-chemin-15.png": {
+   "frame": {
+    "x": 910,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-eau-00.png": {
+   "frame": {
+    "x": 975,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-01.png": {
+   "frame": {
+    "x": 1040,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-02.png": {
+   "frame": {
+    "x": 1105,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-03.png": {
+   "frame": {
+    "x": 1170,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-04.png": {
+   "frame": {
+    "x": 1235,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-05.png": {
+   "frame": {
+    "x": 1300,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-06.png": {
+   "frame": {
+    "x": 1365,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-07.png": {
+   "frame": {
+    "x": 1430,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-08.png": {
+   "frame": {
+    "x": 1495,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-09.png": {
+   "frame": {
+    "x": 1560,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-10.png": {
+   "frame": {
+    "x": 1625,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-11.png": {
+   "frame": {
+    "x": 1690,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-12.png": {
+   "frame": {
+    "x": 1755,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-13.png": {
+   "frame": {
+    "x": 1820,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-14.png": {
+   "frame": {
+    "x": 1885,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-eau-15.png": {
+   "frame": {
+    "x": 1950,
+    "y": 585,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/herbe-gravier-00.png": {
+   "frame": {
+    "x": 0,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-01.png": {
+   "frame": {
+    "x": 65,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-02.png": {
+   "frame": {
+    "x": 130,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-03.png": {
+   "frame": {
+    "x": 195,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-04.png": {
+   "frame": {
+    "x": 260,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-05.png": {
+   "frame": {
+    "x": 325,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-06.png": {
+   "frame": {
+    "x": 390,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-07.png": {
+   "frame": {
+    "x": 455,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-08.png": {
+   "frame": {
+    "x": 520,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-09.png": {
+   "frame": {
+    "x": 585,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-10.png": {
+   "frame": {
+    "x": 650,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-11.png": {
+   "frame": {
+    "x": 715,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-12.png": {
+   "frame": {
+    "x": 780,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-13.png": {
+   "frame": {
+    "x": 845,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-14.png": {
+   "frame": {
+    "x": 910,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-gravier-15.png": {
+   "frame": {
+    "x": 975,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-00.png": {
+   "frame": {
+    "x": 1040,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-01.png": {
+   "frame": {
+    "x": 1105,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-02.png": {
+   "frame": {
+    "x": 1170,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-03.png": {
+   "frame": {
+    "x": 1235,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-04.png": {
+   "frame": {
+    "x": 1300,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-05.png": {
+   "frame": {
+    "x": 1365,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-06.png": {
+   "frame": {
+    "x": 1430,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-07.png": {
+   "frame": {
+    "x": 1495,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-08.png": {
+   "frame": {
+    "x": 1560,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-09.png": {
+   "frame": {
+    "x": 1625,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-10.png": {
+   "frame": {
+    "x": 1690,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-11.png": {
+   "frame": {
+    "x": 1755,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-12.png": {
+   "frame": {
+    "x": 1820,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-13.png": {
+   "frame": {
+    "x": 1885,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-14.png": {
+   "frame": {
+    "x": 1950,
+    "y": 650,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/herbe-terre-15.png": {
+   "frame": {
+    "x": 0,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "transitions/terre-paillage-00.png": {
+   "frame": {
+    "x": 65,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-01.png": {
+   "frame": {
+    "x": 130,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-02.png": {
+   "frame": {
+    "x": 195,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-03.png": {
+   "frame": {
+    "x": 260,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-04.png": {
+   "frame": {
+    "x": 325,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-05.png": {
+   "frame": {
+    "x": 390,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-06.png": {
+   "frame": {
+    "x": 455,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-07.png": {
+   "frame": {
+    "x": 520,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-08.png": {
+   "frame": {
+    "x": 585,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-09.png": {
+   "frame": {
+    "x": 650,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-10.png": {
+   "frame": {
+    "x": 715,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-11.png": {
+   "frame": {
+    "x": 780,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-12.png": {
+   "frame": {
+    "x": 845,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-13.png": {
+   "frame": {
+    "x": 910,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-14.png": {
+   "frame": {
+    "x": 975,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "transitions/terre-paillage-15.png": {
+   "frame": {
+    "x": 1040,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/chemin-1.png": {
+   "frame": {
+    "x": 1105,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/chemin-2.png": {
+   "frame": {
+    "x": 1170,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/chemin-3.png": {
+   "frame": {
+    "x": 1235,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/dalles-1.png": {
+   "frame": {
+    "x": 1300,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/dalles-2.png": {
+   "frame": {
+    "x": 1365,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/eau-f1.png": {
+   "frame": {
+    "x": 1430,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/eau-f2.png": {
+   "frame": {
+    "x": 1495,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/eau-f3.png": {
+   "frame": {
+    "x": 1560,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/gravier-1.png": {
+   "frame": {
+    "x": 1625,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/gravier-2.png": {
+   "frame": {
+    "x": 1690,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/gravier-3.png": {
+   "frame": {
+    "x": 1755,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/herbe-1.png": {
+   "frame": {
+    "x": 1820,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/herbe-2.png": {
+   "frame": {
+    "x": 1885,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/herbe-3.png": {
+   "frame": {
+    "x": 1950,
+    "y": 715,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/herbe-automne-1.png": {
+   "frame": {
+    "x": 0,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-automne-2.png": {
+   "frame": {
+    "x": 65,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-automne-3.png": {
+   "frame": {
+    "x": 130,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-hiver-1.png": {
+   "frame": {
+    "x": 195,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-hiver-2.png": {
+   "frame": {
+    "x": 260,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-hiver-3.png": {
+   "frame": {
+    "x": 325,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-printemps-1.png": {
+   "frame": {
+    "x": 390,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-printemps-2.png": {
+   "frame": {
+    "x": 455,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/herbe-printemps-3.png": {
+   "frame": {
+    "x": 520,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/paillage-brf-1.png": {
+   "frame": {
+    "x": 585,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/paillage-brf-2.png": {
+   "frame": {
+    "x": 650,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/paillage-brf-3.png": {
+   "frame": {
+    "x": 715,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/paillage-paille-1.png": {
+   "frame": {
+    "x": 780,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/paillage-paille-2.png": {
+   "frame": {
+    "x": 845,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/paillage-paille-3.png": {
+   "frame": {
+    "x": 910,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/sol-serre-beton-1.png": {
+   "frame": {
+    "x": 975,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/sol-serre-carrelage-1.png": {
+   "frame": {
+    "x": 1040,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/terre-1.png": {
+   "frame": {
+    "x": 1105,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/terre-2.png": {
+   "frame": {
+    "x": 1170,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/terre-3.png": {
+   "frame": {
+    "x": 1235,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/terre-battue-1.png": {
+   "frame": {
+    "x": 1300,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/terre-battue-2.png": {
+   "frame": {
+    "x": 1365,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/terre-battue-3.png": {
+   "frame": {
+    "x": 1430,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "tuiles/terre-nue-1.png": {
+   "frame": {
+    "x": 1495,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/terre-nue-2.png": {
+   "frame": {
+    "x": 1560,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "tuiles/terre-nue-3.png": {
+   "frame": {
+    "x": 1625,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-arroser.png": {
+   "frame": {
+    "x": 33,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-editer-plan.png": {
+   "frame": {
+    "x": 82,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-observer.png": {
+   "frame": {
+    "x": 131,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-photo.png": {
+   "frame": {
+    "x": 180,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-planter.png": {
+   "frame": {
+    "x": 229,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-recolter.png": {
+   "frame": {
+    "x": 278,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-semer.png": {
+   "frame": {
+    "x": 327,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/action-ticket.png": {
+   "frame": {
+    "x": 376,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/cadenas.png": {
+   "frame": {
+    "x": 425,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/cadre-badge.png": {
+   "frame": {
+    "x": 1690,
+    "y": 780,
+    "w": 64,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 64,
+    "h": 64
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/calendrier.png": {
+   "frame": {
+    "x": 474,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/competence-aromatiques.png": {
+   "frame": {
+    "x": 523,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/competence-compost.png": {
+   "frame": {
+    "x": 572,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/competence-fruitiers.png": {
+   "frame": {
+    "x": 621,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/competence-potager.png": {
+   "frame": {
+    "x": 670,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/competence-semences.png": {
+   "frame": {
+    "x": 719,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/competence-serre.png": {
+   "frame": {
+    "x": 768,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/groupe.png": {
+   "frame": {
+    "x": 817,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/meteo-canicule.png": {
+   "frame": {
+    "x": 866,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/meteo-gel.png": {
+   "frame": {
+    "x": 915,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/meteo-nuages.png": {
+   "frame": {
+    "x": 964,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/meteo-pluie.png": {
+   "frame": {
+    "x": 1013,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/meteo-soleil.png": {
+   "frame": {
+    "x": 1062,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/meteo-vent.png": {
+   "frame": {
+    "x": 1111,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/niveau.png": {
+   "frame": {
+    "x": 1160,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  },
+  "ui/notification.png": {
+   "frame": {
+    "x": 1209,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/saison-automne.png": {
+   "frame": {
+    "x": 1258,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/saison-ete.png": {
+   "frame": {
+    "x": 1307,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/saison-hiver.png": {
+   "frame": {
+    "x": 1356,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/saison-printemps.png": {
+   "frame": {
+    "x": 1405,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P2"
+  },
+  "ui/xp.png": {
+   "frame": {
+    "x": 1454,
+    "y": 845,
+    "w": 48,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 48,
+    "h": 48
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 1.0
+   },
+   "priority": "P1"
+  }
+ },
+ "animations": {
+  "ambiance/abeille": [
+   "ambiance/abeille-f1.png",
+   "ambiance/abeille-f2.png"
+  ],
+  "ambiance/coccinelle": [
+   "ambiance/coccinelle-f1.png",
+   "ambiance/coccinelle-f2.png"
+  ],
+  "ambiance/feuilles": [
+   "ambiance/feuilles-f1.png",
+   "ambiance/feuilles-f2.png",
+   "ambiance/feuilles-f3.png",
+   "ambiance/feuilles-f4.png"
+  ],
+  "ambiance/oiseau": [
+   "ambiance/oiseau-f1.png",
+   "ambiance/oiseau-f2.png",
+   "ambiance/oiseau-f3.png",
+   "ambiance/oiseau-f4.png"
+  ],
+  "ambiance/papillon": [
+   "ambiance/papillon-f1.png",
+   "ambiance/papillon-f2.png",
+   "ambiance/papillon-f3.png",
+   "ambiance/papillon-f4.png"
+  ],
+  "ambiance/petales": [
+   "ambiance/petales-f1.png",
+   "ambiance/petales-f2.png",
+   "ambiance/petales-f3.png",
+   "ambiance/petales-f4.png"
+  ],
+  "ambiance/poussiere": [
+   "ambiance/poussiere-f1.png",
+   "ambiance/poussiere-f2.png",
+   "ambiance/poussiere-f3.png",
+   "ambiance/poussiere-f4.png"
+  ],
+  "tuiles/eau": [
+   "tuiles/eau-f1.png",
+   "tuiles/eau-f2.png",
+   "tuiles/eau-f3.png"
+  ]
+ },
+ "meta": {
+  "image": "atlas-27.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 942
+  },
+  "scale": "1"
+ }
+}

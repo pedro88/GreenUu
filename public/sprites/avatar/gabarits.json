@@ -1,0 +1,1229 @@
+{
+ "v": 1,
+ "gabarits": {
+  "mince-petite": {
+   "*": [
+    0,
+    6
+   ],
+   "bas-semer-f1": [
+    0,
+    4
+   ],
+   "bas-semer-f2": [
+    0,
+    4
+   ],
+   "bas-semer-f3": [
+    0,
+    4
+   ],
+   "bas-semer-f4": [
+    0,
+    4
+   ],
+   "bas-planter-f1": [
+    0,
+    4
+   ],
+   "bas-planter-f2": [
+    0,
+    4
+   ],
+   "bas-planter-f3": [
+    0,
+    4
+   ],
+   "bas-planter-f4": [
+    0,
+    4
+   ],
+   "bas-recolter-f4": [
+    0,
+    5
+   ],
+   "bas-observer-f1": [
+    0,
+    5
+   ],
+   "bas-observer-f2": [
+    0,
+    5
+   ],
+   "haut-semer-f1": [
+    0,
+    4
+   ],
+   "haut-semer-f2": [
+    0,
+    4
+   ],
+   "haut-semer-f3": [
+    0,
+    4
+   ],
+   "haut-semer-f4": [
+    0,
+    4
+   ],
+   "haut-planter-f1": [
+    0,
+    4
+   ],
+   "haut-planter-f2": [
+    0,
+    4
+   ],
+   "haut-planter-f3": [
+    0,
+    4
+   ],
+   "haut-planter-f4": [
+    0,
+    4
+   ],
+   "haut-recolter-f4": [
+    0,
+    5
+   ],
+   "haut-observer-f1": [
+    0,
+    5
+   ],
+   "haut-observer-f2": [
+    0,
+    5
+   ],
+   "gauche-semer-f1": [
+    0,
+    4
+   ],
+   "gauche-semer-f2": [
+    0,
+    4
+   ],
+   "gauche-semer-f3": [
+    0,
+    4
+   ],
+   "gauche-semer-f4": [
+    0,
+    4
+   ],
+   "gauche-planter-f1": [
+    0,
+    4
+   ],
+   "gauche-planter-f2": [
+    0,
+    4
+   ],
+   "gauche-planter-f3": [
+    0,
+    4
+   ],
+   "gauche-planter-f4": [
+    0,
+    4
+   ],
+   "gauche-recolter-f4": [
+    0,
+    5
+   ],
+   "gauche-observer-f1": [
+    0,
+    5
+   ],
+   "gauche-observer-f2": [
+    0,
+    5
+   ],
+   "droite-semer-f1": [
+    0,
+    4
+   ],
+   "droite-semer-f2": [
+    0,
+    4
+   ],
+   "droite-semer-f3": [
+    0,
+    4
+   ],
+   "droite-semer-f4": [
+    0,
+    4
+   ],
+   "droite-planter-f1": [
+    0,
+    4
+   ],
+   "droite-planter-f2": [
+    0,
+    4
+   ],
+   "droite-planter-f3": [
+    0,
+    4
+   ],
+   "droite-planter-f4": [
+    0,
+    4
+   ],
+   "droite-recolter-f4": [
+    0,
+    5
+   ],
+   "droite-observer-f1": [
+    0,
+    5
+   ],
+   "droite-observer-f2": [
+    0,
+    5
+   ]
+  },
+  "mince-moyenne": {
+   "*": [
+    0,
+    0
+   ]
+  },
+  "mince-grande": {
+   "*": [
+    0,
+    -8
+   ],
+   "bas-semer-f1": [
+    0,
+    -6
+   ],
+   "bas-semer-f2": [
+    0,
+    -6
+   ],
+   "bas-semer-f3": [
+    0,
+    -6
+   ],
+   "bas-semer-f4": [
+    0,
+    -6
+   ],
+   "bas-planter-f1": [
+    0,
+    -6
+   ],
+   "bas-planter-f2": [
+    0,
+    -6
+   ],
+   "bas-planter-f3": [
+    0,
+    -6
+   ],
+   "bas-planter-f4": [
+    0,
+    -6
+   ],
+   "bas-recolter-f1": [
+    0,
+    -7
+   ],
+   "bas-recolter-f2": [
+    0,
+    -7
+   ],
+   "bas-recolter-f4": [
+    0,
+    -7
+   ],
+   "bas-observer-f1": [
+    0,
+    -6
+   ],
+   "bas-observer-f2": [
+    0,
+    -6
+   ],
+   "haut-semer-f1": [
+    0,
+    -6
+   ],
+   "haut-semer-f2": [
+    0,
+    -6
+   ],
+   "haut-semer-f3": [
+    0,
+    -6
+   ],
+   "haut-semer-f4": [
+    0,
+    -6
+   ],
+   "haut-planter-f1": [
+    0,
+    -6
+   ],
+   "haut-planter-f2": [
+    0,
+    -6
+   ],
+   "haut-planter-f3": [
+    0,
+    -6
+   ],
+   "haut-planter-f4": [
+    0,
+    -6
+   ],
+   "haut-recolter-f1": [
+    0,
+    -7
+   ],
+   "haut-recolter-f2": [
+    0,
+    -7
+   ],
+   "haut-recolter-f4": [
+    0,
+    -7
+   ],
+   "haut-observer-f1": [
+    0,
+    -6
+   ],
+   "haut-observer-f2": [
+    0,
+    -6
+   ],
+   "gauche-becher-f4": [
+    0,
+    -7
+   ],
+   "gauche-semer-f1": [
+    0,
+    -6
+   ],
+   "gauche-semer-f2": [
+    0,
+    -6
+   ],
+   "gauche-semer-f3": [
+    0,
+    -6
+   ],
+   "gauche-semer-f4": [
+    0,
+    -6
+   ],
+   "gauche-planter-f1": [
+    0,
+    -6
+   ],
+   "gauche-planter-f2": [
+    0,
+    -6
+   ],
+   "gauche-planter-f3": [
+    0,
+    -6
+   ],
+   "gauche-planter-f4": [
+    0,
+    -6
+   ],
+   "gauche-recolter-f1": [
+    0,
+    -7
+   ],
+   "gauche-recolter-f2": [
+    0,
+    -7
+   ],
+   "gauche-recolter-f4": [
+    0,
+    -7
+   ],
+   "gauche-observer-f1": [
+    0,
+    -6
+   ],
+   "gauche-observer-f2": [
+    0,
+    -6
+   ],
+   "droite-becher-f4": [
+    0,
+    -7
+   ],
+   "droite-semer-f1": [
+    0,
+    -6
+   ],
+   "droite-semer-f2": [
+    0,
+    -6
+   ],
+   "droite-semer-f3": [
+    0,
+    -6
+   ],
+   "droite-semer-f4": [
+    0,
+    -6
+   ],
+   "droite-planter-f1": [
+    0,
+    -6
+   ],
+   "droite-planter-f2": [
+    0,
+    -6
+   ],
+   "droite-planter-f3": [
+    0,
+    -6
+   ],
+   "droite-planter-f4": [
+    0,
+    -6
+   ],
+   "droite-recolter-f1": [
+    0,
+    -7
+   ],
+   "droite-recolter-f2": [
+    0,
+    -7
+   ],
+   "droite-recolter-f4": [
+    0,
+    -7
+   ],
+   "droite-observer-f1": [
+    0,
+    -6
+   ],
+   "droite-observer-f2": [
+    0,
+    -6
+   ]
+  },
+  "moyenne-petite": {
+   "*": [
+    0,
+    6
+   ],
+   "bas-semer-f1": [
+    0,
+    4
+   ],
+   "bas-semer-f2": [
+    0,
+    4
+   ],
+   "bas-semer-f3": [
+    0,
+    4
+   ],
+   "bas-semer-f4": [
+    0,
+    4
+   ],
+   "bas-planter-f1": [
+    0,
+    4
+   ],
+   "bas-planter-f2": [
+    0,
+    4
+   ],
+   "bas-planter-f3": [
+    0,
+    4
+   ],
+   "bas-planter-f4": [
+    0,
+    4
+   ],
+   "bas-recolter-f4": [
+    0,
+    5
+   ],
+   "bas-observer-f1": [
+    0,
+    5
+   ],
+   "bas-observer-f2": [
+    0,
+    5
+   ],
+   "haut-semer-f1": [
+    0,
+    4
+   ],
+   "haut-semer-f2": [
+    0,
+    4
+   ],
+   "haut-semer-f3": [
+    0,
+    4
+   ],
+   "haut-semer-f4": [
+    0,
+    4
+   ],
+   "haut-planter-f1": [
+    0,
+    4
+   ],
+   "haut-planter-f2": [
+    0,
+    4
+   ],
+   "haut-planter-f3": [
+    0,
+    4
+   ],
+   "haut-planter-f4": [
+    0,
+    4
+   ],
+   "haut-recolter-f4": [
+    0,
+    5
+   ],
+   "haut-observer-f1": [
+    0,
+    5
+   ],
+   "haut-observer-f2": [
+    0,
+    5
+   ],
+   "gauche-semer-f1": [
+    0,
+    4
+   ],
+   "gauche-semer-f2": [
+    0,
+    4
+   ],
+   "gauche-semer-f3": [
+    0,
+    4
+   ],
+   "gauche-semer-f4": [
+    0,
+    4
+   ],
+   "gauche-planter-f1": [
+    0,
+    4
+   ],
+   "gauche-planter-f2": [
+    0,
+    4
+   ],
+   "gauche-planter-f3": [
+    0,
+    4
+   ],
+   "gauche-planter-f4": [
+    0,
+    4
+   ],
+   "gauche-recolter-f4": [
+    0,
+    5
+   ],
+   "gauche-observer-f1": [
+    0,
+    5
+   ],
+   "gauche-observer-f2": [
+    0,
+    5
+   ],
+   "droite-semer-f1": [
+    0,
+    4
+   ],
+   "droite-semer-f2": [
+    0,
+    4
+   ],
+   "droite-semer-f3": [
+    0,
+    4
+   ],
+   "droite-semer-f4": [
+    0,
+    4
+   ],
+   "droite-planter-f1": [
+    0,
+    4
+   ],
+   "droite-planter-f2": [
+    0,
+    4
+   ],
+   "droite-planter-f3": [
+    0,
+    4
+   ],
+   "droite-planter-f4": [
+    0,
+    4
+   ],
+   "droite-recolter-f4": [
+    0,
+    5
+   ],
+   "droite-observer-f1": [
+    0,
+    5
+   ],
+   "droite-observer-f2": [
+    0,
+    5
+   ]
+  },
+  "moyenne-grande": {
+   "*": [
+    0,
+    -8
+   ],
+   "bas-semer-f1": [
+    0,
+    -6
+   ],
+   "bas-semer-f2": [
+    0,
+    -6
+   ],
+   "bas-semer-f3": [
+    0,
+    -6
+   ],
+   "bas-semer-f4": [
+    0,
+    -6
+   ],
+   "bas-planter-f1": [
+    0,
+    -6
+   ],
+   "bas-planter-f2": [
+    0,
+    -6
+   ],
+   "bas-planter-f3": [
+    0,
+    -6
+   ],
+   "bas-planter-f4": [
+    0,
+    -6
+   ],
+   "bas-recolter-f1": [
+    0,
+    -7
+   ],
+   "bas-recolter-f2": [
+    0,
+    -7
+   ],
+   "bas-recolter-f4": [
+    0,
+    -7
+   ],
+   "bas-observer-f1": [
+    0,
+    -6
+   ],
+   "bas-observer-f2": [
+    0,
+    -6
+   ],
+   "haut-semer-f1": [
+    0,
+    -6
+   ],
+   "haut-semer-f2": [
+    0,
+    -6
+   ],
+   "haut-semer-f3": [
+    0,
+    -6
+   ],
+   "haut-semer-f4": [
+    0,
+    -6
+   ],
+   "haut-planter-f1": [
+    0,
+    -6
+   ],
+   "haut-planter-f2": [
+    0,
+    -6
+   ],
+   "haut-planter-f3": [
+    0,
+    -6
+   ],
+   "haut-planter-f4": [
+    0,
+    -6
+   ],
+   "haut-recolter-f1": [
+    0,
+    -7
+   ],
+   "haut-recolter-f2": [
+    0,
+    -7
+   ],
+   "haut-recolter-f4": [
+    0,
+    -7
+   ],
+   "haut-observer-f1": [
+    0,
+    -6
+   ],
+   "haut-observer-f2": [
+    0,
+    -6
+   ],
+   "gauche-becher-f4": [
+    0,
+    -7
+   ],
+   "gauche-semer-f1": [
+    0,
+    -6
+   ],
+   "gauche-semer-f2": [
+    0,
+    -6
+   ],
+   "gauche-semer-f3": [
+    0,
+    -6
+   ],
+   "gauche-semer-f4": [
+    0,
+    -6
+   ],
+   "gauche-planter-f1": [
+    0,
+    -6
+   ],
+   "gauche-planter-f2": [
+    0,
+    -6
+   ],
+   "gauche-planter-f3": [
+    0,
+    -6
+   ],
+   "gauche-planter-f4": [
+    0,
+    -6
+   ],
+   "gauche-recolter-f1": [
+    0,
+    -7
+   ],
+   "gauche-recolter-f2": [
+    0,
+    -7
+   ],
+   "gauche-recolter-f4": [
+    0,
+    -7
+   ],
+   "gauche-observer-f1": [
+    0,
+    -6
+   ],
+   "gauche-observer-f2": [
+    0,
+    -6
+   ],
+   "droite-becher-f4": [
+    0,
+    -7
+   ],
+   "droite-semer-f1": [
+    0,
+    -6
+   ],
+   "droite-semer-f2": [
+    0,
+    -6
+   ],
+   "droite-semer-f3": [
+    0,
+    -6
+   ],
+   "droite-semer-f4": [
+    0,
+    -6
+   ],
+   "droite-planter-f1": [
+    0,
+    -6
+   ],
+   "droite-planter-f2": [
+    0,
+    -6
+   ],
+   "droite-planter-f3": [
+    0,
+    -6
+   ],
+   "droite-planter-f4": [
+    0,
+    -6
+   ],
+   "droite-recolter-f1": [
+    0,
+    -7
+   ],
+   "droite-recolter-f2": [
+    0,
+    -7
+   ],
+   "droite-recolter-f4": [
+    0,
+    -7
+   ],
+   "droite-observer-f1": [
+    0,
+    -6
+   ],
+   "droite-observer-f2": [
+    0,
+    -6
+   ]
+  },
+  "ronde-petite": {
+   "*": [
+    0,
+    6
+   ],
+   "bas-semer-f1": [
+    0,
+    4
+   ],
+   "bas-semer-f2": [
+    0,
+    4
+   ],
+   "bas-semer-f3": [
+    0,
+    4
+   ],
+   "bas-semer-f4": [
+    0,
+    4
+   ],
+   "bas-planter-f1": [
+    0,
+    4
+   ],
+   "bas-planter-f2": [
+    0,
+    4
+   ],
+   "bas-planter-f3": [
+    0,
+    4
+   ],
+   "bas-planter-f4": [
+    0,
+    4
+   ],
+   "bas-recolter-f4": [
+    0,
+    5
+   ],
+   "bas-observer-f1": [
+    0,
+    5
+   ],
+   "bas-observer-f2": [
+    0,
+    5
+   ],
+   "haut-semer-f1": [
+    0,
+    4
+   ],
+   "haut-semer-f2": [
+    0,
+    4
+   ],
+   "haut-semer-f3": [
+    0,
+    4
+   ],
+   "haut-semer-f4": [
+    0,
+    4
+   ],
+   "haut-planter-f1": [
+    0,
+    4
+   ],
+   "haut-planter-f2": [
+    0,
+    4
+   ],
+   "haut-planter-f3": [
+    0,
+    4
+   ],
+   "haut-planter-f4": [
+    0,
+    4
+   ],
+   "haut-recolter-f4": [
+    0,
+    5
+   ],
+   "haut-observer-f1": [
+    0,
+    5
+   ],
+   "haut-observer-f2": [
+    0,
+    5
+   ],
+   "gauche-semer-f1": [
+    0,
+    4
+   ],
+   "gauche-semer-f2": [
+    0,
+    4
+   ],
+   "gauche-semer-f3": [
+    0,
+    4
+   ],
+   "gauche-semer-f4": [
+    0,
+    4
+   ],
+   "gauche-planter-f1": [
+    0,
+    4
+   ],
+   "gauche-planter-f2": [
+    0,
+    4
+   ],
+   "gauche-planter-f3": [
+    0,
+    4
+   ],
+   "gauche-planter-f4": [
+    0,
+    4
+   ],
+   "gauche-recolter-f4": [
+    0,
+    5
+   ],
+   "gauche-observer-f1": [
+    0,
+    5
+   ],
+   "gauche-observer-f2": [
+    0,
+    5
+   ],
+   "droite-semer-f1": [
+    0,
+    4
+   ],
+   "droite-semer-f2": [
+    0,
+    4
+   ],
+   "droite-semer-f3": [
+    0,
+    4
+   ],
+   "droite-semer-f4": [
+    0,
+    4
+   ],
+   "droite-planter-f1": [
+    0,
+    4
+   ],
+   "droite-planter-f2": [
+    0,
+    4
+   ],
+   "droite-planter-f3": [
+    0,
+    4
+   ],
+   "droite-planter-f4": [
+    0,
+    4
+   ],
+   "droite-recolter-f4": [
+    0,
+    5
+   ],
+   "droite-observer-f1": [
+    0,
+    5
+   ],
+   "droite-observer-f2": [
+    0,
+    5
+   ]
+  },
+  "ronde-moyenne": {
+   "*": [
+    0,
+    0
+   ]
+  },
+  "ronde-grande": {
+   "*": [
+    0,
+    -8
+   ],
+   "bas-semer-f1": [
+    0,
+    -6
+   ],
+   "bas-semer-f2": [
+    0,
+    -6
+   ],
+   "bas-semer-f3": [
+    0,
+    -6
+   ],
+   "bas-semer-f4": [
+    0,
+    -6
+   ],
+   "bas-planter-f1": [
+    0,
+    -6
+   ],
+   "bas-planter-f2": [
+    0,
+    -6
+   ],
+   "bas-planter-f3": [
+    0,
+    -6
+   ],
+   "bas-planter-f4": [
+    0,
+    -6
+   ],
+   "bas-recolter-f1": [
+    0,
+    -7
+   ],
+   "bas-recolter-f2": [
+    0,
+    -7
+   ],
+   "bas-recolter-f4": [
+    0,
+    -7
+   ],
+   "bas-observer-f1": [
+    0,
+    -6
+   ],
+   "bas-observer-f2": [
+    0,
+    -6
+   ],
+   "haut-semer-f1": [
+    0,
+    -6
+   ],
+   "haut-semer-f2": [
+    0,
+    -6
+   ],
+   "haut-semer-f3": [
+    0,
+    -6
+   ],
+   "haut-semer-f4": [
+    0,
+    -6
+   ],
+   "haut-planter-f1": [
+    0,
+    -6
+   ],
+   "haut-planter-f2": [
+    0,
+    -6
+   ],
+   "haut-planter-f3": [
+    0,
+    -6
+   ],
+   "haut-planter-f4": [
+    0,
+    -6
+   ],
+   "haut-recolter-f1": [
+    0,
+    -7
+   ],
+   "haut-recolter-f2": [
+    0,
+    -7
+   ],
+   "haut-recolter-f4": [
+    0,
+    -7
+   ],
+   "haut-observer-f1": [
+    0,
+    -6
+   ],
+   "haut-observer-f2": [
+    0,
+    -6
+   ],
+   "gauche-becher-f4": [
+    0,
+    -7
+   ],
+   "gauche-semer-f1": [
+    0,
+    -6
+   ],
+   "gauche-semer-f2": [
+    0,
+    -6
+   ],
+   "gauche-semer-f3": [
+    0,
+    -6
+   ],
+   "gauche-semer-f4": [
+    0,
+    -6
+   ],
+   "gauche-planter-f1": [
+    0,
+    -6
+   ],
+   "gauche-planter-f2": [
+    0,
+    -6
+   ],
+   "gauche-planter-f3": [
+    0,
+    -6
+   ],
+   "gauche-planter-f4": [
+    0,
+    -6
+   ],
+   "gauche-recolter-f1": [
+    0,
+    -7
+   ],
+   "gauche-recolter-f2": [
+    0,
+    -7
+   ],
+   "gauche-recolter-f4": [
+    0,
+    -7
+   ],
+   "gauche-observer-f1": [
+    0,
+    -6
+   ],
+   "gauche-observer-f2": [
+    0,
+    -6
+   ],
+   "droite-becher-f4": [
+    0,
+    -7
+   ],
+   "droite-semer-f1": [
+    0,
+    -6
+   ],
+   "droite-semer-f2": [
+    0,
+    -6
+   ],
+   "droite-semer-f3": [
+    0,
+    -6
+   ],
+   "droite-semer-f4": [
+    0,
+    -6
+   ],
+   "droite-planter-f1": [
+    0,
+    -6
+   ],
+   "droite-planter-f2": [
+    0,
+    -6
+   ],
+   "droite-planter-f3": [
+    0,
+    -6
+   ],
+   "droite-planter-f4": [
+    0,
+    -6
+   ],
+   "droite-recolter-f1": [
+    0,
+    -7
+   ],
+   "droite-recolter-f2": [
+    0,
+    -7
+   ],
+   "droite-recolter-f4": [
+    0,
+    -7
+   ],
+   "droite-observer-f1": [
+    0,
+    -6
+   ],
+   "droite-observer-f2": [
+    0,
+    -6
+   ]
+  }
+ }
+}
