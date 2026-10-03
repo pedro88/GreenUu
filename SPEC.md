@@ -2026,10 +2026,49 @@ Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent de
 | PRV-09 | une suppression demandée | l'utilisateur clique sur le lien de rétablissement dans les 30 jours | le compte est rétabli à l'identique | I |
 | ENV-01 | une variable d'environnement obligatoire manquante | on démarre l'app | elle s'arrête avec un message qui nomme la variable | U |
 
-### 12.10 Lot 9 — Finitions (à détailler avant le lot)
+### 12.10 Lot 9 — Finitions
+
+Trois volets : le hors-ligne (PWA, Serwist, §3.1), les statistiques pluriannuelles, et des finitions issues des audits
+des lots 6 à 8. Hors périmètre du lot : notifications push (§17 Q-18), photos saisies hors-ligne, base de communes
+(§17 Q-24), déploiement (§17 Q-12).
+
+#### Hors-ligne
 
 | ID | Étant donné | Quand | Alors | Test |
 |---|---|---|---|---|
+| OFF-01 | une vue jardin chargée une fois | le réseau est coupé et la page rechargée | le plan et les sprites essentiels s'affichent depuis le cache | E |
+| OFF-02 | hors-ligne | on saisit une observation et une récolte | elles sont mises en file (IndexedDB), un compteur « 2 en attente » s'affiche, et elles sont envoyées au retour du réseau, sans doublon grâce aux IDs client ; le compteur revient à 0 | E |
+| OFF-03 | une observation déjà reçue avec l'ID client X | la file la renvoie avec le même ID (réponse perdue, nouvel essai) | une seule entrée existe, et le second envoi renvoie l'entrée existante sans erreur ni XP en double | I |
+| OFF-04 | un ID client déjà pris par une entrée d'un autre jardin ou d'un autre auteur | on envoie une saisie avec cet ID | `CONFLICT`, sans rien révéler de l'entrée existante ; un ID fourni ne donne aucun droit (§4.1) | I |
+| OFF-05 | une saisie en file sur une culture supprimée entre-temps (ou des droits retirés) | la file est rejouée | la saisie refusée reste dans la file avec la raison en clair (« à revoir ») ; elle n'est jamais perdue en silence, et l'utilisateur peut la corriger ou l'abandonner | E |
+| OFF-06 | hors-ligne, une page jamais visitée | on la demande | la page hors-ligne s'affiche : ce qui reste consultable et le nombre d'actions en attente | E |
+| OFF-07 | une observation saisie hors-ligne à 23 h 50 (heure du jardin) | elle est envoyée le lendemain à 0 h 10 | elle garde la date et l'heure de saisie, et compte pour le jour de saisie (journal, XP, quêtes) | I |
+| OFF-08 | un utilisateur connecté avec des pages et une file en cache | il se déconnecte | le cache des pages authentifiées et la file sont vidés ; la saisie suivante sur cet appareil ne voit rien de la session précédente | E |
+
+#### Statistiques pluriannuelles (`/app/jardins/[jardinId]/statistiques`)
+
+| ID | Étant donné | Quand | Alors | Test |
+|---|---|---|---|---|
+| STAT-01 | 3 saisons d'historique | on ouvre `/statistiques` | les rendements par espèce et par zone sont comparés d'une année à l'autre | E |
+| STAT-02 | des récoltes en `g`, `kg`, `unit` et `bunch` | on calcule les rendements | conversion de RG-JRN-05 : `g` et `kg` en kg, `unit` avec le poids moyen de l'espèce quand il est connu ; le reste (`bunch`, `l`, `unit` sans poids moyen) n'entre pas dans le total en kg et est compté à part (« 12 bottes ») | U |
+| STAT-03 | une zone avec une surface et une zone sans surface | on affiche le rendement par zone | kg/m² pour la première ; kg seulement, avec une mention, pour la seconde | U |
+| STAT-04 | un jardin dont la saison commence en septembre (`season_start_month = 9`) | une récolte du 15 août 2026 et une du 15 septembre 2026 | la première compte pour la saison 2025-2026, la seconde pour 2026-2027 | U |
+| STAT-05 | une culture vivace sur 3 saisons (§17 Q-04) | on calcule les rendements | chaque saison reçoit les récoltes faites pendant cette saison ; la culture n'est pas comptée trois fois en entier | U |
+| STAT-06 | des cultures terminées, échouées et abandonnées | on affiche les réussites | taux de réussite par espèce et par saison ; les cultures en cours n'entrent pas dans le calcul | I |
+| STAT-07 | un `member` et un `admin` | ils demandent l'export CSV des statistiques | l'admin reçoit le fichier ; le membre reçoit `FORBIDDEN` (`garden:export`, §5.2) | I |
+
+#### Finitions
+
+| ID | Étant donné | Quand | Alors | Test |
+|---|---|---|---|---|
+| POL-01 | le formulaire de connexion | il est soumis avant que la page soit interactive (réseau lent) | les identifiants ne partent jamais dans l'URL : soumission `POST`, aucune requête `GET` portant `password` | E |
+| POL-02 | un objet de déco placé ou forgé hors des zones et du terrain | on ouvre la vue jardin | l'emprise de la scène l'inclut et le cadrage initial le montre ; une position au-delà de 100 m du bord de la scène est refusée en `VALIDATION` | I |
+| POL-03 | une zone de la vue jardin | on la touche deux fois rapidement | la caméra zoome sur la zone (§9.5) | E |
+| POL-04 | le classement d'un jardin activé | on l'affiche | il porte sur l'XP du mois en cours (§17 Q-15), et le libellé le dit | I |
+| POL-05 | des quêtes en français | on passe l'interface en anglais | les titres des quêtes sont traduits (clés i18n et paramètres, §4.2.5) | U |
+| POL-06 | `/app/profil/quetes` | on l'ouvre deux fois de suite | la lecture n'écrit rien en base (la génération des quêtes passe par le job, pas par la page) | I |
+
+---|---|---|---|---|
 | OFF-01 | une vue jardin chargée une fois | le réseau est coupé et la page rechargée | le plan et les sprites essentiels s'affichent depuis le cache | E |
 | OFF-02 | hors-ligne | on saisit une observation et une récolte | elles sont mises en file (IndexedDB) et envoyées au retour du réseau, sans doublon grâce aux IDs client | E |
 | STAT-01 | 3 saisons d'historique | on ouvre `/statistiques` | les rendements par espèce et par zone sont comparés d'une année à l'autre | E |
@@ -2097,7 +2136,7 @@ Contenu :
 | 6 Progression | Barème, journal d'XP, anti-abus, recalcul, niveaux, compétences, succès, quêtes, collectif (logique) | XP, LVL, ACH, QST, COL-01 à COL-03 | §6 `/app/profil*` (sauf l'avatar), §8 `/admin/xp` |
 | 7 Vue jardin | Moteur PixiJS, instantané de scène, phase visuelle, états, couche accessible, éditeur de plan | MAP, PLN | §4 `/`, `/plan`, §7 `/affichage` |
 | 8 Déco et avatar | Déco, déblocages, avatar, vignettes, avatars dans la vue, page de progression collective | DEC, AVT, COL-04 | §6 `/app/profil/avatar`, §2 étape avatar, §4 `/progression` |
-| 9 Finitions | PWA et hors-ligne, statistiques pluriannuelles, polish | OFF, STAT (à compléter) | §4 `/statistiques`, page hors-ligne |
+| 9 Finitions | PWA et hors-ligne, statistiques pluriannuelles, finitions issues des audits | OFF, STAT, POL | §4 `/statistiques`, page hors-ligne |
 
 **Définition de « terminé » pour chaque lot** :
 
@@ -2183,6 +2222,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.15 | 2026-10-03 | Critères du lot 9 détaillés (§12.10), proposition soumise à validation : hors-ligne (OFF-01 à 08 : file IndexedDB, idempotence par ID client, saisies refusées conservées « à revoir », page hors-ligne, date de saisie conservée, cache vidé à la déconnexion), statistiques (STAT-01 à 07 : conversions, kg/m², saison culturale décalée, vivaces, taux de réussite, export CSV réservé à `garden:export`), finitions issues des audits (POL-01 à 06, dont la soumission du formulaire de connexion avant hydratation). Hors lot : push (Q-18), photos hors-ligne, base de communes (Q-24), déploiement (Q-12). |
 | 0.14 | 2026-10-03 | Avatar plus fin (demande de l'utilisateur) : calques `head` (5 formes de visage) et `face_details` (âge), 6 formes d'yeux recolorables (palettes `eyes`), sourcils, 9 silhouettes par corpulence et taille, vêtements ajustés par gabarit et décalage des calques de tête (§10.1). Ces éléments n'apparaissent qu'une fois leurs sprites livrés ; la demande est rédigée dans `DEMANDE-SPRITES-AVATAR.md`. **Tout le catalogue d'avatar est disponible dès le départ** : le mécanisme de déblocage est conservé pour de futurs contenus exclusifs ; la déco garde ses conditions. AVT-02 est donc prouvé avec un élément exclusif créé par le test (intégration et e2e). |
 | 0.13 | 2026-10-02 | Alignement sur les maquettes (branche `design/maquettes`) : palette relevée sur les maquettes, police Inter, sprites HD (`out_hd`) et icônes pixel art de la barre d'onglets (`scripts/nav-icons.py`, provisoires). Décision : **thème clair par défaut**, le thème sombre n'est plus déclenché par `prefers-color-scheme` et ne s'applique que sur choix explicite (`data-theme="dark"`) ; le réglage du thème reste à exposer dans `/app/parametres/affichage`. |
 | 0.12 | 2026-10-02 | Fin du lot 8 : tables `decor_item`, `decor_placement`, `avatar_item`, `palette`, `avatar_item_palette`, `user_avatar` ; catalogues définis en code et chargés avec le référentiel ; commandes `placeDecor`, `moveDecor`, `removeDecor` dans le lot tout ou rien de l'éditeur ; éditeur d'avatar, étape 1 de `/bienvenue`, vignettes `AvatarThumb` ; avatars dans la vue jardin ; page `/progression`. Décisions : sprites HD (`out_hd/`) pour l'avatar et toute l'app (§9.2) ; déclarer un objet ★ comme pratique exige `garden:update` et crée la déclaration au niveau du jardin (retirer l'objet propose de retirer la pratique, sinon elle reste, détachée) ; avatars affichés dans les jardins `collective`, `association` et `educational`, d'après le dernier événement de domaine rattaché à une zone ; « succès collectifs » de `/progression` = succès des membres actifs, sans rang ; conditions `skill` exprimées en niveau de compétence et `season_active` sur l'hémisphère nord, comme `all_seasons` ; le succès `seed_saver` s'appelle « Semencier » (§10.4). Écarts : les comptes antérieurs au lot reçoivent leur avatar par défaut à la lecture (pas de rétro-remplissage : il est dérivé de l'ID en code) ; les assets V1 n'ont ni calque `hair_back` ni yeux recolorables (calque `face_eyes` sans emplacement, aucune palette `eyes`) ni sourcils ; la palette d'objets ne gère pas encore les variantes de nuit (lanterne allumée). |
