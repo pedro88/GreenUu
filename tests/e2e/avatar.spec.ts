@@ -120,7 +120,9 @@ test.describe('jardin collectif (§9.5, §8.7)', () => {
     const avatar = page.getByTestId(`avatar-${userId('emma')}`);
     const compost = zoneId('canal', 'compost');
     await expect(avatar).toHaveAttribute('data-zone-id', compost);
-    await expect(avatar).toHaveAttribute('aria-label', 'emma, près de Compost collectif');
+    // Lot 9 (LIV-06) : sa dernière action réelle (créer un ticket : action générique « porter ») et son ancienneté.
+    await expect(avatar).toHaveAttribute('data-avatar-action', 'porter');
+    await expect(avatar).toHaveAttribute('aria-label', 'emma a jardiné, près de Compost collectif, il y a 0 min');
     // Près de la zone : son repère touche le rectangle de la zone à l'écran.
     const a = await avatar.boundingBox();
     const z = await page.getByTestId(`zone-${compost}`).boundingBox();
@@ -131,7 +133,7 @@ test.describe('jardin collectif (§9.5, §8.7)', () => {
     expect(cx).toBeLessThanOrEqual(z.x + z.width + 1);
     expect(Math.abs(foot - (z.y + z.height))).toBeLessThan(a.height);
     // La liste textuelle l'annonce aussi.
-    await expect(page.getByTestId(`avatar-item-${userId('emma')}`)).toHaveText('emma, près de Compost collectif');
+    await expect(page.getByTestId(`avatar-item-${userId('emma')}`)).toHaveText('emma a jardiné, près de Compost collectif, il y a 0 min');
   });
 
   test('un objet ★ posé se déclare comme pratique depuis sa feuille', async ({ page }) => {
