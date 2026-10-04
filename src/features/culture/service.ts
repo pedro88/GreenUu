@@ -1,7 +1,7 @@
 import { and, eq, inArray, isNull, or } from 'drizzle-orm';
 import { DomainError, forbidden, notFound, validation } from '@/lib/errors';
 import { addDays, localDate } from '@/lib/dates';
-import type { Method, Stage } from '@/lib/enums';
+import type { DensityUnit, Method, Stage } from '@/lib/enums';
 import type { ScopedCtx } from '@/server/action-core';
 import { can, loadScope, type Scope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
@@ -15,7 +15,7 @@ import { assertZoneContribute } from '../zone/service';
 import { findDescendants, findZone } from '../zone/repo';
 import { areNeighbors, periodsOverlap, rotationWarning, seasonYearsTouched, type PastCulture, type RotationWarning } from './rotation.pure';
 import type { CultureCreateInput, CulturePreviewInput, StageRecordInput } from './schema';
-import { deriveStatus, firstDate, occupation, orderWarnings, planStages, stagesFor, type StageRow } from './stages.pure';
+import { deriveStatus, estimatedPlantCount, firstDate, occupation, orderWarnings, planStages, plantsPerM2, stagesFor, type StageRow } from './stages.pure';
 
 export const CULTURE_RESTORE_DAYS = 30;
 /** Délai de retour le plus long du référentiel (solanacées, brassicacées…) : borne de la frise. */
@@ -157,9 +157,12 @@ export async function createCulture(ctx: ScopedCtx, input: CultureCreateInput) {
   if (s.status === 'closed') throw forbidden('seasonClosed');
   const rows: StageRow[] = preview.stages.map((x) => ({ ...x, actualOn: null }));
   const occ = occupation(input.method, rows);
+  // Distances : celles saisies, sinon celles de l'espèce ; sans nombre de plants saisi, il est estimé (RG-CUL-06).
+  const planting = { spacingPlantCm: input.spacingPlantCm ?? null, spacingRowCm: input.spacingRowCm ?? null, density: input.density ?? null, densityUnit: input.densityUnit ?? null };
+  const plantCount = input.plantCount ?? estimatedPlantCount(input.areaM2 ?? null, plantsPerM2({ ...planting, ...(await speciesSpacing(tx, input.speciesId, planting)) }));
   const [c] = await tx.insert(culture).values({
     gardenId: scope.gardenId, zoneId: input.zoneId, seasonId: s.id, speciesId: input.speciesId, varietyId: input.varietyId ?? null, method: input.method,
-    status: 'planned', plantCount: input.plantCount ?? null, areaM2: input.areaM2 ?? null, seedSource: input.seedSource,
+    status: 'planned', plantCount, areaM2: input.areaM2 ?? null, ...planting, seedSource: input.seedSource,
     seedParentCultureId: input.seedSource === 'own_saved' ? (input.seedParentCultureId ?? null) : null, rotationOverride: preview.rotation !== null,
     notes: input.notes ?? null, createdBy: actor.id, occupiedFrom: occ.from, occupiedTo: occ.to,
   }).returning({ id: culture.id });
@@ -168,6 +171,12 @@ export async function createCulture(ctx: ScopedCtx, input: CultureCreateInput) {
   await emit(tx, { type: 'culture.created', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: { speciesId: input.speciesId, method: input.method, rotationOverride: preview.rotation !== null } }, clock.now());
   await syncStageTickets(tx, scope.gardenId, c.id, actor.id, clock.now());
   return { cultureId: c.id, rotationOverride: preview.rotation !== null };
+}
+
+/** Distances de l'espèce, pour compléter celles qui n'ont pas été saisies. */
+async function speciesSpacing(tx: Executor, speciesId: string, given: { spacingPlantCm: number | null; spacingRowCm: number | null }) {
+  const [sp] = await tx.select({ spacingPlantCm: species.spacingPlantCm, spacingRowCm: species.spacingRowCm }).from(species).where(eq(species.id, speciesId)).limit(1);
+  return { spacingPlantCm: given.spacingPlantCm ?? sp?.spacingPlantCm ?? null, spacingRowCm: given.spacingRowCm ?? sp?.spacingRowCm ?? null };
 }
 
 /** RG-CUL-08 : semences maison issues d'une culture de la même espèce ayant une récolte « semences ». */
@@ -285,14 +294,20 @@ async function moveCulture(ctx: ScopedCtx, c: typeof culture.$inferSelect, targe
   await emit(tx, { type: 'culture.moved', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: { fromZoneId: c.zoneId, toZoneId: target.id } }, clock.now());
 }
 
-export async function updateCulture(ctx: ScopedCtx, input: { cultureId: string; varietyId: string | null; plantCount?: number | undefined; areaM2?: number | undefined; notes?: string | undefined }) {
+export async function updateCulture(ctx: ScopedCtx, input: {
+  cultureId: string; varietyId: string | null; plantCount?: number | undefined; areaM2?: number | undefined; notes?: string | undefined;
+  spacingPlantCm?: number | undefined; spacingRowCm?: number | undefined; density?: number | undefined; densityUnit?: DensityUnit | undefined;
+}) {
   const { tx, scope, actor, clock } = ctx;
   const c = await loadCulture(tx, scope, input.cultureId);
   await assertZoneContribute(tx, scope, 'culture:update', c.zoneId);
   await assertSeasonOpen(tx, c.seasonId);
   if (input.varietyId) await assertVarietyUsable(tx, input.varietyId, c.speciesId, scope.gardenId);
-  await tx.update(culture).set({ varietyId: input.varietyId, plantCount: input.plantCount ?? null, areaM2: input.areaM2 ?? null, notes: input.notes ?? null }).where(eq(culture.id, c.id));
-  await emit(tx, { type: 'culture.updated', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: { fields: ['varietyId', 'plantCount', 'areaM2', 'notes'] } }, clock.now());
+  await tx.update(culture).set({
+    varietyId: input.varietyId, plantCount: input.plantCount ?? null, areaM2: input.areaM2 ?? null, notes: input.notes ?? null,
+    spacingPlantCm: input.spacingPlantCm ?? null, spacingRowCm: input.spacingRowCm ?? null, density: input.density ?? null, densityUnit: input.densityUnit ?? null,
+  }).where(eq(culture.id, c.id));
+  await emit(tx, { type: 'culture.updated', subjectType: 'culture', subjectId: c.id, gardenId: scope.gardenId, actorId: actor.id, payload: { fields: ['varietyId', 'plantCount', 'areaM2', 'notes', 'spacing'] } }, clock.now());
   return { cultureId: c.id };
 }
 

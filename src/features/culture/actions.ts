@@ -2,14 +2,14 @@
 
 import { defineAction } from '@/server/action';
 import { uuidSchema, z } from '@/lib/zod';
-import { cultureCreateSchema, cultureOutcomeSchema, culturePreviewSchema, cultureRefSchema, cultureUpdateSchema, stageRecordSchema } from './schema';
+import { cultureCreateSchema, cultureOutcomeSchema, culturePreviewSchema, cultureRefSchema, cultureUpdateSchema, plannedDatesSchema, stageRecordSchema } from './schema';
 import { setSeasonClosed } from '../season/service';
 import * as service from './service';
 
 export const previewCultureAction = defineAction({
   name: 'culture.preview',
   readOnly: true,
-  input: culturePreviewSchema.extend({ plannedDates: cultureCreateSchema.shape.plannedDates }),
+  input: culturePreviewSchema.extend({ plannedDates: plannedDatesSchema }),
   permission: 'garden:read',
   gardenId: (i) => i.gardenId,
   handler: (ctx, input) => service.previewCulture(ctx.tx, ctx.scope, input, input.plannedDates),

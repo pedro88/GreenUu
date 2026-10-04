@@ -715,7 +715,26 @@
     "companionGood": "Bonne association avec {species} ({zone}).",
     "plannedDates": "Dates prévues",
     "ackRotation": "Je plante ici quand même",
-    "create": "Créer la culture"
+    "create": "Créer la culture",
+    "densityPlantingTitle": "Planting distances",
+    "densitySowingTitle": "Sowing distances",
+    "densityMode": "How do you want to enter it?",
+    "densityModeSpacing": "By distances",
+    "densityModeDensity": "By density",
+    "spacingPlant": "Between plants (cm)",
+    "spacingRow": "Between rows (cm)",
+    "speciesDefault": "Recommended for the species: {cm} cm",
+    "densityPlantsPerM2": "Plants per m²",
+    "densitySeedsPerM": "Seeds per metre of row",
+    "densityUnit": "Unit",
+    "unit_plants_per_m2": "Plants per m²",
+    "unit_seeds_per_m": "Seeds per metre of row",
+    "area": "Area (m²)",
+    "areaHint": "Optional: without it, the area is derived from the number of plants.",
+    "estimatePlants": "≈ {n, plural, one {# plant} other {# plants}} on this area",
+    "estimatePerM2": "≈ {n} plants per m²",
+    "estimateNone": "Enter distances or a density to estimate the number of plants.",
+    "plantCountEstimated": "Leave empty to keep the estimate ({n})."
   },
   "cultureDetail": {
     "timeline": "Étapes de la culture",
@@ -758,7 +777,13 @@
     "tab_taches": "Tâches",
     "noTickets": "Aucune tâche en cours.",
     "newTicket": "Nouvelle tâche",
-    "result": "Bilan"
+    "result": "Bilan",
+    "spacingLine": "{plant} cm between plants, {row} cm between rows",
+    "rowLine": "{row} cm between rows",
+    "density_plants_per_m2": "{n} plants per m²",
+    "density_seeds_per_m": "{n} seeds per metre of row",
+    "plantCountLine": "{n, plural, one {# plant} other {# plants}}",
+    "plantingUnknown": "Planting distances not set"
   },
   "quick": {
     "open": "Saisie rapide",

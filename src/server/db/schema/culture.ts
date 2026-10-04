@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { type AnyPgColumn, boolean, check, date, foreignKey, index, integer, jsonb, numeric, pgTable, smallint, text, timestamp, unique, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
-import { CULTURE_STATUSES, HARVEST_UNITS, INTERVENTIONS, JOURNAL_KINDS, METHODS, SEED_SOURCES, STAGES } from '@/lib/enums';
+import { CULTURE_STATUSES, DENSITY_UNITS, HARVEST_UNITS, INTERVENTIONS, JOURNAL_KINDS, METHODS, SEED_SOURCES, STAGES } from '@/lib/enums';
 import { createdAt, id, timestamps, tz } from './_columns';
 import { user } from './auth';
 import { guideVersion } from './content';
@@ -23,6 +23,12 @@ export const culture = pgTable(
     status: text('status', { enum: CULTURE_STATUSES }).notNull().default('planned'),
     plantCount: integer('plant_count'),
     areaM2: numeric('area_m2', { precision: 10, scale: 2, mode: 'number' }),
+    /** Distances saisies à la plantation ou au semis (RG-CUL-06) ; à défaut, celles de l'espèce. */
+    spacingPlantCm: integer('spacing_plant_cm'),
+    spacingRowCm: integer('spacing_row_cm'),
+    /** Densité saisie à la place des distances : plants par m², ou graines par mètre de rang au semis. */
+    density: numeric('density', { precision: 10, scale: 2, mode: 'number' }),
+    densityUnit: text('density_unit', { enum: DENSITY_UNITS }),
     seedSource: text('seed_source', { enum: SEED_SOURCES }).notNull().default('unknown'),
     seedParentCultureId: uuid('seed_parent_culture_id'),
     rotationOverride: boolean('rotation_override').notNull().default(false),
@@ -43,6 +49,8 @@ export const culture = pgTable(
     foreignKey({ columns: [t.seedParentCultureId], foreignColumns: [t.id], name: 'culture_seed_parent_fk' }),
     check('culture_area_positive', sql`${t.areaM2} is null or ${t.areaM2} > 0`),
     check('culture_plants_positive', sql`${t.plantCount} is null or ${t.plantCount} > 0`),
+    check('culture_spacing_ck', sql`(${t.spacingPlantCm} is null or ${t.spacingPlantCm} between 1 and 1000) and (${t.spacingRowCm} is null or ${t.spacingRowCm} between 1 and 1000)`),
+    check('culture_density_ck', sql`(${t.density} is null) = (${t.densityUnit} is null) and (${t.density} is null or ${t.density} > 0)`),
     index('culture_garden_season_idx').on(t.gardenId, t.seasonId).where(sql`${t.deletedAt} is null`),
     index('culture_garden_zone_occ_idx').on(t.gardenId, t.zoneId, t.occupiedFrom).where(sql`${t.deletedAt} is null`),
     index('culture_species_idx').on(t.speciesId),

@@ -69,6 +69,15 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
   const tg = await getTranslations('guides');
   const tst = await getTranslations('stages');
   const fmtDay = (iso: string) => f.dateTime(new Date(`${iso}T12:00:00`), { day: 'numeric', month: 'short', year: 'numeric' });
+  // Distances ou densité de plantation (RG-CUL-06), et le nombre de plants saisi ou estimé.
+  const p = d.planting;
+  const plantingParts = [
+    p.density !== null && p.densityUnit ? t(`density_${p.densityUnit}`, { n: f.number(p.density, { maximumFractionDigits: 1 }) })
+      : p.spacingPlantCm && p.spacingRowCm ? t('spacingLine', { plant: p.spacingPlantCm, row: p.spacingRowCm }) : null,
+    p.densityUnit === 'seeds_per_m' && p.spacingRowCm ? t('rowLine', { row: p.spacingRowCm }) : null,
+    d.c.plantCount !== null ? t('plantCountLine', { n: d.c.plantCount }) : null,
+  ].filter(Boolean);
+  const plantingLine = plantingParts.length ? plantingParts.join(' · ') : t('plantingUnknown');
   const actions = <CultureActions gardenId={scope.gardenId} cultureId={cultureId} deleted={deleted} canDelete={can(scope, 'culture:delete', { isOwn: d.c.createdBy === scope.userId })} canEdit={canEdit} ended={['finished', 'failed', 'abandoned'].includes(d.c.status)} />;
   return (
     <Stack gap="lg">
@@ -79,6 +88,7 @@ export default async function CulturePage({ params, searchParams }: PageProps<'/
           <Link href={`/app/jardins/${scope.gardenId}/zones/${d.c.zoneId}`}>{d.zoneName}</Link> · {t('season', { year: d.seasonYear })}
         </p>
         <Row><Badge data-testid="culture-status">{ts(d.c.status)}</Badge><Badge>{tm(d.c.method)}</Badge>{d.varietyStatus === 'pending' ? <Badge>{t('varietyPending')}</Badge> : null}{d.c.rotationOverride ? <Badge>{t('rotationOverride')}</Badge> : null}</Row>
+        <Muted data-testid="culture-planting">{plantingLine}</Muted>
         <Muted>{d.area.m2 !== null ? t(`area_${d.area.source}`, { m2: f.number(d.area.m2, { maximumFractionDigits: 2 }) }) : t('areaUnknown')}{d.totalKg > 0 ? ` · ${t('totalKg', { kg: f.number(d.totalKg, { maximumFractionDigits: 2 }) })}` : ''}</Muted>
       </section>
       {deleted ? actions : null}

@@ -1,5 +1,5 @@
 import { addDays as addDaysDate, differenceInCalendarDays, format, parseISO } from 'date-fns';
-import { STAGES, type CultureStatus, type HarvestUnit, type Method, type Stage, type VisualModel } from '@/lib/enums';
+import { STAGES, type CultureStatus, type DensityUnit, type HarvestUnit, type Method, type Stage, type VisualModel } from '@/lib/enums';
 
 /** Fonctions pures sur les étapes d'une culture (RG-CUL-01 à 06, RG-JRN-05). Dates ISO `YYYY-MM-DD`. */
 
@@ -117,14 +117,31 @@ export function orderWarnings(stages: StageRow[]): { before: Stage; after: Stage
 
 export type AreaSource = 'input' | 'spacing' | 'zone' | 'unknown';
 
-/** Surface de la culture (RG-CUL-06). */
+/**
+ * Plants par m² d'une culture (RG-CUL-06, lot 9) : densité saisie (plants par m², ou graines par mètre de rang divisées
+ * par l'écartement des rangs), sinon distances entre plants et entre rangs. Null si rien ne permet de le dire.
+ */
+export function plantsPerM2(input: { spacingPlantCm: number | null; spacingRowCm: number | null; density?: number | null; densityUnit?: DensityUnit | null }): number | null {
+  if (input.density && input.densityUnit === 'plants_per_m2') return input.density;
+  if (input.density && input.densityUnit === 'seeds_per_m') return input.spacingRowCm ? (input.density * 100) / input.spacingRowCm : null;
+  if (input.spacingPlantCm && input.spacingRowCm) return 10_000 / (input.spacingPlantCm * input.spacingRowCm);
+  return null;
+}
+
+/** Nombre de plants estimé pour une surface (arrondi), ou null. */
+export function estimatedPlantCount(areaM2: number | null, perM2: number | null): number | null {
+  if (!areaM2 || !perM2) return null;
+  return Math.max(1, Math.round(areaM2 * perM2));
+}
+
+/** Surface de la culture (RG-CUL-06) : saisie, sinon nombre de plants ÷ densité (saisie ou distances), sinon la zone. */
 export function cultureArea(input: {
   areaM2: number | null; plantCount: number | null; spacingPlantCm: number | null; spacingRowCm: number | null; zoneSurfaceM2: number | null; aloneOnZone: boolean;
+  density?: number | null; densityUnit?: DensityUnit | null;
 }): { m2: number | null; source: AreaSource } {
   if (input.areaM2 !== null) return { m2: input.areaM2, source: 'input' };
-  if (input.plantCount !== null && input.spacingPlantCm !== null && input.spacingRowCm !== null) {
-    return { m2: Math.round(input.plantCount * input.spacingPlantCm * input.spacingRowCm / 100) / 100, source: 'spacing' };
-  }
+  const perM2 = plantsPerM2(input);
+  if (input.plantCount !== null && perM2) return { m2: Math.round((input.plantCount / perM2) * 100) / 100, source: 'spacing' };
   if (input.zoneSurfaceM2 !== null && input.aloneOnZone) return { m2: input.zoneSurfaceM2, source: 'zone' };
   return { m2: null, source: 'unknown' };
 }

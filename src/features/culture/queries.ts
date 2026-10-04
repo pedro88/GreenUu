@@ -8,7 +8,7 @@ import { findDescendants, findZone } from '../zone/repo';
 import { effectiveSurface } from '../zone/tree';
 import { periodsOverlap, seasonYearsTouched } from './rotation.pure';
 import type { CultureFilters } from './schema';
-import { cultureArea, orderWarnings, stageOrder } from './stages.pure';
+import { cultureArea, plantsPerM2, orderWarnings, stageOrder } from './stages.pure';
 import { gardenInfo, MAX_RETURN_YEARS } from './service';
 
 const cultureLabel = sql<string>`concat_ws(' ', ${species.commonNames}->'fr'->>0, ${variety.name})`;
@@ -82,10 +82,12 @@ export async function cultureDetail(tx: Executor, scope: Scope, cultureId: strin
   const others = await tx.select({ id: culture.id, from: culture.occupiedFrom, to: culture.occupiedTo }).from(culture)
     .where(and(eq(culture.zoneId, row.c.zoneId), isNull(culture.deletedAt)));
   const alone = others.every((o) => o.id === cultureId || !periodsOverlap({ from: row.c.occupiedFrom, to: row.c.occupiedTo }, { from: o.from, to: o.to }));
-  const area = cultureArea({ areaM2: row.c.areaM2, plantCount: row.c.plantCount, spacingPlantCm: row.sp.spacingPlantCm, spacingRowCm: row.sp.spacingRowCm, zoneSurfaceM2: effectiveSurface(z).m2, aloneOnZone: alone });
+  // Distances saisies pour la culture, sinon celles de l'espèce (RG-CUL-06).
+  const planting = { spacingPlantCm: row.c.spacingPlantCm ?? row.sp.spacingPlantCm, spacingRowCm: row.c.spacingRowCm ?? row.sp.spacingRowCm, density: row.c.density, densityUnit: row.c.densityUnit };
+  const area = cultureArea({ areaM2: row.c.areaM2, plantCount: row.c.plantCount, ...planting, zoneSurfaceM2: effectiveSurface(z).m2, aloneOnZone: alone });
   const totalKg = harvests.reduce((sum, h) => sum + (h.quantityKg ?? 0), 0);
   return {
-    ...row, stages, area, totalKg: Math.round(totalKg * 1000) / 1000,
+    ...row, stages, area, planting: { ...planting, perM2: plantsPerM2(planting) }, totalKg: Math.round(totalKg * 1000) / 1000,
     journal: entries.map((e) => ({ ...e, photos: photos.filter((p) => p.entryId === e.id) })),
     harvests, warnings: orderWarnings(stages),
   };

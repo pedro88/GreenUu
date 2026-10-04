@@ -32,8 +32,10 @@ export async function assertVarietyUsable(tx: Executor, varietyId: string, speci
 }
 
 export type PlantSearchHit =
-  | { kind: 'species'; id: string; name: string; latinName: string; familyCode: string; spriteKey: string | null; score: number }
-  | { kind: 'variety'; id: string; speciesId: string; name: string; speciesName: string; status: string; spriteKey: string | null; score: number };
+  | { kind: 'species'; id: string; name: string; latinName: string; familyCode: string; spriteKey: string | null; score: number; spacing: Spacing }
+  | { kind: 'variety'; id: string; speciesId: string; name: string; speciesName: string; status: string; spriteKey: string | null; score: number; spacing: Spacing };
+/** Distances de l'espèce, pour pré-remplir la plantation (RG-CUL-06). */
+type Spacing = { plantCm: number | null; rowCm: number | null };
 
 /** RG-PLT-04 : recherche tolérante (trigrammes sur noms normalisés), espèces et variétés mêlées. */
 export async function searchPlants(tx: Executor, userId: string, query: string, limit = 20): Promise<PlantSearchHit[]> {
@@ -42,18 +44,19 @@ export async function searchPlants(tx: Executor, userId: string, query: string, 
   const sScore = sql<number>`greatest(word_similarity(${q}, ${species.searchText}), similarity(${q}, ${species.searchText}))`;
   const speciesRows = await tx.select({
     id: species.id, latinName: species.latinName, names: species.commonNames, familyCode: botanicalFamily.code, spriteKey: species.spriteKey, score: sScore,
+    plantCm: species.spacingPlantCm, rowCm: species.spacingRowCm,
   }).from(species).innerJoin(botanicalFamily, eq(botanicalFamily.id, species.familyId))
     .where(or(sql`${sScore} > 0.35`, sql`${species.searchText} like ${`%${q}%`}`)).orderBy(sql`${sScore} desc`).limit(limit);
   const vScore = sql<number>`greatest(word_similarity(${q}, ${variety.searchText}), similarity(${q}, ${variety.searchText}))`;
   const varietyRows = await tx.select({
     id: variety.id, speciesId: variety.speciesId, name: variety.name, status: variety.status, speciesNames: species.commonNames,
-    spriteKey: sql<string | null>`coalesce(${variety.spriteKey}, ${species.spriteKey})`, score: vScore,
+    spriteKey: sql<string | null>`coalesce(${variety.spriteKey}, ${species.spriteKey})`, score: vScore, plantCm: species.spacingPlantCm, rowCm: species.spacingRowCm,
   }).from(variety).innerJoin(species, eq(species.id, variety.speciesId))
     .where(and(visibleVariety(userId), or(sql`${vScore} > 0.35`, sql`${variety.searchText} like ${`%${q}%`}`)))
     .orderBy(sql`${vScore} desc`).limit(limit);
   const hits: PlantSearchHit[] = [
-    ...speciesRows.map((r) => ({ kind: 'species' as const, id: r.id, name: r.names.fr[0] ?? r.latinName, latinName: r.latinName, familyCode: r.familyCode, spriteKey: r.spriteKey, score: Number(r.score) })),
-    ...varietyRows.map((r) => ({ kind: 'variety' as const, id: r.id, speciesId: r.speciesId, name: r.name, speciesName: r.speciesNames.fr[0] ?? '', status: r.status, spriteKey: r.spriteKey, score: Number(r.score) })),
+    ...speciesRows.map((r) => ({ kind: 'species' as const, id: r.id, name: r.names.fr[0] ?? r.latinName, latinName: r.latinName, familyCode: r.familyCode, spriteKey: r.spriteKey, score: Number(r.score), spacing: { plantCm: r.plantCm, rowCm: r.rowCm } })),
+    ...varietyRows.map((r) => ({ kind: 'variety' as const, id: r.id, speciesId: r.speciesId, name: r.name, speciesName: r.speciesNames.fr[0] ?? '', status: r.status, spriteKey: r.spriteKey, score: Number(r.score), spacing: { plantCm: r.plantCm, rowCm: r.rowCm } })),
   ];
   return hits.sort((a, b) => b.score - a.score).slice(0, limit);
 }
