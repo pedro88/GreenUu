@@ -1,6 +1,6 @@
 # Audit e2e — GreenU (jardin vivant, lot 9, partie 1)
 
-**Date** : 2026-10-04 · **Commit** : `0dd403f` (branche `lot-9b/jardin-vivant`) · **Playwright 1.56** · **88 tests dans 16 fichiers** (projets `mobile` et `desktop`) · **durée de suite : 12 min** (88/88), plus 8/8 en build de production (`test:e2e:offline`, 1 min)
+**Date** : 2026-10-04 · **Commit** : `0dd403f` (branche `lot-9b/jardin-vivant`) · **Playwright 1.63** · **88 tests dans 16 fichiers** (projets `mobile` et `desktop`) · **durée de suite : 12 min** (88/88), plus 8/8 en build de production (`test:e2e:offline`, 1 min)
 **Audit précédent** : [E2E-AUDIT-2026-10-04-lot-9.md](E2E-AUDIT-2026-10-04-lot-9.md), specs prioritaires implémentées depuis.
 
 ## Verdict
