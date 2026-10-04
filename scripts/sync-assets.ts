@@ -1,13 +1,16 @@
 import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { ALL_PLAN_THUMBS } from '../src/game/plan-thumbs';
+import { SCENE_ACTIONS } from '../src/features/scene/avatar-action.pure';
 
 /**
  * Copie les assets livrés par la session sprites (dossier `out_hd/` par défaut : version HD, tuile de 64 px pour une
  * tuile logique de 32 px) vers `public/sprites`.
  * Une vignette par espèce et par famille : stade récolte, sinon fruits, floraison, ou le dernier stade.
- * Copie aussi les atlas de la scène et de l'avatar (`atlas.json`, `avatar-atlas.json` et leurs pages
- * `related_multi_packs`) dans `public/sprites/atlas`, sous un budget de poids.
+ * Copie aussi les atlas (`atlas.json`, `saison-<saison>.json`, `avatar-atlas.json`, `avatar-action-<action>.json` et
+ * leurs pages `related_multi_packs`) dans `public/sprites/atlas`, sous un budget de poids par atlas, et les vignettes
+ * de l'éditeur de plan dans `public/sprites/plan`.
  * Génère `src/generated/sprites.ts` (liste des vignettes disponibles, pour le repli à la compilation).
  */
 const SRC = process.argv[2] ?? 'out_hd';
@@ -50,7 +53,10 @@ const atlasFiles = async (name: string) => {
   }
   return files;
 };
-const atlases = ['atlas.json', 'avatar-atlas.json'].filter((n) => existsSync(path.join(SRC, n)));
+// Saisons : seule la saison courante est chargée par la vue (§9.2). Actions de l'avatar : seulement celles que la vue
+// jardin sait jouer (dernière action réelle, §9.5) ; papoter, s'asseoir et la brouette attendent le lot 10.
+const atlases = ['atlas.json', 'saison-printemps.json', 'saison-automne.json', 'saison-hiver.json', 'avatar-atlas.json', ...SCENE_ACTIONS.map((a) => `avatar-action-${a}.json`)]
+  .filter((n) => existsSync(path.join(SRC, n)));
 const plan = await Promise.all(atlases.map(async (n) => ({ n, files: await atlasFiles(n) })));
 for (const { n, files } of plan) {
   const bytes = (await Promise.all(files.map((f) => stat(path.join(SRC, f))))).reduce((t, s) => t + s.size, 0);
@@ -68,6 +74,13 @@ for (const [sub, to] of [['ui', 'ui'], ['bulles', 'bulles'], ['deco', 'decor']] 
   if (!existsSync(dir)) continue;
   await mkdir(path.join(DEST, to), { recursive: true });
   for (const f of (await readdir(dir)).filter((x) => x.endsWith('.png'))) await copyFile(path.join(dir, f), path.join(DEST, to, f));
+}
+// Vignettes de l'éditeur de plan (VOC-01) : la tuile ou l'objet réel de chaque type.
+await rm(path.join(DEST, 'plan'), { recursive: true, force: true });
+await mkdir(path.join(DEST, 'plan'), { recursive: true });
+for (const frame of ALL_PLAN_THUMBS) {
+  const file = path.join(SRC, `${frame}.png`);
+  if (existsSync(file)) await copyFile(file, path.join(DEST, 'plan', `${frame.replace('/', '-')}.png`));
 }
 // Vignettes d'avatar (§10.5) : la frame de face, à l'arrêt, de chaque élément, en fichiers individuels. Une vignette
 // n'a pas à télécharger l'atlas complet (audit lot 8, M1).
