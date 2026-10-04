@@ -2028,9 +2028,9 @@ Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent de
 
 ### 12.10 Lot 9 — Finitions
 
-Trois volets : le hors-ligne (PWA, Serwist, §3.1), les statistiques pluriannuelles, et des finitions issues des audits
-des lots 6 à 8. Hors périmètre du lot : notifications push (§17 Q-18), photos saisies hors-ligne, base de communes
-(§17 Q-24), déploiement (§17 Q-12).
+Quatre volets : le hors-ligne (PWA, Serwist, §3.1), les statistiques pluriannuelles, la localisation par commune
+(§17 Q-24) et des finitions issues des audits des lots 6 à 8. Hors périmètre du lot : notifications push (§17 Q-18),
+photos saisies hors-ligne, déploiement (§17 Q-12).
 
 #### Hors-ligne
 
@@ -2056,6 +2056,19 @@ des lots 6 à 8. Hors périmètre du lot : notifications push (§17 Q-18), photo
 | STAT-05 | une culture vivace sur 3 saisons (§17 Q-04) | on calcule les rendements | chaque saison reçoit les récoltes faites pendant cette saison ; la culture n'est pas comptée trois fois en entier | U |
 | STAT-06 | des cultures terminées, échouées et abandonnées | on affiche les réussites | taux de réussite par espèce et par saison ; les cultures en cours n'entrent pas dans le calcul | I |
 | STAT-07 | un `member` et un `admin` | ils demandent l'export CSV des statistiques | l'admin reçoit le fichier ; le membre reçoit `FORBIDDEN` (`garden:export`, §5.2) | I |
+
+#### Localisation par commune (§17 Q-24)
+
+Base de communes **embarquée** : table `commune` chargée par `pnpm db:reference` à partir d'un fichier versionné
+(proposition : GeoNames, CC BY 4.0, pour la Belgique, la France, le Luxembourg et la Suisse ; attribution dans les
+mentions légales). Recherche en trigrammes (`pg_trgm`, comme les espèces). Aucun appel à un service externe.
+
+| ID | Étant donné | Quand | Alors | Test |
+|---|---|---|---|---|
+| LOC-01 | l'étape « localisation » de l'assistant de jardin | on tape « liege » et on choisit « Liège (4000), Belgique » | le lieu, la latitude, la longitude, le fuseau et l'altitude (si connue) sont pré-remplis ; le navigateur n'a fait aucune requête hors du domaine de l'app | E |
+| LOC-02 | la base de communes | on cherche « saint etienne », « SAINT-ÉTIENNE » ou un code postal « 42000 » | Saint-Étienne est proposée dans tous les cas ; au plus 10 suggestions, les communes les plus peuplées d'abord | I |
+| LOC-03 | la recherche de communes | on l'appelle sans session, ou avec moins de 2 caractères | sans session : `UNAUTHENTICATED` ; moins de 2 caractères : aucun résultat, sans requête en base | I |
+| LOC-04 | une commune introuvable ou un jardin isolé | on choisit « Je ne trouve pas ma commune » | la géolocalisation du navigateur et la saisie latitude / longitude restent disponibles, comme avant (D-24) | E |
 
 #### Finitions
 
@@ -2136,7 +2149,7 @@ Contenu :
 | 6 Progression | Barème, journal d'XP, anti-abus, recalcul, niveaux, compétences, succès, quêtes, collectif (logique) | XP, LVL, ACH, QST, COL-01 à COL-03 | §6 `/app/profil*` (sauf l'avatar), §8 `/admin/xp` |
 | 7 Vue jardin | Moteur PixiJS, instantané de scène, phase visuelle, états, couche accessible, éditeur de plan | MAP, PLN | §4 `/`, `/plan`, §7 `/affichage` |
 | 8 Déco et avatar | Déco, déblocages, avatar, vignettes, avatars dans la vue, page de progression collective | DEC, AVT, COL-04 | §6 `/app/profil/avatar`, §2 étape avatar, §4 `/progression` |
-| 9 Finitions | PWA et hors-ligne, statistiques pluriannuelles, finitions issues des audits | OFF, STAT, POL | §4 `/statistiques`, page hors-ligne |
+| 9 Finitions | PWA et hors-ligne, statistiques pluriannuelles, localisation par commune, finitions issues des audits | OFF, STAT, LOC, POL | §4 `/statistiques`, page hors-ligne, §2 étape localisation |
 
 **Définition de « terminé » pour chaque lot** :
 
@@ -2213,7 +2226,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Q-21 | Unités : faut-il prévoir des unités impériales (lb, ft) ? | i18n | Non ; système métrique seulement en V1, conversion d'affichage possible plus tard |
 | Q-22 | Les jardins pédagogiques ont-ils besoin de comptes élèves sans e-mail (gérés par l'enseignant) ? | Lot 1, auth, RGPD des mineurs | Hors V1 ; à confirmer, car cela change l'auth et le consentement (mineurs) |
 | Q-23 | Faut-il garder la page d'accueil publique `/` avec un aperçu de la vue jardin dès le lot 1, alors que la vue n'arrive qu'au lot 7 ? | Lot 1 | Accueil simple au lot 1, aperçu animé au lot 7 |
-| Q-24 | Localisation : faut-il une carte et un géocodage d'adresse (service externe comme Nominatim, ou base de communes embarquée) pour remplacer la saisie latitude / longitude ? | Onboarding, UX | Base de communes embarquée (sans appel externe) au lot 2 ou 9 |
+| Q-24 | Localisation : faut-il une carte et un géocodage d'adresse (service externe comme Nominatim, ou base de communes embarquée) pour remplacer la saisie latitude / longitude ? | Onboarding, UX | **Retenu au lot 9** : base de communes embarquée, sans appel externe (LOC-01 à 04) |
 
 ---
 
@@ -2222,7 +2235,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
-| 0.15 | 2026-10-03 | Critères du lot 9 détaillés (§12.10), proposition soumise à validation : hors-ligne (OFF-01 à 08 : file IndexedDB, idempotence par ID client, saisies refusées conservées « à revoir », page hors-ligne, date de saisie conservée, cache vidé à la déconnexion), statistiques (STAT-01 à 07 : conversions, kg/m², saison culturale décalée, vivaces, taux de réussite, export CSV réservé à `garden:export`), finitions issues des audits (POL-01 à 06, dont la soumission du formulaire de connexion avant hydratation). Hors lot : push (Q-18), photos hors-ligne, base de communes (Q-24), déploiement (Q-12). |
+| 0.15 | 2026-10-03 | Critères du lot 9 détaillés (§12.10), proposition soumise à validation : hors-ligne (OFF-01 à 08 : file IndexedDB, idempotence par ID client, saisies refusées conservées « à revoir », page hors-ligne, date de saisie conservée, cache vidé à la déconnexion), statistiques (STAT-01 à 07 : conversions, kg/m², saison culturale décalée, vivaces, taux de réussite, export CSV réservé à `garden:export`), localisation par commune embarquée (LOC-01 à 04, §17 Q-24), finitions issues des audits (POL-01 à 06, dont la soumission du formulaire de connexion avant hydratation). Hors lot : push (Q-18), photos hors-ligne, déploiement (Q-12). |
 | 0.14 | 2026-10-03 | Avatar plus fin (demande de l'utilisateur) : calques `head` (5 formes de visage) et `face_details` (âge), 6 formes d'yeux recolorables (palettes `eyes`), sourcils, 9 silhouettes par corpulence et taille, vêtements ajustés par gabarit et décalage des calques de tête (§10.1). Ces éléments n'apparaissent qu'une fois leurs sprites livrés ; la demande est rédigée dans `DEMANDE-SPRITES-AVATAR.md`. **Tout le catalogue d'avatar est disponible dès le départ** : le mécanisme de déblocage est conservé pour de futurs contenus exclusifs ; la déco garde ses conditions. AVT-02 est donc prouvé avec un élément exclusif créé par le test (intégration et e2e). |
 | 0.13 | 2026-10-02 | Alignement sur les maquettes (branche `design/maquettes`) : palette relevée sur les maquettes, police Inter, sprites HD (`out_hd`) et icônes pixel art de la barre d'onglets (`scripts/nav-icons.py`, provisoires). Décision : **thème clair par défaut**, le thème sombre n'est plus déclenché par `prefers-color-scheme` et ne s'applique que sur choix explicite (`data-theme="dark"`) ; le réglage du thème reste à exposer dans `/app/parametres/affichage`. |
 | 0.12 | 2026-10-02 | Fin du lot 8 : tables `decor_item`, `decor_placement`, `avatar_item`, `palette`, `avatar_item_palette`, `user_avatar` ; catalogues définis en code et chargés avec le référentiel ; commandes `placeDecor`, `moveDecor`, `removeDecor` dans le lot tout ou rien de l'éditeur ; éditeur d'avatar, étape 1 de `/bienvenue`, vignettes `AvatarThumb` ; avatars dans la vue jardin ; page `/progression`. Décisions : sprites HD (`out_hd/`) pour l'avatar et toute l'app (§9.2) ; déclarer un objet ★ comme pratique exige `garden:update` et crée la déclaration au niveau du jardin (retirer l'objet propose de retirer la pratique, sinon elle reste, détachée) ; avatars affichés dans les jardins `collective`, `association` et `educational`, d'après le dernier événement de domaine rattaché à une zone ; « succès collectifs » de `/progression` = succès des membres actifs, sans rang ; conditions `skill` exprimées en niveau de compétence et `season_active` sur l'hémisphère nord, comme `all_seasons` ; le succès `seed_saver` s'appelle « Semencier » (§10.4). Écarts : les comptes antérieurs au lot reçoivent leur avatar par défaut à la lecture (pas de rétro-remplissage : il est dérivé de l'ID en code) ; les assets V1 n'ont ni calque `hair_back` ni yeux recolorables (calque `face_eyes` sans emplacement, aucune palette `eyes`) ni sourcils ; la palette d'objets ne gère pas encore les variantes de nuit (lanterne allumée). |
