@@ -87,6 +87,24 @@ test.describe('vue jardin', () => {
     await expect(page.getByTestId(`culture-${expected.cultures[0]}`)).toBeFocused();
   });
 
+  test('[POL-03] deux touchers rapides sur une zone zooment la caméra sur elle (§9.5)', async ({ page }) => {
+    await login(page, 'alice');
+    await page.goto(`/app/jardins/${TILLEULS}?vue=jardin`);
+    await sceneReady(page);
+    // Bac 1 : une zone sans sous-zone, qu'aucun autre bouton ne recouvre.
+    const zone = page.getByTestId(`zone-${zoneId('tilleuls', 'bac1')}`);
+    const before = await zone.boundingBox();
+    // Deux touchers rapides (les écrans tactiles n'émettent pas toujours `dblclick`).
+    await zone.click();
+    await zone.click();
+    await expect.poll(async () => (await zone.boundingBox())?.width ?? 0).toBeGreaterThan((before?.width ?? 0) * 1.5);
+    // La zone est au centre du cadre.
+    const after = await zone.boundingBox();
+    const view = await page.getByTestId('scene-viewport').boundingBox();
+    if (!after || !view) throw new Error('boîtes absentes');
+    expect(Math.abs(after.x + after.width / 2 - (view.x + view.width / 2))).toBeLessThan(view.width * 0.1);
+  });
+
   test('[MAP-03] toucher une culture ouvre sa feuille : étape, états expliqués et actions rapides', async ({ page }) => {
     const { cultures } = await placedEntities(TILLEULS);
     await login(page, 'alice');

@@ -18,7 +18,7 @@ import { tDynamic } from '@/i18n/dynamic';
 import type { CanvasStatus } from './GardenCanvas';
 import { createCameraStore, createDraftStore, createSceneStore, createSelectionStore, type GameStores } from './stores';
 import { ViewToggle } from './ViewToggle';
-import { fitCamera, pxPerCm, useViewportGestures, WorldLayer } from './viewport';
+import { fitCamera, fitRect, pxPerCm, useViewportGestures, WorldLayer } from './viewport';
 import styles from './GardenView.module.scss';
 
 // §9.1 : PixiJS n'est chargé que par la vue jardin, sans SSR ; la couche accessible s'affiche avant le canvas.
@@ -37,6 +37,7 @@ function usePrefersReducedMotion() {
 }
 
 const FADE_MS = 300;
+const DOUBLE_TAP_MS = 300;
 
 /** Vue jardin gamifiée (SPEC §9, PAGES.md §4 `/`). */
 export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; problems: { code: string; category: string }[] }) {
@@ -106,6 +107,22 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
     }
   };
 
+  /** Double-tap sur une zone : la caméra zoome sur elle (§9.5, POL-03). */
+  const zoomTo = (z: SceneZone) => {
+    const el = viewport.current;
+    if (!z.geometry || !el) return;
+    stores.camera.setState(fitRect(scene, z.geometry, el.clientWidth, el.clientHeight));
+  };
+
+  /** Deux touchers sur la même zone à moins de 300 ms : zoom ; sinon le toucher ouvre sa feuille. */
+  const lastTap = useRef<{ id: string; at: number } | null>(null);
+  const tapZone = (z: SceneZone, now: number) => {
+    const double = lastTap.current?.id === z.id && now - lastTap.current.at < DOUBLE_TAP_MS;
+    lastTap.current = double ? null : { id: z.id, at: now };
+    if (double) zoomTo(z);
+    else open('zone', z.id);
+  };
+
   const selectedZone = selected?.kind === 'zone' ? zonesById.get(selected.id) : undefined;
   const selectedCulture = selected?.kind === 'culture' ? scene.cultures.find((c) => c.id === selected.id) : undefined;
   const selectedDecor = selected?.kind === 'decor' ? scene.decor.find((d) => d.id === selected.id) : undefined;
@@ -132,7 +149,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
             <button key={z.id} type="button" ref={(el) => { if (el) entityRefs.current.set(z.id, el); }} className={`${styles.entity} ${styles.zone}`} data-testid={`zone-${z.id}`}
               data-type={z.typeCode} aria-label={z.label} style={{ left: z.geometry.x * k, top: z.geometry.y * k, width: z.geometry.w * k, height: z.geometry.h * k, zIndex: z.depth + 1 }}
               onFocus={() => reveal((z.geometry?.x ?? 0) + (z.geometry?.w ?? 0) / 2, (z.geometry?.y ?? 0) + (z.geometry?.h ?? 0) / 2)}
-              onClick={() => open('zone', z.id)} onDoubleClick={() => z.geometry && reveal(z.geometry.x + z.geometry.w / 2, z.geometry.y + z.geometry.h / 2)} />
+              onClick={(e) => tapZone(z, e.timeStamp)} onDoubleClick={() => zoomTo(z)} />
           ) : null)}
           {placedCultures.map((c) => c.position ? (
             <button key={c.id} type="button" ref={(el) => { if (el) entityRefs.current.set(c.id, el); }} className={`${styles.entity} ${styles.culture}`} data-testid={`culture-${c.id}`}

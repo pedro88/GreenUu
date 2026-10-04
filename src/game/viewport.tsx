@@ -27,6 +27,13 @@ export function fitCamera(s: SceneSnapshot, width: number, height = Number.POSIT
   return { x: Math.max(8, Math.round((width - worldW * zoom) / 2)), y: Math.max(8, Math.round((height === Number.POSITIVE_INFINITY ? 16 : height - worldH * zoom) / 2)), zoom };
 }
 
+/** Caméra cadrée sur un rectangle de la scène (double-tap sur une zone, §9.5, POL-03), zoom borné à 4. */
+export function fitRect(s: SceneSnapshot, r: { x: number; y: number; w: number; h: number }, width: number, height: number) {
+  const k = pxPerCm(s);
+  const zoom = Math.min(4, snapZoom(Math.min((width - 32) / (r.w * k), (height - 32) / (r.h * k))));
+  return { x: Math.round(width / 2 - (r.x + r.w / 2) * k * zoom), y: Math.round(height / 2 - (r.y + r.h / 2) * k * zoom), zoom };
+}
+
 const DRAG_THRESHOLD = 6;
 
 /**
