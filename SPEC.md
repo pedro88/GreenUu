@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.11 — validée le 2026-10-01, mise à jour en fin de lot 7. Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.17 — validée le 2026-10-01, mise à jour pour le jardin vivant (lot 9). Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -994,7 +994,24 @@ erDiagram
   avatar_item ||--o{ avatar_item_palette : "autorise"
   palette ||--o{ avatar_item_palette : "autorisée"
   user ||--|| user_avatar : "a"
+  garden ||--o{ terrain_cell : "a"
+  garden ||--o{ plan_snapshot : "a"
 
+  terrain_cell {
+    uuid id PK
+    uuid garden_id FK
+    uuid scene_zone_id FK "null = extérieur"
+    int x "en tuiles"
+    int y "en tuiles"
+    text kind "path|gravel_path|water|bare_soil|mulch|stepping_stones|hedge|fence"
+  }
+  plan_snapshot {
+    uuid id PK
+    uuid garden_id FK
+    date taken_on "jour local du jardin"
+    int plan_version
+    jsonb payload "PlanSnapshotV1"
+  }
   decor_item {
     uuid id PK
     text code UK
@@ -1042,6 +1059,20 @@ erDiagram
     text config_hash
   }
 ```
+
+Le terrain du plan (lot 9, « jardin vivant ») est **peint case par case** : `terrain_cell` est unique sur
+`(garden_id, scene_zone_id, x, y)` (nulls non distincts), une case n'a qu'un type, et ses coordonnées sont en tuiles de
+l'échelle courante (`garden.tile_size_cm`). Changer d'échelle rééchantillonne les cases (chaque nouvelle case prend le
+type de l'ancienne case qui contient son centre). Les aménagements ponctuels (point d'eau, récupérateur d'eau, arbre
+existant, portail) sont des objets de `decor_item` marqués « aménagement » dans le catalogue en code : ils se posent
+comme la déco, mais exigent `plan:edit`. L'ancienne table `terrain_element` (rectangles) est convertie par la migration
+et n'est plus lue ; sa suppression attend une décision explicite (§18).
+
+`plan_snapshot` garde **un instantané du plan par jour de modification et par jardin** (unique sur
+`(garden_id, taken_on)`, la dernière version du jour remplace les précédentes) : zones (géométrie, type, parent, scène,
+archivage), cases de terrain et objets posés, de toutes les scènes du jardin. Il est écrit dans la transaction de
+`applyPlanCommands` et de toute modification de géométrie ou d'archivage hors éditeur. Il prépare le timelapse du lot 10 :
+grâce à lui, terrain et objets peuvent rester en suppression physique.
 
 ### 4.3 Contraintes et index notables
 
@@ -1545,7 +1576,7 @@ Les succès sont évalués **de façon synchrone**, dans la transaction de l'év
 - **Rendu à la demande** : le ticker Pixi est arrêté par défaut. Un rendu est demandé (`requestRender`) quand un store change, quand la caméra bouge ou au redimensionnement. Les animations ambiantes (ondulation, insectes) font tourner le ticker à 30 i/s au plus, seulement si « animations réduites » est désactivé, que l'onglet est visible et que la scène est à l'écran. Elles s'arrêtent après 20 s sans interaction.
 - **Performances** : terrain précalculé en textures par blocs de 16 × 16 tuiles (re-précalcul seulement du bloc modifié) ; culling des conteneurs hors champ (`cullable`) ; une seule texture d'atlas par catégorie ; mise à l'échelle entière en `nearest` (pixel art net) ; tri de profondeur par le bas des sprites.
 - **Scènes** : la scène extérieure, plus une scène intérieure par zone `has_interior = true`. Entrer dans une serre lance une transition (fondu de 300 ms, instantané en animations réduites). Un fil d'Ariane permet de remonter.
-- **Cycle jour / nuit et saisons** : filtre de couleur global (pas d'assets dédiés), calculé à partir de l'heure locale du jardin, du lever et du coucher du soleil (approximation NOAA, latitude de la cellule geohash) et de la saison astronomique selon l'hémisphère. La variante saisonnière du terrain est choisie si les assets en fournissent une (§9.2). La météo réelle sera affichée seulement si le module météo est actif (hors MVP).
+- **Cycle jour / nuit et saisons** : filtre de couleur global (pas d'assets dédiés), calculé à partir de l'heure locale du jardin, du lever et du coucher du soleil (approximation NOAA, latitude de la cellule geohash) et de la saison astronomique selon l'hémisphère. Le terrain, les planches, les carrés, les haies et l'arbre existant prennent leur **variante saisonnière** (§9.2) : la scène charge l'atlas de base et le seul atlas de la saison courante (`saison-printemps|automne|hiver.json`, l'été est la base), et le canvas porte `data-season`. L'hiver, des surcouches de neige se posent sur les planches. La météo réelle sera affichée seulement si le module météo est actif (hors MVP).
 
 ### 9.2 Contrat avec les assets visuels
 
@@ -1555,7 +1586,9 @@ La production des assets est hors de cette spec. Le moteur attend :
 - **Clés de sprites** : `species.sprite_key`, `variety.sprite_key`, `decor_item.sprite_key` et `avatar_item.sprite_key` référencent des entrées d'un **manifeste d'atlas** (JSON : clé → frames, taille, ancrage, animations). Le manifeste est livré avec les assets et validé par Zod au chargement.
 - **Phases visuelles des cultures** : le moteur ne calcule pas de numéro d'image. Il calcule une **phase visuelle** générique (`seed`, `sprout`, `growing`, `flowering`, `fruiting`, `harvest_ready`, `seed_set`, `dormant`, `finished`) et une progression `0..1` dans la phase (§9.3). Le manifeste associe chaque `(sprite_key, phase)` à une frame, selon le modèle visuel de l'espèce (`species.visual_model`).
 - **Repli** : clé de la variété → clé de l'espèce → clé générique de la famille botanique (`family:<code>`) → clé `unknown_plant`. Une clé absente du manifeste ne fait jamais planter le rendu : le repli suivant est utilisé et une alerte est journalisée en dev.
-- **Terrain** : clés par type d'élément de terrain et de sol (`terrain:<kind>`), avec variantes optionnelles (`…:<season>`).
+- **Terrain** : rendu **dual-grid** des cases peintes. La grille d'affichage est décalée d'une demi-tuile ; chaque tuile d'affichage lit ses 4 coins (haut-gauche = 1, haut-droit = 2, bas-gauche = 4, bas-droit = 8). Masque 15 : tuile pleine du type (`tuiles/<sol>-<n>`) ; masque partiel : transition à fond transparent `transitions/alpha-<sol>-<masque>`. Chaque type est une couche, dessinée sur l'herbe dans un ordre fixe : eau, terre nue, paillage, allée, gravier ; les dalles (`tuiles/dalles-<n>`) ont un bord net. Haies et clôtures sont raccordées selon leurs voisines (`structures/haie-<pièce>`, `cloture-<pièce>` : `h`, `v`, `coin-*`, `t-*`, `croix`, `bout-*`, `seule` / `poteau`). La variante 1 à 3 d'une tuile est tirée d'une fonction pure de `(x, y)`.
+- **Saisons** : clé saisonnière `<clé>-<saison>[-<n>]` (`tuiles/terre-hiver-2`, `transitions/alpha-chemin-automne-07`, `structures/planche-ne-hiver`), avec repli sur la clé de base si la variante manque. L'arbre existant suit les étapes du pommier (`cultures/pommier-1-hiver`, `-3-floraison`, `-4-feuillage`, `-6-automne`).
+- **Atlas** : `atlas.json` (scène, toujours chargé), `saison-<saison>.json` (seulement la saison courante), `avatar-atlas.json` (avatar à l'arrêt et en marche), `avatar-action-<action>.json` (une action, chargé seulement si un avatar affiché la joue). `pnpm assets:sync` les copie avec leurs pages sous un budget de 2,5 Mo par atlas.
 - **Avatar** : calques en niveaux de gris, avec rampes compatibles §10.2 ; 4 directions ; images à l'arrêt et en marche.
 - Tant que les assets ne sont pas livrés, le moteur s'appuie sur des **assets de substitution** (formes colorées générées à l'exécution), pour que les lots 7 et 8 restent testables.
 
@@ -1588,7 +1621,7 @@ Bulles affichées au-dessus de la culture, calculées côté serveur dans l'inst
 - Toucher une zone ouvre sa feuille : cultures en cours, tickets, « Planter ici » (assistant de nouvelle culture pré-rempli).
 - Gestes : glisser un doigt pour déplacer, pincer pour zoomer, double-tap pour zoomer sur une zone. Boutons + / − / recentrer toujours visibles.
 - Les cultures n'ont pas de géométrie propre en V1 : elles sont réparties automatiquement dans le rectangle de leur zone, ou de son ancêtre placé le plus proche. Les cultures dont aucune zone ancêtre n'est placée, et les zones non placées, apparaissent dans un tiroir « À placer » ; l'éditeur de plan permet de dessiner l'emplacement d'une zone non placée.
-- **Avatars** (jardins collectifs) : les membres actifs dans les 24 dernières heures apparaissent près de la dernière zone où ils ont agi. Ils sont statiques en animations réduites, avec une marche lente sinon. Ce ne sont pas des personnages contrôlables.
+- **Avatars** : les membres actifs dans les 24 dernières heures apparaissent près de la dernière zone où ils ont agi, dans tous les types de jardin (lot 9). L'avatar de l'utilisateur courant est affiché dès qu'il a agi sur une zone du jardin, même plus anciennement. Chaque avatar **rejoue sa dernière action réelle** (moins de 24 h) : arrosage → `arroser`, semis → `semer`, plantation ou repiquage → `planter`, récolte → `recolter`, photo → `photo`, observation ou problème → `observer`, désherbage ou paillage → `becher`, ticket terminé → `content` (ou l'action de son étiquette), sinon `porter`. Il la joue en boucle au pied de la zone ; en animations réduites, il montre la première image de l'action, sans animation. Pendant une action, l'accessoire est masqué et l'outil puis l'effet de l'action sont dessinés par-dessus les calques. Ce ne sont pas des personnages contrôlables, et ils n'inventent aucune activité : la liste textuelle de la scène dit « Lucie a arrosé, il y a 1 h ».
 
 ### 9.6 Couche DOM accessible
 
@@ -1607,11 +1640,11 @@ Dans l'éditeur de plan, la couche expose :
 
 ### 9.7 Éditeur de plan
 
-- **Outils** : sélectionner, dessiner une zone (rectangle aligné sur la grille, avec choix du type et du parent ; le parent est déduit de la zone qui contient le rectangle), redimensionner (tuile du coin bas-droit de la zone sélectionnée), déplacer, élément de terrain, déco (lot 8), gomme, échelle (`tile_size_cm` : 10, 25, 50 ou 100), annuler / rétablir (50 niveaux, sur les gestes non encore enregistrés : un enregistrement fixe une nouvelle base). Une zone dessinée reçoit un nom par défaut (« Planche 5 »), modifiable ensuite dans sa fiche.
-- **Modèle de commandes** : chaque geste produit une `PlanCommand` (`createZone`, `resizeZone`, `moveZone`, `archiveZone`, `addTerrain`, `removeTerrain`, `placeDecor`, `moveDecor`, `removeDecor`, `setScale`), appliquée de façon optimiste au store local. Les commandes sont envoyées par lots à la Server Action `applyPlanCommands({ gardenId, sceneZoneId, baseVersion, commands })`, avec un enregistrement automatique 1,5 s après le dernier geste et un bouton « Enregistrer ».
+- **Outils** : sélectionner, **Espaces cultivés** (dessiner une zone : rectangle aligné sur la grille, avec choix du type et du parent ; le parent est déduit de la zone qui contient le rectangle), redimensionner (tuile du coin bas-droit de la zone sélectionnée), déplacer, **Aménagements** (peindre le terrain : pinceau d'une case, de 2 × 2 ou de 3 × 3, rectangle, gomme de terrain et pipette), **Objets** (déco du lot 8 et aménagements ponctuels), gomme, échelle (`tile_size_cm` : 10, 25, 50 ou 100), annuler / rétablir (50 niveaux, sur les gestes non encore enregistrés : un enregistrement fixe une nouvelle base). Une zone dessinée reçoit un nom par défaut (« Planche 5 »), modifiable ensuite dans sa fiche. Chaque outil porte une phrase d'aide (« Un espace cultivé a un historique : cultures, tâches, récoltes » ; « Un aménagement dessine le jardin, sans historique ») et ses types se choisissent par **vignettes** de sprites (boutons au libellé lisible), comme la palette de déco. Une zone peut recouvrir du terrain peint : elle s'affiche par-dessus.
+- **Modèle de commandes** : chaque geste produit une `PlanCommand` (`createZone`, `resizeZone`, `moveZone`, `archiveZone`, `paintTerrain`, `eraseTerrain`, `placeDecor`, `moveDecor`, `removeDecor`, `setScale` ; `paintTerrain({ cells, kind })` et `eraseTerrain({ cells })` portent au plus 2 500 cases chacune), appliquée de façon optimiste au store local. Les commandes sont envoyées par lots à la Server Action `applyPlanCommands({ gardenId, sceneZoneId, baseVersion, commands })`, avec un enregistrement automatique 1,5 s après le dernier geste et un bouton « Enregistrer ».
 - **Côté serveur** : validation Zod de chaque commande, permission `plan:edit` (ou `decor:place`, ou restriction de zone `edit`), contrôle des invariants (RG-ZON-05), puis application **transactionnelle tout-ou-rien** et incrément de `garden.plan_version`. Si `baseVersion ≠ plan_version` → `CONFLICT` : le client recharge l'instantané, rejoue ses commandes non confirmées et signale les conflits.
 - La création d'une zone par dessin crée une vraie ligne `zone` (type, parent, géométrie, surface dérivée) et émet `zone.created`. Elle apparaît aussitôt dans la vue classique.
-- Les zones et cultures ne sont jamais supprimées depuis l'éditeur : la gomme **archive**, toujours après confirmation (les cultures en cours de la zone sont alors terminées, RG-ZON-06). Un élément de terrain, sans historique, est supprimé.
+- Les zones et cultures ne sont jamais supprimées depuis l'éditeur : la gomme **archive**, toujours après confirmation (les cultures en cours de la zone sont alors terminées, RG-ZON-06). Une case de terrain ou un objet, sans historique propre, est supprimé ; l'instantané du plan du jour (§4.2.6) en garde la trace.
 - Chaque enregistrement émet `garden.plan_saved` (nombre de commandes, nouvelle version) ; les zones émettent leurs propres événements (`zone.created`, `zone.updated`, `zone.archived`).
 
 ---
@@ -2028,8 +2061,10 @@ Les critères ZON-09, ZON-10 et AUTHZ-08, rédigés avec le lot 1, dépendent de
 
 ### 12.10 Lot 9 — Finitions
 
-Quatre volets : le hors-ligne (PWA, Serwist, §3.1), les statistiques pluriannuelles, la localisation par commune
-(§17 Q-24) et des finitions issues des audits des lots 6 à 8. Hors périmètre du lot : notifications push (§17 Q-18),
+Cinq volets : le hors-ligne (PWA, §3.1), les statistiques pluriannuelles, la localisation par commune
+(§17 Q-24), des finitions issues des audits des lots 6 à 8, et un premier volet du « jardin vivant »
+(`DEMANDE-LOT-9-JARDIN.md`, `PREPARATION-JARDIN-VIVANT.md`, décisions du 2026-10-03), développé sur sa propre branche
+`lot-9b/jardin-vivant`. Hors périmètre du lot : notifications push (§17 Q-18),
 photos saisies hors-ligne, déploiement (§17 Q-12).
 
 #### Hors-ligne
@@ -2080,6 +2115,30 @@ mentions légales). Recherche en trigrammes (`pg_trgm`, comme les espèces). Auc
 | POL-04 | le classement d'un jardin activé | on l'affiche | il porte sur l'XP du mois en cours (§17 Q-15), et le libellé le dit | I |
 | POL-05 | des quêtes en français | on passe l'interface en anglais | les titres des quêtes sont traduits (clés i18n et paramètres, §4.2.5) | U |
 | POL-06 | `/app/profil/quetes` | on l'ouvre deux fois de suite | la lecture n'écrit rien en base (la génération des quêtes passe par le job, pas par la page) | I |
+
+#### Jardin vivant : plan peint, saisons, avatars en action (§4.2.6, §9.2, §9.5, §9.7)
+
+| ID | Étant donné | Quand | Alors | Test |
+|---|---|---|---|---|
+| PNT-01 | l'éditeur de plan, outil « Aménagements », type « Allée en terre » | on peint une allée en L de 8 cases au pinceau | 8 cases `path` sont enregistrées, et la vue dessine l'allée avec des tuiles de transition (bords arrondis) | E |
+| PNT-02 | une allée peinte le long d'une mare peinte | rendu | les deux couches restent visibles avec leurs bords : seules des transitions à fond transparent sont utilisées, aucune ne recouvre l'autre d'herbe | U |
+| PNT-03 | un plan avec un `terrain_element` rectangle d'allée, une haie et un récupérateur d'eau | conversion de la migration | l'allée et la haie deviennent les cases qu'elles couvrent, le récupérateur un objet posé à son centre ; rejouer la conversion ne duplique rien | I |
+| PNT-04 | des cases de haie en T, en croix et en bout de ligne | rendu | les pièces `t-*`, `croix` et `bout-*` sont choisies selon les voisines | U |
+| PNT-05 | deux éditeurs ouverts sur le même plan | le second peint après un enregistrement du premier (`baseVersion` dépassée) | `CONFLICT`, l'instantané est rechargé et la peinture rejouée sans perte | E |
+| PNT-06 | des cases peintes à l'échelle de 50 cm | on passe à 25 cm puis on revient à 50 cm | les cases sont rééchantillonnées (chacune devient 4 cases, puis 1), le dessin ne bouge pas par rapport aux zones | U |
+| PNT-07 | un membre sans `plan:edit` mais avec `decor:place` | il peint du terrain, ou pose un récupérateur d'eau | `FORBIDDEN` dans les deux cas ; un lot de plus de 2 500 cases est refusé en `VALIDATION` | I |
+| VOC-01 | l'éditeur de plan | ouverture | les outils s'appellent « Espaces cultivés », « Aménagements » et « Objets », chacun avec sa phrase d'aide, et les types se choisissent par des vignettes au nom accessible | E |
+| TER-01 | un jardin de l'hémisphère nord, le 14 octobre | on ouvre la vue jardin | le canvas porte `data-season="autumn"`, l'atlas `saison-automne.json` est chargé et aucun autre atlas de saison | E |
+| TER-02 | le même jardin situé à −34° de latitude | même date | la saison affichée est le printemps | U |
+| TER-03 | une variante saisonnière absente de l'atlas | rendu | la clé de base est utilisée, sans erreur | U |
+| TER-04 | deux rendus successifs de la même scène | — | chaque tuile garde la même variante (tirage déterministe par position) | U |
+| TER-05 | l'hiver | rendu d'une planche et d'un arbre existant | pièces `planche-<pos>-hiver` avec la surcouche `neige/planche-<pos>`, et `cultures/pommier-1-hiver` | U |
+| TLP-01 | une modification du plan (éditeur ou formulaire de zone) | même transaction | un seul instantané du plan du jour existe pour ce jardin, à jour de la dernière version ; si la transaction échoue, aucun instantané n'est écrit | I |
+| LIV-01 | Lucie a enregistré un arrosage sur une planche il y a moins d'une heure | vue jardin | son avatar est au pied de la planche et joue « arroser » (`data-avatar-action="arroser"`), et seul l'atlas `avatar-action-arroser` est téléchargé en plus | E |
+| LIV-04 | `prefers-reduced-motion` | vue jardin | l'avatar montre la première image de son action, sans animation (`data-avatar-animated="false"`) | E |
+| LIV-06 | la liste textuelle de la scène | lecteur d'écran | elle donne, pour chaque avatar, sa dernière action réelle et son ancienneté | E |
+| LIV-07 | un jardin personnel dont je suis seul membre, où j'ai agi sur une zone | vue jardin | mon avatar est affiché, au pied de la zone de ma dernière action | E |
+| LIV-08 | les événements de domaine (arrosage, semis, récolte, photo, problème, ticket terminé…) | correspondance | chacun donne l'action visuelle du §9.5 ; un événement de plus de 24 h ne donne aucune action | U |
 
 ---|---|---|---|---|
 | OFF-01 | une vue jardin chargée une fois | le réseau est coupé et la page rechargée | le plan et les sprites essentiels s'affichent depuis le cache | E |
@@ -2149,7 +2208,8 @@ Contenu :
 | 6 Progression | Barème, journal d'XP, anti-abus, recalcul, niveaux, compétences, succès, quêtes, collectif (logique) | XP, LVL, ACH, QST, COL-01 à COL-03 | §6 `/app/profil*` (sauf l'avatar), §8 `/admin/xp` |
 | 7 Vue jardin | Moteur PixiJS, instantané de scène, phase visuelle, états, couche accessible, éditeur de plan | MAP, PLN | §4 `/`, `/plan`, §7 `/affichage` |
 | 8 Déco et avatar | Déco, déblocages, avatar, vignettes, avatars dans la vue, page de progression collective | DEC, AVT, COL-04 | §6 `/app/profil/avatar`, §2 étape avatar, §4 `/progression` |
-| 9 Finitions | PWA et hors-ligne, statistiques pluriannuelles, localisation par commune, finitions issues des audits | OFF, STAT, LOC, POL | §4 `/statistiques`, page hors-ligne, §2 étape localisation |
+| 9 Finitions | PWA et hors-ligne, statistiques pluriannuelles, localisation par commune, finitions issues des audits ; jardin vivant (partie 1, branche `lot-9b/jardin-vivant`) : terrain peint en cases, vocabulaire de l'éditeur, saisons du terrain, instantanés du plan, avatars qui jouent leur dernière action | OFF, STAT, LOC, POL, PNT, VOC, TER, TLP-01, LIV-01, LIV-04, LIV-06 à LIV-08 | §4 `/statistiques`, page hors-ligne, §2 étape localisation, §4 `/plan` et `/` |
+| 10 Jardin vivant (prévu) | Remplissage des parcelles, avatars qui se déplacent et papotent, timelapse « Histoire du jardin » (`PREPARATION-JARDIN-VIVANT.md` §2 à §4) | FIL, LIV-02, LIV-03, LIV-05, TLP-02 à TLP-06 (à détailler) | §4 `/histoire` |
 
 **Définition de « terminé » pour chaque lot** :
 
@@ -2235,6 +2295,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.17 | 2026-10-04 | Jardin vivant, partie 1 (demande de la session sprites `DEMANDE-LOT-9-JARDIN.md`, décisions du 2026-10-03 dans `PREPARATION-JARDIN-VIVANT.md`), ajoutée au lot 9 sur la branche `lot-9b/jardin-vivant` : terrain peint case par case (`terrain_cell`, commandes `paintTerrain` / `eraseTerrain`, rendu dual-grid en couches à transitions transparentes, haies et clôtures raccordées), aménagements ponctuels posés comme des objets (`plan:edit`), outils renommés « Espaces cultivés », « Aménagements », « Objets » avec vignettes, saisons du terrain (atlas de la saison courante seulement), instantanés quotidiens du plan (`plan_snapshot`), avatars dans tous les jardins et qui rejouent leur dernière action réelle (atlas d'action chargés à la demande). Critères PNT, VOC, TER, TLP-01, LIV-01, 04, 06 à 08 (§12.10). Décisions : l'historique repose sur l'instantané du jour, sans suppression logique du terrain ni des objets ; les cases sont rééchantillonnées quand l'échelle change ; `terrain_element` est convertie puis n'est plus lue, sa suppression attend une décision explicite ; TER-01 est vérifié à la date figée des e2e (automne) ; le reste du jardin vivant passe au lot 10. |
 | 0.16 | 2026-10-04 | Fin du lot 9 : PWA hors-ligne (service worker, file IndexedDB des saisies rapides avec ID client et instant de saisie, page `/hors-ligne`, cache vidé à la déconnexion), statistiques pluriannuelles (`/statistiques`, export CSV), localisation par commune embarquée (table `commune`, 49 010 lignes GeoNames CC BY 4.0, ~870 ko versionnés), finitions POL-01 à 06. Décisions et écarts : **service worker écrit à la main** (`public/sw.js`, sans dépendance) au lieu de Serwist (§3.1), plus simple avec Turbopack ; planches de l'atlas chargées sur le thread principal (`preferWorkers: false`) pour être mises en cache ; CSP `worker-src 'self' blob:` et `manifest-src 'self'` ; les quêtes ne sont plus générées à l'affichage de la page, seulement par le job horaire et le seed ; double toucher détecté à la main (les écrans tactiles n'émettent pas toujours `dblclick`) ; tous les `<form>` déclarent `method="post"` (règle ESLint). Limite de test : sous `next dev`, Turbopack charge les modules à la demande par son serveur, si bien que OFF-01 et OFF-06 n'exigent le canvas, le compteur et la liste qu'en build de production (CI). Écarts reportés : photos saisies hors-ligne, recherche de commune dans les paramètres du jardin. |
 | 0.15 | 2026-10-03 | Critères du lot 9 détaillés (§12.10), proposition soumise à validation : hors-ligne (OFF-01 à 08 : file IndexedDB, idempotence par ID client, saisies refusées conservées « à revoir », page hors-ligne, date de saisie conservée, cache vidé à la déconnexion), statistiques (STAT-01 à 07 : conversions, kg/m², saison culturale décalée, vivaces, taux de réussite, export CSV réservé à `garden:export`), localisation par commune embarquée (LOC-01 à 04, §17 Q-24), finitions issues des audits (POL-01 à 06, dont la soumission du formulaire de connexion avant hydratation). Hors lot : push (Q-18), photos hors-ligne, déploiement (Q-12). |
 | 0.14 | 2026-10-03 | Avatar plus fin (demande de l'utilisateur) : calques `head` (5 formes de visage) et `face_details` (âge), 6 formes d'yeux recolorables (palettes `eyes`), sourcils, 9 silhouettes par corpulence et taille, vêtements ajustés par gabarit et décalage des calques de tête (§10.1). Ces éléments n'apparaissent qu'une fois leurs sprites livrés ; la demande est rédigée dans `DEMANDE-SPRITES-AVATAR.md`. **Tout le catalogue d'avatar est disponible dès le départ** : le mécanisme de déblocage est conservé pour de futurs contenus exclusifs ; la déco garde ses conditions. AVT-02 est donc prouvé avec un élément exclusif créé par le test (intégration et e2e). |
