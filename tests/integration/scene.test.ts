@@ -81,7 +81,9 @@ describe('éditeur de plan (§9.7)', () => {
   it('une géométrie négative ou démesurée est refusée par le schéma des commandes', () => {
     for (const geometry of [rect(-50, 0, 100, 100), rect(0, 0, 2_000_000, 100)]) {
       expect(applyPlanSchema.safeParse({ gardenId: crypto.randomUUID(), sceneZoneId: null, baseVersion: 0, commands: [{ op: 'moveZone', zoneId: crypto.randomUUID(), geometry }] }).success).toBe(false);
-      expect(applyPlanSchema.safeParse({ gardenId: crypto.randomUUID(), sceneZoneId: null, baseVersion: 0, commands: [{ op: 'addTerrain', clientId: 'tmp:a', kind: 'path', geometry }] }).success).toBe(false);
+    }
+    for (const cells of [[[-1, 0]], [[0, 20_000]], []]) {
+      expect(applyPlanSchema.safeParse({ gardenId: crypto.randomUUID(), sceneZoneId: null, baseVersion: 0, commands: [{ op: 'paintTerrain', kind: 'path', cells }] }).success).toBe(false);
     }
     expect(applyPlanSchema.safeParse({ gardenId: crypto.randomUUID(), sceneZoneId: null, baseVersion: 0, commands: [{ op: 'moveZone', zoneId: crypto.randomUUID(), geometry: rect(0, 0, 100, 100) }] }).success).toBe(true);
   });
@@ -110,9 +112,9 @@ describe('éditeur de plan (§9.7)', () => {
       await tx.update(garden).set({ planEditMinRole: 'admin' }).where(eq(garden.id, gardenId));
       const asDavid = await scopedCtx(tx, david, gardenId);
       await expect(applyPlanCommands(asDavid, { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'setScale', tileSizeCm: 25 }] })).rejects.toMatchObject({ code: 'FORBIDDEN' });
-      await expect(applyPlanCommands(asDavid, { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'addTerrain', clientId: 'tmp:allee', kind: 'path', geometry: rect(0, 0, 100, 50) }] })).rejects.toMatchObject({ code: 'FORBIDDEN' });
+      await expect(applyPlanCommands(asDavid, { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'paintTerrain', kind: 'path', cells: [[0, 0], [1, 0]] }] })).rejects.toMatchObject({ code: 'FORBIDDEN' });
       const asBruno = await scopedCtx(tx, bruno, gardenId);
-      const r = await applyPlanCommands(asBruno, { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'addTerrain', clientId: 'tmp:allee', kind: 'path', geometry: rect(0, 0, 100, 50) }, { op: 'setScale', tileSizeCm: 25 }] });
+      const r = await applyPlanCommands(asBruno, { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'paintTerrain', kind: 'path', cells: [[0, 0], [1, 0]] }, { op: 'setScale', tileSizeCm: 25 }] });
       expect(r.planVersion).toBe(1);
       expect((await tx.select({ t: garden.tileSizeCm }).from(garden).where(eq(garden.id, gardenId)))[0]?.t).toBe(25);
     }));

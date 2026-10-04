@@ -80,7 +80,7 @@ describe('décoration (§9.7, §4.2.6)', () => {
       expect(dc.scope.role).toBe('member');
       await applyPlanCommands(dc, { gardenId, sceneZoneId: null, baseVersion: await version(tx, gardenId), commands: [place] });
       // Mais pas de terrain (plan:edit réservé aux admins dans un jardin collectif).
-      await expect(applyPlanCommands(dc, { gardenId, sceneZoneId: null, baseVersion: await version(tx, gardenId), commands: [cmd({ op: 'addTerrain', clientId: 'tmp:t', kind: 'path', geometry: rect(0, 0, 100, 100) })] })).rejects.toMatchObject({ code: 'FORBIDDEN' });
+      await expect(applyPlanCommands(dc, { gardenId, sceneZoneId: null, baseVersion: await version(tx, gardenId), commands: [cmd({ op: 'paintTerrain', kind: 'path', cells: [[0, 0]] })] })).rejects.toMatchObject({ code: 'FORBIDDEN' });
     }));
 
   it('[DEC-03] un hôtel à insectes déclaré comme pratique crée la déclaration liée ; le retirer propose de retirer la pratique', () =>
@@ -202,11 +202,12 @@ describe('avatars dans la vue (§9.5)', () => {
       expect(e?.position.y).toBe(300);
       expect(e?.position.x).toBeGreaterThan(1200);
       expect(e?.position.x).toBeLessThan(1600);
-      // Un jardin familial n'affiche pas d'avatars.
+      // Lot 9 (décision du 2026-10-03) : un jardin familial affiche aussi les avatars, celui de l'utilisateur courant compris.
       const alice = await makeUser(tx);
       const fam = await setup(tx, alice, 'family');
       await createTicket(fam.ctx, { ...base, gardenId: fam.gardenId, title: 'Arroser', zoneId: fam.potager });
-      expect((await sceneSnapshot(tx, fam.ctx.scope, { userId: alice.id, sceneZoneId: null, now: NOW })).avatars).toEqual([]);
+      const famSnap = await sceneSnapshot(tx, fam.ctx.scope, { userId: alice.id, sceneZoneId: null, now: NOW });
+      expect(famSnap.avatars.map((a) => [a.userId, a.isViewer])).toEqual([[alice.id, true]]);
     }));
 
   it('la fenêtre d\'activité s\'arrête exactement à 24 h (INT-COL-04b)', () =>

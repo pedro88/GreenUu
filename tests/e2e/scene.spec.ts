@@ -37,7 +37,7 @@ test.describe('vue jardin', () => {
     await expect.poll(() => scripts.some((b) => b.includes(PIXI_SIGNATURE))).toBe(true);
   });
 
-  test('la vue jardin ne télécharge que l\'atlas de la scène et celui de l\'avatar, sous 3 Mo (audit 2026-10-03, M1)', async ({ page }) => {
+  test('la vue jardin ne télécharge que l\'atlas de la scène, celui de la saison et celui de l\'avatar, sous 3 Mo, plus les actions jouées (audit 2026-10-03, M1)', async ({ page }) => {
     const atlas: { name: string; bytes: number }[] = [];
     page.on('response', (r) => {
       const { pathname } = new URL(r.url());
@@ -48,8 +48,15 @@ test.describe('vue jardin', () => {
     await sceneReady(page);
     await page.waitForLoadState('networkidle');
     expect(atlas.length).toBeGreaterThan(0);
-    for (const a of atlas) expect(a.name).toMatch(/^(avatar-)?atlas(-\d+)?\.(json|png)$/);
-    expect(atlas.reduce((t, a) => t + a.bytes, 0)).toBeLessThan(3 * 1024 * 1024);
+    // Scène, saison courante (automne à la date des e2e) et avatar : sous 3 Mo.
+    const base = atlas.filter((a) => !a.name.startsWith('avatar-action-'));
+    for (const a of base) expect(a.name).toMatch(/^((avatar-)?atlas|saison-automne)(-\d+)?\.(json|png)$/);
+    expect(base.reduce((t, a) => t + a.bytes, 0)).toBeLessThan(3 * 1024 * 1024);
+    // Atlas d'action (§9.2) : seulement ceux des actions jouées par les avatars affichés, chacun sous 1 Mo.
+    const played = new Set(await page.locator('[data-avatar-action]').evaluateAll((els) => els.map((e) => e.getAttribute('data-avatar-action')).filter(Boolean)));
+    const actions = atlas.filter((a) => a.name.startsWith('avatar-action-'));
+    for (const a of actions) expect(played.has(/^avatar-action-([a-z]+)/.exec(a.name)?.[1] ?? '')).toBe(true);
+    for (const action of played) expect(actions.filter((a) => a.name.startsWith(`avatar-action-${action}`)).reduce((t, a) => t + a.bytes, 0)).toBeLessThan(1024 * 1024);
   });
 
   test('[MAP-02] [A11Y-03] chaque zone placée et chaque culture active a un bouton ; tout est atteignable au clavier, avec un focus visible, et Entrée ouvre la feuille', async ({ page }) => {
@@ -216,7 +223,7 @@ test.describe('éditeur de plan', () => {
     const editor = page.getByTestId('plan-editor');
     const version = Number(await editor.getAttribute('data-plan-version'));
     await page.getByTestId('tool-zone').click();
-    await page.getByTestId('zone-type').selectOption({ label: 'Planche' });
+    await page.getByTestId('zone-type-bed').click();
     await dragTiles(page, { x: 2, y: 2 }, { x: 5, y: 4 });
     // Enregistrement automatique 1,5 s après le geste.
     await expect(editor).toHaveAttribute('data-plan-version', String(version + 1));
@@ -262,7 +269,7 @@ test.describe('éditeur de plan', () => {
       await route.continue();
     });
     await page.getByTestId('tool-zone').click();
-    await page.getByTestId('zone-type').selectOption({ label: 'Planche' });
+    await page.getByTestId('zone-type-bed').click();
     // Bande libre sous le tunnel (y = 600 à 650 cm) : deux planches qui ne se touchent pas.
     await dragTiles(page, { x: 0, y: 12 }, { x: 1, y: 12 });
     await expect(editor).toHaveAttribute('data-status', 'saving');
@@ -302,7 +309,7 @@ test.describe('éditeur de plan', () => {
     await page.goto(`/app/jardins/${CANAL}/plan`);
     await sceneReady(page, 'plan-editor');
     await expect(page.getByTestId('plan-readonly')).toBeVisible();
-    for (const tool of ['tool-zone', 'tool-terrain', 'plan-scale', 'zone-type']) await expect(page.getByTestId(tool), tool).toBeDisabled();
+    for (const tool of ['tool-zone', 'tool-terrain', 'plan-scale']) await expect(page.getByTestId(tool), tool).toBeDisabled();
     // La déco a sa propre permission (`decor:place`, membres compris) : l'outil Déco et la gomme (sur la déco) restent actifs.
     await expect(page.getByTestId('tool-decor')).toBeEnabled();
     await expect(page.getByTestId('tool-eraser')).toBeEnabled();

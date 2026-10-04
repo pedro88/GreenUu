@@ -1,0 +1,163 @@
+import { expect, test, type Page } from '@playwright/test';
+import { freshGarden, terrainCells } from './db';
+import { gardenId, userId } from './ids';
+import { login } from './helpers';
+
+/*
+ * Jardin vivant (SPEC §9, §12.10) : terrain peint case par case, vocabulaire de l'éditeur, saisons du terrain et avatars
+ * qui rejouent leur dernière action. Chaque test d'édition a son propre jardin : les versions du plan ne croisent pas
+ * celles des autres tests.
+ */
+
+async function sceneReady(page: Page, testId = 'garden-view') {
+  await expect(page.getByTestId(testId)).toHaveAttribute('data-canvas', 'ready');
+  await expect(page.getByTestId(testId).locator('canvas')).toHaveCount(1);
+}
+
+/** Trace un trait sur la grille du plan, de case en case, à partir des attributs exposés par la couche (§9.6). */
+async function strokeTiles(page: Page, path: { x: number; y: number }[]) {
+  const grid = page.getByTestId('plan-grid');
+  await grid.scrollIntoViewIfNeeded();
+  const box = await grid.boundingBox();
+  if (!box) throw new Error('grille absente');
+  const tile = Number(await grid.getAttribute('data-tile-px'));
+  const ox = Number(await grid.getAttribute('data-origin-x'));
+  const oy = Number(await grid.getAttribute('data-origin-y'));
+  const at = (t: { x: number; y: number }) => ({ x: box.x + ox + (t.x + 0.5) * tile, y: box.y + oy + (t.y + 0.5) * tile });
+  const [first, ...rest] = path;
+  if (!first) return;
+  await page.mouse.move(at(first).x, at(first).y);
+  await page.mouse.down();
+  for (const p of rest) await page.mouse.move(at(p).x, at(p).y, { steps: 8 });
+  await page.mouse.up();
+}
+
+test.describe('terrain peint', () => {
+  test('[PNT-01] une allée en L de 8 cases peinte au pinceau est enregistrée, et la vue la dessine avec ses transitions', async ({ page }) => {
+    const { gardenId: id } = await freshGarden('hugo');
+    await login(page, 'hugo');
+    await page.goto(`/app/jardins/${id}/plan`);
+    await sceneReady(page, 'plan-editor');
+    await page.getByTestId('tool-terrain').click();
+    await page.getByRole('button', { name: 'Allée en terre' }).click();
+    await expect(page.getByTestId('terrain-mode-brush')).toHaveAttribute('aria-pressed', 'true');
+    // Sous la planche : 3 cases vers le bas, puis 5 vers la droite (8 cases en tout).
+    await strokeTiles(page, [{ x: 1, y: 9 }, { x: 1, y: 11 }, { x: 6, y: 11 }]);
+    await expect(page.getByTestId('plan-editor')).toHaveAttribute('data-status', 'saved', { timeout: 15_000 });
+    await expect.poll(() => terrainCells(id)).toHaveLength(8);
+    const cells = await terrainCells(id);
+    expect(cells.every((c) => c.kind === 'path')).toBe(true);
+    expect(cells.map((c) => `${c.x},${c.y}`)).toEqual(['1,9', '1,10', '1,11', '2,11', '3,11', '4,11', '5,11', '6,11']);
+
+    await page.goto(`/app/jardins/${id}?vue=jardin`);
+    await sceneReady(page);
+    // Bords arrondis : des tuiles de transition dual-grid, et pas seulement des tuiles pleines.
+    await expect.poll(async () => Number(await page.getByTestId('garden-view').getAttribute('data-terrain-transitions'))).toBeGreaterThan(8);
+  });
+
+  test('[PNT-05] deux sessions peignent le même plan : la seconde reçoit CONFLICT, recharge et rejoue sa peinture sans perte', async ({ page, browser }) => {
+    const { gardenId: id } = await freshGarden('hugo');
+    await login(page, 'hugo');
+    const other = await (await browser.newContext()).newPage();
+    await login(other, 'hugo');
+    for (const p of [page, other]) {
+      await p.goto(`/app/jardins/${id}/plan`);
+      await sceneReady(p, 'plan-editor');
+      await p.getByTestId('tool-terrain').click();
+    }
+    const version = Number(await page.getByTestId('plan-editor').getAttribute('data-plan-version'));
+    await page.getByRole('button', { name: 'Allée de gravier' }).click();
+    await strokeTiles(page, [{ x: 0, y: 12 }, { x: 2, y: 12 }]);
+    await expect(page.getByTestId('plan-editor')).toHaveAttribute('data-plan-version', String(version + 1), { timeout: 15_000 });
+    // La seconde session, restée sur l'ancienne version, peint la mare.
+    await other.getByRole('button', { name: 'Eau (mare, bassin)' }).click();
+    await strokeTiles(other, [{ x: 8, y: 2 }, { x: 9, y: 2 }]);
+    await expect(other.getByTestId('plan-editor')).toHaveAttribute('data-plan-version', String(version + 2), { timeout: 20_000 });
+    await expect(other.getByTestId('plan-conflicts')).toHaveCount(0);
+    const cells = await terrainCells(id);
+    expect(cells.filter((c) => c.kind === 'gravel_path')).toHaveLength(3);
+    expect(cells.filter((c) => c.kind === 'water')).toHaveLength(2);
+  });
+});
+
+test.describe('vocabulaire de l\'éditeur', () => {
+  test('[VOC-01] « Espaces cultivés », « Aménagements », « Objets » : une phrase d\'aide chacun, des vignettes au nom accessible', async ({ page }) => {
+    const { gardenId: id } = await freshGarden('hugo');
+    await login(page, 'hugo');
+    await page.goto(`/app/jardins/${id}/plan`);
+    await sceneReady(page, 'plan-editor');
+    const tools = page.getByRole('toolbar', { name: 'Outils' });
+    for (const [name, help, thumb] of [
+      ['Espaces cultivés', 'Un espace cultivé a un historique : cultures, tâches, récoltes.', 'Planche'],
+      ['Aménagements', 'Un aménagement dessine le jardin, sans historique.', 'Allée de gravier'],
+      ['Objets', 'Un objet se pose sur une case', 'Récupérateur d’eau'],
+    ] as const) {
+      const button = tools.getByRole('button', { name, exact: true });
+      await button.click();
+      await expect(button).toHaveAttribute('aria-pressed', 'true');
+      await expect(button).toHaveAccessibleDescription(new RegExp(help.slice(0, 30)));
+      await expect(page.getByText(help, { exact: false })).toBeVisible();
+      // Vignette : l'image réelle du type, et son nom lisible pour l'accessibilité.
+      const tile = page.getByRole('button', { name: thumb, exact: true });
+      await expect(tile).toBeVisible();
+      await expect(tile.locator('img')).toHaveJSProperty('complete', true);
+      expect(await tile.locator('img').evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    }
+    // Plus de liste déroulante de type de zone ni d'élément de terrain.
+    await expect(page.getByLabel('Type de zone')).toHaveCount(0);
+    await expect(page.getByLabel('Élément de terrain')).toHaveCount(0);
+  });
+});
+
+test.describe('saisons du terrain', () => {
+  test('[TER-01] le 14 octobre dans l\'hémisphère nord : saison d\'automne, seul l\'atlas d\'automne est chargé', async ({ page }) => {
+    const atlases: string[] = [];
+    page.on('request', (r) => {
+      const { pathname } = new URL(r.url());
+      if (pathname.startsWith('/sprites/atlas/')) atlases.push(pathname.slice('/sprites/atlas/'.length));
+    });
+    await login(page, 'alice');
+    await page.goto(`/app/jardins/${gardenId('tilleuls')}?vue=jardin`);
+    await sceneReady(page);
+    await expect(page.getByTestId('garden-view')).toHaveAttribute('data-season', 'autumn');
+    expect(atlases).toContain('saison-automne.json');
+    expect(atlases.filter((a) => a.startsWith('saison-') && !a.startsWith('saison-automne'))).toEqual([]);
+  });
+});
+
+test.describe('avatars en action', () => {
+  test('[LIV-01] [LIV-07] [LIV-06] seul dans mon jardin personnel, après un arrosage : mon avatar arrose au pied de la planche ; seul l\'atlas d\'arrosage est téléchargé en plus', async ({ page }) => {
+    const { gardenId: id, zoneId } = await freshGarden('hugo', { watered: true });
+    const actions: string[] = [];
+    page.on('request', (r) => {
+      const m = /\/sprites\/atlas\/avatar-action-([a-z]+)/.exec(new URL(r.url()).pathname);
+      if (m?.[1]) actions.push(m[1]);
+    });
+    await login(page, 'hugo');
+    await page.goto(`/app/jardins/${id}?vue=jardin`);
+    await sceneReady(page);
+    const avatar = page.getByTestId(`avatar-${userId('hugo')}`);
+    await expect(avatar).toHaveAttribute('data-avatar-action', 'arroser');
+    await expect(avatar).toHaveAttribute('data-zone-id', zoneId);
+    await expect.poll(() => actions.length).toBeGreaterThan(0);
+    await page.waitForLoadState('networkidle');
+    expect([...new Set(actions)]).toEqual(['arroser']);
+    // La liste textuelle dit l'action réelle et son ancienneté.
+    await page.getByTestId('scene-list').locator('summary').click();
+    await expect(page.getByTestId(`avatar-item-${userId('hugo')}`)).toHaveText('hugo a arrosé, près de Planche 2, il y a 40 min');
+  });
+
+  test('[LIV-04] animations réduites : l\'avatar montre la première image de son action, sans animation', async ({ page }) => {
+    const { gardenId: id } = await freshGarden('hugo', { watered: true });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await login(page, 'hugo');
+    await page.goto(`/app/jardins/${id}?vue=jardin`);
+    await sceneReady(page);
+    const view = page.getByTestId('garden-view');
+    await expect(view).toHaveAttribute('data-reduced-motion', 'true');
+    await expect(view).toHaveAttribute('data-ticker', 'stopped');
+    const avatar = page.getByTestId(`avatar-${userId('hugo')}`);
+    await expect(avatar).toHaveAttribute('data-avatar-action', 'arroser');
+    await expect(avatar).toHaveAttribute('data-avatar-animated', 'false');
+  });
+});

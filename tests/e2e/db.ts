@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { seedId } from '../../src/lib/uuid5';
 
 /** Base des e2e, remise à zéro et seedée au démarrage du serveur (SPEC §13). */
 /**
@@ -257,6 +258,49 @@ export async function setCultureDeleted(cultureId: string, deleted: boolean): Pr
   const sql = postgres(TEST_DB, { max: 1 });
   try {
     await sql`update culture set deleted_at = ${deleted ? sql`now()` : null} where id = ${cultureId}`;
+  } finally {
+    await sql.end();
+  }
+}
+
+/**
+ * Jardin neuf pour un test du jardin vivant (lot 9) : un seul membre (propriétaire) et une planche placée, pour que
+ * les gestes et les versions du plan ne croisent pas ceux des autres tests. `watered` ajoute un arrosage de la planche,
+ * enregistré 40 minutes avant l'instant de référence (événement déjà distribué : il ne rapporte pas d'XP).
+ */
+export async function freshGarden(owner: string, opts: { orgType?: 'individual' | 'family' | 'collective'; watered?: boolean } = {}): Promise<{ gardenId: string; zoneId: string }> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  const ownerId = seedId(`user:${owner}`);
+  try {
+    return await sql.begin(async (tx) => {
+      const name = `Jardin vivant ${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+      const [g] = await tx<{ id: string }[]>`insert into garden (name, org_type, lat, lng, geohash4, timezone, plan_edit_min_role, created_by)
+        values (${name}, ${opts.orgType ?? 'individual'}, 50.4669, 4.8675, 'u0hw', 'Europe/Brussels', 'admin', ${ownerId}) returning id`;
+      const gardenId = g?.id ?? '';
+      await tx`insert into garden_member (garden_id, user_id, role) values (${gardenId}, ${ownerId}, 'owner')`;
+      const [z] = await tx<{ id: string }[]>`insert into zone (garden_id, zone_type_id, name, geometry)
+        values (${gardenId}, (select id from zone_type where code = 'bed' and garden_id is null), 'Planche 2', ${tx.json({ v: 1, kind: 'rect', x: 100, y: 100, w: 200, h: 300 })}) returning id`;
+      const zoneId = z?.id ?? '';
+      if (opts.watered) {
+        const at = new Date(Date.parse(E2E_NOW) - 40 * 60_000);
+        const [j] = await tx<{ id: string }[]>`insert into journal_entry (garden_id, zone_id, kind, intervention, observed_at, author_id)
+          values (${gardenId}, ${zoneId}, 'intervention', 'watering', ${at}, ${ownerId}) returning id`;
+        await tx`insert into domain_event (type, actor_id, garden_id, subject_type, subject_id, payload, occurred_at, dispatched_at)
+          values ('journal.entry_created', ${ownerId}, ${gardenId}, 'journal_entry', ${j?.id ?? ''},
+            ${tx.json({ kind: 'intervention', hasPhoto: false, structured: true, cultureId: null, textLength: 0 })}, ${at}, ${at})`;
+      }
+      return { gardenId, zoneId };
+    });
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Cases de terrain peintes d'un jardin (PNT-01, PNT-05). */
+export async function terrainCells(gardenId: string): Promise<{ x: number; y: number; kind: string }[]> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    return [...await sql<{ x: number; y: number; kind: string }[]>`select x, y, kind from terrain_cell where garden_id = ${gardenId} order by y, x`];
   } finally {
     await sql.end();
   }
