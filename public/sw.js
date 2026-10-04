@@ -2,11 +2,13 @@
  * Service worker de GreenU (SPEC §12.10, OFF-01, OFF-06, OFF-08). Écrit à la main, sans dépendance (écart §18 : Serwist
  * prévu au §3.1). Règles :
  * - pages (navigations) : réseau d'abord ; hors-ligne, la page en cache, sinon la page /hors-ligne ;
- * - fichiers statiques (`/_next/static`, `/sprites`, icônes) : cache d'abord ;
+ * - `/_next/static` (noms à empreinte, immuables) : cache d'abord ;
+ * - sprites, icônes et manifeste (noms stables, contenus livrés à nouveau) : la version en cache tout de suite, et une mise
+ *   à jour en arrière-plan pour la visite suivante (stale-while-revalidate, audit lot 9 M1) ;
  * - jamais l'authentification, les fichiers privés (`/api/files`), les requêtes autres que GET ni les autres origines.
  * Les saisies hors-ligne passent par la file IndexedDB de l'app, pas par ce worker.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const PAGES = `greenu-pages-${VERSION}`;
 const STATIC = `greenu-static-${VERSION}`;
 const OFFLINE_URL = '/hors-ligne';
@@ -63,13 +65,23 @@ async function page(request) {
   }
 }
 
-async function asset(request) {
+const isImmutable = (url) => url.pathname.startsWith('/_next/static/');
+
+async function asset(event) {
+  const { request } = event;
   const cache = await caches.open(STATIC);
   const hit = await cache.match(request);
-  if (hit) return hit;
-  const response = await fetch(request);
-  if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
-  return response;
+  const refresh = fetch(request).then(async (response) => {
+    if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
+    return response;
+  });
+  if (hit && isImmutable(new URL(request.url))) return hit;
+  if (hit) {
+    // Version en cache tout de suite ; la mise à jour termine même après la réponse.
+    event.waitUntil(refresh.catch(() => undefined));
+    return hit;
+  }
+  return refresh;
 }
 
 async function clearPages() {
@@ -83,7 +95,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (!sameOrigin(url) || isPrivate(url)) return;
   if (request.mode === 'navigate') event.respondWith(page(request));
-  else if (isStatic(url)) event.respondWith(asset(request));
+  else if (isStatic(url)) event.respondWith(asset(event));
 });
 
 self.addEventListener('message', (event) => {

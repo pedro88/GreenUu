@@ -4,6 +4,9 @@ import { gardenId } from './ids';
 import { login } from './helpers';
 
 const TILLEULS = gardenId('tilleuls');
+/** Caches du service worker (`public/sw.js`, VERSION). */
+const PAGES = 'greenu-pages-v2';
+const STATIC = 'greenu-static-v2';
 
 /**
  * Le service worker est actif et a mis en cache la page courante (OFF-01 : chargée une seule fois). Il ne contrôle la
@@ -11,10 +14,10 @@ const TILLEULS = gardenId('tilleuls');
  */
 async function swReady(page: Page) {
   await expect.poll(() => page.evaluate(async () => (await navigator.serviceWorker.getRegistration())?.active?.state ?? null), { timeout: 20_000 }).toBe('activated');
-  await expect.poll(() => page.evaluate(async () => {
-    const c = await caches.open('greenu-pages-v1');
+  await expect.poll(() => page.evaluate(async (name) => {
+    const c = await caches.open(name);
     return (await c.match(location.href)) !== undefined;
-  }), { timeout: 20_000 }).toBe(true);
+  }, PAGES), { timeout: 20_000 }).toBe(true);
 }
 
 async function culturePage(page: Page) {
@@ -40,7 +43,7 @@ test.describe('hors-ligne', () => {
     await expect(page.getByTestId('garden-view')).toHaveAttribute('data-canvas', 'ready');
     await swReady(page);
     // Atlas des sprites essentiels en cache.
-    await expect.poll(() => page.evaluate(async () => (await (await caches.open('greenu-static-v1')).keys()).some((r) => r.url.includes('/sprites/atlas/'))), { timeout: 20_000 }).toBe(true);
+    await expect.poll(() => page.evaluate(async (name) => (await (await caches.open(name)).keys()).some((r) => r.url.includes('/sprites/atlas/')), STATIC), { timeout: 20_000 }).toBe(true);
     await context.setOffline(true);
     await page.reload();
     await expect(page.getByTestId('garden-view')).toBeVisible();
@@ -153,5 +156,23 @@ test.describe('hors-ligne', () => {
       return { pages: urls.filter((p) => p.startsWith('/app')), queued };
     });
     expect(left).toEqual({ pages: [], queued: 0 });
+  });
+
+  test('un sprite en cache est servi tout de suite puis revalidé : une nouvelle livraison atteint l\'appareil (audit lot 9, M1)', async ({ page }) => {
+    await login(page, 'alice');
+    await culturePage(page);
+    await swReady(page);
+    // La page suivante est contrôlée par le service worker.
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller !== null)).toBe(true);
+    // Une « ancienne livraison » de l'atlas reste dans le cache de l'appareil.
+    await page.evaluate(async (name) => {
+      await (await caches.open(name)).put('/sprites/atlas/atlas.json', new Response('{"ancienne":true}', { headers: { 'content-type': 'application/json' } }));
+    }, STATIC);
+    // Servie tout de suite (pas d'attente du réseau)…
+    expect(await page.evaluate(() => fetch('/sprites/atlas/atlas.json').then((r) => r.text()))).toBe('{"ancienne":true}');
+    // …puis remplacée par la version du serveur, sans changer la version du service worker.
+    await expect.poll(() => page.evaluate(async (name) => (await (await (await caches.open(name)).match('/sprites/atlas/atlas.json'))?.text()) ?? '', STATIC), { timeout: 20_000 })
+      .toContain('"frames"');
   });
 });
