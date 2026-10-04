@@ -14,6 +14,7 @@ La référence fonctionnelle est [SPEC.md](SPEC.md) : périmètre des lots au §
 | Lint (ESLint + Stylelint) | `pnpm lint` |
 | Tests unitaires / intégration | `pnpm test` |
 | Tests e2e (Playwright) | `pnpm test:e2e` |
+| Hors-ligne en build de production | `pnpm test:e2e:offline` |
 | Traçabilité critères ↔ tests | `pnpm test:spec` |
 | Migrations | `pnpm db:generate` puis `pnpm db:migrate` |
 | Seed / reset | `pnpm db:seed` / `pnpm db:reset` |
@@ -48,7 +49,7 @@ git switch -c lot-N/<slug>
 - Migrations : générées par `drizzle-kit`, relues, **jamais éditées après coup**.
 - Le lot est terminé quand la **définition de « terminé » du §15** est remplie :
   1. `pnpm typecheck` et `pnpm lint` sans erreur ni avertissement ;
-  2. `pnpm test`, `pnpm test:e2e`, `pnpm test:spec` au vert (lot courant et précédents) ;
+  2. `pnpm test`, `pnpm test:e2e`, `pnpm test:e2e:offline`, `pnpm test:spec` au vert (lot courant et précédents) ; `test:e2e:offline` rejoue la suite hors-ligne sur le build de production, seul mode où OFF-01 et OFF-06 vérifient le rendu hors-ligne ;
   3. migrations appliquées sur base vide **et** sur la base du lot précédent avec seed ;
   4. seed à jour ;
   5. SPEC.md à jour, écarts consignés au §18 ;

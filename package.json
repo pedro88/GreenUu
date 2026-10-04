@@ -22,6 +22,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:offline": "CI=1 playwright test tests/e2e/offline.spec.ts --retries=0",
     "test:spec": "tsx scripts/spec-coverage.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm test",
     "db:reference": "tsx --env-file=.env scripts/reference.ts",
