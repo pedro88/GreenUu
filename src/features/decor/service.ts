@@ -4,7 +4,8 @@ import { conflict, DomainError, forbidden, notFound, validation } from '@/lib/er
 import type { ScopedCtx } from '@/server/action-core';
 import { can } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
-import { decorItem, decorPlacement, practice, practiceDeclaration, terrainElement, zone } from '@/server/db/schema';
+import { decorItem, decorPlacement, garden, practice, practiceDeclaration, terrainCell, zone } from '@/server/db/schema';
+import { isFixture } from './catalog';
 import { MAX_DECOR_OUTSIDE_CM } from '../scene/grid.pure';
 import { emit } from '@/server/events/emit';
 import { unlockFactsOf } from '../progression/unlock';
@@ -32,8 +33,9 @@ export async function decorCatalogFor(tx: Executor, userId: string) {
 /** Facts de déblocage lus une fois par lot de commandes. */
 export type FactsLoader = () => Promise<UnlockFacts>;
 
-function assertCanPlace(c: ScopedCtx) {
-  if (!can(c.scope, 'decor:place')) throw forbidden();
+/** La déco exige `decor:place` ; un aménagement ponctuel (point d'eau, portail…) dessine le jardin réel : `plan:edit`. */
+function assertCanPlace(c: ScopedCtx, itemCode: string) {
+  if (!can(c.scope, isFixture(itemCode) ? 'plan:edit' : 'decor:place')) throw forbidden();
 }
 
 /**
@@ -47,8 +49,8 @@ async function assertNearScene(c: ScopedCtx, sceneZoneId: string | null, x: numb
       select (${zone.geometry}->>'x')::int + (${zone.geometry}->>'w')::int as mx, (${zone.geometry}->>'y')::int + (${zone.geometry}->>'h')::int as my
         from ${zone} where ${zone.gardenId} = ${c.scope.gardenId} and ${zone.archivedAt} is null and ${zone.geometry} is not null and ${scene(zone.sceneZoneId)}
       union all
-      select (${terrainElement.geometry}->>'x')::int + (${terrainElement.geometry}->>'w')::int, (${terrainElement.geometry}->>'y')::int + (${terrainElement.geometry}->>'h')::int
-        from ${terrainElement} where ${terrainElement.gardenId} = ${c.scope.gardenId} and ${scene(terrainElement.sceneZoneId)}
+      select (max(${terrainCell.x}) + 1) * min(${garden.tileSizeCm}), (max(${terrainCell.y}) + 1) * min(${garden.tileSizeCm})
+        from ${terrainCell} join ${garden} on ${garden.id} = ${terrainCell.gardenId} where ${terrainCell.gardenId} = ${c.scope.gardenId} and ${scene(terrainCell.sceneZoneId)}
       union all
       select ${decorPlacement.xCm}, ${decorPlacement.yCm} from ${decorPlacement}
         where ${decorPlacement.gardenId} = ${c.scope.gardenId} and ${scene(decorPlacement.sceneZoneId)} ${exceptId ? sql`and ${decorPlacement.id} <> ${exceptId}` : sql``}
@@ -58,7 +60,7 @@ async function assertNearScene(c: ScopedCtx, sceneZoneId: string | null, x: numb
 }
 
 export async function placeDecor(c: ScopedCtx, sceneZoneId: string | null, cmd: { itemCode: string; x: number; y: number; label: string | null }, facts: FactsLoader) {
-  assertCanPlace(c);
+  assertCanPlace(c, cmd.itemCode);
   const [item] = await c.tx.select().from(decorItem).where(eq(decorItem.code, cmd.itemCode)).limit(1);
   if (!item) throw validation({ itemCode: ['unknownItem'] });
   // Revalidé au moment du geste, d'après la progression de l'utilisateur (DEC-02).
@@ -79,8 +81,9 @@ async function placementIn(c: ScopedCtx, id: string, sceneZoneId: string | null)
 }
 
 export async function moveDecor(c: ScopedCtx, sceneZoneId: string | null, id: string, x: number, y: number) {
-  assertCanPlace(c);
+  if (!can(c.scope, 'decor:place') && !can(c.scope, 'plan:edit')) throw forbidden();
   const p = await placementIn(c, id, sceneZoneId);
+  assertCanPlace(c, p.itemCode);
   await assertNearScene(c, sceneZoneId, x, y, p.id);
   await c.tx.update(decorPlacement).set({ xCm: x, yCm: y }).where(eq(decorPlacement.id, p.id));
   await emit(c.tx, { type: 'decor.moved', subjectType: 'decor', subjectId: p.id, gardenId: c.scope.gardenId, actorId: c.actor.id, payload: { itemCode: p.itemCode } }, c.clock.now());
@@ -88,8 +91,9 @@ export async function moveDecor(c: ScopedCtx, sceneZoneId: string | null, id: st
 
 /** Retire l'objet ; la pratique déclarée par cet objet est retirée aussi si on le demande, sinon elle reste (détachée). */
 export async function removeDecor(c: ScopedCtx, sceneZoneId: string | null, id: string, removePractice: boolean) {
-  assertCanPlace(c);
+  if (!can(c.scope, 'decor:place') && !can(c.scope, 'plan:edit')) throw forbidden();
   const p = await placementIn(c, id, sceneZoneId);
+  assertCanPlace(c, p.itemCode);
   if (removePractice) {
     const linked = await c.tx.select({ id: practiceDeclaration.id }).from(practiceDeclaration).where(and(eq(practiceDeclaration.gardenId, c.scope.gardenId), eq(practiceDeclaration.decorPlacementId, p.id)));
     // Les pratiques du jardin relèvent de `garden:update` (§5.2).

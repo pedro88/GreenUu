@@ -7,6 +7,7 @@ import type { Executor } from '@/server/db/client';
 import { culture, cultureStage, garden, gardenEnvironment, gardenGroup, zone, zoneGroupPermission, zoneType } from '@/server/db/schema';
 import { localDate } from '@/lib/dates';
 import { emit } from '@/server/events/emit';
+import { planChanged } from '../scene/history';
 import * as repo from './repo';
 import type { ZoneCreateInput, ZoneUpdateInput } from './schema';
 import {
@@ -107,6 +108,7 @@ export async function createZone(ctx: ScopedCtx, input: ZoneCreateInput) {
     .returning({ id: zone.id, depth: zone.depth });
   if (!z) throw new Error('Insertion de la zone échouée');
   await emit(tx, { type: 'zone.created', subjectType: 'zone', subjectId: z.id, gardenId: scope.gardenId, actorId: actor.id, payload: { zoneTypeCode: type.code, depth: z.depth } }, clock.now());
+  await planChanged(tx, scope.gardenId, clock.now());
   return { zoneId: z.id };
 }
 
@@ -132,6 +134,7 @@ export async function updateZone(ctx: ScopedCtx, input: ZoneUpdateInput) {
     })
     .where(and(eq(zone.gardenId, scope.gardenId), eq(zone.id, current.id)));
   await emit(tx, { type: 'zone.updated', subjectType: 'zone', subjectId: current.id, gardenId: scope.gardenId, actorId: actor.id, payload: { fields: Object.keys(input) } }, clock.now());
+  await planChanged(tx, scope.gardenId, clock.now());
   return { zoneId: current.id };
 }
 
@@ -152,6 +155,7 @@ export async function setZoneGeometry(ctx: ScopedCtx, zoneId: string, geometry: 
   }
   await tx.update(zone).set({ geometry }).where(and(eq(zone.gardenId, scope.gardenId), eq(zone.id, current.id)));
   await emit(tx, { type: 'zone.updated', subjectType: 'zone', subjectId: current.id, gardenId: scope.gardenId, actorId: actor.id, payload: { fields: ['geometry'] } }, clock.now());
+  await planChanged(tx, scope.gardenId, clock.now());
   return { zoneId: current.id };
 }
 
@@ -183,6 +187,7 @@ export async function moveZone(ctx: ScopedCtx, input: { zoneId: string; parentId
       .where(and(eq(zone.gardenId, scope.gardenId), inArray(zone.id, descendants.map((d) => d.id))));
   }
   await emit(tx, { type: 'zone.moved', subjectType: 'zone', subjectId: current.id, gardenId: scope.gardenId, actorId: actor.id, payload: { fromParentId: current.parentId, toParentId: parent?.id ?? null } }, clock.now());
+  await planChanged(tx, scope.gardenId, clock.now());
   return { zoneId: current.id };
 }
 
@@ -215,6 +220,7 @@ export async function setZoneArchived(ctx: ScopedCtx, zoneId: string, archived: 
   if (archived) {
     await emit(tx, { type: 'zone.archived', subjectType: 'zone', subjectId: current.id, gardenId: scope.gardenId, actorId: actor.id, payload: { archivedIds: ids } }, clock.now());
   }
+  await planChanged(tx, scope.gardenId, clock.now());
   return { zoneIds: ids };
 }
 

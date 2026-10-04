@@ -3,9 +3,11 @@ import type { UnlockConditionV1 } from '../progression/unlock.pure';
 /*
  * Catalogue des objets de déco (SPEC §4.2.6, SPRITES.md §6), défini en code et chargé en base avec le référentiel.
  * Un objet ★ porte le code de la pratique réelle qu'il peut déclarer (DEC-03). Le sprite est la frame `deco/<clé>.png`.
+ * Les aménagements ponctuels (`fixture`, lot 9) se posent comme la déco mais dessinent le jardin réel : ils exigent
+ * `plan:edit`, et leur clé de sprite est le chemin complet de la frame (`structures/robinet`).
  */
 
-export type DecorItemDef = { code: string; spriteKey: string; w: number; h: number; practice?: string; unlock: UnlockConditionV1; labelled?: boolean };
+export type DecorItemDef = { code: string; spriteKey: string; w: number; h: number; practice?: string; unlock: UnlockConditionV1; labelled?: boolean; fixture?: boolean };
 
 const none: UnlockConditionV1 = { v: 1, kind: 'none' };
 const level = (min: number): UnlockConditionV1 => ({ v: 1, kind: 'level', min });
@@ -37,8 +39,17 @@ export const DECOR_ITEMS: readonly DecorItemDef[] = [
   { code: 'arch', spriteKey: 'arche', w: 2, h: 2, unlock: level(5) },
   { code: 'hammock', spriteKey: 'hamac', w: 2, h: 1, unlock: level(5) },
   { code: 'statue', spriteKey: 'statue', w: 1, h: 1, unlock: level(5) },
+  { code: 'water_point', spriteKey: 'structures/robinet', w: 1, h: 1, unlock: none, fixture: true },
+  { code: 'rain_barrel', spriteKey: 'structures/recuperateur-eau', w: 1, h: 1, unlock: none, fixture: true },
+  { code: 'existing_tree', spriteKey: 'cultures/pommier-4-feuillage', w: 2, h: 2, unlock: none, fixture: true },
+  { code: 'gate', spriteKey: 'structures/portail-ferme', w: 1, h: 1, unlock: none, fixture: true },
 ];
 
 export const DECOR_BY_CODE: ReadonlyMap<string, DecorItemDef> = new Map(DECOR_ITEMS.map((d) => [d.code, d]));
 
-export const decorFrame = (spriteKey: string) => `deco/${spriteKey}.png`;
+export const isFixture = (code: string) => DECOR_BY_CODE.get(code)?.fixture === true;
+
+/** Frame de l'atlas : `deco/<clé>.png`, ou le chemin complet pour un aménagement. */
+export const decorFrame = (spriteKey: string) => (spriteKey.includes('/') ? `${spriteKey}.png` : `deco/${spriteKey}.png`);
+/** Vignette de la palette (fichier individuel copié par `assets:sync`). */
+export const decorThumb = (spriteKey: string) => (spriteKey.includes('/') ? `/sprites/plan/${spriteKey.replace('/', '-')}.png` : `/sprites/decor/${spriteKey}.png`);

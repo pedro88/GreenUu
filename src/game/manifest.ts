@@ -34,6 +34,11 @@ export const ATLAS_URL = '/sprites/atlas/atlas.json';
 /** Atlas de l'avatar, séparé de celui de la scène : seulement les poses composées (arrêt, marche). */
 export const AVATAR_ATLAS_URL = '/sprites/atlas/avatar-atlas.json';
 
+/** Atlas de la saison (printemps, automne, hiver) : seul celui de la saison courante est chargé ; l'été est la base. */
+export const seasonAtlasUrl = (season: 'spring' | 'autumn' | 'winter') => `/sprites/atlas/saison-${season === 'spring' ? 'printemps' : season === 'autumn' ? 'automne' : 'hiver'}.json`;
+/** Atlas d'une action de l'avatar, chargé seulement quand un avatar affiché la joue. */
+export const actionAtlasUrl = (action: string) => `/sprites/atlas/avatar-action-${action}.json`;
+
 export type AtlasFrame = { page: string; x: number; y: number; w: number; h: number };
 export type LoadedAtlas = { frames: Map<string, AtlasFrame>; pages: string[]; resolution: number; index: PhaseIndex };
 

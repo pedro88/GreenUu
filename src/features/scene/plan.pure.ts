@@ -1,6 +1,7 @@
 import { checkGeometry, type GeometryIssue, type RectGeometry } from '../zone/tree';
 import type { PlanCommand } from './plan.schema';
 import { DECOR_BY_CODE } from '../decor/catalog';
+import { eraseCells, paintCells, resampleCells } from './terrain.pure';
 import type { SceneDecor, SceneTerrain, SceneZone } from './snapshot.schema';
 
 /*
@@ -71,12 +72,12 @@ export function applyLocal(scene: EditorScene, cmd: PlanCommand, types: Map<stri
       const gone = subtree(scene, cmd.zoneId);
       return { ...scene, zones: scene.zones.filter((z) => !gone.has(z.id)) };
     }
-    case 'addTerrain':
-      return { ...scene, terrain: [...scene.terrain, { id: cmd.clientId, kind: cmd.kind, geometry: cmd.geometry }] };
-    case 'removeTerrain':
-      return { ...scene, terrain: scene.terrain.filter((t) => t.id !== cmd.terrainId) };
+    case 'paintTerrain':
+      return { ...scene, terrain: paintCells(scene.terrain, cmd.cells, cmd.kind) };
+    case 'eraseTerrain':
+      return { ...scene, terrain: eraseCells(scene.terrain, cmd.cells) };
     case 'setScale':
-      return { ...scene, tileSizeCm: cmd.tileSizeCm };
+      return { ...scene, tileSizeCm: cmd.tileSizeCm, terrain: resampleCells(scene.terrain, scene.tileSizeCm, cmd.tileSizeCm) };
     case 'placeDecor': {
       const item = DECOR_BY_CODE.get(cmd.itemCode);
       const d: SceneDecor = { id: cmd.clientId, itemCode: cmd.itemCode, spriteKey: item?.spriteKey ?? cmd.itemCode, w: item?.w ?? 1, h: item?.h ?? 1, x: cmd.x, y: cmd.y, label: cmd.label, practiceCode: item?.practice ?? null, practiceDeclared: false };

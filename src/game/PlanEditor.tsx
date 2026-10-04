@@ -16,7 +16,10 @@ import { TMP_PREFIX, type PlanCommand } from '@/features/scene/plan.schema';
 import { applyPlanCommandsAction } from '@/features/scene/actions';
 import type { SceneSnapshot, SceneZone } from '@/features/scene/snapshot.schema';
 import { useZoneTypeLabel } from '@/features/zone/ui/zoneLabels';
-import { TERRAIN_KINDS, type TerrainKind } from '@/lib/enums';
+import { TERRAIN_CELL_KINDS, type TerrainCellKind } from '@/lib/enums';
+import { brushCells, cellKey, cellsRect, MAX_CELLS_PER_COMMAND, paintCells, rectCells, eraseCells, type CellPos } from '@/features/scene/terrain.pure';
+import { decorThumb, isFixture } from '@/features/decor/catalog';
+import { CELL_THUMBS, GENERIC_ZONE_THUMB, planThumbUrl, ZONE_THUMBS } from './plan-thumbs';
 import type { DecorCatalog } from '@/features/decor/service';
 import { useUnlockLabel } from '@/features/progression/ui/unlockLabel';
 import type { SceneDecor } from '@/features/scene/snapshot.schema';
@@ -46,7 +49,6 @@ function remap(cmds: PlanCommand[], ids: Record<string, string>): PlanCommand[] 
     switch (c.op) {
       case 'createZone': return { ...c, parentId: c.parentId ? r(c.parentId) : null };
       case 'resizeZone': case 'moveZone': case 'archiveZone': return { ...c, zoneId: r(c.zoneId) };
-      case 'removeTerrain': return { ...c, terrainId: r(c.terrainId) };
       case 'moveDecor': case 'removeDecor': return { ...c, decorId: r(c.decorId) };
       default: return c;
     }
@@ -78,7 +80,9 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
   const [removing, setRemoving] = useState<SceneDecor | null>(null);
   const [tool, setTool] = useState<Tool>('select');
   const [zoneTypeId, setZoneTypeId] = useState(zoneTypes.find((z) => z.code === 'bed')?.id ?? zoneTypes[0]?.id ?? '');
-  const [terrainKind, setTerrainKind] = useState<TerrainKind>('path');
+  const [cellKind, setCellKind] = useState<TerrainCellKind>('path');
+  const [terrainMode, setTerrainMode] = useState<'brush' | 'rect' | 'erase' | 'pick'>('brush');
+  const [brushSize, setBrushSize] = useState<1 | 2 | 3>(1);
   const [status, setStatus] = useState<Status>('saved');
   const [issue, setIssue] = useState<LocalIssue | null>(null);
   const [conflicts, setConflicts] = useState<number>(0);
@@ -97,11 +101,14 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
    */
   const inFlight = useRef(false);
   const resaveAfter = useRef(false);
-  const drag = useRef<{ start: Tile; mode: 'draw' | 'move' | 'resize' | 'decor'; zone?: SceneZone; decor?: SceneDecor } | null>(null);
+  const drag = useRef<{ start: Tile; mode: 'draw' | 'move' | 'resize' | 'decor' | 'paint'; zone?: SceneZone; decor?: SceneDecor } | null>(null);
+  /** Cases touchées par le trait de pinceau en cours : une seule commande au relâcher (un geste = un niveau d'annulation). */
+  const stroke = useRef<Map<string, CellPos>>(new Map());
 
   // L'état local (base + commandes non confirmées) alimente le canvas comme un instantané.
   useEffect(() => history.subscribe((h) => {
-    const rects = [...h.current.zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...h.current.terrain.map((x) => x.geometry), ...h.current.decor.map((d) => decorRect(d, h.current.tileSizeCm))];
+    const cells = cellsRect(h.current.terrain, h.current.tileSizeCm);
+    const rects = [...h.current.zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...(cells ? [cells] : []), ...h.current.decor.map((d) => decorRect(d, h.current.tileSizeCm))];
     stores.scene.getState().setSnapshot({ ...snapshot, tileSizeCm: h.current.tileSizeCm, zones: h.current.zones, terrain: h.current.terrain, decor: h.current.decor, cultures: [], avatars: [], bounds: sceneBounds(rects, h.current.tileSizeCm) });
   }), [history, stores, snapshot]);
 
@@ -217,7 +224,22 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
   };
   /** Pied d'un objet posé sur une tuile : bas de la tuile, centré sur son emprise. */
   const footAt = (tile: Tile, w: number) => ({ x: Math.max(0, Math.round(tile.x * current.tileSizeCm + (w * current.tileSizeCm) / 2)), y: (tile.y + 1) * current.tileSizeCm });
-  const terrainAt = (p: { x: number; y: number }) => current.terrain.find((x) => p.x >= x.geometry.x && p.y >= x.geometry.y && p.x < x.geometry.x + x.geometry.w && p.y < x.geometry.y + x.geometry.h);
+  /** Aperçu du trait en cours : les cases peintes ou gommées s'affichent avant l'enregistrement de la commande. */
+  const previewStroke = () => {
+    const at = [...stroke.current.values()];
+    const terrain = terrainMode === 'erase' ? eraseCells(current.terrain, at) : paintCells(current.terrain, at, cellKind);
+    stores.scene.getState().setSnapshot({ ...stores.scene.getState().snapshot, terrain });
+  };
+  /** Le trait devient une commande (découpée par 2 500 cases, PNT-07). */
+  const commitStroke = () => {
+    const at = [...stroke.current.values()];
+    stroke.current = new Map();
+    for (let i = 0; i < at.length; i += MAX_CELLS_PER_COMMAND) {
+      const cells = at.slice(i, i + MAX_CELLS_PER_COMMAND);
+      push(terrainMode === 'erase' ? { op: 'eraseTerrain', cells } : { op: 'paintTerrain', kind: cellKind, cells });
+    }
+  };
+  const addToStroke = (cells: CellPos[]) => { for (const c of cells) stroke.current.set(cellKey(c[0], c[1]), c); };
 
   const onDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (!canAny) return;
@@ -225,13 +247,16 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     const tile = tileAt(p.x, p.y, current.tileSizeCm);
     if (tool === 'decor') {
       const item = decorCatalog.find((d) => d.code === decorCode);
-      if (!canDecor || !item) return;
+      if (!item) return;
+      // Un aménagement ponctuel dessine le jardin réel : `plan:edit`, comme le terrain.
+      if (isFixture(item.code) ? !canEdit : !canDecor) { setDecorHint(t('fixtureLocked')); return; }
       if (!item.unlocked) { setDecorHint(tDecor('lockedHint', { condition: unlockLabel(item.condition) })); return; }
       const foot = footAt(tile, item.w);
       push({ op: 'placeDecor', clientId: tmpId(), itemCode: item.code, x: foot.x, y: foot.y, label: item.code === 'sign' && signLabel.trim() ? signLabel.trim().slice(0, 40) : null });
       return;
     }
-    const d = canDecor && (tool === 'select' || tool === 'eraser') ? decorAt(p) : undefined;
+    const found = (tool === 'select' || tool === 'eraser') ? decorAt(p) : undefined;
+    const d = found && (isFixture(found.itemCode) ? canEdit : canDecor) ? found : undefined;
     if (d && tool === 'eraser') {
       if (d.practiceDeclared) setRemoving(d);
       else push({ op: 'removeDecor', decorId: d.id, removePractice: false });
@@ -244,6 +269,22 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
       return;
     }
     if (!canEdit) return;
+    if (tool === 'terrain' && terrainMode === 'pick') {
+      // Pipette : le type de la case touchée devient le type courant.
+      const hit = current.terrain.find((c) => c.x === tile.x && c.y === tile.y);
+      if (hit) setCellKind(hit.kind);
+      setTerrainMode('brush');
+      return;
+    }
+    if (tool === 'terrain' && terrainMode !== 'rect') {
+      e.stopPropagation();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      drag.current = { start: tile, mode: 'paint' };
+      stroke.current = new Map();
+      addToStroke(brushCells(tile, terrainMode === 'erase' ? 1 : brushSize));
+      previewStroke();
+      return;
+    }
     if (tool === 'zone' || tool === 'terrain') {
       e.stopPropagation();
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -253,9 +294,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     }
     if (tool === 'eraser') {
       const z = zoneAt(p);
-      const terrain = terrainAt(p);
-      if (terrain && (!z || z.depth === 0)) push({ op: 'removeTerrain', terrainId: terrain.id });
-      else if (z) setErasing(z);
+      if (z) setErasing(z);
       return;
     }
     const z = zoneAt(p);
@@ -285,6 +324,12 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     const d = drag.current;
     if (!d) return;
     const p = cmAt(e);
+    if (d.mode === 'paint') {
+      const before = stroke.current.size;
+      addToStroke(brushCells(tileAt(p.x, p.y, current.tileSizeCm), terrainMode === 'erase' ? 1 : brushSize));
+      if (stroke.current.size !== before) previewStroke();
+      return;
+    }
     stores.draft.getState().set(draftFor(d, tileAt(p.x, p.y, current.tileSizeCm)));
   };
   const onUp = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -293,6 +338,10 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     stores.draft.getState().set(null);
     if (!d) return;
     const p = cmAt(e);
+    if (d.mode === 'paint') {
+      commitStroke();
+      return;
+    }
     if (d.mode === 'decor' && d.decor) {
       const foot = footAt(tileAt(p.x, p.y, current.tileSizeCm), d.decor.w);
       if (foot.x !== d.decor.x || foot.y !== d.decor.y) push({ op: 'moveDecor', decorId: d.decor.id, x: foot.x, y: foot.y });
@@ -300,7 +349,12 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     }
     const g = draftFor(d, tileAt(p.x, p.y, current.tileSizeCm));
     if (!g) return;
-    if (d.mode === 'draw' && tool === 'terrain') push({ op: 'addTerrain', clientId: tmpId(), kind: terrainKind, geometry: g });
+    if (d.mode === 'draw' && tool === 'terrain') {
+      // Rectangle de terrain : toutes les cases entre les deux coins.
+      stroke.current = new Map();
+      addToStroke(rectCells(d.start, tileAt(p.x, p.y, current.tileSizeCm)));
+      commitStroke();
+    }
     else if (d.mode === 'draw' && placing) { if (push({ op: 'resizeZone', zoneId: placing, geometry: g })) setPlacing(null); }
     else if (d.mode === 'draw') createAt(g);
     else if (d.zone && (g.x !== d.zone.geometry?.x || g.y !== d.zone.geometry?.y || g.w !== d.zone.geometry?.w || g.h !== d.zone.geometry?.h)) {
@@ -334,19 +388,9 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
 
       <div className={styles.tools} role="toolbar" aria-label={t('toolsLabel')}>
         {(['select', 'zone', 'terrain', 'decor', 'eraser'] as const).map((x) => (
-          <Button key={x} variant="secondary" className={styles.tool} aria-pressed={tool === x}
-            disabled={x === 'select' ? false : x === 'decor' ? !canDecor : x === 'eraser' ? !canAny : !canEdit} onClick={() => { setTool(x); setDecorHint(null); }} data-testid={`tool-${x}`}>{t(`tool_${x}`)}</Button>
+          <Button key={x} variant="secondary" className={styles.tool} aria-pressed={tool === x} aria-describedby={x === 'zone' || x === 'terrain' || x === 'decor' ? `plan-help-${x}` : undefined}
+            disabled={x === 'select' ? false : x === 'decor' ? !canAny : x === 'eraser' ? !canAny : !canEdit} onClick={() => { setTool(x); setDecorHint(null); }} data-testid={`tool-${x}`}>{t(`tool_${x}`)}</Button>
         ))}
-        <Field label={t('zoneType')}>{(p) => (
-          <NativeSelect {...p} value={zoneTypeId} disabled={!canEdit} onChange={(e) => setZoneTypeId(e.target.value)} data-testid="zone-type">
-            {zoneTypes.map((z) => <option key={z.id} value={z.id}>{typeLabel(z)}</option>)}
-          </NativeSelect>
-        )}</Field>
-        <Field label={t('terrainKind')}>{(p) => (
-          <NativeSelect {...p} value={terrainKind} disabled={!canEdit} onChange={(e) => setTerrainKind(TERRAIN_KINDS.find((x) => x === e.target.value) ?? 'path')} data-testid="terrain-kind">
-            {TERRAIN_KINDS.map((x) => <option key={x} value={x}>{tTerrain(x)}</option>)}
-          </NativeSelect>
-        )}</Field>
         <Field label={t('scale')}>{(p) => (
           <NativeSelect {...p} value={current.tileSizeCm} disabled={!canEdit} data-testid="plan-scale"
             onChange={(e) => { const v = TILE_SIZES_CM.find((x) => x === Number(e.target.value)); if (v) push({ op: 'setScale', tileSizeCm: v }); }}>
@@ -357,20 +401,69 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
         <Button variant="secondary" disabled={!canAny || !undone.length} onClick={() => { history.getState().redo(); schedule(); }} data-testid="plan-redo">{t('redo')}</Button>
         <Button disabled={!canAny || !done.length || status === 'saving'} onClick={() => void save()} data-testid="plan-save">{t('save')}</Button>
       </div>
-      {tool === 'decor' ? (
-        <div className={styles.decorPalette} role="group" aria-label={tDecor('paletteLabel')} data-testid="decor-palette">
+      {/* VOC-01 : chaque outil dit ce qu'il fait ; ses types se choisissent par vignettes au nom lisible. */}
+      <p id="plan-help-zone" className={styles.toolHelp} hidden={tool !== 'zone'} data-testid="plan-help-zone">{t('help_zone')}</p>
+      <p id="plan-help-terrain" className={styles.toolHelp} hidden={tool !== 'terrain'} data-testid="plan-help-terrain">{t('help_terrain')}</p>
+      <p id="plan-help-decor" className={styles.toolHelp} hidden={tool !== 'decor'} data-testid="plan-help-decor">{t('help_decor')}</p>
+      {tool === 'zone' ? (
+        <div className={styles.decorPalette} role="group" aria-label={t('zoneType')} data-testid="zone-types">
           <ul>
-            {decorCatalog.map((d) => (
-              <li key={d.code}>
-                <button type="button" className={styles.decorItem} aria-pressed={decorCode === d.code} aria-disabled={!d.unlocked} data-locked={d.unlocked ? 'false' : 'true'} data-testid={`decor-item-${d.code}`}
-                  onClick={() => { setDecorCode(d.code); setDecorHint(d.unlocked ? null : tDecor('lockedHint', { condition: unlockLabel(d.condition) })); }}>
-                  <img src={`/sprites/decor/${d.spriteKey}.png`} alt="" width={32} height={32} />
-                  <span>{tDynamic(tDecor, `item_${d.code}`, d.code)}{d.practiceCode ? ' ★' : ''}</span>
-                  {d.unlocked ? null : <small>{unlockLabel(d.condition)}</small>}
+            {zoneTypes.map((z) => (
+              <li key={z.id}>
+                <button type="button" className={styles.decorItem} aria-pressed={zoneTypeId === z.id} disabled={!canEdit} data-testid={`zone-type-${z.code}`} onClick={() => setZoneTypeId(z.id)}>
+                  <img src={planThumbUrl(ZONE_THUMBS[z.code] ?? GENERIC_ZONE_THUMB)} alt="" width={32} height={32} />
+                  <span>{typeLabel(z)}</span>
                 </button>
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+      {tool === 'terrain' ? (
+        <div className={styles.decorPalette} data-testid="terrain-palette">
+          <div role="group" aria-label={t('terrainModes')} className={styles.modes}>
+            {(['brush', 'rect', 'erase', 'pick'] as const).map((m) => (
+              <Button key={m} variant="secondary" className={styles.tool} aria-pressed={terrainMode === m} disabled={!canEdit} onClick={() => setTerrainMode(m)} data-testid={`terrain-mode-${m}`}>{t(`mode_${m}`)}</Button>
+            ))}
+            {terrainMode === 'brush' ? (
+              <span role="group" aria-label={t('brushSize')}>
+                {([1, 2, 3] as const).map((n) => (
+                  <Button key={n} variant="secondary" className={styles.tool} aria-pressed={brushSize === n} disabled={!canEdit} onClick={() => setBrushSize(n)} data-testid={`brush-${n}`}>{t(`brush_${n}`)}</Button>
+                ))}
+              </span>
+            ) : null}
+          </div>
+          <ul role="group" aria-label={t('terrainKind')}>
+            {TERRAIN_CELL_KINDS.map((k) => (
+              <li key={k}>
+                <button type="button" className={styles.decorItem} aria-pressed={cellKind === k} disabled={!canEdit} data-testid={`terrain-kind-${k}`} onClick={() => { setCellKind(k); if (terrainMode === 'erase' || terrainMode === 'pick') setTerrainMode('brush'); }}>
+                  <img src={planThumbUrl(CELL_THUMBS[k])} alt="" width={32} height={32} />
+                  <span>{tTerrain(k)}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {tool === 'decor' ? (
+        <div className={styles.decorPalette} role="group" aria-label={tDecor('paletteLabel')} data-testid="decor-palette">
+          {[{ key: 'decor', items: decorCatalog.filter((d) => !isFixture(d.code)), allowed: canDecor }, { key: 'fixtures', items: decorCatalog.filter((d) => isFixture(d.code)), allowed: canEdit }].map((group) => (
+            <section key={group.key} aria-label={group.key === 'fixtures' ? t('fixturesTitle') : tDecor('paletteLabel')}>
+              {group.key === 'fixtures' ? <h3>{t('fixturesTitle')}</h3> : null}
+              <ul>
+                {group.items.map((d) => (
+                  <li key={d.code}>
+                    <button type="button" className={styles.decorItem} aria-pressed={decorCode === d.code} aria-disabled={!d.unlocked || !group.allowed} data-locked={d.unlocked && group.allowed ? 'false' : 'true'} data-testid={`decor-item-${d.code}`}
+                      onClick={() => { setDecorCode(d.code); setDecorHint(!group.allowed ? t('fixtureLocked') : d.unlocked ? null : tDecor('lockedHint', { condition: unlockLabel(d.condition) })); }}>
+                      <img src={decorThumb(d.spriteKey)} alt="" width={32} height={32} />
+                      <span>{tDynamic(tDecor, `item_${d.code}`, d.code)}{d.practiceCode ? ' ★' : ''}</span>
+                      {d.unlocked ? null : <small>{unlockLabel(d.condition)}</small>}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
           {decorCode === 'sign' ? <Field label={tDecor('signLabel')}>{(p) => <TextInput {...p} maxLength={40} value={signLabel} onChange={(e) => setSignLabel(e.target.value)} data-testid="decor-sign-label" />}</Field> : null}
           <p role="status" data-testid="decor-hint">{decorHint ?? tDecor('placeHint')}</p>
         </div>

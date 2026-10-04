@@ -1,20 +1,24 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { DomainError, forbidden, notFound, validation } from '@/lib/errors';
 import type { ScopedCtx } from '@/server/action-core';
 import { can } from '@/server/authz/scope';
-import { garden, terrainElement, zone } from '@/server/db/schema';
+import { garden, terrainCell, zone } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
 import { zoneCreateSchema } from '../zone/schema';
 import { moveDecor, placeDecor, removeDecor, type FactsLoader } from '../decor/service';
 import { unlockFactsOf } from '../progression/unlock';
 import type { UnlockFacts } from '../progression/unlock.pure';
 import { createZone, setZoneArchived, setZoneGeometry } from '../zone/service';
+import { markPlanBatch, recordPlanSnapshot } from './history';
 import { TMP_PREFIX, type ApplyPlanInput, type PlanCommand } from './plan.schema';
+import { MAX_CELL_COORD, resampleCells, type Cell } from './terrain.pure';
 
 /*
  * `applyPlanCommands` (SPEC §9.7) : un lot de commandes de l'éditeur, appliqué tout ou rien. Les commandes de zone
- * passent par les services de zone (permissions, restrictions de zone, RG-ZON-05, événements) ; le terrain et l'échelle
- * exigent `plan:edit`, la déco `decor:place`. Une version de plan différente de `baseVersion` donne `CONFLICT` sans rien appliquer.
+ * passent par les services de zone (permissions, restrictions de zone, RG-ZON-05, événements) ; le terrain peint et
+ * l'échelle exigent `plan:edit`, la déco `decor:place` (les aménagements ponctuels, `plan:edit`). Une version de plan
+ * différente de `baseVersion` donne `CONFLICT` sans rien appliquer. L'instantané du plan du jour est écrit à la fin du
+ * lot, dans la même transaction (TLP-01).
  */
 
 export type ApplyPlanResult = { planVersion: number; ids: Record<string, string> };
@@ -33,6 +37,7 @@ export async function applyPlanCommands(ctx: ScopedCtx, input: ApplyPlanInput): 
   // Point de sauvegarde : tout ou rien, même appelé dans une transaction plus large (PLN-04).
   return ctx.tx.transaction(async (sp) => {
     const c: ScopedCtx = { ...ctx, tx: sp };
+    markPlanBatch(sp);
     const ids = new Map<string, string>();
     const resolve = (ref: string) => {
       if (!ref.startsWith(TMP_PREFIX)) return ref;
@@ -44,6 +49,7 @@ export async function applyPlanCommands(ctx: ScopedCtx, input: ApplyPlanInput): 
     const loadFacts: FactsLoader = () => (facts ??= unlockFactsOf(sp, ctx.actor.id));
     for (const cmd of input.commands) await applyOne(c, input.sceneZoneId, cmd, ids, resolve, loadFacts);
     const [v] = await sp.update(garden).set({ planVersion: sql`${garden.planVersion} + 1` }).where(eq(garden.id, scope.gardenId)).returning({ v: garden.planVersion });
+    await recordPlanSnapshot(sp, scope.gardenId, ctx.clock.now());
     await emit(sp, { type: 'garden.plan_saved', subjectType: 'garden', subjectId: scope.gardenId, gardenId: scope.gardenId, actorId: ctx.actor.id, payload: { commands: input.commands.length, planVersion: v?.v ?? 0 } }, ctx.clock.now());
     return { planVersion: v?.v ?? input.baseVersion + 1, ids: Object.fromEntries(ids) };
   });
@@ -75,23 +81,34 @@ async function applyOne(c: ScopedCtx, sceneZoneId: string | null, cmd: PlanComma
       await setZoneArchived(c, id, true, { finishActiveCultures: cmd.finishActiveCultures });
       return;
     }
-    case 'addTerrain': {
+    case 'paintTerrain': {
       if (!can(scope, 'plan:edit')) throw forbidden();
-      const [t] = await tx.insert(terrainElement).values({ gardenId: scope.gardenId, sceneZoneId, kind: cmd.kind, geometry: cmd.geometry }).returning({ id: terrainElement.id });
-      if (t) ids.set(cmd.clientId, t.id);
+      // Une case citée deux fois ne doit être écrite qu'une fois (`ON CONFLICT DO UPDATE` refuse le doublon).
+      const unique = new Map(cmd.cells.map(([x, y]) => [`${x},${y}`, { gardenId: scope.gardenId, sceneZoneId, x, y, kind: cmd.kind }]));
+      const rows = [...unique.values()];
+      await tx.insert(terrainCell).values(rows).onConflictDoUpdate({ target: [terrainCell.gardenId, terrainCell.sceneZoneId, terrainCell.x, terrainCell.y], set: { kind: cmd.kind } });
       return;
     }
-    case 'removeTerrain': {
+    case 'eraseTerrain': {
       if (!can(scope, 'plan:edit')) throw forbidden();
-      const id = resolve(cmd.terrainId);
-      const gone = await tx.delete(terrainElement).where(and(eq(terrainElement.gardenId, scope.gardenId), eq(terrainElement.id, id))).returning({ id: terrainElement.id });
-      if (!gone.length) throw notFound();
+      await tx.delete(terrainCell).where(and(eq(terrainCell.gardenId, scope.gardenId), sceneZoneId ? eq(terrainCell.sceneZoneId, sceneZoneId) : isNull(terrainCell.sceneZoneId),
+        sql`(${terrainCell.x}, ${terrainCell.y}) in (${sql.join(cmd.cells.map(([x, y]) => sql`(${x}::int, ${y}::int)`), sql`, `)})`));
       return;
     }
     case 'setScale': {
       if (!can(scope, 'plan:edit')) throw forbidden();
-      // L'échelle ne change que l'affichage : la géométrie reste en centimètres (PLN-07).
+      // L'échelle ne change que l'affichage : la géométrie reste en centimètres (PLN-07). Les cases de terrain, en
+      // tuiles, sont rééchantillonnées pour que le dessin ne bouge pas (PNT-06).
+      const [cur] = await tx.select({ tileSizeCm: garden.tileSizeCm }).from(garden).where(eq(garden.id, scope.gardenId)).limit(1);
       await tx.update(garden).set({ tileSizeCm: cmd.tileSizeCm }).where(eq(garden.id, scope.gardenId));
+      if (!cur || cur.tileSizeCm === cmd.tileSizeCm) return;
+      const cells = await tx.select({ sceneZoneId: terrainCell.sceneZoneId, x: terrainCell.x, y: terrainCell.y, kind: terrainCell.kind }).from(terrainCell).where(eq(terrainCell.gardenId, scope.gardenId));
+      if (!cells.length) return;
+      const byScene = new Map<string | null, Cell[]>();
+      for (const x of cells) byScene.set(x.sceneZoneId, [...(byScene.get(x.sceneZoneId) ?? []), { x: x.x, y: x.y, kind: x.kind }]);
+      await tx.delete(terrainCell).where(eq(terrainCell.gardenId, scope.gardenId));
+      const rows = [...byScene].flatMap(([scene, list]) => resampleCells(list, cur.tileSizeCm, cmd.tileSizeCm).filter((x) => x.x <= MAX_CELL_COORD && x.y <= MAX_CELL_COORD).map((x) => ({ gardenId: scope.gardenId, sceneZoneId: scene, ...x })));
+      for (let i = 0; i < rows.length; i += 5000) await tx.insert(terrainCell).values(rows.slice(i, i + 5000));
       return;
     }
     case 'placeDecor':

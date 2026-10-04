@@ -1,12 +1,13 @@
 // Synchronisation des shaders précompilée : la CSP de production interdit `eval` / `new Function` (audit lot 7, M1).
 import 'pixi.js/unsafe-eval';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Texture, TextureStyle, TilingSprite } from 'pixi.js';
-import { avatarCanvas, WALK } from '@/features/avatar/compose';
+import { actionFrameCount, avatarCanvas, WALK, type Pose } from '@/features/avatar/compose';
 import { decorFrame } from '@/features/decor/catalog';
+import { existingTreeFrame, linearLayer, seasonal, SURFACE_ORDER, surfaceLayer, zonePieces, type Season, type TileDraw } from '@/features/scene/tiles.pure';
 import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
 import { TILE_PX } from '@/features/scene/grid.pure';
-import { fetchAtlas, grassFrame, resolvePlantFrame, STATE_FRAMES, TERRAIN_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
+import { fetchAtlas, grassFrame, resolvePlantFrame, seasonAtlasUrl, STATE_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
 
 /*
  * Rendu PixiJS de la scène (SPEC §9.1, §9.2). Seul ce module (et `GardenCanvas`) importe PixiJS. Il lit les stores et ne
@@ -29,10 +30,11 @@ type Atlas = { index: PhaseIndex; textures: Map<string, Texture> } | null;
 
 /**
  * Atlas multi-pages (sprites HD) : une source par page, à la résolution des assets ; les cadres sont exprimés en unités
- * logiques (pixels / résolution), comme le fait le parseur de spritesheets de PixiJS.
+ * logiques (pixels / résolution), comme le fait le parseur de spritesheets de PixiJS. `into` reçoit les textures (un
+ * atlas de saison s'ajoute à celui de la scène).
  */
-async function loadAtlas(): Promise<Atlas> {
-  const atlas = await fetchAtlas();
+async function loadAtlas(url?: string, into = new Map<string, Texture>()): Promise<Atlas> {
+  const atlas = await fetchAtlas(url);
   if (!atlas) return null;
   try {
     // Planches chargées sur le thread principal, pas dans les workers de PixiJS : ces requêtes sont alors visibles de
@@ -48,12 +50,11 @@ async function loadAtlas(): Promise<Atlas> {
       sources.set(page, t);
     });
     const r = atlas.resolution;
-    const textures = new Map<string, Texture>();
     for (const [name, f] of atlas.frames) {
       const src = sources.get(f.page);
-      if (src) textures.set(name, new Texture({ source: src.source, frame: new Rectangle(f.x / r, f.y / r, f.w / r, f.h / r) }));
+      if (src) into.set(name, new Texture({ source: src.source, frame: new Rectangle(f.x / r, f.y / r, f.w / r, f.h / r) }));
     }
-    return { index: atlas.index, textures };
+    return { index: atlas.index, textures: into };
   } catch {
     return null;
   }
@@ -66,8 +67,7 @@ const ZONE_COLORS: Record<string, number> = {
   meadow: 0x8fbf63, path: 0xc8b48c, plot: 0xb08a60,
 };
 const TERRAIN_COLORS: Record<string, number> = {
-  path: 0xc6a879, gravel_path: 0xb9b2a4, stepping_stones: 0xa9a39a, water_point: 0x4f8fc0, rain_barrel: 0x5a7da0, hedge: 0x3f6b35,
-  existing_tree: 0x3c6e2f, fence: 0x7a5a3a, gate: 0x7a5a3a,
+  path: 0xc6a879, gravel_path: 0xb9b2a4, stepping_stones: 0xa9a39a, water: 0x4f8fc0, bare_soil: 0x9a6a48, mulch: 0xd9b05b, hedge: 0x3f6b35, fence: 0x7a5a3a,
 };
 const PHASE_SIZE: Record<VisualPhase, number> = { seed: 6, sprout: 10, growing: 16, flowering: 20, fruiting: 22, harvest_ready: 24, seed_set: 20, dormant: 12, finished: 10 };
 const PHASE_COLOR: Record<VisualPhase, number> = {
@@ -88,7 +88,10 @@ export type SceneView = {
   destroy: () => void;
 };
 
-export async function createSceneView(host: HTMLElement, opts: { onMissingSprite?: (key: string) => void; onChange?: () => void } = {}): Promise<SceneView> {
+/** Ce que la scène a dessiné, exposé à la couche DOM (`data-season`, `data-terrain-*`) pour les tests et le débogage. */
+export type SceneStats = { season: Season | null; terrainTiles: number; terrainTransitions: number };
+
+export async function createSceneView(host: HTMLElement, opts: { onMissingSprite?: (key: string) => void; onChange?: () => void; onStats?: (s: SceneStats) => void } = {}): Promise<SceneView> {
   const onAvatarReady = opts.onChange;
   const app = new Application();
   await app.init({ resizeTo: host, backgroundAlpha: 0, antialias: false, autoStart: false, preference: 'webgl', resolution: window.devicePixelRatio || 1, autoDensity: true });
@@ -96,6 +99,10 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   app.canvas.setAttribute('aria-hidden', 'true');
   host.appendChild(app.canvas);
   const atlas = await loadAtlas();
+  /** Saison dont l'atlas est chargé (l'été n'en a pas : c'est la base). */
+  let loadedSeason: Season | null = 'summer';
+  let seasonLoading: Season | null = null;
+  const has = (frame: string) => atlas?.textures.has(frame) ?? false;
 
   const world = new Container();
   const ground = new Container();
@@ -117,12 +124,28 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   let elapsed = 0;
   const plants: Sprite[] = [];
   /** Avatars posés : frames de marche composées en Canvas 2D (§10.2), animées seulement par la boucle ambiante. */
-  const walkers: { sprite: Sprite; frames: Texture[]; baseX: number; phase: number }[] = [];
+  const walkers: { sprite: Sprite; frames: Texture[]; baseX: number; phase: number; acting: boolean }[] = [];
   const avatarTextures = new Map<string, Promise<Texture[]>>();
   let generation = 0;
   const tex = (name: string | null | undefined) => (name ? atlas?.textures.get(name) : undefined);
 
   const px = (cm: number) => cm * scale;
+
+  /**
+   * Atlas de la saison courante (TER-01) : chargé une fois, seulement s'il n'est pas déjà là ; l'été est la base. La
+   * scène est redessinée quand il arrive, sans attendre : en attendant, les clés de base servent de repli (TER-03).
+   */
+  function ensureSeason(season: Season) {
+    if (!atlas || season === 'summer' || loadedSeason === season || seasonLoading === season) return;
+    seasonLoading = season;
+    void loadAtlas(seasonAtlasUrl(season), atlas.textures).then(() => {
+      if (seasonLoading !== season) return;
+      loadedSeason = season;
+      seasonLoading = null;
+      if (snapshot) redraw(snapshot);
+      onAvatarReady?.();
+    });
+  }
 
   function drawGround(s: SceneSnapshot) {
     clearLayer(ground);
@@ -136,12 +159,35 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     }
   }
 
+  /** Frame de fond d'une zone, dans sa variante saisonnière si elle existe (`tuiles/terre-1` → `tuiles/terre-hiver-1`). */
+  function zoneFrame(typeCode: string, season: Season): string | undefined {
+    const base = ZONE_FRAMES[typeCode];
+    const m = base ? /^(.+?)-(\d)\.png$/.exec(base) : null;
+    return (m?.[1] && m[2] ? seasonal(has, m[1], season, m[2]) : null) ?? base;
+  }
+
   function drawZones(s: SceneSnapshot) {
     clearLayer(zoneLayer);
+    const season = s.ambient.season;
     for (const z of [...s.zones].sort((a, b) => a.depth - b.depth)) {
       if (!z.geometry) continue;
       const { x, y, w, h } = z.geometry;
-      const t = tex(ZONE_FRAMES[z.typeCode]);
+      // Planches et carrés en pièces (bords en bois, saisons, neige l'hiver, TER-05) ; les autres types en motif répété.
+      const cols = Math.max(1, Math.round(w / s.tileSizeCm));
+      const rows = Math.max(1, Math.round(h / s.tileSizeCm));
+      const pieces = atlas ? zonePieces(z.typeCode, cols, rows, season, has) : null;
+      if (pieces) {
+        const pw = px(w) / cols;
+        const ph = px(h) / rows;
+        for (const p of pieces) {
+          for (const frame of [p.frame, p.snow]) {
+            const t = tex(frame);
+            if (t) zoneLayer.addChild(Object.assign(new Sprite(t), { x: px(x) + p.x * pw, y: px(y) + p.y * ph, width: pw, height: ph }));
+          }
+        }
+        continue;
+      }
+      const t = tex(zoneFrame(z.typeCode, season));
       if (t) zoneLayer.addChild(Object.assign(new TilingSprite({ texture: t, width: px(w), height: px(h) }), { x: px(x), y: px(y) }));
       const g = new Graphics().rect(px(x), px(y), px(w), px(h));
       if (!t) g.fill({ color: ZONE_COLORS[z.typeCode] ?? 0xb08a60, alpha: z.depth === 0 ? 0.55 : 0.9 });
@@ -150,14 +196,30 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     }
   }
 
+  /**
+   * Terrain peint (§9.2) : une couche dual-grid par surface, dans l'ordre fixe, puis haies et clôtures raccordées.
+   * Une case vaut une tuile (`TILE_PX`) quelle que soit l'échelle.
+   */
   function drawTerrain(s: SceneSnapshot) {
     clearLayer(terrainLayer);
-    for (const t of s.terrain) {
-      const { x, y, w, h } = t.geometry;
-      const frame = tex(TERRAIN_FRAMES[t.kind]);
-      if (frame) terrainLayer.addChild(Object.assign(new TilingSprite({ texture: frame, width: px(w), height: px(h) }), { x: px(x), y: px(y) }));
-      else terrainLayer.addChild(new Graphics().rect(px(x), px(y), px(w), px(h)).fill(TERRAIN_COLORS[t.kind] ?? 0xc6a879));
+    let tiles = 0;
+    let transitions = 0;
+    if (!atlas) {
+      const g = new Graphics();
+      for (const c of s.terrain) g.rect(c.x * TILE_PX, c.y * TILE_PX, TILE_PX, TILE_PX).fill(TERRAIN_COLORS[c.kind] ?? 0xc6a879);
+      terrainLayer.addChild(g);
+      opts.onStats?.({ season: s.ambient.season, terrainTiles: s.terrain.length, terrainTransitions: 0 });
+      return;
     }
+    const draws: TileDraw[] = [...SURFACE_ORDER.flatMap((kind) => surfaceLayer(s.terrain, kind, s.ambient.season, has)), ...linearLayer(s.terrain, s.ambient.season, has)];
+    for (const d of draws) {
+      const t = tex(d.frame);
+      if (!t) continue;
+      terrainLayer.addChild(Object.assign(new Sprite(t), { x: d.x * TILE_PX, y: d.y * TILE_PX, width: TILE_PX, height: TILE_PX }));
+      tiles += 1;
+      if (d.frame.startsWith('transitions/')) transitions += 1;
+    }
+    opts.onStats?.({ season: loadedSeason === s.ambient.season ? s.ambient.season : null, terrainTiles: tiles, terrainTransitions: transitions });
   }
 
   function plantSprite(c: SceneCulture): Sprite | Graphics {
@@ -195,8 +257,9 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     }
   }
 
-  function decorNode(d: SceneDecor): Sprite | Graphics {
-    const t = tex(decorFrame(d.spriteKey));
+  function decorNode(d: SceneDecor, season: Season): Sprite | Graphics {
+    // L'arbre existant suit les saisons (étapes du pommier, TER-05).
+    const t = tex(d.itemCode === 'existing_tree' ? existingTreeFrame(season, has) : decorFrame(d.spriteKey));
     if (t) {
       const sp = new Sprite(t);
       sp.anchor.set(0.5, 1);
@@ -210,25 +273,40 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
 
   function drawDecor(s: SceneSnapshot) {
     for (const d of s.decor) {
-      const node = decorNode(d);
+      const node = decorNode(d, s.ambient.season);
       node.position.set(px(d.x), px(d.y));
       node.zIndex = d.y;
       plantLayer.addChild(node);
     }
   }
 
-  /** Textures d'un avatar (arrêt puis marche), en cache par `configHash`, à la résolution des sprites HD. */
+  const toTexture = (c: HTMLCanvasElement | null) => {
+    if (!c) return [];
+    const t = Texture.from(c);
+    t.source.resolution = 2;
+    t.source.scaleMode = 'nearest';
+    return [t];
+  };
+
+  /**
+   * Textures d'un avatar, en cache par (`configHash`, action), à la résolution des sprites HD : les images de son action
+   * (atlas de l'action chargé à cette occasion, LIV-01), sinon l'arrêt puis la marche.
+   */
   function avatarFrames(a: SceneAvatar): Promise<Texture[]> {
-    let p = avatarTextures.get(a.configHash);
+    const key = `${a.configHash}|${a.action ?? ''}`;
+    let p = avatarTextures.get(key);
     if (!p) {
-      p = Promise.all((['arret', ...WALK] as const).map((pose) => avatarCanvas(a.config, 'bas', pose))).then((canvases) => canvases.flatMap((c) => {
-        if (!c) return [];
-        const t = Texture.from(c);
-        t.source.resolution = 2;
-        t.source.scaleMode = 'nearest';
-        return [t];
-      }));
-      avatarTextures.set(a.configHash, p);
+      p = (async () => {
+        if (a.action) {
+          const action = a.action;
+          const n = await actionFrameCount(action);
+          const poses = Array.from({ length: n }, (_, i): Pose => `${action}-f${i + 1}`);
+          const frames = (await Promise.all(poses.map((pose) => avatarCanvas(a.config, 'bas', pose, 'atlas', action)))).flatMap(toTexture);
+          if (frames.length) return frames;
+        }
+        return (await Promise.all((['arret', ...WALK] as const).map((pose) => avatarCanvas(a.config, 'bas', pose)))).flatMap(toTexture);
+      })();
+      avatarTextures.set(key, p);
     }
     return p;
   }
@@ -245,7 +323,8 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
         sp.position.set(px(a.position.x), px(a.position.y));
         sp.zIndex = a.position.y + 1;
         plantLayer.addChild(sp);
-        walkers.push({ sprite: sp, frames, baseX: sp.x, phase: i * 1.7 });
+        // Une action se joue sur place ; sans action, l'avatar marche lentement au pied de la zone.
+        walkers.push({ sprite: sp, frames, baseX: sp.x, phase: i * 1.7, acting: !!a.action });
         onAvatarReady?.();
       });
     }
@@ -268,19 +347,24 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     if (s.ambient.alpha > 0) tint.rect(0, 0, app.screen.width, app.screen.height).fill({ color: s.ambient.tint, alpha: s.ambient.alpha });
   }
 
+  function redraw(s: SceneSnapshot) {
+    snapshot = s;
+    scale = TILE_PX / s.tileSizeCm;
+    ensureSeason(s.ambient.season);
+    drawGround(s);
+    drawTerrain(s);
+    drawZones(s);
+    drawGrid(s);
+    drawPlants(s);
+    drawDecor(s);
+    generation += 1;
+    drawAvatars(s);
+    drawTint(s);
+  }
+
   return {
     setSnapshot(s) {
-      snapshot = s;
-      scale = TILE_PX / s.tileSizeCm;
-      drawGround(s);
-      drawTerrain(s);
-      drawZones(s);
-      drawGrid(s);
-      drawPlants(s);
-      drawDecor(s);
-      generation += 1;
-      drawAvatars(s);
-      drawTint(s);
+      redraw(s);
     },
     setCamera(c) {
       world.position.set(c.x, c.y);
@@ -309,6 +393,12 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       plants.forEach((p, i) => { p.skew.x = Math.sin(elapsed / 700 + i) * 0.04; });
       // Marche lente d'un côté à l'autre, au pied de la zone (§9.5) ; statique en animations réduites.
       for (const w of walkers) {
+        if (w.acting) {
+          // L'action en boucle, sur place (§9.5) ; figée sur sa première image en animations réduites (pas d'appel).
+          const f = w.frames[Math.floor((elapsed + w.phase * 1000) / 260) % w.frames.length];
+          if (f) w.sprite.texture = f;
+          continue;
+        }
         const t = elapsed / 1000 + w.phase;
         w.sprite.x = w.baseX + Math.sin(t / 3) * 12;
         const f = w.frames[1 + (Math.floor(elapsed / 220) % Math.max(1, w.frames.length - 1))];

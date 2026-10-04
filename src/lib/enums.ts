@@ -76,6 +76,12 @@ export type Skill = (typeof SKILL_DOMAINS)[number];
 export const TERRAIN_KINDS = ['path', 'gravel_path', 'stepping_stones', 'water_point', 'rain_barrel', 'hedge', 'existing_tree', 'fence', 'gate'] as const;
 export const DEFAULT_VIEWS = ['garden', 'classic'] as const;
 export type TerrainKind = (typeof TERRAIN_KINDS)[number];
+/**
+ * Terrain peint case par case (lot 9, §4.2.6). Les surfaces sont listées dans l'ordre de leurs couches de rendu (§9.2),
+ * les linéaires (haie, clôture) ensuite.
+ */
+export const TERRAIN_CELL_KINDS = ['water', 'bare_soil', 'mulch', 'path', 'gravel_path', 'stepping_stones', 'hedge', 'fence'] as const;
+export type TerrainCellKind = (typeof TERRAIN_CELL_KINDS)[number];
 export type DefaultView = (typeof DEFAULT_VIEWS)[number];
 
 /* ---------- Lot 8 : décoration et avatar ---------- */

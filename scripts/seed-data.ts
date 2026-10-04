@@ -6,9 +6,9 @@ import { seasonBounds } from '../src/features/season/season.pure';
 import type { Db } from '../src/server/db/client';
 import {
   account, consent, garden, gardenEnvironment, gardenGroup, gardenMember, groupMember, practice, practiceDeclaration,
-  decorPlacement, season, terrainElement, user, userProfile, zone, zoneGroupPermission, zoneType,
+  decorPlacement, season, terrainCell, user, userProfile, zone, zoneGroupPermission, zoneType,
 } from '../src/server/db/schema';
-import type { Environment, GardenRole, OrgType, TerrainKind } from '../src/lib/enums';
+import type { Environment, GardenRole, OrgType, TerrainCellKind } from '../src/lib/enums';
 import { assignDefaultAvatar } from '../src/features/avatar/service';
 import { decorItemRefId } from '../src/features/decor/load';
 import { loadReferenceData } from '../src/features/plant/reference/load';
@@ -124,10 +124,16 @@ const rectOf = (garden: string, key: string) => {
   const g = GEOMETRY[garden]?.[key];
   return g ? { v: 1 as const, kind: 'rect' as const, x: g[0], y: g[1], w: g[2], h: g[3] } : null;
 };
-/** Éléments de terrain de la scène extérieure (§9.2) : allées et points d'eau. */
-const TERRAIN: Record<string, { key: string; kind: TerrainKind; at: [number, number, number, number] }[]> = {
-  tilleuls: [{ key: 'allee', kind: 'gravel_path', at: [0, 600, 1200, 100] }, { key: 'robinet', kind: 'water_point', at: [1250, 150, 50, 50] }, { key: 'cuve', kind: 'rain_barrel', at: [1300, 200, 50, 50] }],
-  canal: [{ key: 'allee', kind: 'path', at: [0, 400, 1300, 100] }, { key: 'portail', kind: 'gate', at: [600, 900, 100, 50] }],
+/**
+ * Terrain peint de la scène extérieure (§9.2, lot 9) : rectangles de cases [x, y, largeur, hauteur], en tuiles de 50 cm.
+ * La haie des Tilleuls forme un T (PNT-04), la clôture du Canal laisse passer le portail.
+ */
+const TERRAIN: Record<string, { kind: TerrainCellKind; at: [number, number, number, number] }[]> = {
+  tilleuls: [
+    { kind: 'gravel_path', at: [0, 12, 24, 2] }, { kind: 'water', at: [28, 6, 3, 3] }, { kind: 'mulch', at: [16, 17, 16, 1] },
+    { kind: 'hedge', at: [0, 19, 32, 1] }, { kind: 'hedge', at: [15, 14, 1, 5] },
+  ],
+  canal: [{ kind: 'path', at: [0, 8, 26, 2] }, { kind: 'fence', at: [0, 18, 13, 1] }, { kind: 'fence', at: [14, 18, 13, 1] }],
 };
 
 /**
@@ -139,11 +145,14 @@ const DECOR: Record<string, { key: string; item: string; at: [number, number]; b
     { key: 'hotel', item: 'insect_hotel', at: [1225, 450], by: 'alice', practice: 'biodiversity_insect_hotel' },
     { key: 'banc', item: 'bench', at: [1450, 650], by: 'alice' },
     { key: 'epouvantail', item: 'scarecrow', at: [925, 550], by: 'alice' },
+    { key: 'robinet', item: 'water_point', at: [1275, 200], by: 'alice' },
+    { key: 'cuve', item: 'rain_barrel', at: [1325, 250], by: 'alice' },
   ],
   canal: [
     { key: 'panneau', item: 'sign', at: [650, 950], by: 'bruno', label: 'Jardin du Canal' },
     { key: 'nichoir', item: 'birdhouse', at: [1250, 350], by: 'chloe' },
     { key: 'brouette', item: 'wheelbarrow', at: [650, 480], by: 'david' },
+    { key: 'portail', item: 'gate', at: [675, 950], by: 'bruno' },
   ],
 };
 
@@ -193,9 +202,8 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
         }
       };
       await insertZones(g.zones, null);
-      for (const t of TERRAIN[g.key] ?? []) {
-        await tx.insert(terrainElement).values({ id: seedId(`terrain:${g.key}:${t.key}`), gardenId: gid, kind: t.kind, geometry: { v: 1, kind: 'rect', x: t.at[0], y: t.at[1], w: t.at[2], h: t.at[3] } }).onConflictDoNothing();
-      }
+      const cells = (TERRAIN[g.key] ?? []).flatMap((t) => Array.from({ length: t.at[2] * t.at[3] }, (_, i) => ({ gardenId: gid, kind: t.kind, x: t.at[0] + (i % t.at[2]), y: t.at[1] + Math.floor(i / t.at[2]) })));
+      if (cells.length) await tx.insert(terrainCell).values(cells).onConflictDoNothing();
       for (const d of DECOR[g.key] ?? []) {
         const id = seedId(`decor:${g.key}:${d.key}`);
         await tx.insert(decorPlacement).values({ id, gardenId: gid, decorItemId: decorItemRefId(d.item), xCm: d.at[0], yCm: d.at[1], label: d.label ?? null, placedBy: userId(d.by) }).onConflictDoNothing();

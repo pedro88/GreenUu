@@ -5,13 +5,14 @@ import type { Scope } from '@/server/authz/scope';
 import { can } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
 import {
-  botanicalFamily, culture, cultureStage, garden, gardenMember, groupMember, journalEntry, species, terrainElement, ticket, ticketAssignee, userProfile, variety, zone, zoneType,
+  botanicalFamily, culture, cultureStage, garden, gardenMember, groupMember, journalEntry, species, terrainCell, ticket, ticketAssignee, userProfile, variety, zone, zoneType,
 } from '@/server/db/schema';
 import type { RectGeometry } from '../zone/tree';
 import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
 import { sceneAvatars } from './avatars';
 import { decorRect, layoutInRect, sceneBounds } from './grid.pure';
+import { cellsRect } from './terrain.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
 import { familyKey } from '@/game/manifest';
@@ -19,6 +20,8 @@ import { familyKey } from '@/game/manifest';
 /* Instantané de scène (SPEC §9.1) : tout ce que le moteur affiche, calculé côté serveur et validé par Zod. */
 
 const OPEN = ['todo', 'in_progress', 'blocked'] as const;
+/** Cases de terrain lues par scène (une scène de 100 × 100 tuiles entièrement peinte). */
+const MAX_SCENE_CELLS = 10_000;
 const DAY = 86_400_000;
 const shiftDay = (iso: string, days: number) => new Date(Date.parse(`${iso}T12:00:00Z`) + days * DAY).toISOString().slice(0, 10);
 
@@ -51,14 +54,15 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
       label: parent ? `${z.name}, ${parent.name}` : z.name };
   });
 
-  const terrain = await tx.select({ id: terrainElement.id, kind: terrainElement.kind, geometry: terrainElement.geometry }).from(terrainElement)
-    .where(and(eq(terrainElement.gardenId, scope.gardenId), opts.sceneZoneId ? eq(terrainElement.sceneZoneId, opts.sceneZoneId) : isNull(terrainElement.sceneZoneId))).limit(2000);
+  const terrain = await tx.select({ x: terrainCell.x, y: terrainCell.y, kind: terrainCell.kind }).from(terrainCell)
+    .where(and(eq(terrainCell.gardenId, scope.gardenId), opts.sceneZoneId ? eq(terrainCell.sceneZoneId, opts.sceneZoneId) : isNull(terrainCell.sceneZoneId))).limit(MAX_SCENE_CELLS);
 
   const cultures = await scenesCultures(tx, scope, { zoneIds: inScene.map((z) => z.id), today, userId: opts.userId, byId, south: g.lat < 0 });
   const [prof] = await tx.select({ reducedMotion: userProfile.reducedMotion }).from(userProfile).where(eq(userProfile.userId, opts.userId)).limit(1);
   const decor = await sceneDecor(tx, scope.gardenId, opts.sceneZoneId);
-  const avatars = await sceneAvatars(tx, { gardenId: scope.gardenId, orgType: g.orgType, sceneZoneId: opts.sceneZoneId, now: opts.now, byId });
-  const rects = [...zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...terrain.map((t) => t.geometry), ...decor.map((d) => decorRect(d, g.tileSizeCm))];
+  const avatars = await sceneAvatars(tx, { gardenId: scope.gardenId, viewerId: opts.userId, sceneZoneId: opts.sceneZoneId, now: opts.now, byId });
+  const cellsBox = cellsRect(terrain, g.tileSizeCm);
+  const rects = [...zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...(cellsBox ? [cellsBox] : []), ...decor.map((d) => decorRect(d, g.tileSizeCm))];
   const ambient = ambientFilter(opts.now, g);
 
   return sceneSnapshotSchema.parse({

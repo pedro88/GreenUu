@@ -1,13 +1,14 @@
 import { z } from 'zod';
-import { TERRAIN_KINDS } from '@/lib/enums';
+import { TERRAIN_CELL_KINDS } from '@/lib/enums';
 import { uuidSchema } from '@/lib/zod';
 import { rectSchema } from './snapshot.schema';
 import { TILE_SIZES_CM } from './grid.pure';
+import { MAX_CELL_COORD, MAX_CELLS_PER_COMMAND } from './terrain.pure';
 
 /*
  * Commandes de l'éditeur de plan (SPEC §9.7). Chaque geste produit une commande, appliquée d'abord au store local puis
  * envoyée par lots. Une zone ou un élément créé dans le lot est désigné par un identifiant client `tmp:…` jusqu'à sa
- * confirmation par le serveur. Les commandes de déco exigent `decor:place` (lot 8).
+ * confirmation par le serveur. Les commandes de déco exigent `decor:place` (lot 8) ; le terrain est peint par cases (lot 9).
  */
 
 export const TMP_PREFIX = 'tmp:';
@@ -21,14 +22,17 @@ const inputRect = rectSchema.extend({ x: cm, y: cm, w: cm.min(1), h: cm.min(1) }
 
 /** Zone existante (UUID) ou créée plus tôt dans le même lot (`tmp:…`). */
 const zoneRef = z.union([uuidSchema, tmpId]);
+/** Cases de terrain `[x, y]`, en tuiles (PNT-07 : au plus 2 500 par commande). */
+const coord = z.number().int().min(0).max(MAX_CELL_COORD);
+const cells = z.array(z.tuple([coord, coord])).min(1).max(MAX_CELLS_PER_COMMAND);
 
 export const planCommandSchema = z.discriminatedUnion('op', [
   z.object({ op: z.literal('createZone'), clientId: tmpId, name: z.string().trim().min(1).max(80), zoneTypeId: uuidSchema, parentId: zoneRef.nullable(), geometry: inputRect }),
   z.object({ op: z.literal('resizeZone'), zoneId: zoneRef, geometry: inputRect }),
   z.object({ op: z.literal('moveZone'), zoneId: zoneRef, geometry: inputRect }),
   z.object({ op: z.literal('archiveZone'), zoneId: zoneRef, finishActiveCultures: z.boolean().default(false) }),
-  z.object({ op: z.literal('addTerrain'), clientId: tmpId, kind: z.enum(TERRAIN_KINDS), geometry: inputRect }),
-  z.object({ op: z.literal('removeTerrain'), terrainId: z.union([uuidSchema, tmpId]) }),
+  z.object({ op: z.literal('paintTerrain'), kind: z.enum(TERRAIN_CELL_KINDS), cells }),
+  z.object({ op: z.literal('eraseTerrain'), cells }),
   z.object({ op: z.literal('setScale'), tileSizeCm: z.literal(TILE_SIZES_CM) }),
   /** Pied de l'objet (bas au centre), en centimètres. */
   z.object({ op: z.literal('placeDecor'), clientId: tmpId, itemCode: z.string().regex(/^[a-z0-9_]{1,40}$/), x: cm, y: cm, label: z.string().trim().min(1).max(40).nullable().default(null) }),

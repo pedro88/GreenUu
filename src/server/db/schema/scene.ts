@@ -1,8 +1,9 @@
 import { sql } from 'drizzle-orm';
-import { check, foreignKey, index, integer, jsonb, pgTable, smallint, text, uuid } from 'drizzle-orm/pg-core';
+import { check, date, foreignKey, index, integer, jsonb, pgTable, smallint, text, unique, uuid } from 'drizzle-orm/pg-core';
 import type { UnlockConditionV1 } from '@/features/progression/unlock.pure';
 import type { RectGeometry } from '@/features/zone/tree';
-import { TERRAIN_KINDS } from '@/lib/enums';
+import type { PlanSnapshotV1 } from '@/features/scene/history.schema';
+import { TERRAIN_CELL_KINDS, TERRAIN_KINDS } from '@/lib/enums';
 import { id, timestamps } from './_columns';
 import { user } from './auth';
 import { garden } from './garden';
@@ -10,7 +11,10 @@ import { practice, zone } from './zone';
 
 /* Vue jardin et éditeur de plan (SPEC §4.2.1, §9.7). */
 
-/** Élément du plan sans culture ni ticket propre : allée, point d'eau, haie… Supprimable, sans historique. */
+/**
+ * Ancien terrain en rectangles (lots 7 et 8). Converti en cases et en objets posés par la migration du lot 9, il n'est
+ * plus lu ; sa suppression attend une décision explicite (SPEC §18, 0.17).
+ */
 export const terrainElement = pgTable(
   'terrain_element',
   {
@@ -66,4 +70,45 @@ export const decorPlacement = pgTable(
     index('decor_garden_scene_idx').on(t.gardenId, t.sceneZoneId),
     index('decor_item_idx').on(t.decorItemId),
   ],
+);
+
+/**
+ * Terrain peint case par case (§4.2.6, lot 9) : une case de la grille du plan, en tuiles de l'échelle courante, et un
+ * seul type par case. Sans historique propre : l'instantané du plan du jour en garde la trace.
+ */
+export const terrainCell = pgTable(
+  'terrain_cell',
+  {
+    id: id(),
+    gardenId: uuid('garden_id').notNull().references(() => garden.id, { onDelete: 'cascade' }),
+    /** Scène : null = extérieur, sinon l'intérieur d'une zone `has_interior`. */
+    sceneZoneId: uuid('scene_zone_id'),
+    x: integer('x').notNull(),
+    y: integer('y').notNull(),
+    kind: text('kind', { enum: TERRAIN_CELL_KINDS }).notNull(),
+    ...timestamps(),
+  },
+  (t) => [
+    foreignKey({ columns: [t.gardenId, t.sceneZoneId], foreignColumns: [zone.gardenId, zone.id], name: 'terrain_cell_scene_same_garden_fk' }).onDelete('cascade'),
+    unique('terrain_cell_position_uq').on(t.gardenId, t.sceneZoneId, t.x, t.y).nullsNotDistinct(),
+    check('terrain_cell_position_ck', sql`${t.x} between 0 and 10000 and ${t.y} between 0 and 10000`),
+  ],
+);
+
+/**
+ * Instantané du plan (§4.2.6, TLP-01) : un par jour de modification et par jardin, la dernière version du jour remplace
+ * les précédentes. Écrit dans la transaction de la modification ; il servira au timelapse (lot 10).
+ */
+export const planSnapshot = pgTable(
+  'plan_snapshot',
+  {
+    id: id(),
+    gardenId: uuid('garden_id').notNull().references(() => garden.id, { onDelete: 'cascade' }),
+    /** Jour local du jardin. */
+    takenOn: date('taken_on').notNull(),
+    planVersion: integer('plan_version').notNull(),
+    payload: jsonb('payload').$type<PlanSnapshotV1>().notNull(),
+    ...timestamps(),
+  },
+  (t) => [unique('plan_snapshot_day_uq').on(t.gardenId, t.takenOn)],
 );

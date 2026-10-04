@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { TERRAIN_KINDS } from '@/lib/enums';
+import { TERRAIN_CELL_KINDS } from '@/lib/enums';
+import { SCENE_ACTIONS } from './avatar-action.pure';
 import { VISUAL_PHASES, VISUAL_STATES } from './phase.pure';
 
 /* Instantané de scène (SPEC §9.1) : produit par le serveur, validé par Zod, passé au client qui ne lit jamais la base. */
@@ -32,7 +33,8 @@ export const sceneCultureSchema = z.object({
   position: z.object({ x: z.number(), y: z.number() }).nullable(),
 });
 
-export const sceneTerrainSchema = z.object({ id: z.uuid(), kind: z.enum(TERRAIN_KINDS), geometry: rectSchema });
+/** Case de terrain peinte (§4.2.6), en tuiles de l'échelle courante. */
+export const sceneTerrainSchema = z.object({ x: z.number().int().min(0), y: z.number().int().min(0), kind: z.enum(TERRAIN_CELL_KINDS) });
 
 /** Objet de déco : pied (bas au centre) en centimètres, emprise en tuiles. */
 export const sceneDecorSchema = z.object({
@@ -49,7 +51,10 @@ export const sceneDecorSchema = z.object({
   practiceDeclared: z.boolean(),
 });
 
-/** Membre actif dans les 24 dernières heures, près de la zone de sa dernière action (§9.5, COL-04). */
+/**
+ * Membre actif dans les 24 dernières heures (ou l'utilisateur courant), près de la zone de sa dernière action (§9.5,
+ * COL-04) ; il rejoue cette action si elle a moins de 24 h (LIV-01, LIV-08).
+ */
 export const sceneAvatarSchema = z.object({
   userId: z.uuid(),
   pseudo: z.string(),
@@ -57,6 +62,10 @@ export const sceneAvatarSchema = z.object({
   configHash: z.string(),
   zoneId: z.uuid(),
   position: z.object({ x: z.number(), y: z.number() }),
+  action: z.enum(SCENE_ACTIONS).nullable(),
+  /** Ancienneté de la dernière action en minutes, pour la liste textuelle (« il y a 1 h », LIV-06). */
+  ageMinutes: z.number().int().min(0),
+  isViewer: z.boolean(),
 });
 
 export const sceneSnapshotSchema = z.object({

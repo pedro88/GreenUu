@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/Button';
 import { FormError } from '@/components/ui/FormError';
 import { useAction } from '@/components/ui/useAction';
 import { tDynamic } from '@/i18n/dynamic';
-import type { CanvasStatus } from './GardenCanvas';
+import type { CanvasStatus, SceneStats } from './GardenCanvas';
 import { createCameraStore, createDraftStore, createSceneStore, createSelectionStore, type GameStores } from './stores';
 import { ViewToggle } from './ViewToggle';
 import { fitCamera, fitRect, pxPerCm, useViewportGestures, WorldLayer } from './viewport';
@@ -47,6 +47,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
   const scene = useStore(stores.scene, (s) => s.snapshot);
   const selected = useStore(stores.selection, (s) => s.selected);
   const [status, setStatus] = useState<CanvasStatus>({ canvas: 'loading', ticker: false });
+  const [stats, setStats] = useState<SceneStats | null>(null);
   // Scène visée par une transition en cours ; le fondu s'arrête quand l'instantané de cette scène arrive.
   const [fadeTarget, setFadeTarget] = useState<string | null | undefined>(undefined);
   const viewport = useRef<HTMLDivElement>(null);
@@ -79,7 +80,11 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
   const tDecor = useTranslations('decor');
   const decorName = (d: SceneDecor) => tDynamic(tDecor, `item_${d.itemCode}`, d.itemCode);
   const placedDecor = [...scene.decor].sort((a, b) => a.y - b.y || a.x - b.x);
-  const avatarAria = (a: SceneAvatar) => t('avatarNear', { pseudo: a.pseudo, zone: zonesById.get(a.zoneId)?.name ?? '' });
+  /** LIV-06 : la dernière action réelle et son ancienneté, jamais une activité inventée. */
+  const ago = (min: number) => (min < 60 ? t('agoMinutes', { n: min }) : min < 1440 ? t('agoHours', { n: Math.floor(min / 60) }) : t('agoDays', { n: Math.floor(min / 1440) }));
+  const avatarAria = (a: SceneAvatar) => (a.action
+    ? t('avatarActing', { pseudo: a.pseudo, action: t(`avatarAction_${a.action}`), zone: zonesById.get(a.zoneId)?.name ?? '', ago: ago(a.ageMinutes) })
+    : t('avatarNear', { pseudo: a.pseudo, zone: zonesById.get(a.zoneId)?.name ?? '' }));
 
   const open = (kind: 'zone' | 'culture' | 'decor', id: string) => stores.selection.getState().select({ kind, id });
   const close = () => {
@@ -129,6 +134,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
 
   return (
     <div className={styles.root} data-testid="garden-view" data-canvas={status.canvas} data-ticker={status.ticker ? 'running' : 'stopped'}
+      data-season={stats?.season ?? ''} data-terrain-tiles={stats?.terrainTiles ?? 0} data-terrain-transitions={stats?.terrainTransitions ?? 0}
       data-transition={reducedMotion ? 'instant' : 'fade'} data-reduced-motion={reducedMotion ? 'true' : 'false'}>
       <div className={styles.toolbar}>
         <nav aria-label={t('breadcrumb')} className={styles.breadcrumb} data-testid="scene-breadcrumb">
@@ -143,7 +149,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
       </div>
 
       <div ref={viewport} className={`${styles.viewport} ${fading ? styles.fading : ''}`} data-testid="scene-viewport">
-        <GardenCanvas stores={stores} reducedMotion={reducedMotion} onStatus={setStatus} />
+        <GardenCanvas stores={stores} reducedMotion={reducedMotion} onStatus={setStatus} onStats={setStats} />
         <WorldLayer stores={stores} label={t('worldLabel')}>
           {placedZones.map((z) => z.geometry ? (
             <button key={z.id} type="button" ref={(el) => { if (el) entityRefs.current.set(z.id, el); }} className={`${styles.entity} ${styles.zone}`} data-testid={`zone-${z.id}`}
@@ -164,6 +170,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
           {/* Avatars (§9.5) : repères non contrôlables, annoncés par la liste textuelle. */}
           {scene.avatars.map((a) => (
             <span key={a.userId} className={`${styles.entity} ${styles.avatar}`} role="img" data-testid={`avatar-${a.userId}`} data-zone-id={a.zoneId} aria-label={avatarAria(a)}
+              data-avatar-action={a.action ?? ''} data-avatar-animated={reducedMotion ? 'false' : 'true'}
               style={{ left: `calc(${a.position.x * k}px - var(--touch-min) / 2)`, top: `calc(${a.position.y * k}px - var(--touch-min))`, pointerEvents: 'none' }} />
           ))}
         </WorldLayer>

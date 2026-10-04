@@ -2,7 +2,7 @@
 
 import { AVATAR_SPRITES } from '@/generated/avatar-sprites';
 import { AVATAR_LAYERS, SKIN_LINKED_LAYERS, type AvatarLayer } from '@/lib/enums';
-import { AVATAR_ATLAS_URL, fetchAtlas, type LoadedAtlas } from '@/game/manifest';
+import { actionAtlasUrl, AVATAR_ATLAS_URL, fetchAtlas, type LoadedAtlas } from '@/game/manifest';
 import { AVATAR_ITEM_BY_CODE, BASE_GABARIT, PALETTE_BY_CODE } from './catalog';
 import { frameCandidates, gabaritsSchema, headOffset, type GabaritTable } from './frames.pure';
 import type { AvatarConfigV1 } from './config.pure';
@@ -18,7 +18,8 @@ import { recolorPixels } from './recolor.pure';
 
 export const DIRECTIONS = ['bas', 'gauche', 'haut', 'droite'] as const;
 export type Direction = (typeof DIRECTIONS)[number];
-export type Pose = 'arret' | 'marche-f1' | 'marche-f2' | 'marche-f3' | 'marche-f4';
+/** Pose : à l'arrêt, une image de marche, ou une image d'action (`arroser-f2`, atlas d'action chargé à la demande). */
+export type Pose = 'arret' | 'marche-f1' | 'marche-f2' | 'marche-f3' | 'marche-f4' | `${string}-f${number}`;
 export const WALK: readonly Pose[] = ['marche-f1', 'marche-f2', 'marche-f3', 'marche-f4'];
 
 /** Taille d'un sprite d'avatar HD et cadre « tête et buste » de la vignette (§10.5). */
@@ -32,6 +33,38 @@ const layers = new Map<string, Promise<HTMLCanvasElement | null>>();
 const thumbs = new Map<string, Promise<string | null>>();
 
 const atlas = () => (atlasP ??= fetchAtlas(AVATAR_ATLAS_URL));
+const actionAtlases = new Map<string, Promise<LoadedAtlas | null>>();
+/** Atlas d'une action (`avatar-action-<action>.json`), téléchargé seulement quand un avatar la joue (§9.2, LIV-01). */
+function actionAtlas(action: string) {
+  let p = actionAtlases.get(action);
+  if (!p) {
+    p = fetchAtlas(actionAtlasUrl(action));
+    actionAtlases.set(action, p);
+  }
+  return p;
+}
+
+/**
+ * Couleur de l'objet manipulé pendant une action (calque `outil`, en niveaux de gris), comme `sprites_hd/avatars_demo.py` :
+ * métal, paille, osier… Rampe de la plus claire à la plus sombre.
+ */
+const METAL = ['#c4c8c2', '#969c9a', '#6e7476', '#464a4e'] as const;
+const OSIER = ['#e2ba7c', '#c49256', '#9c6a3a', '#6e4624'] as const;
+const GRIS = ['#c4c8c6', '#929698', '#64686c', '#3c3e42'] as const;
+const TOOL_RAMPS: Record<string, readonly string[]> = {
+  arroser: METAL, becher: METAL, semer: ['#f4d48a', '#e4b662', '#c2904a', '#966634'], planter: ['#92c078', '#609650', '#3c6e3a', '#244628'],
+  recolter: OSIER, porter: OSIER, observer: GRIS, photo: GRIS,
+};
+
+/** Nombre d'images d'une action, d'après son atlas (1 si l'atlas manque). */
+export async function actionFrameCount(action: string): Promise<number> {
+  const a = await actionAtlas(action);
+  if (!a) return 0;
+  let n = 0;
+  const re = new RegExp(`-bas-${action}-f(\\d+)\\.png$`);
+  for (const k of a.frames.keys()) n = Math.max(n, Number(re.exec(k)?.[1] ?? 0));
+  return n;
+}
 
 function image(url: string) {
   let p = images.get(url);
@@ -59,7 +92,7 @@ let gabaritsP: Promise<GabaritTable | null> | null = null;
 /** Décalages de tête par gabarit (`gabarits.json`, livré avec les sprites) ; absents tant qu'il n'y a qu'un gabarit. */
 const gabarits = () => (gabaritsP ??= fetch('/sprites/avatar/gabarits.json').then(async (r) => (r.ok ? gabaritsSchema.safeParse(await r.json()).data ?? null : null)).catch(() => null));
 
-async function frameOf(names: string[], source: Source): Promise<Frame | null> {
+async function frameOf(names: string[], source: Source, action: string | null = null): Promise<Frame | null> {
   if (source === 'single') {
     // Fichiers individuels : seulement la frame de face à l'arrêt (`avatar/<clé>-bas-arret.png`).
     for (const n of names.filter((x) => x.endsWith('-bas-arret.png'))) {
@@ -68,20 +101,20 @@ async function frameOf(names: string[], source: Source): Promise<Frame | null> {
     }
     return null;
   }
-  const a = await atlas();
-  const f = a ? names.map((n) => a.frames.get(n)).find(Boolean) : undefined;
+  // Pendant une action : l'atlas de l'action d'abord, puis celui de l'avatar (repli sur la pose à l'arrêt).
+  const [act, base] = await Promise.all([action ? actionAtlas(action) : null, atlas()]);
+  const f = names.map((n) => act?.frames.get(n) ?? base?.frames.get(n)).find(Boolean);
   const img = f ? await image(f.page) : null;
   return f && img ? { img, x: f.x, y: f.y, w: f.w, h: f.h } : null;
 }
 
 /** Un calque recoloré (§10.2), ou null si la frame manque (repli sans erreur, §9.2). */
-function layer(o: { layer: AvatarLayer; item: string; ramps: (readonly string[] | null)[]; gabarit: string; dir: Direction; pose: Pose; source: Source }): Promise<HTMLCanvasElement | null> {
-  const key = `${o.source}|${o.item}|${o.ramps.map((r) => r?.join('') ?? '-').join(',')}|${o.gabarit}|${o.dir}|${o.pose}`;
+function layer(o: { layer: AvatarLayer | 'tool' | 'effect'; item: string; ramps: (readonly string[] | null)[]; gabarit: string; dir: Direction; pose: Pose; source: Source; action?: string | null }): Promise<HTMLCanvasElement | null> {
+  const key = `${o.source}|${o.layer}|${o.item}|${o.ramps.map((r) => r?.join('') ?? '-').join(',')}|${o.gabarit}|${o.dir}|${o.pose}`;
   let p = layers.get(key);
   if (!p) {
     p = (async () => {
-      const def = AVATAR_ITEM_BY_CODE.get(o.item);
-      const f = def ? await frameOf(frameCandidates({ layer: o.layer, spriteKey: def.spriteKey, gabarit: o.gabarit, dir: o.dir, pose: o.pose, available: AVATAR_SPRITES }), o.source) : null;
+      const f = await frameOf(layerFrames(o), o.source, o.action ?? null);
       if (!f) return null;
       const c = canvas(f.w, f.h);
       const ctx = c.getContext('2d', { willReadFrequently: true });
@@ -99,11 +132,22 @@ function layer(o: { layer: AvatarLayer; item: string; ramps: (readonly string[] 
   return p;
 }
 
+/** Frames à essayer pour un calque ; l'outil et l'effet d'une action ont leur propre nom (`outil-<action>[@gabarit]-<dir>-f<n>`). */
+function layerFrames(o: { layer: AvatarLayer | 'tool' | 'effect'; item: string; gabarit: string; dir: Direction; pose: Pose }): string[] {
+  if (o.layer === 'tool' || o.layer === 'effect') {
+    const n = o.pose.slice(o.pose.lastIndexOf('-f') + 1);
+    const key = `${o.layer === 'tool' ? 'outil' : 'effet'}-${o.item}`;
+    return [...(o.gabarit === BASE_GABARIT ? [] : [`avatar/${key}@${o.gabarit}-${o.dir}-${n}.png`]), `avatar/${key}-${o.dir}-${n}.png`];
+  }
+  const def = AVATAR_ITEM_BY_CODE.get(o.item);
+  return def ? frameCandidates({ layer: o.layer, spriteKey: def.spriteKey, gabarit: o.gabarit, dir: o.dir, pose: o.pose, available: AVATAR_SPRITES }) : [];
+}
+
 /**
  * Dessine l'avatar complet dans `target` (taille du sprite), calques de l'arrière vers l'avant (§10.1). Le gabarit du
  * corps choisit les variantes des vêtements et décale les calques de tête ; la peau du corps recolore la tête.
  */
-export async function drawAvatar(target: CanvasRenderingContext2D, config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret', source: Source = 'atlas'): Promise<boolean> {
+export async function drawAvatar(target: CanvasRenderingContext2D, config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret', source: Source = 'atlas', action: string | null = null): Promise<boolean> {
   const body = config.layers.body?.item ? AVATAR_ITEM_BY_CODE.get(config.layers.body.item) : undefined;
   const gabarit = body?.gabarit ?? BASE_GABARIT;
   const skin = config.layers.body?.palettes[0];
@@ -111,12 +155,20 @@ export async function drawAvatar(target: CanvasRenderingContext2D, config: Avata
   const table = gabarit === BASE_GABARIT ? null : await gabarits();
   const parts = await Promise.all(AVATAR_LAYERS.map(async (l) => {
     const e = config.layers[l];
-    if (!e?.item) return null;
+    // Pendant une action, l'objet tenu est masqué au profit de l'outil de l'action (§9.5).
+    if (!e?.item || (action && l === 'held_item')) return null;
     const linked = SKIN_LINKED.has(l);
     const ramps = linked ? [skinRamp] : e.palettes.map((code) => PALETTE_BY_CODE.get(code)?.ramp ?? null);
-    const c = await layer({ layer: l, item: e.item, ramps, gabarit, dir, pose, source });
+    const c = await layer({ layer: l, item: e.item, ramps, gabarit, dir, pose, source, action });
     return c ? { c, offset: headOffset(table, l, gabarit, dir, pose) } : null;
   }));
+  if (action) {
+    // Puis l'outil (recoloré) et l'effet de l'action, variantes de gabarit comprises.
+    for (const l of ['tool', 'effect'] as const) {
+      const c = await layer({ layer: l, item: action, ramps: l === 'tool' ? [TOOL_RAMPS[action] ?? null] : [], gabarit, dir, pose, source, action });
+      parts.push(c ? { c, offset: [0, 0] } : null);
+    }
+  }
   target.clearRect(0, 0, target.canvas.width, target.canvas.height);
   target.imageSmoothingEnabled = false;
   const sx = target.canvas.width / SPRITE.w;
@@ -131,10 +183,10 @@ export async function drawAvatar(target: CanvasRenderingContext2D, config: Avata
 }
 
 /** Sprite composé hors écran, à la taille native (pour la vue jardin). */
-export async function avatarCanvas(config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret', source: Source = 'atlas'): Promise<HTMLCanvasElement | null> {
+export async function avatarCanvas(config: AvatarConfigV1, dir: Direction = 'bas', pose: Pose = 'arret', source: Source = 'atlas', action: string | null = null): Promise<HTMLCanvasElement | null> {
   const c = canvas(SPRITE.w, SPRITE.h);
   const ctx = c.getContext('2d');
-  return ctx && (await drawAvatar(ctx, config, dir, pose, source)) ? c : null;
+  return ctx && (await drawAvatar(ctx, config, dir, pose, source, action)) ? c : null;
 }
 
 const CACHE = 'greenu-avatars';

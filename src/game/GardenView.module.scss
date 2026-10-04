@@ -393,3 +393,32 @@
     color: var(--color-text-muted);
   }
 }
+
+/* Phrase d'aide de l'outil actif (VOC-01). */
+.toolHelp {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Outils d'aménagement : pinceau, rectangle, gomme, pipette, puis la taille du pinceau. */
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+
+  span {
+    display: flex;
+    gap: var(--space-1);
+  }
+}
+
+.decorPalette h3 {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.decorItem:disabled,
+.decorItem[aria-disabled="true"] {
+  opacity: 0.6;
+}

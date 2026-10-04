@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { browserScheduler, RenderLoop } from './engine/loop';
-import { createSceneView, type SceneView } from './engine/pixi-scene';
+import { createSceneView, type SceneStats, type SceneView } from './engine/pixi-scene';
 import type { GameStores } from './stores';
 import styles from './GardenView.module.scss';
 
@@ -10,18 +10,20 @@ import styles from './GardenView.module.scss';
 if (typeof window !== 'undefined') Object.assign(window, { __greenuPixiLoaded: true });
 
 export type CanvasStatus = { canvas: 'loading' | 'ready' | 'unavailable'; ticker: boolean };
+export type { SceneStats };
 
 /**
  * Canvas PixiJS de la vue jardin (SPEC §9.1), chargé par `next/dynamic` sans SSR. Il s'abonne aux stores, ne rend qu'à
  * la demande, et signale son état (`data-canvas`, `data-ticker`) au composant parent. React ne touche pas au rendu.
  */
-export default function GardenCanvas({ stores, reducedMotion, grid = false, onStatus }: {
-  stores: GameStores; reducedMotion: boolean; grid?: boolean; onStatus: (s: CanvasStatus) => void;
+export default function GardenCanvas({ stores, reducedMotion, grid = false, onStatus, onStats }: {
+  stores: GameStores; reducedMotion: boolean; grid?: boolean; onStatus: (s: CanvasStatus) => void; onStats?: (s: SceneStats) => void;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const loopRef = useRef<RenderLoop | null>(null);
   const statusRef = useRef(onStatus);
-  useEffect(() => { statusRef.current = onStatus; });
+  const statsRef = useRef(onStats);
+  useEffect(() => { statusRef.current = onStatus; statsRef.current = onStats; });
 
   useEffect(() => {
     const el = host.current;
@@ -32,7 +34,7 @@ export default function GardenCanvas({ stores, reducedMotion, grid = false, onSt
     void (async () => {
       try {
         // Les avatars sont composés après coup (Canvas 2D) : un rendu est redemandé quand ils sont prêts.
-        view = await createSceneView(el, { onChange: () => loopRef.current?.requestRender() });
+        view = await createSceneView(el, { onChange: () => loopRef.current?.requestRender(), onStats: (x) => statsRef.current?.(x) });
       } catch {
         // Pas de WebGL : la couche accessible reste utilisable, avec un rendu de repli en CSS.
         if (!disposed) statusRef.current({ canvas: 'unavailable', ticker: false });
