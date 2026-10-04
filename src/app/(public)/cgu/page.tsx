@@ -13,6 +13,7 @@ export default async function LegalPage() {
       <Stack>
         <h1>{t('title')}</h1>
         <p>{t('body')}</p>
+        <p data-testid="data-sources">{t('sources')}</p>
       </Stack>
     </Narrow>
   );

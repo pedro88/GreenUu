@@ -201,3 +201,15 @@ export async function removeExclusiveAvatarItem(): Promise<void> {
     await sql.end();
   }
 }
+
+/** Jardin créé par l'assistant, relu par son nom (LOC-01). */
+export async function gardenByName(name: string): Promise<{ lat: number; lng: number; timezone: string; altitudeM: number | null; placeLabel: string | null } | null> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ lat: number; lng: number; timezone: string; altitude_m: number | null; place_label: string | null }[]>`
+      select lat, lng, timezone, altitude_m, place_label from garden where name = ${name} order by created_at desc limit 1`;
+    return row ? { lat: Number(row.lat), lng: Number(row.lng), timezone: row.timezone, altitudeM: row.altitude_m, placeLabel: row.place_label } : null;
+  } finally {
+    await sql.end();
+  }
+}

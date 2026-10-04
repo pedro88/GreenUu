@@ -10,3 +10,4 @@ export * from './result';
 export * from './progression';
 export * from './scene';
 export * from './avatar';
+export * from './location';

@@ -113,6 +113,20 @@
       "when": 1790958680262,
       "tag": "0015_deco_avatar_constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791098557919,
+      "tag": "0016_communes",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1791098570438,
+      "tag": "0017_communes_trigger",
+      "breakpoints": true
     }
   ]
 }

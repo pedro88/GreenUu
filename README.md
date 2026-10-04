@@ -45,7 +45,8 @@ Les e-mails envoyés (vérification, invitations, réinitialisation) arrivent da
 | `pnpm test:spec` | Vérifie que chaque critère d'acceptation du lot courant a un test au vert ; échoue si un rapport (`reports/`) manque, contient un échec ou est antérieur au dernier commit |
 | `pnpm verify` | Types, lint et tests : à lancer avant tout merge dans `main` (le hook `pre-push` le lance aussi) |
 | `pnpm db:generate` / `db:migrate` / `db:seed` / `db:reset` | Migrations Drizzle, seed déterministe, remise à zéro (dev) |
-| `pnpm db:reference` | Charge le référentiel végétal commun (espèces, variétés) ; à lancer aussi en production après les migrations |
+| `pnpm db:reference` | Charge le référentiel commun (espèces, variétés, catalogues d'avatar et de déco, communes) ; à lancer aussi en production après les migrations |
+| `pnpm tsx scripts/build-communes.ts <dossier>` | Reconstruit la base de communes (`src/features/location/data/communes.tsv.gz`) à partir des fichiers GeoNames (`dump/` et `zip/` de BE, FR, LU, CH ; CC BY 4.0) |
 | `pnpm assets:sync [dossier]` | Copie les assets HD livrés par la session sprites (`out_hd/` par défaut, hors de ce dépôt) vers `public/sprites` |
 | `pnpm xp:recompute [--user <id>] [--apply]` | Rejoue l'historique avec le barème d'XP courant (RG-XP-08). Sans `--apply`, rapport des écarts seulement ; avec, lignes de correction ajoutées au journal (append-only) |
 

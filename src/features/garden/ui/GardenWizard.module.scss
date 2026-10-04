@@ -113,3 +113,18 @@
   gap: var(--space-3);
   grid-template-columns: 1fr 1fr;
 }
+
+.manual {
+  summary {
+    min-height: var(--touch-min);
+    padding: var(--space-2) 0;
+    color: var(--color-link);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.attribution {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

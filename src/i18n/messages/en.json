@@ -26,7 +26,8 @@
   "legal": {
     "cgu": {
       "title": "Conditions d'utilisation",
-      "body": "Version provisoire (cgu-2026-10). Le texte définitif sera publié avant l'ouverture du service."
+      "body": "Version provisoire (cgu-2026-10). Le texte définitif sera publié avant l'ouverture du service.",
+      "sources": "Data sources: the town database (Belgium, France, Luxembourg, Switzerland) comes from GeoNames (geonames.org), under the Creative Commons Attribution 4.0 licence."
     },
     "confidentialite": {
       "title": "Politique de confidentialité",
@@ -1756,5 +1757,19 @@
     "item_arch": "Arch",
     "item_hammock": "Hammock",
     "item_statue": "Statue"
+  },
+  "communes": {
+    "label": "Town or postcode",
+    "placeholder": "E.g. Liège, 4000, Saint-Étienne",
+    "hint": "Belgium, France, Luxembourg and Switzerland. The precise position stays visible to the garden owners and admins only.",
+    "results": "Matching towns",
+    "none": "No town matches.",
+    "country_BE": "Belgium",
+    "country_FR": "France",
+    "country_LU": "Luxembourg",
+    "country_CH": "Switzerland",
+    "picked": "{place} · latitude {lat}, longitude {lng}",
+    "notFound": "I can't find my town",
+    "attribution": "Town data: GeoNames (CC BY 4.0)."
   }
 }

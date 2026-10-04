@@ -15,6 +15,8 @@ import { ENVIRONMENTS, EXPOSURES, ORG_TYPES, SOIL_TYPES, WATER_ACCESS } from '@/
 import { setPracticesAction } from '../../practice/actions';
 import { createGardenAction } from '../actions';
 import { KOPPEN_CODES } from '../koppen';
+import type { CommuneHit } from '../../location/service';
+import { CommuneSearch } from '../../location/ui/CommuneSearch';
 import styles from './GardenWizard.module.scss';
 
 type OrgType = (typeof ORG_TYPES)[number];
@@ -28,6 +30,8 @@ const ORG_ART: Record<OrgType, string> = {
 type WizardValues = {
   orgType: OrgType; environments: Env[]; name: string; placeLabel: string; lat: string; lng: string; altitudeM: string;
   soilType: string; soilPh: string; exposure: string; waterAccess: string; koppen: string; hardinessZone: string; practices: string[];
+  /** Fuseau de la commune choisie ; à défaut, celui du navigateur. */
+  timezone: string;
 };
 
 const STEP_FIELDS: Record<number, string[]> = {
@@ -42,6 +46,7 @@ export function GardenWizard({ practices }: { practices: { code: string }[] }) {
   const to = useTranslations('orgTypes');
   const te = useTranslations('environments');
   const tp = useTranslations('practices');
+  const tc = useTranslations('communes');
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [pending, setPending] = useState(false);
@@ -49,8 +54,14 @@ export function GardenWizard({ practices }: { practices: { code: string }[] }) {
   const [geoError, setGeoError] = useState(false);
   const [v, setV] = useState<WizardValues>({
     orgType: 'family', environments: ['open_air'], name: '', placeLabel: '', lat: '', lng: '', altitudeM: '',
-    soilType: 'unknown', soilPh: '', exposure: '', waterAccess: '', koppen: '', hardinessZone: '', practices: [],
+    soilType: 'unknown', soilPh: '', exposure: '', waterAccess: '', koppen: '', hardinessZone: '', practices: [], timezone: '',
   });
+  /** « Je ne trouve pas ma commune » : géolocalisation et saisie latitude / longitude (D-24, LOC-04). */
+  const [manual, setManual] = useState(false);
+  const pickCommune = (c: CommuneHit) => setV((s) => ({
+    ...s, placeLabel: `${c.name} (${c.postalCode})`, lat: c.lat.toFixed(4), lng: c.lng.toFixed(4), timezone: c.timezone,
+    altitudeM: c.elevationM === null ? s.altitudeM : String(c.elevationM),
+  }));
   const set = <K extends keyof WizardValues>(k: K, value: WizardValues[K]) => setV((s) => ({ ...s, [k]: value }));
   const fe: FieldErrors = error?.fieldErrors ?? {};
   const total = 4;
@@ -69,7 +80,7 @@ export function GardenWizard({ practices }: { practices: { code: string }[] }) {
     const created = await createGardenAction({
       name: v.name, orgType: v.orgType, environments: v.environments, lat: v.lat, lng: v.lng, placeLabel: v.placeLabel, altitudeM: v.altitudeM,
       soilType: v.soilType, soilPh: v.soilPh, exposure: v.exposure, waterAccess: v.waterAccess, koppen: v.koppen, hardinessZone: v.hardinessZone,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timezone: v.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
     if (!created.ok) {
       setPending(false);
@@ -120,15 +131,23 @@ export function GardenWizard({ practices }: { practices: { code: string }[] }) {
         <Stack>
           <h1 className={styles.title}>{t('placeTitle')}</h1>
           <Field label={tf('name')} errors={fe.name}>{(p) => <TextInput {...p} name="name" required value={v.name} onChange={(e) => set('name', e.target.value)} />}</Field>
-          <Field label={tf('placeLabel')} hint={tf('placeLabelHint')} errors={fe.placeLabel}>{(p) => <TextInput {...p} name="placeLabel" value={v.placeLabel} onChange={(e) => set('placeLabel', e.target.value)} />}</Field>
-          <Button variant="secondary" onClick={locate}><LocateFixed aria-hidden />{t('useMyPosition')}</Button>
-          {geoError ? <span role="alert">{t('geoError')}</span> : null}
-          <div className={styles.twoCols}>
-            <Field label={tf('lat')} errors={fe.lat}>{(p) => <TextInput {...p} name="lat" inputMode="decimal" required value={v.lat} onChange={(e) => set('lat', e.target.value)} />}</Field>
-            <Field label={tf('lng')} errors={fe.lng}>{(p) => <TextInput {...p} name="lng" inputMode="decimal" required value={v.lng} onChange={(e) => set('lng', e.target.value)} />}</Field>
-          </div>
+          <CommuneSearch onPick={pickCommune} />
+          {v.lat && v.lng && !manual ? <p data-testid="commune-picked">{tc('picked', { place: v.placeLabel, lat: v.lat, lng: v.lng })}</p> : null}
+          <details className={styles.manual} open={manual || Boolean(fe.lat ?? fe.lng)} onToggle={(e) => setManual(e.currentTarget.open)}>
+            <summary data-testid="commune-not-found">{tc('notFound')}</summary>
+            <Stack>
+              <Field label={tf('placeLabel')} hint={tf('placeLabelHint')} errors={fe.placeLabel}>{(p) => <TextInput {...p} name="placeLabel" value={v.placeLabel} onChange={(e) => set('placeLabel', e.target.value)} />}</Field>
+              <Button variant="secondary" onClick={locate}><LocateFixed aria-hidden />{t('useMyPosition')}</Button>
+              {geoError ? <span role="alert">{t('geoError')}</span> : null}
+              <div className={styles.twoCols}>
+                <Field label={tf('lat')} errors={fe.lat}>{(p) => <TextInput {...p} name="lat" inputMode="decimal" required value={v.lat} onChange={(e) => set('lat', e.target.value)} />}</Field>
+                <Field label={tf('lng')} errors={fe.lng}>{(p) => <TextInput {...p} name="lng" inputMode="decimal" required value={v.lng} onChange={(e) => set('lng', e.target.value)} />}</Field>
+              </div>
+            </Stack>
+          </details>
           <Field label={tf('altitudeM')} errors={fe.altitudeM}>{(p) => <TextInput {...p} name="altitudeM" inputMode="numeric" value={v.altitudeM} onChange={(e) => set('altitudeM', e.target.value)} />}</Field>
           <p>{t('privacyNote')}</p>
+          <p className={styles.attribution}>{tc('attribution')}</p>
         </Stack>
       ) : null}
 

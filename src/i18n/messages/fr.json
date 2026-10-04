@@ -26,7 +26,8 @@
   "legal": {
     "cgu": {
       "title": "Conditions d'utilisation",
-      "body": "Version provisoire (cgu-2026-10). Le texte définitif sera publié avant l'ouverture du service."
+      "body": "Version provisoire (cgu-2026-10). Le texte définitif sera publié avant l'ouverture du service.",
+      "sources": "Sources de données : la base des communes (Belgique, France, Luxembourg, Suisse) provient de GeoNames (geonames.org), sous licence Creative Commons Attribution 4.0."
     },
     "confidentialite": {
       "title": "Politique de confidentialité",
@@ -1756,5 +1757,19 @@
     "item_arch": "Arche",
     "item_hammock": "Hamac",
     "item_statue": "Statue"
+  },
+  "communes": {
+    "label": "Commune ou code postal",
+    "placeholder": "Ex. Liège, 4000, Saint-Étienne",
+    "hint": "Belgique, France, Luxembourg et Suisse. La position précise reste visible des seuls propriétaires et admins du jardin.",
+    "results": "Communes trouvées",
+    "none": "Aucune commune ne correspond.",
+    "country_BE": "Belgique",
+    "country_FR": "France",
+    "country_LU": "Luxembourg",
+    "country_CH": "Suisse",
+    "picked": "{place} · latitude {lat}, longitude {lng}",
+    "notFound": "Je ne trouve pas ma commune",
+    "attribution": "Données des communes : GeoNames (CC BY 4.0)."
   }
 }

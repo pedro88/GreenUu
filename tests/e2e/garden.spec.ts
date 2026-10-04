@@ -1,14 +1,18 @@
 import { expect, test } from '@playwright/test';
+import { gardenByName } from './db';
 import { gardenId } from './ids';
 import { login } from './helpers';
 
 test.describe('jardins et zones', () => {
-  test('[GRD-01] création d\'un jardin avec l\'assistant', async ({ page }) => {
+  test('[GRD-01] [LOC-04] création d\'un jardin avec l\'assistant, position saisie à la main (« Je ne trouve pas ma commune »)', async ({ page }) => {
     await login(page, 'hugo');
     await page.goto('/app/jardins/nouveau');
     await page.getByTestId('org-family').click();
     await page.getByTestId('wizard-continue').click();
     await page.getByLabel('Nom du jardin').fill('Potager de Hugo');
+    // LOC-04 : la saisie manuelle et la géolocalisation restent disponibles (D-24).
+    await page.getByTestId('commune-not-found').click();
+    await expect(page.getByRole('button', { name: 'Utiliser ma position' })).toBeVisible();
     await page.getByLabel('Latitude').fill('50.63');
     await page.getByLabel('Longitude').fill('5.57');
     await page.getByTestId('wizard-continue').click();
@@ -20,6 +24,29 @@ test.describe('jardins et zones', () => {
     await expect(page.getByTestId('garden-title')).toHaveText('Potager de Hugo');
     await page.goto('/app/jardins');
     await expect(page.getByText('Potager de Hugo')).toBeVisible();
+  });
+
+  test('[LOC-01] choisir « Liège (4000) » pré-remplit la position, le fuseau et l\'altitude, sans requête hors du domaine de l\'app', async ({ page, baseURL }) => {
+    const external: string[] = [];
+    page.on('request', (r) => { if (!r.url().startsWith(baseURL ?? 'http://localhost') && !r.url().startsWith('data:')) external.push(r.url()); });
+    const name = `Potager liégeois ${Date.now().toString(36)}`;
+    await login(page, 'hugo');
+    await page.goto('/app/jardins/nouveau');
+    await page.getByTestId('org-family').click();
+    await page.getByTestId('wizard-continue').click();
+    await page.getByLabel('Nom du jardin').fill(name);
+    await page.getByTestId('commune-search').fill('liege');
+    await page.getByTestId('commune-BE-4000').click();
+    await expect(page.getByTestId('commune-picked')).toContainText('Liège (4000)');
+    await expect(page.getByLabel('Altitude (m)')).not.toHaveValue('');
+    for (let i = 0; i < 3; i += 1) await page.getByTestId('wizard-continue').click();
+    await expect(page).toHaveURL(/\/app\/jardins\/[0-9a-f-]+\/zones\?nouveau=1$/);
+    const g = await gardenByName(name);
+    expect(g).toMatchObject({ timezone: 'Europe/Brussels', placeLabel: 'Liège (4000)' });
+    expect(g?.lat).toBeCloseTo(50.6337, 3);
+    expect(g?.lng).toBeCloseTo(5.5675, 3);
+    expect(g?.altitudeM).toEqual(expect.any(Number));
+    expect(external).toEqual([]);
   });
 
   test('[ZON-01] création de zones imbriquées sur trois niveaux', async ({ page }) => {

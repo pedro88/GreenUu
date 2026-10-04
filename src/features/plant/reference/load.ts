@@ -4,6 +4,7 @@ import type { Executor } from '@/server/db/client';
 import { botanicalFamily, companion, problem, species, speciesCalendar, variety } from '@/server/db/schema';
 import { loadAvatarCatalog } from '../../avatar/load';
 import { loadDecorCatalog } from '../../decor/load';
+import { loadCommunes } from '../../location/load';
 import { CALENDARS, COMPANIONS, FAMILIES, PROBLEMS, SPECIES, VARIETIES } from './data';
 
 export const familyRefId = (code: string) => seedId(`family:${code}`);
@@ -11,7 +12,7 @@ export const speciesRefId = (code: string) => seedId(`species:${code}`);
 export const varietyRefId = (speciesCode: string, name: string) => seedId(`variety:${speciesCode}:${name}`);
 export const problemRefId = (code: string) => seedId(`problem:${code}`);
 
-/** Charge ou met à jour le référentiel commun (idempotent, identifiants stables), catalogues d'avatar et de déco compris. */
+/** Charge ou met à jour le référentiel commun (idempotent, identifiants stables) : catalogues d'avatar et de déco, communes. */
 export async function loadReferenceData(tx: Executor): Promise<void> {
   for (const f of FAMILIES) {
     await tx.insert(botanicalFamily).values({ id: familyRefId(f.code), code: f.code, latinName: f.latin, rotationReturnYears: f.returnYears, spriteKey: f.sprite ?? null })
@@ -49,4 +50,5 @@ export async function loadReferenceData(tx: Executor): Promise<void> {
   }
   await loadAvatarCatalog(tx);
   await loadDecorCatalog(tx);
+  await loadCommunes(tx);
 }
