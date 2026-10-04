@@ -1,8 +1,9 @@
 'use client';
 
 import { Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
@@ -17,6 +18,7 @@ import { HARVEST_UNITS, type HarvestUnit } from '@/lib/enums';
 import type { ActionError } from '@/lib/errors';
 import { recordHarvestAction } from '../../harvest/actions';
 import { createJournalEntryAction } from '../../journal/actions';
+import { isQueued, withOutbox } from '../../offline/queue';
 import styles from './QuickCapture.module.scss';
 
 export type QuickMode = 'observation' | 'photo' | 'watering' | 'harvest';
@@ -52,8 +54,14 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
   const fileInput = useRef<HTMLInputElement>(null);
   const [xp, setXp] = useState(0);
   const finish = (msg: string) => { setDone(msg); setXp(0); setBody(''); setFiles([]); setProblemCode(''); };
-  const journal = useAction(createJournalEntryAction, { onSuccess: () => finish(t('saved')) });
-  const harvestAction = useAction(recordHarvestAction, { onSuccess: (d) => { finish(t('harvestSaved')); setXp(d.xp); } });
+  const to = useTranslations('offline');
+  const router = useRouter();
+  // Hors-ligne (OFF-02) : la saisie part dans la file de l'appareil et sera envoyée au retour du réseau.
+  const journalOrQueue = useMemo(() => withOutbox('journal', createJournalEntryAction, () => to('label_journal', { title })), [title]); // eslint-disable-line react-hooks/exhaustive-deps
+  const harvestOrQueue = useMemo(() => withOutbox('harvest', recordHarvestAction, () => to('label_harvest', { title })), [title]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Pas de rafraîchissement hors-ligne : la page reste telle quelle jusqu'au retour du réseau.
+  const journal = useAction(journalOrQueue, { refresh: false, onSuccess: (d) => { finish(isQueued(d) ? to('queued') : t('saved')); if (!isQueued(d)) router.refresh(); } });
+  const harvestAction = useAction(harvestOrQueue, { refresh: false, onSuccess: (d) => { finish(isQueued(d) ? to('queued') : t('harvestSaved')); if (!isQueued(d)) { setXp(d.xp); router.refresh(); } } });
   const step = unit === 'kg' ? 0.1 : unit === 'g' ? 50 : 1;
 
   const submitJournal = async (extra: Record<string, unknown> = {}) => {

@@ -181,7 +181,8 @@
     "restoreInvalid": "Ce lien de rétablissement n'est plus valable.",
     "resultTooEarly": "Le bilan est proposé une fois la culture terminée ou après la première récolte.",
     "lockedItem": "This item is not unlocked yet: nothing was saved.",
-    "practiceAlreadyDeclared": "This practice is already declared for the garden."
+    "practiceAlreadyDeclared": "This practice is already declared for the garden.",
+    "clientIdTaken": "This entry conflicts with another one: it was not saved."
   },
   "nav": {
     "label": "Navigation principale",
@@ -1791,5 +1792,24 @@
     "successHelp": "Finished crops out of all closed crops (finished, failed, abandoned). Ongoing crops do not count.",
     "noSuccess": "No closed crop yet.",
     "rate": "{rate} % ({done} / {total})"
+  },
+  "offline": {
+    "offline": "Offline",
+    "pending": "{count, plural, =0 {nothing pending} one {# pending} other {# pending}}",
+    "toReview": "{count, plural, one {# to review} other {# to review}}",
+    "panel": "Offline entries",
+    "empty": "No pending entry.",
+    "waiting": "Waiting for the network: sent automatically once back online.",
+    "retry": "Retry",
+    "discard": "Discard",
+    "queued": "Offline: entry kept on this device, it will be sent once back online.",
+    "pageTitle": "Offline",
+    "pageIntro": "No connection right now. Your quick entries are kept on this device and will be sent once back online.",
+    "pageAvailable": "Pages available offline",
+    "pageNone": "No page saved on this device.",
+    "pagePending": "{count, plural, =0 {No pending entry.} one {# entry waiting to be sent.} other {# entries waiting to be sent.}}",
+    "pageBack": "Retry",
+    "label_journal": "Observation — {title}",
+    "label_harvest": "Harvest — {title}"
   }
 }

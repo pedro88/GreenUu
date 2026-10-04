@@ -35,6 +35,9 @@ async function loadAtlas(): Promise<Atlas> {
   const atlas = await fetchAtlas();
   if (!atlas) return null;
   try {
+    // Planches chargées sur le thread principal, pas dans les workers de PixiJS : ces requêtes sont alors visibles de
+    // la page, qui les confie au service worker, et la vue jardin s'affiche hors-ligne (OFF-01).
+    Assets.setPreferences({ preferWorkers: false });
     // Pages chargées en parallèle, pas l'une après l'autre.
     const loaded = await Promise.all(atlas.pages.map((page) => Assets.load<Texture>(page)));
     const sources = new Map<string, Texture>();

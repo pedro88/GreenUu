@@ -181,7 +181,8 @@
     "restoreInvalid": "Ce lien de rétablissement n'est plus valable.",
     "resultTooEarly": "Le bilan est proposé une fois la culture terminée ou après la première récolte.",
     "lockedItem": "Cet élément n’est pas encore débloqué : rien n’a été enregistré.",
-    "practiceAlreadyDeclared": "Cette pratique est déjà déclarée pour le jardin."
+    "practiceAlreadyDeclared": "Cette pratique est déjà déclarée pour le jardin.",
+    "clientIdTaken": "Cette saisie entre en conflit avec une autre : elle n’a pas été enregistrée."
   },
   "nav": {
     "label": "Navigation principale",
@@ -1791,5 +1792,24 @@
     "successHelp": "Cultures terminées sur l’ensemble des cultures closes (terminées, échouées, abandonnées). Les cultures en cours ne comptent pas.",
     "noSuccess": "Aucune culture close pour l’instant.",
     "rate": "{rate} % ({done} / {total})"
+  },
+  "offline": {
+    "offline": "Hors ligne",
+    "pending": "{count, plural, =0 {rien en attente} one {# en attente} other {# en attente}}",
+    "toReview": "{count, plural, one {# à revoir} other {# à revoir}}",
+    "panel": "Saisies hors ligne",
+    "empty": "Aucune saisie en attente.",
+    "waiting": "En attente du réseau : envoi automatique au retour de la connexion.",
+    "retry": "Réessayer",
+    "discard": "Abandonner",
+    "queued": "Hors ligne : saisie gardée sur l’appareil, elle sera envoyée au retour du réseau.",
+    "pageTitle": "Hors ligne",
+    "pageIntro": "Pas de connexion pour l’instant. Tes saisies rapides sont gardées sur cet appareil et partiront au retour du réseau.",
+    "pageAvailable": "Pages consultables hors ligne",
+    "pageNone": "Aucune page enregistrée sur cet appareil.",
+    "pagePending": "{count, plural, =0 {Aucune saisie en attente.} one {# saisie en attente d’envoi.} other {# saisies en attente d’envoi.}}",
+    "pageBack": "Réessayer",
+    "label_journal": "Observation — {title}",
+    "label_harvest": "Récolte — {title}"
   }
 }

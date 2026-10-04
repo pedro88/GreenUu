@@ -7,6 +7,7 @@ import { PixelIcon } from '@/components/ui/PlantIcon';
 import { requireUser } from '@/server/auth/session';
 import { db } from '@/server/db/client';
 import { unreadCount } from '@/features/notification/service';
+import { OfflineSync } from '@/features/offline/ui/OfflineSync';
 
 function NotificationBell({ count, label }: { count: number; label: string }) {
   return (
@@ -27,6 +28,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <header className={styles.topbar}>
         <Link href="/app" className={styles.brand}><PixelIcon name="ui/action-planter" size={32} />{t('brand')}</Link>
         <AppNav variant="top" />
+        <OfflineSync />
         <NotificationBell count={unread} label={t('notifications')} />
       </header>
       <main id="contenu" className={styles.main}>{children}</main>

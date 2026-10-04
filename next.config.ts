@@ -15,7 +15,11 @@ const nextConfig: NextConfig = {
   sassOptions: { silenceDeprecations: ['legacy-js-api'] },
   // En-têtes de sécurité (audit M2) ; la CSP à nonce est posée par src/proxy.ts.
   async headers() {
-    return [{ source: '/:path*', headers: staticSecurityHeaders(process.env.NODE_ENV === 'production') }];
+    return [
+      { source: '/:path*', headers: staticSecurityHeaders(process.env.NODE_ENV === 'production') },
+      // Service worker (lot 9) : jamais mis en cache, pour qu'une nouvelle version soit prise aussitôt.
+      { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }, { key: 'Content-Type', value: 'application/javascript; charset=utf-8' }] },
+    ];
   },
 };
 

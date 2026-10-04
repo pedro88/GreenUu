@@ -9,6 +9,7 @@ import { Field, NativeSelect, TextInput } from '@/components/ui/Field';
 import { FormError } from '@/components/ui/FormError';
 import { Row, Stack } from '@/components/ui/Layout';
 import { useAction } from '@/components/ui/useAction';
+import { clearDeviceData } from '../../offline/clear';
 import { signOut, updateAccount } from '../actions';
 
 export function AccountForm({ initial }: { initial: { pseudo: string; timezone: string; locale: 'fr' | 'en' } }) {
@@ -35,7 +36,7 @@ export function AccountForm({ initial }: { initial: { pseudo: string; timezone: 
           <Row><Button type="submit" disabled={action.pending}>{t('save')}</Button></Row>
         </Stack>
       </form>
-      <Row><Button variant="secondary" onClick={() => void out.run(undefined)} data-testid="sign-out">{t('signOut')}</Button></Row>
+      <Row><Button variant="secondary" onClick={() => void clearDeviceData().then(() => out.run(undefined))} data-testid="sign-out">{t('signOut')}</Button></Row>
     </Stack>
   );
 }

@@ -93,6 +93,7 @@ L'éditeur est sur `/app/profil/avatar` (et en première étape de `/bienvenue`)
 
 - **Deux fuseaux, exprès** : Vitest et le serveur e2e tournent en `America/New_York` (offset négatif), le navigateur Playwright en `Europe/Brussels`. Un calcul de date qui dépend du fuseau de la machine échoue donc localement comme en CI. `TEST_TZ` permet d'essayer un autre fuseau pour Vitest.
 - **Un seul « maintenant »** pour les e2e : `E2E_NOW` (`tests/e2e/db.ts`, le 14 octobre 2026 à 10:00 UTC) est passé au serveur (`APP_NOW`) et au seed (`SEED_REFERENCE_DATE`). Les données du seed sont datées relativement à cet instant.
+- **Hors-ligne** : le service worker (`public/sw.js`) met en cache les pages visitées et leurs fichiers ; les saisies rapides hors-ligne vont dans une file IndexedDB rejouée au retour du réseau. Sous `next dev`, Turbopack charge les modules à la demande par son serveur de développement : la vue jardin et la page hors-ligne ne s'hydratent donc pas hors-ligne. Les e2e OFF-01 et OFF-06 n'exigent le canvas, le compteur et la liste qu'en build de production : `CI=1 pnpm test:e2e tests/e2e/offline.spec.ts`.
 - **Build séparé** : les e2e compilent dans `.next-e2e` (`NEXT_DIST_DIR`), pour ne pas gêner un `pnpm dev` ouvert. En CI, `next build` puis `next start` ; en local, `next dev`.
 - **Traçabilité** : chaque critère d'acceptation du §12 est cité par son ID dans le titre d'au moins un test ; `pnpm test:spec` le vérifie pour le lot courant (`spec.config.json`).
 

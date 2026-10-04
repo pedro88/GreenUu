@@ -231,3 +231,33 @@ export async function topSpeciesKgByYear(gardenId: string): Promise<{ speciesId:
     await sql.end();
   }
 }
+
+/** Saisies relues par leur texte (OFF-02, OFF-05). */
+export async function journalCountByBody(body: string): Promise<number> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ n: number }[]>`select count(*)::int as n from journal_entry where body = ${body} and deleted_at is null`;
+    return row?.n ?? 0;
+  } finally {
+    await sql.end();
+  }
+}
+export async function harvestCount(cultureId: string, quantity: number): Promise<number> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const [row] = await sql<{ n: number }[]>`select count(*)::int as n from harvest where culture_id = ${cultureId} and quantity = ${quantity} and deleted_at is null`;
+    return row?.n ?? 0;
+  } finally {
+    await sql.end();
+  }
+}
+
+/** Supprime (ou rétablit) une culture, comme le ferait un autre membre pendant que l'appareil est hors-ligne (OFF-05). */
+export async function setCultureDeleted(cultureId: string, deleted: boolean): Promise<void> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    await sql`update culture set deleted_at = ${deleted ? sql`now()` : null} where id = ${cultureId}`;
+  } finally {
+    await sql.end();
+  }
+}
