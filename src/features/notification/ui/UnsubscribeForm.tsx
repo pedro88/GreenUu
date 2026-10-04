@@ -18,7 +18,7 @@ export function UnsubscribeForm({ token, typeLabel }: { token: string; typeLabel
     return <Alert tone="success"><span data-testid="unsubscribed">{t('unsubscribeDone', { type: typeLabel })}</span></Alert>;
   }
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void action.run({ token }); }}>
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ token }); }}>
       <Stack>
         <FormError error={action.error} />
         <p data-testid="unsubscribe-confirm">{t('unsubscribeConfirm', { type: typeLabel })}</p>

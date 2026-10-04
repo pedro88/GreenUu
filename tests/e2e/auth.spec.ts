@@ -68,4 +68,20 @@ test.describe('authentification', () => {
     await page.getByRole('button', { name: 'Se connecter' }).click();
     await expect(page).toHaveURL(/\/app\/jardins$/);
   });
+
+  test('[POL-01] soumis avant l\'hydratation, le formulaire de connexion n\'envoie jamais les identifiants dans l\'URL', async ({ page }) => {
+    // Réseau lent poussé à l'extrême : aucun script ne s'exécute, la page n'est jamais hydratée.
+    await page.route('**/*.js', (r) => r.abort());
+    const urls: string[] = [];
+    page.on('request', (r) => urls.push(r.url()));
+    await page.goto('/connexion');
+    await page.getByLabel('Adresse e-mail').fill('alice@greenu.test');
+    await page.getByLabel('Mot de passe').fill(SEED_PASSWORD);
+    const submitted = page.waitForRequest((r) => r.isNavigationRequest());
+    await page.getByRole('button', { name: 'Se connecter' }).click();
+    const req = await submitted;
+    expect(req.method()).toBe('POST');
+    expect(urls.filter((u) => u.includes('password') || u.includes(encodeURIComponent(SEED_PASSWORD)) || u.includes(SEED_PASSWORD))).toEqual([]);
+    expect(page.url()).not.toContain('password');
+  });
 });

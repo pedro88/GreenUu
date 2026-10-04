@@ -24,7 +24,7 @@ export function ProposeVarietyForm({ species, gardens, initialSpeciesId, initial
   const action = useAction(proposeVarietyAction, { onSuccess: () => { setSent(true); setName(''); setDescription(''); } });
   if (gardens.length === 0) return <Alert tone="info">{t('proposeNeedsGarden')}</Alert>;
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void action.run({ speciesId, gardenId, name, origin, description }); }}>
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ speciesId, gardenId, name, origin, description }); }}>
       <Stack>
         {sent ? <Alert tone="success"><span data-testid="propose-sent">{t('proposeSent')}</span></Alert> : null}
         <FormError error={action.error && !Object.keys(action.fieldErrors).length ? action.error : null} />

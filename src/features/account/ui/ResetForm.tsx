@@ -17,7 +17,7 @@ export function ResetForm({ token }: { token: string }) {
   const [password, setPassword] = useState('');
   const action = useAction(resetPassword, { refresh: false, onSuccess: (d) => router.push(d.redirectTo) });
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void action.run({ token, password }); }}>
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ token, password }); }}>
       <Stack>
         {action.error?.message === 'linkExpired' ? (
           <>

@@ -22,7 +22,7 @@ export function RegisterForm({ invitation }: { invitation?: { token: string; ema
   const action = useAction(register, { refresh: false, onSuccess: (d) => router.push(d.redirectTo) });
   const fe = action.fieldErrors;
   return (
-    <form
+    <form method="post"
       onSubmit={(e) => {
         e.preventDefault();
         void action.run({

@@ -39,7 +39,7 @@ export function TipComposer({ gardens, species, defaultGardenId }: { gardens: { 
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setDone(false); create.reset(); } }} title={t('share')}
       trigger={<Button size="large" className={styles.fab} data-testid="tip-share">{t('share')}</Button>}>
       {done ? <Alert tone="success" role="status"><span data-testid="tip-published">{t('published')}</span></Alert> : (
-        <form onSubmit={(e) => { e.preventDefault(); void create.run({ body, tags: tags.split(','), speciesId, contextGardenId }); }}>
+        <form method="post" onSubmit={(e) => { e.preventDefault(); void create.run({ body, tags: tags.split(','), speciesId, contextGardenId }); }}>
           <Stack>
             <FormError error={create.error && !Object.keys(create.fieldErrors).length ? create.error : null} />
             <Field label={t('body')} hint={t('bodyHint')} errors={create.fieldErrors.body}>{(p) => <TextArea {...p} required minLength={10} maxLength={500} rows={4} value={body} onChange={(e) => setBody(e.target.value)} data-testid="tip-body" />}</Field>

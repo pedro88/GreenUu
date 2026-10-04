@@ -18,7 +18,7 @@ export function SignInForm({ next }: { next?: string | undefined }) {
   const [password, setPassword] = useState('');
   const action = useAction(signIn, { refresh: false, onSuccess: (d) => router.push(d.redirectTo) });
   return (
-    <form
+    <form method="post"
       onSubmit={(e) => {
         e.preventDefault();
         void action.run({ email, password, ...(next ? { next } : {}) });

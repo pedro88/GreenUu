@@ -86,7 +86,7 @@ export function GardenWizard({ practices }: { practices: { code: string }[] }) {
   const canContinue = step === 1 ? v.environments.length > 0 : step === 2 ? v.name.trim().length >= 2 && v.lat !== '' && v.lng !== '' : true;
 
   return (
-    <form className={styles.wizard} onSubmit={(e) => { e.preventDefault(); if (step < total) setStep(step + 1); else void submit(); }}>
+    <form method="post" className={styles.wizard} onSubmit={(e) => { e.preventDefault(); if (step < total) setStep(step + 1); else void submit(); }}>
       <div className={styles.progressRow}>
         <button type="button" className={styles.back} onClick={() => (step > 1 ? setStep(step - 1) : router.back())} aria-label={t('back')}><ArrowLeft /></button>
         <div className={styles.progress} role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={step} aria-label={t('progress')}>

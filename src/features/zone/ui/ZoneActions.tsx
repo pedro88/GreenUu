@@ -40,7 +40,7 @@ export function ZoneActions({ gardenId, zoneId, archived, types, initial, moveTa
         <ZoneForm gardenId={gardenId} zoneId={zoneId} types={types} initial={initial} onDone={() => setEditOpen(false)} />
       </Dialog>
       <Dialog open={moveOpen} onOpenChange={setMoveOpen} title={t('moveTitle')} trigger={<Button variant="secondary">{t('move')}</Button>}>
-        <form onSubmit={(e) => { e.preventDefault(); void move.run({ gardenId, zoneId, parentId: target === '' ? null : target }); }}>
+        <form method="post" onSubmit={(e) => { e.preventDefault(); void move.run({ gardenId, zoneId, parentId: target === '' ? null : target }); }}>
           <Stack>
             <FormError error={move.error} />
             <Field label={t('newParent')} errors={move.fieldErrors.parentId}>{(p) => (

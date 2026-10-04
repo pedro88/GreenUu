@@ -63,7 +63,7 @@ export function ResultForm({ gardenId, cultureId, initial, problems, areaKnown, 
     wouldGrowAgain: again, problems: [...chosen.entries()].map(([problemId, severity]) => ({ problemId, severity })), noProblem, notes,
   });
   return (
-    <form onSubmit={(e) => { e.preventDefault(); submit(); }} data-testid="result-form">
+    <form method="post" onSubmit={(e) => { e.preventDefault(); submit(); }} data-testid="result-form">
       <Stack>
         <Muted>{t('intro')}</Muted>
         <FormError error={action.error} />

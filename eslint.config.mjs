@@ -25,6 +25,9 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'as', objectLiteralTypeAssertions: 'never' }],
       'greenu/justified-as': 'error',
+      // POL-01 : sans `method`, un formulaire soumis avant l'hydratation part en GET, champs (mot de passe, jetons)
+      // dans l'URL. Tout <form> déclare sa méthode.
+      'no-restricted-syntax': ['error', { selector: "JSXOpeningElement[name.name='form']:not(:has(JSXAttribute[name.name='method']))", message: 'Un <form> déclare method="post" : avant l\'hydratation, un GET mettrait les champs dans l\'URL (POL-01).' }],
       // <img> volontaire : photos privées servies après contrôle d'accès (pas de cache d'optimisation partagé)
       // et pixel art affiché à l'échelle entière sans lissage.
       '@next/next/no-img-element': 'off',

@@ -33,7 +33,7 @@ export function DeletionRequest() {
   // La session est révoquée : on quitte /app pour une page publique qui confirme la date de suppression.
   const action = useAction(requestDeletionAction, { refresh: false, onSuccess: (d) => router.replace(`/compte-desactive?le=${d.purgeOn}`) });
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if (confirm) void action.run({ confirm: true, confirmTransferToMember: toMember }); }}>
+    <form method="post" onSubmit={(e) => { e.preventDefault(); if (confirm) void action.run({ confirm: true, confirmTransferToMember: toMember }); }}>
       <Stack gap="sm">
         <FormError error={action.error} />
         <Checkbox label={t('deleteConfirm')} checked={confirm} onChange={(e) => setConfirm(e.target.checked)} data-testid="deletion-confirm" />

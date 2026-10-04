@@ -22,7 +22,7 @@ export function ZoneTypesEditor({ gardenId, custom }: { gardenId: string; custom
           <li key={c.id}><Row><span>{c.label}</span><Button variant="ghost" onClick={() => void archive.run({ gardenId, zoneTypeId: c.id })}>{t('archive')}</Button></Row></li>
         ))}</ul>
       ) : <p>{t('none')}</p>}
-      <form onSubmit={(e) => { e.preventDefault(); void create.run({ gardenId, label, canHostCultures, hasInteriorDefault: false }); }}>
+      <form method="post" onSubmit={(e) => { e.preventDefault(); void create.run({ gardenId, label, canHostCultures, hasInteriorDefault: false }); }}>
         <Stack gap="sm">
           <FormError error={create.error && !Object.keys(create.fieldErrors).length ? create.error : null} />
           <Field label={t('label')} errors={create.fieldErrors.label}>{(p) => <TextInput {...p} value={label} onChange={(e) => setLabel(e.target.value)} />}</Field>

@@ -20,7 +20,7 @@ export function AccountForm({ initial }: { initial: { pseudo: string; timezone: 
   const out = useAction(signOut, { refresh: false, onSuccess: () => router.push('/connexion') });
   return (
     <Stack>
-      <form onSubmit={(e) => { e.preventDefault(); void action.run(v); }}>
+      <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run(v); }}>
         <Stack>
           {saved ? <Alert tone="success">{t('saved')}</Alert> : null}
           <FormError error={action.error && !Object.keys(action.fieldErrors).length ? action.error : null} />

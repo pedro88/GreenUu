@@ -30,7 +30,7 @@ export function GardenSettingsForm({ gardenId, initial }: { gardenId: string; in
   const action = useAction(updateGardenAction, { onSuccess: () => setSaved(true) });
   const fe = action.fieldErrors;
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, ...v }); }} data-testid="garden-settings-form">
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, ...v }); }} data-testid="garden-settings-form">
       <Stack>
         {saved ? <Alert tone="success">{t('saved')}</Alert> : null}
         <FormError error={action.error && !Object.keys(fe).length ? action.error : null} />

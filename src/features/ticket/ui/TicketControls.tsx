@@ -67,7 +67,7 @@ export function ChecklistEditor({ gardenId, ticketId, items, canToggle, canAdd }
         ))}
       </ul>
       {canAdd ? (
-        <form onSubmit={(e) => { e.preventDefault(); void add.run({ gardenId, ticketId, label }); }}>
+        <form method="post" onSubmit={(e) => { e.preventDefault(); void add.run({ gardenId, ticketId, label }); }}>
           <Row>
             <label className="visually-hidden" htmlFor="new-check">{t('addCheck')}</label>
             <TextInput id="new-check" value={label} placeholder={t('addCheck')} onChange={(e) => setLabel(e.target.value)} />
@@ -84,7 +84,7 @@ export function CommentForm({ gardenId, ticketId }: { gardenId: string; ticketId
   const [body, setBody] = useState('');
   const action = useAction(commentTicketAction, { onSuccess: () => setBody('') });
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, ticketId, body }); }}>
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, ticketId, body }); }}>
       <Stack gap="sm">
         <FormError error={action.error} />
         <Field label={t('comment')} hint={t('mentionHint')}>{(p) => <TextArea {...p} value={body} onChange={(e) => setBody(e.target.value)} data-testid="comment-body" />}</Field>
@@ -129,7 +129,7 @@ export function EditTicketDialog({ gardenId, ticketId, initial, recurring }: {
   return (
     <Row>
       <Dialog open={open} onOpenChange={setOpen} title={t('editTitle')} trigger={<Button variant="secondary" data-testid="edit-open">{t('edit')}</Button>}>
-        <form onSubmit={(e) => { e.preventDefault(); void update.run({ gardenId, ticketId, ...v, applyTo }); }}>
+        <form method="post" onSubmit={(e) => { e.preventDefault(); void update.run({ gardenId, ticketId, ...v, applyTo }); }}>
           <Stack>
             <FormError error={update.error && !Object.keys(update.fieldErrors).length ? update.error : null} />
             <Field label={t('titleLabel')} errors={update.fieldErrors.title}>{(p) => <TextInput {...p} value={v.title} onChange={(e) => setV({ ...v, title: e.target.value })} />}</Field>

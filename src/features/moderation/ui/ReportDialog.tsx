@@ -26,7 +26,7 @@ export function ReportDialog({ target, label }: { target: { kind: 'guide' | 'tip
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setSent(false); action.reset(); } }} title={t('title')}
       trigger={<Button variant="secondary" aria-label={label} data-testid={`report-${target.kind}-${target.id}`}><Flag aria-hidden size={18} />{label}</Button>}>
       {sent ? <Alert tone="success" role="status"><span data-testid="report-sent">{t('sent')}</span></Alert> : (
-        <form onSubmit={(e) => { e.preventDefault(); void action.run({ target, reason, details }); }}>
+        <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ target, reason, details }); }}>
           <Stack>
             <FormError error={action.error} />
             <Field label={t('reason')}>{(p) => (

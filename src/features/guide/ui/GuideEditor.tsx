@@ -79,7 +79,7 @@ export function GuideEditor({ guideId, species, varieties, gardens, initial, loc
   const pending = create.pending || update.pending || publish.pending;
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); submit('stay'); }} data-testid="guide-editor">
+    <form method="post" onSubmit={(e) => { e.preventDefault(); submit('stay'); }} data-testid="guide-editor">
       <Stack>
         <FormError error={error && !Object.keys(fe).length ? error : null} />
         <Field label={t('titleLabel')} errors={fe['draft.title']}>{(p) => <TextInput {...p} required minLength={3} maxLength={140} value={title} onChange={(e) => setTitle(e.target.value)} />}</Field>

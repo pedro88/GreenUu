@@ -26,7 +26,7 @@ export function GoalForm({ gardenId, groups, today }: { gardenId: string; groups
   const [groupId, setGroupId] = useState('');
   const action = useAction(createGoalAction, { onSuccess: () => setTitle('') });
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, title, metric, target: Number(target), periodStart: start, periodEnd: end, groupId }); }} data-testid="goal-form">
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, title, metric, target: Number(target), periodStart: start, periodEnd: end, groupId }); }} data-testid="goal-form">
       <Stack gap="sm">
         <FormError error={action.error && !Object.keys(action.fieldErrors).length ? action.error : null} />
         <Field label={t('goalTitle')} errors={action.fieldErrors.title}>{(p) => <TextInput {...p} required minLength={3} maxLength={120} value={title} onChange={(e) => setTitle(e.target.value)} />}</Field>

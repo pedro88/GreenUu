@@ -35,7 +35,7 @@ export function ZoneForm({ gardenId, parentId, zoneId, types, initial, onDone }:
     else void create.run({ ...common, parentId: parentId ?? null });
   };
   return (
-    <form onSubmit={(e) => { e.preventDefault(); submit(); }} data-testid="zone-form">
+    <form method="post" onSubmit={(e) => { e.preventDefault(); submit(); }} data-testid="zone-form">
       <Stack>
         <FormError error={action.error && !Object.keys(fe).length ? action.error : null} />
         <Field label={t('name')} errors={fe.name}>{(p) => <TextInput {...p} name="name" required value={v.name} onChange={(e) => set('name', e.target.value)} />}</Field>

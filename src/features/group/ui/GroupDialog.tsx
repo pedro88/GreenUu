@@ -25,7 +25,7 @@ export function GroupDialog({ gardenId, members, group }: {
   return (
     <Dialog open={open} onOpenChange={setOpen} title={group ? t('editTitle') : t('newTitle')}
       trigger={<Button variant={group ? 'secondary' : 'primary'} data-testid={group ? `group-edit-${group.id}` : 'group-new'}>{group ? t('edit') : t('new')}</Button>}>
-      <form onSubmit={(e) => {
+      <form method="post" onSubmit={(e) => {
         e.preventDefault();
         if (group) void update.run({ gardenId, groupId: group.id, name, memberIds, color: 'green' });
         else void create.run({ gardenId, name, memberIds, color: 'green' });

@@ -422,7 +422,7 @@ function DimensionsForm({ zones, types, typeLabel, defaultType, onSubmit }: {
     <Field label={label}>{(p) => <TextInput {...p} inputMode="numeric" value={v[key]} onChange={(e) => setV({ ...v, [key]: Number(e.target.value) || 0 })} data-testid={`dims-${key}`} />}</Field>
   );
   return (
-    <form className={styles.drawer} data-testid="zone-form-dims" onSubmit={(e) => {
+    <form method="post" className={styles.drawer} data-testid="zone-form-dims" onSubmit={(e) => {
       e.preventDefault();
       if (onSubmit({ name: v.name.trim() || typeLabel(types.find((x) => x.id === v.zoneTypeId) ?? { id: '', code: '', label: '', isCustom: true, hasInteriorDefault: false, canHostCultures: true }), zoneTypeId: v.zoneTypeId, parentId: v.parentId || null, geometry: { v: 1, kind: 'rect', x: v.x, y: v.y, w: v.w, h: v.h } })) setV({ ...v, name: '' });
     }}>

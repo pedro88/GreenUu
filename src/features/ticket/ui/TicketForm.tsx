@@ -78,7 +78,7 @@ export function TicketForm({ gardenId, zones, cultures, members, groups, today, 
     });
   };
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void submit(); }} data-testid="ticket-form">
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void submit(); }} data-testid="ticket-form">
       <Stack>
         <FormError error={uploadError ?? (action.error && !Object.keys(fe).length ? action.error : null)} />
         <Field label={t('titleLabel')} errors={fe.title}>{(p) => <TextInput {...p} name="title" required value={title} onChange={(e) => setTitle(e.target.value)} />}</Field>

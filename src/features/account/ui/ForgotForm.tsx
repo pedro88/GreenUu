@@ -16,7 +16,7 @@ export function ForgotForm() {
   const action = useAction(requestPasswordReset, { refresh: false, onSuccess: () => setSent(true) });
   if (sent) return <Alert tone="success">{t('forgotSent')}</Alert>;
   return (
-    <form onSubmit={(e) => { e.preventDefault(); void action.run({ email }); }}>
+    <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ email }); }}>
       <Stack>
         <Field label={t('email')} errors={action.fieldErrors.email}>
           {(p) => <TextInput {...p} type="email" name="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />}

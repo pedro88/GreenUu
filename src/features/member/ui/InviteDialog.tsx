@@ -23,7 +23,7 @@ export function InviteDialog({ gardenId, roles, groups }: { gardenId: string; ro
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSentTo(null); }} title={t('inviteTitle')}
       trigger={<Button size="large" block data-testid="invite-open">{t('invite')}</Button>}>
-      <form onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, email, role, groupIds }); }}>
+      <form method="post" onSubmit={(e) => { e.preventDefault(); void action.run({ gardenId, email, role, groupIds }); }}>
         <Stack>
           {sentTo ? <Alert tone="success">{t('inviteSent', { email: sentTo })}</Alert> : null}
           <FormError error={action.error && !Object.keys(action.fieldErrors).length ? action.error : null} />

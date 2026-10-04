@@ -103,7 +103,7 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
           onChange={(e) => { setFiles([...(e.target.files ?? [])].slice(0, 6)); setMode((m) => (m === 'photo' ? 'photo' : m)); }} />
 
         {mode === 'observation' || mode === 'photo' ? (
-          <form onSubmit={(e) => { e.preventDefault(); void submitJournal(); }}>
+          <form method="post" onSubmit={(e) => { e.preventDefault(); void submitJournal(); }}>
             <Stack gap="sm">
               {mode === 'observation' ? (
                 <Field label={t('kind')}>{(p) => (
@@ -143,7 +143,7 @@ export function QuickCapture({ gardenId, cultureId, title, problems, triggerClas
         ) : null}
 
         {mode === 'harvest' ? (
-          <form onSubmit={(e) => { e.preventDefault(); void harvestAction.run({ gardenId, cultureId, quantity: qty, unit, quality, seedSaving: false, note: body }); }}>
+          <form method="post" onSubmit={(e) => { e.preventDefault(); void harvestAction.run({ gardenId, cultureId, quantity: qty, unit, quality, seedSaving: false, note: body }); }}>
             <Stack gap="sm">
               <div className={styles.stepper}>
                 <button type="button" className={styles.stepButton} aria-label={t('less')} onClick={() => setQty((q) => Math.max(step, Math.round((q - step) * 1000) / 1000))}>−</button>

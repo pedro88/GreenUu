@@ -16,7 +16,7 @@ export function DisplayForm({ initial }: { initial: { defaultView: DefaultView; 
   const [saved, setSaved] = useState(false);
   const action = useAction(setDisplayPrefsAction, { onSuccess: () => setSaved(true) });
   return (
-    <form onSubmit={(e) => { e.preventDefault(); setSaved(false); void action.run(v); }}>
+    <form method="post" onSubmit={(e) => { e.preventDefault(); setSaved(false); void action.run(v); }}>
       <Stack gap="sm">
         <fieldset>
           <legend>{t('defaultView')}</legend>
