@@ -12,7 +12,7 @@ import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
 import { sceneAvatars } from './avatars';
 import { decorRect, layoutInRect, sceneBounds } from './grid.pure';
-import { cellsRect } from './terrain.pure';
+import { cellsRect, MAX_SCENE_CELLS } from './terrain.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
 import { familyKey } from '@/game/manifest';
@@ -20,8 +20,6 @@ import { familyKey } from '@/game/manifest';
 /* Instantané de scène (SPEC §9.1) : tout ce que le moteur affiche, calculé côté serveur et validé par Zod. */
 
 const OPEN = ['todo', 'in_progress', 'blocked'] as const;
-/** Cases de terrain lues par scène (une scène de 100 × 100 tuiles entièrement peinte). */
-const MAX_SCENE_CELLS = 10_000;
 const DAY = 86_400_000;
 const shiftDay = (iso: string, days: number) => new Date(Date.parse(`${iso}T12:00:00Z`) + days * DAY).toISOString().slice(0, 10);
 

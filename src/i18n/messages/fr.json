@@ -1572,7 +1572,8 @@
     "brush_2": "2 × 2",
     "brush_3": "3 × 3",
     "fixturesTitle": "Aménagements ponctuels",
-    "fixtureLocked": "Réservé aux rôles qui peuvent modifier le plan."
+    "fixtureLocked": "Réservé aux rôles qui peuvent modifier le plan.",
+    "issue_too_many_cells": "dépasse le nombre de cases peintes autorisé"
   },
   "display": {
     "title": "Affichage et accessibilité",

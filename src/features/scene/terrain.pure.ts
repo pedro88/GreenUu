@@ -11,6 +11,8 @@ export type CellPos = [number, number];
 
 /** Nombre maximal de cases par commande `paintTerrain` / `eraseTerrain` (PNT-07). */
 export const MAX_CELLS_PER_COMMAND = 2500;
+/** Cases peintes au plus par scène (audit jardin vivant, M1) : borne l'écriture, la lecture et l'instantané du plan. */
+export const MAX_SCENE_CELLS = 10_000;
 /** Coordonnée maximale d'une case, en tuiles (contrainte `terrain_cell_position_ck`). */
 export const MAX_CELL_COORD = 10_000;
 

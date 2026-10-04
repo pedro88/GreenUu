@@ -8,7 +8,8 @@ import { planSnapshotV1Schema, type PlanSnapshotV1 } from './history.schema';
  * Instantanés du plan (SPEC §4.2.6, TLP-01) : à chaque modification du plan, l'état complet du plan du jardin est écrit
  * dans la même transaction, une ligne par jour local du jardin (la dernière version du jour remplace les précédentes).
  * Un lot de l'éditeur n'écrit qu'un instantané, à la fin : les services de zone appelés pendant le lot le savent par
- * la transaction du lot, marquée ici.
+ * la transaction du lot, marquée ici. Le volume est borné par les plafonds du plan (2 000 zones, 10 000 cases par
+ * scène, `MAX_SCENE_CELLS`).
  */
 
 const batches = new WeakSet<Executor>();

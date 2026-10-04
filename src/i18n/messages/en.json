@@ -1572,7 +1572,8 @@
     "brush_2": "2 × 2",
     "brush_3": "3 × 3",
     "fixturesTitle": "Fixtures",
-    "fixtureLocked": "Reserved to roles allowed to edit the plan."
+    "fixtureLocked": "Reserved to roles allowed to edit the plan.",
+    "issue_too_many_cells": "exceeds the number of painted tiles allowed"
   },
   "display": {
     "title": "Display and accessibility",

@@ -11,7 +11,7 @@ import type { UnlockFacts } from '../progression/unlock.pure';
 import { createZone, setZoneArchived, setZoneGeometry } from '../zone/service';
 import { markPlanBatch, recordPlanSnapshot } from './history';
 import { TMP_PREFIX, type ApplyPlanInput, type PlanCommand } from './plan.schema';
-import { MAX_CELL_COORD, resampleCells, type Cell } from './terrain.pure';
+import { MAX_CELL_COORD, MAX_SCENE_CELLS, resampleCells, type Cell } from './terrain.pure';
 
 /*
  * `applyPlanCommands` (SPEC §9.7) : un lot de commandes de l'éditeur, appliqué tout ou rien. Les commandes de zone
@@ -87,6 +87,7 @@ async function applyOne(c: ScopedCtx, sceneZoneId: string | null, cmd: PlanComma
       const unique = new Map(cmd.cells.map(([x, y]) => [`${x},${y}`, { gardenId: scope.gardenId, sceneZoneId, x, y, kind: cmd.kind }]));
       const rows = [...unique.values()];
       await tx.insert(terrainCell).values(rows).onConflictDoUpdate({ target: [terrainCell.gardenId, terrainCell.sceneZoneId, terrainCell.x, terrainCell.y], set: { kind: cmd.kind } });
+      await assertCellBudget(c, sceneZoneId);
       return;
     }
     case 'eraseTerrain': {
@@ -108,6 +109,8 @@ async function applyOne(c: ScopedCtx, sceneZoneId: string | null, cmd: PlanComma
       for (const x of cells) byScene.set(x.sceneZoneId, [...(byScene.get(x.sceneZoneId) ?? []), { x: x.x, y: x.y, kind: x.kind }]);
       await tx.delete(terrainCell).where(eq(terrainCell.gardenId, scope.gardenId));
       const rows = [...byScene].flatMap(([scene, list]) => resampleCells(list, cur.tileSizeCm, cmd.tileSizeCm).filter((x) => x.x <= MAX_CELL_COORD && x.y <= MAX_CELL_COORD).map((x) => ({ gardenId: scope.gardenId, sceneZoneId: scene, ...x })));
+      // Passer à une échelle plus fine multiplie les cases : chaque scène reste sous le plafond.
+      if ([...byScene].some(([scene]) => rows.filter((r) => r.sceneZoneId === scene).length > MAX_SCENE_CELLS)) throw validation({ cells: ['tooManyCells'] });
       for (let i = 0; i < rows.length; i += 5000) await tx.insert(terrainCell).values(rows.slice(i, i + 5000));
       return;
     }
@@ -121,6 +124,13 @@ async function applyOne(c: ScopedCtx, sceneZoneId: string | null, cmd: PlanComma
       await removeDecor(c, sceneZoneId, resolve(cmd.decorId), cmd.removePractice);
       return;
   }
+}
+
+/** Plafond de cases peintes par scène (audit jardin vivant, M1), vérifié après l'écriture, dans le lot tout ou rien. */
+async function assertCellBudget(c: ScopedCtx, sceneZoneId: string | null) {
+  const [n] = await c.tx.select({ n: sql<number>`count(*)::int` }).from(terrainCell)
+    .where(and(eq(terrainCell.gardenId, c.scope.gardenId), sceneZoneId ? eq(terrainCell.sceneZoneId, sceneZoneId) : isNull(terrainCell.sceneZoneId)));
+  if ((n?.n ?? 0) > MAX_SCENE_CELLS) throw validation({ cells: ['tooManyCells'] });
 }
 
 /**

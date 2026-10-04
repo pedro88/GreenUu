@@ -70,6 +70,21 @@ describe('terrain peint', () => {
       expect(applyPlanSchema.safeParse({ gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'paintTerrain', kind: 'path', cells: many.slice(0, 2500) }] }).success).toBe(true);
     }));
 
+  it('[PNT-07] au plus 10 000 cases peintes par scène, y compris après un passage à une échelle plus fine (audit jardin vivant, M1)', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const gardenId = await makeGarden(tx, alice);
+      const ctx = await scopedCtx(tx, alice, gardenId);
+      const block = (y0: number) => Array.from({ length: 2500 }, (_, i): [number, number] => [i % 100, y0 + Math.floor(i / 100)]);
+      const v = (await applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: await version(tx, gardenId), commands: [0, 25, 50, 75].map((y) => ({ op: 'paintTerrain' as const, kind: 'path' as const, cells: block(y) })) })).planVersion;
+      expect(await cellsOf(tx, gardenId)).toHaveLength(10_000);
+      // Repeindre une case existante reste possible ; une case de plus est refusée, et rien n'est écrit.
+      await applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: v, commands: [{ op: 'paintTerrain', kind: 'water', cells: [[0, 0]] }] });
+      await expect(applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: v + 1, commands: [{ op: 'paintTerrain', kind: 'path', cells: [[0, 100]] }] })).rejects.toMatchObject({ code: 'VALIDATION' });
+      await expect(applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: v + 1, commands: [{ op: 'setScale', tileSizeCm: 25 }] })).rejects.toMatchObject({ code: 'VALIDATION' });
+      expect(await cellsOf(tx, gardenId)).toHaveLength(10_000);
+    }));
+
   it('peindre, repeindre, gommer et changer d\'échelle : les cases suivent, l\'instantané de scène aussi', () =>
     inTx(async (tx) => {
       const alice = await makeUser(tx);

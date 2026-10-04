@@ -1,7 +1,7 @@
 import { checkGeometry, type GeometryIssue, type RectGeometry } from '../zone/tree';
 import type { PlanCommand } from './plan.schema';
 import { DECOR_BY_CODE } from '../decor/catalog';
-import { eraseCells, paintCells, resampleCells } from './terrain.pure';
+import { eraseCells, MAX_SCENE_CELLS, paintCells, resampleCells } from './terrain.pure';
 import type { SceneDecor, SceneTerrain, SceneZone } from './snapshot.schema';
 
 /*
@@ -11,7 +11,7 @@ import type { SceneDecor, SceneTerrain, SceneZone } from './snapshot.schema';
 
 export type ZoneTypeInfo = { id: string; code: string; label: string; canHostCultures: boolean; hasInteriorDefault: boolean };
 export type EditorScene = { tileSizeCm: number; zones: SceneZone[]; terrain: SceneTerrain[]; decor: SceneDecor[] };
-export type LocalIssue = GeometryIssue | 'unknown_zone' | 'unknown_decor';
+export type LocalIssue = GeometryIssue | 'unknown_zone' | 'unknown_decor' | 'too_many_cells';
 
 function siblingsOf(scene: EditorScene, parentId: string | null, selfId: string | null): RectGeometry[] {
   return scene.zones.filter((z) => z.parentId === parentId && z.id !== selfId && z.geometry).map((z) => z.geometry as RectGeometry); // as: filtré sur geometry non nulle
@@ -38,6 +38,8 @@ export function validateLocal(scene: EditorScene, cmd: PlanCommand): LocalIssue 
     const children = scene.zones.filter((c) => c.parentId === z.id && c.geometry && !z.hasInterior);
     return children.some((c) => c.geometry && checkGeometry(c.geometry, cmd.geometry, []) !== null) ? 'outside_parent' : null;
   }
+  // Plafond de cases par scène (même règle que le serveur, audit jardin vivant M1).
+  if (cmd.op === 'paintTerrain' && paintCells(scene.terrain, cmd.cells, cmd.kind).length > MAX_SCENE_CELLS) return 'too_many_cells';
   if (cmd.op === 'archiveZone') return scene.zones.some((z) => z.id === cmd.zoneId) ? null : 'unknown_zone';
   if (cmd.op === 'moveDecor' || cmd.op === 'removeDecor') return scene.decor.some((d) => d.id === cmd.decorId) ? null : 'unknown_decor';
   return null;
