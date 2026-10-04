@@ -85,7 +85,12 @@ export function successRates(rows: CultureOutcome[]) {
 
 /** Export CSV (STAT-07) : une ligne par espèce, zone et saison ; séparateur `;` et virgule décimale (tableurs francophones). */
 export function statsCsv(rows: HarvestRow[], startMonth: number): string {
-  const esc = (v: string) => (/[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+  // Un texte qui commence par = + - @ (ou une tabulation, un retour chariot) serait lu comme une formule par les tableurs :
+  // préfixé d'une apostrophe, il reste du texte.
+  const esc = (raw: string) => {
+    const v = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+    return /[;"\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+  };
   const num = (n: number | null) => (n === null ? '' : String(n).replace('.', ','));
   const lines = new Map<string, { season: number; species: string; zone: string; areaM2: number | null; cell: Cell }>();
   for (const r of rows) {

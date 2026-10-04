@@ -59,4 +59,17 @@ describe('statistiques pluriannuelles (§12.10)', () => {
     expect(csv.split('\n')[0]).toBe('saison;espece;zone;kg;kg_m2;recoltes;autres_unites');
     expect(csv.split('\n')[1]).toBe('2026;"Tomate « cœur ; de bœuf »";Planche 1;1,25;0,31;1;');
   });
+
+  it('export CSV : un nom qui commence par = + - @ reste du texte (pas de formule)', () => {
+    const lines = statsCsv([
+      row({ zoneId: 'z1', zoneName: '=HYPERLINK("https://exemple.test";"Planche")' }),
+      row({ zoneId: 'z2', zoneName: '+1+1' }),
+      row({ zoneId: 'z3', zoneName: '-2' }),
+      row({ zoneId: 'z4', zoneName: '@SUM(A1)' }),
+    ], 1).trim().split('\n').slice(1);
+    // Aucune cellule ne commence par un caractère de formule, guillemets d'encadrement compris.
+    for (const l of lines) for (const cell of l.split(';')) expect(cell.replace(/^"/, ''), cell).not.toMatch(/^[=+\-@]/);
+    expect(lines.some((l) => l.includes(`"'=HYPERLINK(""https://exemple.test"";""Planche"")"`))).toBe(true);
+    expect(lines.some((l) => l.includes(";'+1+1;"))).toBe(true);
+  });
 });
