@@ -175,4 +175,28 @@ test.describe('hors-ligne', () => {
     await expect.poll(() => page.evaluate(async (name) => (await (await (await caches.open(name)).match('/sprites/atlas/atlas.json'))?.text()) ?? '', STATIC), { timeout: 20_000 })
       .toContain('"frames"');
   });
+
+  test('une observation qui atteint le serveur mais perd sa réponse est rejouée sans doublon (E2E-OFF-03b)', async ({ page }) => {
+    const body = `Réponse perdue ${Date.now().toString(36)}`;
+    await login(page, 'alice');
+    await culturePage(page);
+    // Le serveur reçoit et enregistre la saisie, mais la réponse n'arrive jamais au navigateur.
+    let lost = false;
+    await page.route('**/*', async (route) => {
+      const req = route.request();
+      if (lost || req.method() !== 'POST' || !req.headers()['next-action'] || !(req.postData() ?? '').includes(body)) return route.continue();
+      lost = true;
+      await route.fetch();
+      await route.abort('internetdisconnected');
+    });
+    await observe(page, body);
+    await expect(page.getByTestId('offline-pending')).toHaveAttribute('data-count', '1');
+    expect(await journalCountByBody(body)).toBe(1);
+    // Retour à la normale : la file rejoue la saisie avec le même ID client, que le serveur reconnaît.
+    await page.unrouteAll({ behavior: 'wait' });
+    await page.evaluate(() => window.dispatchEvent(new Event('online')));
+    await expect(page.getByTestId('offline-badge')).toHaveCount(0, { timeout: 20_000 });
+    expect(await journalCountByBody(body)).toBe(1);
+  });
+
 });
