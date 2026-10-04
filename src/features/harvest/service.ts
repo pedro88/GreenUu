@@ -2,6 +2,7 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { forbidden, notFound, validation } from '@/lib/errors';
 import { addDays, localDate } from '@/lib/dates';
 import type { ScopedCtx } from '@/server/action-core';
+import { captureInstant, replayOf } from '@/server/offline';
 import { can } from '@/server/authz/scope';
 import { culture, garden, harvest, species } from '@/server/db/schema';
 import { emit } from '@/server/events/emit';
@@ -16,18 +17,27 @@ export async function recordHarvest(ctx: ScopedCtx, input: HarvestCreateInput) {
     .where(and(eq(culture.gardenId, scope.gardenId), eq(culture.id, input.cultureId), isNull(culture.deletedAt))).limit(1);
   if (!c) throw notFound('cultureNotFound');
   await assertZoneContribute(tx, scope, 'journal:create', c.zoneId);
+  // Renvoi d'une saisie déjà reçue : la récolte existante (OFF-03).
+  const replayed = input.clientId ? await replayOf(tx, harvest, input.clientId, scope.gardenId, actor.id) : null;
+  if (replayed) {
+    const [h] = await tx.select({ quantityKg: harvest.quantityKg }).from(harvest).where(eq(harvest.id, replayed)).limit(1);
+    return { harvestId: replayed, quantityKg: h?.quantityKg ?? null };
+  }
   const [g] = await tx.select({ timezone: garden.timezone }).from(garden).where(eq(garden.id, scope.gardenId)).limit(1);
   const tz = g?.timezone ?? 'Europe/Paris';
-  const today = localDate(clock.now(), tz);
+  // Saisie hors-ligne : la récolte et son événement comptent pour le jour de saisie (OFF-07).
+  const eventAt = captureInstant(input.capturedAt, clock.now());
+  const today = localDate(eventAt, tz);
   const harvestedOn = input.harvestedOn ?? today;
   if (harvestedOn > localDate(addDays(clock.now(), 1), tz)) throw validation({ harvestedOn: ['futureDate'] });
   const quantityKg = harvestKg(input.quantity, input.unit, c.unitG);
   const [h] = await tx.insert(harvest).values({
+    ...(input.clientId ? { id: input.clientId } : {}),
     gardenId: scope.gardenId, cultureId: c.id, harvestedOn, quantity: input.quantity, unit: input.unit, quantityKg, quality: input.quality ?? null,
     seedSaving: input.seedSaving, note: input.note ?? null, authorId: actor.id,
   }).returning({ id: harvest.id });
   if (!h) throw new Error('Insertion de la récolte échouée');
-  await emit(tx, { type: 'harvest.recorded', subjectType: 'harvest', subjectId: h.id, gardenId: scope.gardenId, actorId: actor.id, payload: { cultureId: c.id, quantityKg, unit: input.unit, seedSaving: input.seedSaving } }, clock.now());
+  await emit(tx, { type: 'harvest.recorded', subjectType: 'harvest', subjectId: h.id, gardenId: scope.gardenId, actorId: actor.id, payload: { cultureId: c.id, quantityKg, unit: input.unit, seedSaving: input.seedSaving } }, eventAt);
   return { harvestId: h.id, quantityKg };
 }
 

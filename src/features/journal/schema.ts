@@ -3,6 +3,9 @@ import { INTERVENTIONS, JOURNAL_KINDS } from '@/lib/enums';
 
 export const journalCreateSchema = z.object({
   gardenId: uuidSchema,
+  /** Saisie hors-ligne : ID choisi par le client (idempotence, D-15) et instant de saisie (OFF-07). */
+  clientId: uuidSchema.optional(),
+  capturedAt: z.iso.datetime({ offset: true }).optional(),
   cultureId: uuidSchema.optional(),
   zoneId: uuidSchema.optional(),
   kind: z.enum(JOURNAL_KINDS),

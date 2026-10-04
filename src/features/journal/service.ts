@@ -3,6 +3,7 @@ import { forbidden, notFound, validation } from '@/lib/errors';
 import { addDays } from '@/lib/dates';
 import { hasExif, imageSize, sniffImage, stripJpegMetadata } from '@/lib/images';
 import type { ScopedCtx } from '@/server/action-core';
+import { captureInstant, replayOf } from '@/server/offline';
 import { can, type Scope } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
 import { attachment, culture, journalEntry, problem } from '@/server/db/schema';
@@ -33,8 +34,13 @@ async function targetZone(tx: Executor, scope: Scope, input: { cultureId?: strin
 export async function createJournalEntry(ctx: ScopedCtx, input: JournalCreateInput) {
   const { tx, scope, actor, clock } = ctx;
   await assertZoneContribute(tx, scope, 'journal:create', await targetZone(tx, scope, input));
+  // Renvoi d'une saisie déjà reçue (réponse perdue) : l'entrée existante, sans doublon ni XP en double (OFF-03).
+  const replayed = input.clientId ? await replayOf(tx, journalEntry, input.clientId, scope.gardenId, actor.id) : null;
+  if (replayed) return { entryId: replayed };
   const now = clock.now();
-  const observedAt = input.observedAt ? new Date(input.observedAt) : now;
+  // Saisie hors-ligne : l'événement (journal, XP, quêtes) compte pour l'instant de saisie, pas celui de l'envoi (OFF-07).
+  const eventAt = captureInstant(input.capturedAt, now);
+  const observedAt = input.observedAt ? new Date(input.observedAt) : eventAt;
   if (observedAt.getTime() > now.getTime() + 60_000) throw validation({ observedAt: ['futureDate'] });
   if (observedAt.getTime() < addDays(now, -BACKDATE_DAYS).getTime()) throw validation({ observedAt: ['tooOld'] });
   let problemId: string | null = null;
@@ -50,6 +56,7 @@ export async function createJournalEntry(ctx: ScopedCtx, input: JournalCreateInp
   if (input.kind === 'note' && !input.body && input.attachmentIds.length === 0) throw validation({ body: ['required'] });
   const kind = input.kind === 'note' && !input.body && input.attachmentIds.length > 0 ? 'photo' : input.kind;
   const [e] = await tx.insert(journalEntry).values({
+    ...(input.clientId ? { id: input.clientId } : {}),
     gardenId: scope.gardenId, cultureId: input.cultureId ?? null, zoneId: input.cultureId ? null : (input.zoneId ?? null), kind, observedAt,
     body: input.body ?? null, problemId, problemOther: input.problemOther ?? null, severity: input.severity ?? null,
     intervention: input.kind === 'intervention' ? (input.intervention ?? null) : null, weather: input.weather ?? null, authorId: actor.id,
@@ -61,7 +68,7 @@ export async function createJournalEntry(ctx: ScopedCtx, input: JournalCreateInp
     await completeWateringTickets(tx, scope, { cultureId: input.cultureId, zoneId: input.cultureId ? undefined : input.zoneId }, actor.id, now);
   }
   const structured = problemId !== null || input.intervention !== undefined || input.weather !== undefined;
-  await emit(tx, { type: 'journal.entry_created', subjectType: 'journal_entry', subjectId: e.id, gardenId: scope.gardenId, actorId: actor.id, payload: { kind, hasPhoto: photos > 0, structured, cultureId: input.cultureId ?? null, textLength: (input.body ?? '').trim().length } }, now);
+  await emit(tx, { type: 'journal.entry_created', subjectType: 'journal_entry', subjectId: e.id, gardenId: scope.gardenId, actorId: actor.id, payload: { kind, hasPhoto: photos > 0, structured, cultureId: input.cultureId ?? null, textLength: (input.body ?? '').trim().length } }, eventAt);
   return { entryId: e.id };
 }
 

@@ -3,6 +3,9 @@ import { HARVEST_UNITS } from '@/lib/enums';
 
 export const harvestCreateSchema = z.object({
   gardenId: uuidSchema,
+  /** Saisie hors-ligne : ID choisi par le client (idempotence, D-15) et instant de saisie (OFF-07). */
+  clientId: uuidSchema.optional(),
+  capturedAt: z.iso.datetime({ offset: true }).optional(),
   cultureId: uuidSchema,
   harvestedOn: z.preprocess((v) => (v === '' ? undefined : v), z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'invalidDate').optional()),
   quantity: z.coerce.number().positive().max(100_000),

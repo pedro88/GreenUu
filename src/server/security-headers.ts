@@ -8,6 +8,9 @@ export function contentSecurityPolicy(nonce: string, isDev: boolean): string {
     "img-src 'self' blob: data:",
     "font-src 'self'",
     "connect-src 'self'",
+    // Service worker et manifeste de la PWA (lot 9) : sans `worker-src`, la `script-src` à nonce bloquerait /sw.js.
+    "worker-src 'self'",
+    "manifest-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
