@@ -7,8 +7,13 @@
  *   à jour en arrière-plan pour la visite suivante (stale-while-revalidate, audit lot 9 M1) ;
  * - jamais l'authentification, les fichiers privés (`/api/files`), les requêtes autres que GET ni les autres origines.
  * Les saisies hors-ligne passent par la file IndexedDB de l'app, pas par ce worker.
+ *
+ * En développement (`/sw.js?dev=1`), le code change sans que les pages changent d'adresse et une page peut mettre
+ * plus de 4 s à compiler : les pages attendent le réseau sans délai, et `/_next/static` passe par le réseau d'abord.
+ * Le cache ne sert alors que hors-ligne ; sans cela, une page en cache rechargeait l'ancien JS de l'app.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
+const DEV = new URL(self.location.href).searchParams.has('dev');
 const PAGES = `greenu-pages-${VERSION}`;
 const STATIC = `greenu-static-${VERSION}`;
 const OFFLINE_URL = '/hors-ligne';
@@ -51,7 +56,7 @@ function withTimeout(promise, ms) {
 async function page(request) {
   const cache = await caches.open(PAGES);
   try {
-    const response = await withTimeout(fetch(request), NETWORK_TIMEOUT_MS);
+    const response = await (DEV ? fetch(request) : withTimeout(fetch(request), NETWORK_TIMEOUT_MS));
     const url = new URL(response.url || request.url);
     // Session terminée (renvoi vers la connexion) : les pages authentifiées en cache ne doivent plus servir.
     if (url.pathname.startsWith('/connexion')) {
@@ -71,6 +76,16 @@ async function asset(event) {
   const { request } = event;
   const cache = await caches.open(STATIC);
   const hit = await cache.match(request);
+  if (DEV && isImmutable(new URL(request.url))) {
+    // Développement : le réseau d'abord, le cache seulement hors-ligne.
+    try {
+      const response = await fetch(request);
+      if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
+      return response;
+    } catch {
+      return hit ?? Response.error();
+    }
+  }
   const refresh = fetch(request).then(async (response) => {
     if (response.ok && response.type === 'basic') await cache.put(request, response.clone());
     return response;

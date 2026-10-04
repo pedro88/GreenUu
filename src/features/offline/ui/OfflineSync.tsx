@@ -29,7 +29,8 @@ function useServiceWorker() {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => { send(batch); batch = []; }, 1000);
     });
-    void navigator.serviceWorker.register('/sw.js').then(() => navigator.serviceWorker.ready).then((r) => {
+    // En développement, le worker ne sert l'ancien code que hors-ligne (voir `public/sw.js`).
+    void navigator.serviceWorker.register(process.env.NODE_ENV === 'development' ? '/sw.js?dev=1' : '/sw.js').then(() => navigator.serviceWorker.ready).then((r) => {
       reg = r;
       send(performance.getEntriesByType('resource').map((e) => e.name));
       observer?.observe({ type: 'resource' });

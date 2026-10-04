@@ -5,8 +5,8 @@ import { login } from './helpers';
 
 const TILLEULS = gardenId('tilleuls');
 /** Caches du service worker (`public/sw.js`, VERSION). */
-const PAGES = 'greenu-pages-v2';
-const STATIC = 'greenu-static-v2';
+const PAGES = 'greenu-pages-v3';
+const STATIC = 'greenu-static-v3';
 
 /**
  * Le service worker est actif et a mis en cache la page courante (OFF-01 : chargée une seule fois). Il ne contrôle la
