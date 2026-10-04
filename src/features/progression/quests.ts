@@ -91,6 +91,15 @@ export async function questsOnEvent(tx: Executor, e: EmittedEvent) {
   await complete(tx, open.filter((q) => q.progress >= q.target), e.occurredAt);
 }
 
+/**
+ * Quêtes ouvertes, en lecture seule (POL-06 : la génération passe par le job `quests.generate`). Pour traduire les titres
+ * (POL-05), chaque quête porte de quoi les recomposer dans la langue de l'interface : le ticket source (titre saisi, ou
+ * clé traduisible d'un ticket d'étape) et les noms de l'espèce dans toutes les langues.
+ */
 export async function questsOf(tx: Executor, userId: string) {
-  return tx.select().from(quest).where(and(eq(quest.userId, userId), eq(quest.status, 'open'))).orderBy(quest.kind, quest.periodEnd).limit(30);
+  return tx.select({
+    id: quest.id, kind: quest.kind, titleKey: quest.titleKey, titleParams: quest.titleParams, target: quest.target, progress: quest.progress,
+    ticket: { title: ticket.title, titleKey: ticket.titleKey, titleParams: ticket.titleParams }, speciesNames: species.commonNames,
+  }).from(quest).leftJoin(ticket, eq(ticket.id, quest.ticketId)).leftJoin(culture, eq(culture.id, quest.cultureId)).leftJoin(species, eq(species.id, culture.speciesId))
+    .where(and(eq(quest.userId, userId), eq(quest.status, 'open'))).orderBy(quest.kind, quest.periodEnd).limit(30);
 }

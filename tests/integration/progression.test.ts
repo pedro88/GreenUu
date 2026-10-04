@@ -1,10 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { and, eq, sql } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { createCulture, deleteCulture, recordStage } from '../../src/features/culture/service';
 import { recordHarvest } from '../../src/features/harvest/service';
 import { exportEntries } from '../../src/features/privacy/service';
 import { createGoal, goalsOf, leaderboard, setLeaderboard, setLeaderboardOptOut } from '../../src/features/progression/collective';
-import { generateQuests } from '../../src/features/progression/quests';
+import { generateQuests, questsOf } from '../../src/features/progression/quests';
 import { enrich, progressOf, recomputeXp, xpForSubject } from '../../src/features/progression/service';
 import { createTicket, transitionTicket } from '../../src/features/ticket/commands';
 import { fixedClock } from '../../src/server/clock';
@@ -12,7 +13,7 @@ import type { Tx } from '../../src/server/db/client';
 import type { EmittedEvent } from '../../src/server/events/emit';
 import { domainEvent, notification, quest, species, user, userAchievement, userProfile, xpLedgerEntry } from '../../src/server/db/schema';
 import type { Actor } from '../../src/server/action-core';
-import { addMember, makeGarden, makeGroup, makeZone, speciesRefId } from './fixtures';
+import { addMember, makeGarden, makeGroup, makeZone, memberIdOf, speciesRefId } from './fixtures';
 import { memoryStorage } from './files';
 import { inTx, makeUser, NOW, scopedCtx } from './helpers';
 
@@ -152,6 +153,26 @@ describe('quêtes', () => {
     }));
 });
 
+describe('lecture des quêtes', () => {
+  it('[POL-06] ouvrir /app/profil/quetes n\'écrit rien : la page lit les quêtes, le job les génère', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const gardenId = await makeGarden(tx, alice);
+      const ctx = await scopedCtx(tx, alice, gardenId);
+      await createTicket(ctx, { gardenId, type: 'task', title: 'Pailler les fraisiers', priority: 'high', checklist: [], memberIds: [await memberIdOf(tx, gardenId, alice.id)], groupIds: [], dueOn: '2026-06-15' });
+      await generateQuests(tx, alice.id, NOW);
+      const before = await tx.select().from(quest).where(eq(quest.userId, alice.id));
+      expect(before.length).toBeGreaterThan(0);
+      // Toute écriture échouerait désormais : la lecture des quêtes passe deux fois sans erreur.
+      await tx.execute(sql`set transaction read only`);
+      await questsOf(tx, alice.id);
+      await questsOf(tx, alice.id);
+      expect(await tx.select().from(quest).where(eq(quest.userId, alice.id))).toEqual(before);
+      // La page n'appelle plus la génération (seul le job quests.generate le fait).
+      expect(readFileSync('src/app/app/profil/quetes/page.tsx', 'utf8')).not.toContain('generateQuests');
+    }));
+});
+
 describe('progression collective', () => {
   it('[COL-02] le classement activé par un admin exclut le membre qui s\'en retire', () =>
     inTx(async (tx) => {
@@ -162,12 +183,30 @@ describe('progression collective', () => {
       await addMember(tx, gardenId, emma, 'member');
       await addMember(tx, gardenId, david, 'member');
       const scope = (await scopedCtx(tx, bruno, gardenId)).scope;
-      expect(await leaderboard(tx, scope)).toBeNull();
+      expect(await leaderboard(tx, scope, NOW)).toBeNull();
       await setLeaderboard(await scopedCtx(tx, bruno, gardenId), true);
       await setLeaderboardOptOut(tx, emma.id, true);
-      const board = await leaderboard(tx, scope);
+      const board = await leaderboard(tx, scope, NOW);
       expect(board?.map((r) => r.userId).sort()).toEqual([bruno.id, david.id].sort());
       await expect(setLeaderboard(await scopedCtx(tx, emma, gardenId), false)).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    }));
+
+  it('[POL-04] le classement porte sur l\'XP du mois en cours, à l\'heure du jardin', () =>
+    inTx(async (tx) => {
+      const bruno = await makeUser(tx);
+      const emma = await makeUser(tx);
+      const gardenId = await makeGarden(tx, bruno, { orgType: 'collective' });
+      await addMember(tx, gardenId, emma, 'member');
+      await setLeaderboard(await scopedCtx(tx, bruno, gardenId), true);
+      const award = (userId: string, amount: number, at: string) => tx.insert(xpLedgerEntry).values({ userId, gardenId, actionCode: 'harvest.recorded', amount, reason: 'award', idempotencyKey: `test:${userId}:${at}`, localDay: at.slice(0, 10), rulesVersion: 1, createdAt: new Date(at) });
+      // Bruno a beaucoup gagné en mai ; Emma un peu en juin (NOW = 15 juin 2026).
+      await award(bruno.id, 500, '2026-05-20T10:00:00+02:00');
+      await award(bruno.id, 5, '2026-06-02T10:00:00+02:00');
+      await award(emma.id, 40, '2026-06-10T10:00:00+02:00');
+      // Le 31 mai à 23 h 30 à Bruxelles (UTC 21 h 30) compte encore pour mai.
+      await award(emma.id, 1000, '2026-05-31T23:30:00+02:00');
+      const board = await leaderboard(tx, (await scopedCtx(tx, bruno, gardenId)).scope, NOW);
+      expect(board?.map((r) => [r.userId, r.xp])).toEqual([[emma.id, 40], [bruno.id, 5]]);
     }));
 
   it('[COL-03] un objectif « 30 tickets terminés en juin » pour Équipe serre affiche 12 / 30', () =>

@@ -1,5 +1,6 @@
 import { and, asc, eq, gte, inArray, isNull, lte, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
+import { localDate } from '@/lib/dates';
 import { forbidden, validation } from '@/lib/errors';
 import type { GoalMetric } from '@/lib/enums';
 import type { ScopedCtx } from '@/server/action-core';
@@ -25,11 +26,16 @@ export async function contributions(tx: Executor, scope: Scope, p: Period) {
   return members.map((m) => ({ ...m, tickets: tickets.get(m.userId) ?? 0, observations: obs.get(m.userId) ?? 0, harvests: harv.get(m.userId) ?? 0, results: res.get(m.userId) ?? 0 }));
 }
 
-/** Classement par XP du jardin, si un admin l'a activé ; les membres qui s'en excluent n'y figurent pas (COL-02). */
-export async function leaderboard(tx: Executor, scope: Scope) {
-  const [g] = await tx.select({ on: garden.leaderboardEnabled }).from(garden).where(eq(garden.id, scope.gardenId)).limit(1);
+/**
+ * Classement par XP du jardin, si un admin l'a activé ; les membres qui s'en excluent n'y figurent pas (COL-02). Il porte
+ * sur l'XP du mois en cours, à l'heure du jardin (§17 Q-15, POL-04) : un nouveau membre peut y figurer.
+ */
+export async function leaderboard(tx: Executor, scope: Scope, now: Date) {
+  const [g] = await tx.select({ on: garden.leaderboardEnabled, tz: garden.timezone }).from(garden).where(eq(garden.id, scope.gardenId)).limit(1);
   if (!g?.on) return null;
-  return tx.select({ userId: gardenMember.userId, pseudo: userProfile.pseudo, xp: sql<number>`coalesce((select sum(l.amount) from ${xpLedgerEntry} l where l.user_id = ${gardenMember.userId} and l.garden_id = ${scope.gardenId}), 0)::int` })
+  const monthStart = `${localDate(now, g.tz).slice(0, 7)}-01`;
+  return tx.select({ userId: gardenMember.userId, pseudo: userProfile.pseudo, xp: sql<number>`coalesce((select sum(l.amount) from ${xpLedgerEntry} l where l.user_id = ${gardenMember.userId} and l.garden_id = ${scope.gardenId}
+      and (l.created_at at time zone ${g.tz})::date >= ${monthStart}::date and l.created_at <= ${now.toISOString()}::timestamptz), 0)::int` })
     .from(gardenMember).innerJoin(userProfile, eq(userProfile.userId, gardenMember.userId))
     .where(and(eq(gardenMember.gardenId, scope.gardenId), isNull(gardenMember.leftAt), eq(userProfile.leaderboardOptOut, false)))
     .orderBy(sql`3 desc`, asc(userProfile.pseudo)).limit(200);

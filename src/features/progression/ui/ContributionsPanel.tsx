@@ -12,7 +12,7 @@ import styles from './Contributions.module.scss';
 export async function ContributionsPanel({ tx, scope, now, timezone, groups }: { tx: Executor; scope: Scope; now: Date; timezone: string; groups: { id: string; name: string }[] }) {
   const t = await getTranslations('collective');
   const period = { from: new Date(now.getTime() - 30 * 86_400_000), to: now };
-  const [rows, goals, board, xp] = await Promise.all([contributions(tx, scope, period), goalsOf(tx, scope), leaderboard(tx, scope), gardenXp(tx, scope.gardenId)]);
+  const [rows, goals, board, xp] = await Promise.all([contributions(tx, scope, period), goalsOf(tx, scope), leaderboard(tx, scope, now), gardenXp(tx, scope.gardenId)]);
   return (
     <Stack gap="lg">
       <Card>

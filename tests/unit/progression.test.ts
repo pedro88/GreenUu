@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate, rotationStreak } from '@/features/progression/achievements.pure';
-import { astronomicalSeason, pickDaily, seasonalTemplates, type TaskCandidate, weekBounds } from '@/features/progression/quests.pure';
+import { astronomicalSeason, pickDaily, questTitleParams, seasonalTemplates, type TaskCandidate, weekBounds } from '@/features/progression/quests.pure';
 import { applyRules, candidatesFor, emptyHistory, levelOf, project, reversalsFor, score, type XpEvent } from '@/features/progression/rules.pure';
 
 const AT = new Date('2026-06-17T10:00:00Z');
@@ -185,5 +185,22 @@ describe('bornes de semaine (D3, audit e2e du lot 6)', () => {
     expect(weekBounds('2027-01-01')).toEqual({ start: '2026-12-28', end: '2027-01-03' });
     expect(weekBounds('2026-12-28')).toEqual({ start: '2026-12-28', end: '2027-01-03' });
     expect(weekBounds('2027-01-04')).toEqual({ start: '2027-01-04', end: '2027-01-10' });
+  });
+});
+
+describe('titres des quêtes traduits (§12.10)', () => {
+  const tomate = { fr: ['Tomate'], en: ['Tomato'] };
+  it('[POL-05] le nom de l\'espèce et le titre du ticket source suivent la langue de l\'interface', () => {
+    const weekly = { titleKey: 'stage_sowing', titleParams: { label: 'Tomate' }, ticket: null, speciesNames: tomate };
+    expect(questTitleParams(weekly, 'en', () => '')).toEqual({ label: 'Tomato' });
+    expect(questTitleParams(weekly, 'fr', () => '')).toEqual({ label: 'Tomate' });
+    // Espèce sans nom anglais : le français sert de repli.
+    expect(questTitleParams({ ...weekly, speciesNames: { fr: ['Panais'] } }, 'en', () => '')).toEqual({ label: 'Panais' });
+    // Ticket d'étape : son titre est une clé traduisible, résolue par l'interface.
+    const daily = { titleKey: 'ticket', titleParams: { title: 'Semer : Tomate' }, speciesNames: null,
+      ticket: { title: 'Semer : Tomate', titleKey: 'stageTicket.sowing', titleParams: { label: 'Tomate' } } };
+    expect(questTitleParams(daily, 'en', (t) => `[${t.titleKey ?? t.title}]`)).toEqual({ title: '[stageTicket.sowing]' });
+    // Ticket supprimé : les paramètres enregistrés servent de repli.
+    expect(questTitleParams({ ...daily, ticket: null }, 'en', () => 'x')).toEqual({ title: 'Semer : Tomate' });
   });
 });

@@ -15,6 +15,7 @@ import { loadReferenceData } from '../src/features/plant/reference/load';
 import { closeOldSeasons, seedCultures } from './seed-cultures';
 import { seedCommunity, seedOwnResults } from './seed-community';
 import { awardAchievements } from '../src/features/progression/achievements';
+import { generateQuests } from '../src/features/progression/quests';
 import { recomputeXp } from '../src/features/progression/service';
 import { seedContent } from './seed-content';
 import { seedTickets } from './seed-tickets';
@@ -224,6 +225,8 @@ export async function seed(db: Db, referenceDate: Date): Promise<void> {
     // Progression (SPEC §14) : les événements historiques sont rejoués par le recalcul, puis les succès évalués.
     await recomputeXp(tx, { apply: true, now: referenceDate });
     for (const u of SEED_USERS) await awardAchievements(tx, userId(u.key), null, referenceDate);
+    // Quêtes de la période, comme les génère le job `quests.generate` : la page des quêtes ne fait que les lire (POL-06).
+    for (const u of SEED_USERS) await generateQuests(tx, userId(u.key), referenceDate);
     // Vérification d'intégrité minimale : un owner par jardin.
     for (const g of SEED_GARDENS) {
       const owners = await tx.select().from(gardenMember).where(eq(gardenMember.id, seedId(`member:${g.key}:${g.owner}`)));

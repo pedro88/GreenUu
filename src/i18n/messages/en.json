@@ -1411,7 +1411,7 @@
     "observations": "Observations",
     "harvests": "Récoltes",
     "results": "Bilans",
-    "leaderboard": "Classement",
+    "leaderboard": "This month’s ranking (XP earned this month)",
     "leaderboardEnable": "Activer le classement",
     "leaderboardDisable": "Désactiver le classement",
     "goals": "Objectifs collectifs",

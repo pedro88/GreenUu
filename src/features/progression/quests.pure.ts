@@ -63,3 +63,24 @@ export function weekBounds(date: string): { start: string; end: string } {
   const end = new Date(start.getTime() + 6 * 86_400_000);
   return { start: start.toISOString().slice(0, 10), end: end.toISOString().slice(0, 10) };
 }
+
+type LocalizedNames = { fr: string[]; en?: string[] | undefined };
+export type QuestTitleSource = {
+  titleKey: string;
+  titleParams: Record<string, string | number> | null;
+  ticket: { title: string; titleKey: string | null; titleParams: Record<string, string> | null } | null;
+  speciesNames: LocalizedNames | null;
+};
+
+/**
+ * Paramètres du titre d'une quête dans la langue de l'interface (POL-05) : le titre du ticket source (traduit si c'est
+ * un ticket d'étape, sinon tel que saisi) et le nom de l'espèce dans la langue demandée, à défaut en français. Les
+ * paramètres enregistrés servent de repli (ticket ou culture supprimés).
+ */
+export function questTitleParams(q: QuestTitleSource, locale: 'fr' | 'en', ticketTitle: (t: NonNullable<QuestTitleSource['ticket']>) => string): Record<string, string | number> {
+  const params = { ...(q.titleParams ?? {}) };
+  if (q.titleKey === 'ticket' && q.ticket) params.title = ticketTitle(q.ticket);
+  const name = q.speciesNames ? (q.speciesNames[locale]?.[0] ?? q.speciesNames.fr[0]) : undefined;
+  if (name && 'label' in params) params.label = name;
+  return params;
+}
