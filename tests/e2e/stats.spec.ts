@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { E2E_YEAR, topSpeciesKgByYear } from './db';
 import { gardenId } from './ids';
@@ -25,5 +26,17 @@ test.describe('statistiques', () => {
     await expect(page.getByTestId('stats-zones').locator('tbody tr').first()).toBeVisible();
     // Le propriétaire peut exporter ; le bouton est là.
     await expect(page.getByTestId('stats-export')).toBeVisible();
+  });
+
+  test('la propriétaire télécharge l\'export CSV des statistiques (E2E-STAT-07b)', async ({ page }) => {
+    await login(page, 'alice');
+    await page.goto(`/app/jardins/${TILLEULS}/statistiques`);
+    const [download] = await Promise.all([page.waitForEvent('download'), page.getByTestId('stats-export').click()]);
+    expect(download.suggestedFilename()).toBe('statistiques-les-tilleuls.csv');
+    const content = readFileSync((await download.path()) ?? '', 'utf8');
+    // BOM UTF-8 (accents lisibles dans les tableurs), en-tête, puis au moins une ligne de la saison en cours.
+    expect(content.charCodeAt(0)).toBe(0xfeff);
+    expect(content.slice(1).split('\n')[0]).toBe('saison;espece;zone;kg;kg_m2;recoltes;autres_unites');
+    expect(content).toMatch(new RegExp(`\\n${E2E_YEAR};`));
   });
 });
