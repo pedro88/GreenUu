@@ -142,7 +142,10 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       if (seasonLoading !== season) return;
       loadedSeason = season;
       seasonLoading = null;
-      if (snapshot) redraw(snapshot);
+      // Nouvelles textures : tout est redessiné, même instantané compris.
+      const current = snapshot;
+      snapshot = null;
+      if (current) redraw(current);
       onAvatarReady?.();
     });
   }
@@ -348,6 +351,20 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   }
 
   function redraw(s: SceneSnapshot) {
+    const prev = snapshot;
+    // Seules les cases ont changé (aperçu du pinceau, gomme) : on ne redessine que le terrain, et le fond si l'emprise
+    // de la scène a bougé (audit jardin vivant, M3). Les autres calques gardent leurs sprites.
+    if (prev && prev.zones === s.zones && prev.decor === s.decor && prev.cultures === s.cultures && prev.avatars === s.avatars && prev.tileSizeCm === s.tileSizeCm
+      && prev.sceneZoneId === s.sceneZoneId && prev.ambient.season === s.ambient.season) {
+      snapshot = s;
+      if (prev.bounds.w !== s.bounds.w || prev.bounds.h !== s.bounds.h) {
+        drawGround(s);
+        drawGrid(s);
+      }
+      if (prev.terrain !== s.terrain) drawTerrain(s);
+      drawTint(s);
+      return;
+    }
     snapshot = s;
     scale = TILE_PX / s.tileSizeCm;
     ensureSeason(s.ambient.season);

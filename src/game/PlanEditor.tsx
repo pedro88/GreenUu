@@ -38,6 +38,10 @@ const AUTOSAVE_MS = 1500;
 type ZoneTypeOption = { id: string; code: string; label: string; isCustom: boolean; hasInteriorDefault: boolean; canHostCultures: boolean };
 type Status = 'saved' | 'pending' | 'saving' | 'conflict' | 'error';
 
+/** Pas de cultures ni d'avatars dans l'éditeur : références stables, pour que le moteur ne redessine que ce qui change. */
+const NO_CULTURES: SceneSnapshot['cultures'] = [];
+const NO_AVATARS: SceneSnapshot['avatars'] = [];
+
 const baseOf = (s: SceneSnapshot): EditorScene => ({ tileSizeCm: s.tileSizeCm, zones: s.zones, terrain: s.terrain, decor: s.decor });
 let tmpSeq = 0;
 const tmpId = () => `${TMP_PREFIX}${Date.now().toString(36)}${(tmpSeq += 1)}`;
@@ -66,7 +70,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
   const router = useRouter();
   const types = useMemo(() => new Map<string, ZoneTypeInfo>(zoneTypes.map((z) => [z.id, { id: z.id, code: z.code, label: typeLabel(z), canHostCultures: z.canHostCultures, hasInteriorDefault: z.hasInteriorDefault }])), [zoneTypes]); // eslint-disable-line react-hooks/exhaustive-deps
   const history = useMemo(() => createHistoryStore(baseOf(snapshot), snapshot.planVersion, types), []); // eslint-disable-line react-hooks/exhaustive-deps
-  const stores = useMemo<GameStores>(() => ({ scene: createSceneStore({ ...snapshot, cultures: [], avatars: [] }), camera: createCameraStore(), selection: createSelectionStore(), draft: createDraftStore() }), []); // eslint-disable-line react-hooks/exhaustive-deps
+  const stores = useMemo<GameStores>(() => ({ scene: createSceneStore({ ...snapshot, cultures: NO_CULTURES, avatars: NO_AVATARS }), camera: createCameraStore(), selection: createSelectionStore(), draft: createDraftStore() }), []); // eslint-disable-line react-hooks/exhaustive-deps
   const current = useStore(history, (h) => h.current);
   const done = useStore(history, (h) => h.done);
   const undone = useStore(history, (h) => h.undone);
@@ -109,7 +113,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
   useEffect(() => history.subscribe((h) => {
     const cells = cellsRect(h.current.terrain, h.current.tileSizeCm);
     const rects = [...h.current.zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...(cells ? [cells] : []), ...h.current.decor.map((d) => decorRect(d, h.current.tileSizeCm))];
-    stores.scene.getState().setSnapshot({ ...snapshot, tileSizeCm: h.current.tileSizeCm, zones: h.current.zones, terrain: h.current.terrain, decor: h.current.decor, cultures: [], avatars: [], bounds: sceneBounds(rects, h.current.tileSizeCm) });
+    stores.scene.getState().setSnapshot({ ...snapshot, tileSizeCm: h.current.tileSizeCm, zones: h.current.zones, terrain: h.current.terrain, decor: h.current.decor, cultures: NO_CULTURES, avatars: NO_AVATARS, bounds: sceneBounds(rects, h.current.tileSizeCm) });
   }), [history, stores, snapshot]);
 
 
