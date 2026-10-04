@@ -10,7 +10,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogActions, DialogClose } from '@/components/ui/Dialog';
 import { Field, NativeSelect, TextInput } from '@/components/ui/Field';
-import { deduceParent, sceneBounds, TILE_PX, TILE_SIZES_CM, tileAt, tilesToGeometry, type Tile } from '@/features/scene/grid.pure';
+import { decorRect, deduceParent, sceneBounds, TILE_PX, TILE_SIZES_CM, tileAt, tilesToGeometry, type Tile } from '@/features/scene/grid.pure';
 import { replay, validateLocal, type EditorScene, type LocalIssue, type ZoneTypeInfo } from '@/features/scene/plan.pure';
 import { TMP_PREFIX, type PlanCommand } from '@/features/scene/plan.schema';
 import { applyPlanCommandsAction } from '@/features/scene/actions';
@@ -101,7 +101,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
 
   // L'état local (base + commandes non confirmées) alimente le canvas comme un instantané.
   useEffect(() => history.subscribe((h) => {
-    const rects = [...h.current.zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...h.current.terrain.map((x) => x.geometry)];
+    const rects = [...h.current.zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...h.current.terrain.map((x) => x.geometry), ...h.current.decor.map((d) => decorRect(d, h.current.tileSizeCm))];
     stores.scene.getState().setSnapshot({ ...snapshot, tileSizeCm: h.current.tileSizeCm, zones: h.current.zones, terrain: h.current.terrain, decor: h.current.decor, cultures: [], avatars: [], bounds: sceneBounds(rects, h.current.tileSizeCm) });
   }), [history, stores, snapshot]);
 

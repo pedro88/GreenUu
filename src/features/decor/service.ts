@@ -1,9 +1,11 @@
-import { and, eq, inArray, isNull } from 'drizzle-orm';
+import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import { conflict, DomainError, forbidden, notFound, validation } from '@/lib/errors';
 import type { ScopedCtx } from '@/server/action-core';
 import { can } from '@/server/authz/scope';
 import type { Executor } from '@/server/db/client';
-import { decorItem, decorPlacement, practice, practiceDeclaration } from '@/server/db/schema';
+import { decorItem, decorPlacement, practice, practiceDeclaration, terrainElement, zone } from '@/server/db/schema';
+import { MAX_DECOR_OUTSIDE_CM } from '../scene/grid.pure';
 import { emit } from '@/server/events/emit';
 import { unlockFactsOf } from '../progression/unlock';
 import { isUnlocked, type UnlockFacts } from '../progression/unlock.pure';
@@ -34,12 +36,34 @@ function assertCanPlace(c: ScopedCtx) {
   if (!can(c.scope, 'decor:place')) throw forbidden();
 }
 
+/**
+ * POL-02 : un objet reste à moins de 100 m du bord de la scène (zones placées, terrain et autres objets), sinon il
+ * sortirait du plan dessiné et du cadrage. Les zones créées plus tôt dans le même lot comptent déjà.
+ */
+async function assertNearScene(c: ScopedCtx, sceneZoneId: string | null, x: number, y: number, exceptId?: string) {
+  const scene = (col: AnyPgColumn) => (sceneZoneId ? sql`${col} = ${sceneZoneId}` : sql`${col} is null`);
+  const rows = await c.tx.execute<{ mx: number | null; my: number | null }>(sql`
+    select max(mx)::int as mx, max(my)::int as my from (
+      select (${zone.geometry}->>'x')::int + (${zone.geometry}->>'w')::int as mx, (${zone.geometry}->>'y')::int + (${zone.geometry}->>'h')::int as my
+        from ${zone} where ${zone.gardenId} = ${c.scope.gardenId} and ${zone.archivedAt} is null and ${zone.geometry} is not null and ${scene(zone.sceneZoneId)}
+      union all
+      select (${terrainElement.geometry}->>'x')::int + (${terrainElement.geometry}->>'w')::int, (${terrainElement.geometry}->>'y')::int + (${terrainElement.geometry}->>'h')::int
+        from ${terrainElement} where ${terrainElement.gardenId} = ${c.scope.gardenId} and ${scene(terrainElement.sceneZoneId)}
+      union all
+      select ${decorPlacement.xCm}, ${decorPlacement.yCm} from ${decorPlacement}
+        where ${decorPlacement.gardenId} = ${c.scope.gardenId} and ${scene(decorPlacement.sceneZoneId)} ${exceptId ? sql`and ${decorPlacement.id} <> ${exceptId}` : sql``}
+    ) e`);
+  const [e] = [...rows];
+  if (x > (e?.mx ?? 0) + MAX_DECOR_OUTSIDE_CM || y > (e?.my ?? 0) + MAX_DECOR_OUTSIDE_CM) throw validation({ position: ['outsideScene'] });
+}
+
 export async function placeDecor(c: ScopedCtx, sceneZoneId: string | null, cmd: { itemCode: string; x: number; y: number; label: string | null }, facts: FactsLoader) {
   assertCanPlace(c);
   const [item] = await c.tx.select().from(decorItem).where(eq(decorItem.code, cmd.itemCode)).limit(1);
   if (!item) throw validation({ itemCode: ['unknownItem'] });
   // Revalidé au moment du geste, d'après la progression de l'utilisateur (DEC-02).
   if (!isUnlocked(item.unlockCondition, await facts())) throw new DomainError('LOCKED_ITEM', 'lockedItem', { items: [item.code] });
+  await assertNearScene(c, sceneZoneId, cmd.x, cmd.y);
   const [row] = await c.tx.insert(decorPlacement).values({ gardenId: c.scope.gardenId, sceneZoneId, decorItemId: item.id, xCm: cmd.x, yCm: cmd.y, label: cmd.label, placedBy: c.actor.id })
     .returning({ id: decorPlacement.id });
   if (!row) throw notFound();
@@ -57,6 +81,7 @@ async function placementIn(c: ScopedCtx, id: string, sceneZoneId: string | null)
 export async function moveDecor(c: ScopedCtx, sceneZoneId: string | null, id: string, x: number, y: number) {
   assertCanPlace(c);
   const p = await placementIn(c, id, sceneZoneId);
+  await assertNearScene(c, sceneZoneId, x, y, p.id);
   await c.tx.update(decorPlacement).set({ xCm: x, yCm: y }).where(eq(decorPlacement.id, p.id));
   await emit(c.tx, { type: 'decor.moved', subjectType: 'decor', subjectId: p.id, gardenId: c.scope.gardenId, actorId: c.actor.id, payload: { itemCode: p.itemCode } }, c.clock.now());
 }

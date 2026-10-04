@@ -125,7 +125,8 @@
     "invalidRrule": "Récurrence non prise en charge.",
     "assigneeInvalid": "Personne non assignable (membre actif, non observateur).",
     "invalidTransition": "Changement de statut impossible.",
-    "checklistFull": "50 éléments au maximum."
+    "checklistFull": "50 éléments au maximum.",
+    "outsideScene": "Too far from the plan (more than 100 m from its edge)."
   },
   "errors": {
     "unsubscribeInvalid": "Ce lien de désinscription n'est pas valide.",

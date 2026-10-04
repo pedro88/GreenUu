@@ -59,3 +59,11 @@ export function sceneBounds(rects: RectGeometry[], tileCm: number, min = { w: 20
 export function spotsBelow(rect: RectGeometry, count: number): { x: number; y: number }[] {
   return Array.from({ length: Math.max(0, count) }, (_, i) => ({ x: Math.round(rect.x + ((i + 1) * rect.w) / (count + 1)), y: rect.y + rect.h }));
 }
+
+/** Distance maximale entre un objet de déco et le bord de la scène (zones, terrain, déco), en centimètres (POL-02). */
+export const MAX_DECOR_OUTSIDE_CM = 10_000;
+
+/** Emprise d'un objet de déco : pied au bas centre, `w` × `h` tuiles à l'échelle courante. */
+export function decorRect(d: { x: number; y: number; w: number; h: number }, tileCm: number): RectGeometry {
+  return { v: 1, kind: 'rect', x: Math.max(0, Math.round(d.x - (d.w * tileCm) / 2)), y: Math.max(0, d.y - d.h * tileCm), w: d.w * tileCm, h: d.h * tileCm };
+}

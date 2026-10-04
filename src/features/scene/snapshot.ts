@@ -11,7 +11,7 @@ import type { RectGeometry } from '../zone/tree';
 import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
 import { sceneAvatars } from './avatars';
-import { layoutInRect, sceneBounds } from './grid.pure';
+import { decorRect, layoutInRect, sceneBounds } from './grid.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
 import { familyKey } from '@/game/manifest';
@@ -58,7 +58,7 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
   const [prof] = await tx.select({ reducedMotion: userProfile.reducedMotion }).from(userProfile).where(eq(userProfile.userId, opts.userId)).limit(1);
   const decor = await sceneDecor(tx, scope.gardenId, opts.sceneZoneId);
   const avatars = await sceneAvatars(tx, { gardenId: scope.gardenId, orgType: g.orgType, sceneZoneId: opts.sceneZoneId, now: opts.now, byId });
-  const rects = [...zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...terrain.map((t) => t.geometry)];
+  const rects = [...zones.flatMap((z) => (z.geometry ? [z.geometry] : [])), ...terrain.map((t) => t.geometry), ...decor.map((d) => decorRect(d, g.tileSizeCm))];
   const ambient = ambientFilter(opts.now, g);
 
   return sceneSnapshotSchema.parse({

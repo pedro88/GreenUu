@@ -118,6 +118,23 @@ describe('décoration (§9.7, §4.2.6)', () => {
     }));
 });
 
+describe('déco et emprise de la scène (§12.10)', () => {
+  it('[POL-02] un objet posé hors des zones entre dans l\'emprise de la scène ; au-delà de 100 m du bord, il est refusé', () =>
+    inTx(async (tx) => {
+      const alice = await makeUser(tx);
+      const { gardenId, ctx } = await setup(tx, alice);
+      // Le Potager s'arrête à x = 1000 cm, y = 600 cm ; un banc à 30 m de là reste accepté et élargit la scène.
+      const r = await applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: await version(tx, gardenId), commands: [cmd({ op: 'placeDecor', clientId: 'tmp:loin', itemCode: 'bench', x: 4000, y: 500 })] });
+      const snap = await sceneSnapshot(tx, ctx.scope, { userId: alice.id, sceneZoneId: null, now: NOW });
+      expect(snap.bounds.w).toBeGreaterThan(4000);
+      // Au-delà de 100 m du bord (objets compris), refusé, déplacement compris.
+      await expect(applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: r.planVersion, commands: [cmd({ op: 'placeDecor', clientId: 'tmp:trop', itemCode: 'bench', x: 4000 + 10_001, y: 500 })] }))
+        .rejects.toMatchObject({ code: 'VALIDATION', fieldErrors: { position: ['outsideScene'] } });
+      await expect(applyPlanCommands(ctx, { gardenId, sceneZoneId: null, baseVersion: r.planVersion, commands: [cmd({ op: 'moveDecor', decorId: r.ids['tmp:loin'] ?? '', x: 500, y: 600 + 10_001 })] }))
+        .rejects.toMatchObject({ code: 'VALIDATION' });
+    }));
+});
+
 describe('pratiques déclarées par la déco : refus (§5.2, audit e2e lot 8 E1)', () => {
   it('[DEC-03] un membre et un observateur ne déclarent pas de pratique, ni ne la retirent avec l\'objet ; une pratique déjà déclarée donne CONFLICT', () =>
     inTx(async (tx) => {
