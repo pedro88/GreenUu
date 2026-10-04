@@ -199,4 +199,21 @@ test.describe('hors-ligne', () => {
     expect(await journalCountByBody(body)).toBe(1);
   });
 
+  test('après une session expirée, aucune page authentifiée n\'est plus servie depuis le cache de l\'appareil (E2E-OFF-09)', async ({ page, context }) => {
+    await login(page, 'alice');
+    const cultureId = await culturePage(page);
+    await swReady(page);
+    const url = `/app/jardins/${TILLEULS}/cultures/${cultureId}`;
+    // Session perdue sans déconnexion (cookie expiré, révoqué ailleurs) : la navigation est renvoyée vers la connexion.
+    await context.clearCookies();
+    await page.goto(url);
+    await expect(page).toHaveURL(/\/connexion/);
+    await expect.poll(() => page.evaluate(async (name) => (await (await caches.open(name)).keys()).map((r) => new URL(r.url).pathname), PAGES)).toEqual(['/hors-ligne']);
+    // Hors-ligne, la page de culture n'est plus disponible : la page hors-ligne, sans aucune donnée du jardin.
+    await context.setOffline(true);
+    await page.goto(url).catch(() => undefined);
+    await expect(page.getByRole('heading', { level: 1, name: 'Hors ligne' })).toBeVisible();
+    await expect(page.locator('body')).not.toContainText('Tilleuls');
+    await context.setOffline(false);
+  });
 });
