@@ -18,7 +18,7 @@ const APP = [
   `/app/jardins/${gardenId('canal')}/recommandations`, '/app/parametres/confidentialite',
   '/app/profil', '/app/profil/xp', '/app/profil/succes', '/app/profil/quetes', `/app/jardins/${gardenId('canal')}/membres?onglet=contributions`,
   `/app/jardins/${gardenId('canal')}?vue=classique`, `/app/jardins/${gardenId('canal')}/plan`, `/app/jardins/${gardenId('canal')}?vue=jardin&scene=${zoneId('canal', 'serre')}`, '/app/parametres/affichage',
-  '/app/profil/avatar', `/app/jardins/${gardenId('canal')}/progression`, `/app/jardins/${gardenId('canal')}?vue=jardin`,
+  '/app/profil/avatar', `/app/jardins/${gardenId('canal')}/progression`, `/app/jardins/${gardenId('tilleuls')}/statistiques`, `/app/jardins/${gardenId('canal')}?vue=jardin`,
 ];
 
 async function audit(page: Page, path: string) {

@@ -15,7 +15,7 @@ test.describe('contrôle d\'accès par URL directe', () => {
   test('[AUTHZ-01] un non-membre voit la page 403 sur chaque page du jardin, sans aucune donnée', async ({ page }) => {
     const ticketId = await ticketIdByTitle(CANAL, TICKET);
     await login(page, 'hugo');
-    for (const path of ['', '/plan', '/progression', '/zones', '/membres', '/parametres', '/cultures', '/saisons', '/tickets', `/tickets/${ticketId}`]) {
+    for (const path of ['', '/plan', '/progression', '/statistiques', '/zones', '/membres', '/parametres', '/cultures', '/saisons', '/tickets', `/tickets/${ticketId}`]) {
       await page.goto(`/app/jardins/${CANAL}${path}`);
       await expect(page.getByTestId('page-403'), path).toBeVisible();
       await expect(page.locator('body'), path).not.toContainText('Canal');

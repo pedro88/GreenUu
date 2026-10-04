@@ -71,6 +71,7 @@ function samples(gardenId: string): Record<string, Record<string, unknown>> {
     'goal.create': { gardenId, title: 'Objectif', metric: 'tickets_completed', target: 10, periodStart: '2026-06-01', periodEnd: '2026-06-30' },
     'leaderboard.toggle': { gardenId, enabled: true },
     'decor.declarePractice': { gardenId, placementId: id },
+    'stats.export': { gardenId },
     'plan.apply': { gardenId, sceneZoneId: null, baseVersion: 0, commands: [{ op: 'setScale', tileSizeCm: 25 }] },
   };
 }

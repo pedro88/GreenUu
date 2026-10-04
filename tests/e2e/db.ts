@@ -213,3 +213,21 @@ export async function gardenByName(name: string): Promise<{ lat: number; lng: nu
     await sql.end();
   }
 }
+
+/** Espèce la plus récoltée (en kg) d'un jardin sur des saisons civiles, avec ses kilos par année (STAT-01). */
+export async function topSpeciesKgByYear(gardenId: string): Promise<{ speciesId: string; kg: Record<number, number> }> {
+  const sql = postgres(TEST_DB, { max: 1 });
+  try {
+    const rows = await sql<{ species_id: string; y: number; kg: number }[]>`
+      select c.species_id, extract(year from h.harvested_on)::int as y, sum(h.quantity_kg)::float as kg
+      from harvest h join culture c on c.id = h.culture_id
+      where h.garden_id = ${gardenId} and h.deleted_at is null and c.deleted_at is null and h.quantity_kg is not null
+      group by 1, 2`;
+    const totals = new Map<string, number>();
+    for (const r of rows) totals.set(r.species_id, (totals.get(r.species_id) ?? 0) + r.kg);
+    const [speciesId = ''] = [...totals].sort((a, b) => b[1] - a[1])[0] ?? [];
+    return { speciesId, kg: Object.fromEntries(rows.filter((r) => r.species_id === speciesId).map((r) => [r.y, r.kg])) };
+  } finally {
+    await sql.end();
+  }
+}

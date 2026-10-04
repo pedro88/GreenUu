@@ -1,0 +1,42 @@
+// Les tableaux défilent dans leur carte plutôt que d'élargir la page (A11Y-02, 360 px).
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: var(--space-1) var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    background: var(--color-surface);
+    text-align: left;
+  }
+}
+
+.other {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.up {
+  color: var(--color-success-text);
+  font-size: var(--font-size-sm);
+}
+
+.down {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+}

@@ -355,7 +355,8 @@
     "seasons": "Saisons",
     "tickets": "Tâches",
     "reco": "Que planter ?",
-    "progression": "Progression"
+    "progression": "Progression",
+    "stats": "Statistiques"
   },
   "garden": {
     "season": {
@@ -1771,5 +1772,24 @@
     "picked": "{place} · latitude {lat}, longitude {lng}",
     "notFound": "Je ne trouve pas ma commune",
     "attribution": "Données des communes : GeoNames (CC BY 4.0)."
+  },
+  "stats": {
+    "title": "Statistiques",
+    "subtitle": "Vos rendements et vos réussites, saison après saison.",
+    "export": "Exporter en CSV",
+    "empty": "Pas encore de récolte enregistrée : les rendements apparaîtront ici.",
+    "bySpecies": "Rendements par espèce",
+    "byZone": "Rendements par zone",
+    "byZoneHelp": "En kg/m² quand la zone a une surface ; sinon en kg.",
+    "species": "Espèce",
+    "zone": "Zone",
+    "noArea": "(sans surface)",
+    "kg": "{kg} kg",
+    "kgPerM2": "{kg} kg · {perM2} kg/m²",
+    "trend": "{pct, number, ::sign-always} %",
+    "success": "Réussites par espèce",
+    "successHelp": "Cultures terminées sur l’ensemble des cultures closes (terminées, échouées, abandonnées). Les cultures en cours ne comptent pas.",
+    "noSuccess": "Aucune culture close pour l’instant.",
+    "rate": "{rate} % ({done} / {total})"
   }
 }

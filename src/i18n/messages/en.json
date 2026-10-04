@@ -355,7 +355,8 @@
     "seasons": "Saisons",
     "tickets": "Tâches",
     "reco": "Que planter ?",
-    "progression": "Progress"
+    "progression": "Progress",
+    "stats": "Statistics"
   },
   "garden": {
     "season": {
@@ -1771,5 +1772,24 @@
     "picked": "{place} · latitude {lat}, longitude {lng}",
     "notFound": "I can't find my town",
     "attribution": "Town data: GeoNames (CC BY 4.0)."
+  },
+  "stats": {
+    "title": "Statistics",
+    "subtitle": "Your yields and successes, season after season.",
+    "export": "Export as CSV",
+    "empty": "No harvest recorded yet: yields will show up here.",
+    "bySpecies": "Yields by species",
+    "byZone": "Yields by zone",
+    "byZoneHelp": "In kg/m² when the zone has an area; otherwise in kg.",
+    "species": "Species",
+    "zone": "Zone",
+    "noArea": "(no area)",
+    "kg": "{kg} kg",
+    "kgPerM2": "{kg} kg · {perM2} kg/m²",
+    "trend": "{pct, number, ::sign-always} %",
+    "success": "Success by species",
+    "successHelp": "Finished crops out of all closed crops (finished, failed, abandoned). Ongoing crops do not count.",
+    "noSuccess": "No closed crop yet.",
+    "rate": "{rate} % ({done} / {total})"
   }
 }
