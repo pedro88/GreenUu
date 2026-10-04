@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ambientFilter } from '@/features/scene/ambient.pure';
 import { actionOf, replayedAction } from '@/features/scene/avatar-action.pure';
+import { ACT_MS, avatarMoment, avatarRoute, ROUTE_POINTS, walkDir } from '@/features/scene/avatar-route.pure';
 import { applyAll, type EditorScene } from '@/features/scene/plan.pure';
 import { brushCells, paintCells, rectCells, resampleCells, type Cell } from '@/features/scene/terrain.pure';
 import { existingTreeFrame, linearLayer, linearPiece, seasonal, surfaceLayer, variantAt, zonePieces } from '@/features/scene/tiles.pure';
@@ -113,5 +114,41 @@ describe('avatars en action', () => {
     const e = { type: 'harvest.recorded' };
     expect(replayedAction({ ...e, occurredAt: new Date(now.getTime() - 23 * 3_600_000) }, now)).toBe('recolter');
     expect(replayedAction({ ...e, occurredAt: new Date(now.getTime() - 24 * 3_600_000) }, now)).toBeNull();
+  });
+});
+
+describe('avatars qui font le tour de leur zone', () => {
+  const planche = { x: 100, y: 100, w: 200, h: 300 };
+  const inside = (p: { x: number; y: number }) => p.x >= planche.x && p.x <= planche.x + planche.w && p.y >= planche.y && p.y <= planche.y + planche.h;
+
+  it('[LIV-09] action à un point, marche vers un autre point de la même planche, en face de sa marche ; trajet déterministe', () => {
+    const route = avatarRoute('lucie', planche, 50);
+    expect(route).toHaveLength(ROUTE_POINTS);
+    expect(route.every(inside)).toBe(true);
+    expect(new Set(route.map((p) => `${p.x},${p.y}`)).size).toBeGreaterThan(1);
+    // Même identifiant, même trajet ; un autre membre a le sien.
+    expect(avatarRoute('lucie', planche, 50)).toEqual(route);
+    expect(avatarRoute('bruno', planche, 50)).not.toEqual(route);
+    // t = 0 : l'action au premier point, de face (image figée en animations réduites).
+    expect(avatarMoment(route, 50, 0)).toEqual({ at: route[0], dir: 'bas', mode: 'act', elapsedMs: 0 });
+    // Juste après l'action : il marche vers le deuxième point, face à son déplacement.
+    const walking = avatarMoment(route, 50, ACT_MS + 10);
+    expect(walking.mode).toBe('walk');
+    expect(walking.dir).toBe(walkDir(route[0] ?? { x: 0, y: 0 }, route[1] ?? { x: 0, y: 0 }));
+    // Tout au long de plusieurs tours, il reste sur la planche, et rejoue son action à chacun des points.
+    const acts = new Set<string>();
+    for (let t = 0; t < 120_000; t += 250) {
+      const m = avatarMoment(route, 50, t);
+      expect(inside(m.at)).toBe(true);
+      if (m.mode === 'act') acts.add(`${m.at.x},${m.at.y}`);
+    }
+    expect(acts.size).toBe(new Set(route.map((p) => `${p.x},${p.y}`)).size);
+  });
+
+  it('une zone d\'une seule case : l\'avatar reste sur place et joue son action', () => {
+    const route = avatarRoute('emma', { x: 0, y: 0, w: 50, h: 50 }, 50);
+    expect(route.every((p) => p.x >= 0 && p.x <= 50 && p.y >= 0 && p.y <= 50)).toBe(true);
+    expect(walkDir({ x: 0, y: 0 }, { x: -10, y: 2 })).toBe('gauche');
+    expect(walkDir({ x: 0, y: 0 }, { x: 1, y: -10 })).toBe('haut');
   });
 });

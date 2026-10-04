@@ -48,7 +48,7 @@ export async function sceneAvatars(tx: Executor, o: { gardenId: string; viewerId
       if (!a || !at) return;
       const occurredAt = new Date(m.occurred_at);
       const action = replayedAction({ type: m.type, journalKind: m.journal_kind, intervention: m.intervention, hasPhoto: m.has_photo ?? false, stage: m.stage, method: m.method, actionTag: m.action_tag, occurredAt }, o.now);
-      out.push({ userId: m.actor_id, pseudo: m.pseudo, config: a.config, configHash: a.configHash, zoneId: m.zone_id, position: at, action, ageMinutes: Math.max(0, Math.floor((o.now.getTime() - occurredAt.getTime()) / 60_000)), isViewer: m.actor_id === o.viewerId });
+      out.push({ userId: m.actor_id, pseudo: m.pseudo, config: a.config, configHash: a.configHash, zoneId: m.zone_id, position: at, area: { x: rect.x, y: rect.y, w: rect.w, h: rect.h }, action, ageMinutes: Math.max(0, Math.floor((o.now.getTime() - occurredAt.getTime()) / 60_000)), isViewer: m.actor_id === o.viewerId });
     });
   }
   return out;

@@ -3,6 +3,7 @@ import 'pixi.js/unsafe-eval';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Texture, TextureStyle, TilingSprite } from 'pixi.js';
 import { actionFrameCount, avatarCanvas, WALK, type Pose } from '@/features/avatar/compose';
 import { decorFrame } from '@/features/decor/catalog';
+import { avatarMoment, avatarRoute, type Point, type WalkDir } from '@/features/scene/avatar-route.pure';
 import { existingTreeFrame, linearLayer, seasonal, SURFACE_ORDER, surfaceLayer, zonePieces, type Season, type TileDraw } from '@/features/scene/tiles.pure';
 import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
@@ -124,7 +125,8 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   let elapsed = 0;
   const plants: Sprite[] = [];
   /** Avatars posés : frames de marche composées en Canvas 2D (§10.2), animées seulement par la boucle ambiante. */
-  const walkers: { sprite: Sprite; frames: Texture[]; baseX: number; phase: number; acting: boolean }[] = [];
+  type Walker = { sprite: Sprite; avatar: SceneAvatar; route: Point[]; tileCm: number; frames: Map<string, Texture[]> };
+  const walkers: Walker[] = [];
   const avatarTextures = new Map<string, Promise<Texture[]>>();
   let generation = 0;
   const tex = (name: string | null | undefined) => (name ? atlas?.textures.get(name) : undefined);
@@ -291,44 +293,59 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     return [t];
   };
 
+  type AvatarKind = 'act' | 'walk' | 'idle';
   /**
-   * Textures d'un avatar, en cache par (`configHash`, action), à la résolution des sprites HD : les images de son action
-   * (atlas de l'action chargé à cette occasion, LIV-01), sinon l'arrêt puis la marche.
+   * Images d'un avatar pour une direction, en cache par (`configHash`, direction, sorte, action), à la résolution des
+   * sprites HD : son action (atlas de l'action chargé à cette occasion, LIV-01), sa marche ou sa pose à l'arrêt.
    */
-  function avatarFrames(a: SceneAvatar): Promise<Texture[]> {
-    const key = `${a.configHash}|${a.action ?? ''}`;
+  function avatarFrames(a: SceneAvatar, dir: WalkDir, kind: AvatarKind): Promise<Texture[]> {
+    const key = `${a.configHash}|${dir}|${kind}|${kind === 'act' ? a.action ?? '' : ''}`;
     let p = avatarTextures.get(key);
     if (!p) {
       p = (async () => {
-        if (a.action) {
+        if (kind === 'act' && a.action) {
           const action = a.action;
           const n = await actionFrameCount(action);
           const poses = Array.from({ length: n }, (_, i): Pose => `${action}-f${i + 1}`);
-          const frames = (await Promise.all(poses.map((pose) => avatarCanvas(a.config, 'bas', pose, 'atlas', action)))).flatMap(toTexture);
+          const frames = (await Promise.all(poses.map((pose) => avatarCanvas(a.config, dir, pose, 'atlas', action)))).flatMap(toTexture);
           if (frames.length) return frames;
         }
-        return (await Promise.all((['arret', ...WALK] as const).map((pose) => avatarCanvas(a.config, 'bas', pose)))).flatMap(toTexture);
+        const poses: readonly Pose[] = kind === 'walk' ? WALK : ['arret'];
+        return (await Promise.all(poses.map((pose) => avatarCanvas(a.config, dir, pose)))).flatMap(toTexture);
       })();
       avatarTextures.set(key, p);
     }
     return p;
   }
 
+  /**
+   * Avatars (§9.5, LIV-09) : chacun suit son trajet dans la zone de sa dernière action. Il est posé tout de suite sur
+   * son premier point, de face, avec la première image de son action (image figée en animations réduites) ; les autres
+   * directions se composent ensuite, sans bloquer l'affichage.
+   */
   function drawAvatars(s: SceneSnapshot) {
     walkers.length = 0;
     const gen = generation;
-    for (const [i, a] of s.avatars.entries()) {
-      void avatarFrames(a).then((frames) => {
+    for (const a of s.avatars) {
+      const route = avatarRoute(a.userId, a.area, s.tileSizeCm);
+      const start = avatarMoment(route, s.tileSizeCm, 0);
+      const firstKind: AvatarKind = a.action ? 'act' : 'idle';
+      void avatarFrames(a, start.dir, firstKind).then((frames) => {
         const first = frames[0];
         if (gen !== generation || !first) return;
         const sp = new Sprite(first);
         sp.anchor.set(0.5, 1);
-        sp.position.set(px(a.position.x), px(a.position.y));
-        sp.zIndex = a.position.y + 1;
+        sp.position.set(px(start.at.x), px(start.at.y));
+        sp.zIndex = start.at.y + 1;
         plantLayer.addChild(sp);
-        // Une action se joue sur place ; sans action, l'avatar marche lentement au pied de la zone.
-        walkers.push({ sprite: sp, frames, baseX: sp.x, phase: i * 1.7, acting: !!a.action });
+        const w: Walker = { sprite: sp, avatar: a, route, tileCm: s.tileSizeCm, frames: new Map([[`${start.dir}|${firstKind}`, frames]]) };
+        walkers.push(w);
         onAvatarReady?.();
+        for (const dir of ['bas', 'gauche', 'haut', 'droite'] as const) {
+          for (const kind of ['walk', firstKind] as const) {
+            void avatarFrames(a, dir, kind).then((f) => { if (f.length) w.frames.set(`${dir}|${kind}`, f); });
+          }
+        }
       });
     }
   }
@@ -408,18 +425,15 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       elapsed += ms;
       // Ondulation légère, seulement quand la boucle ambiante tourne (jamais en animations réduites).
       plants.forEach((p, i) => { p.skew.x = Math.sin(elapsed / 700 + i) * 0.04; });
-      // Marche lente d'un côté à l'autre, au pied de la zone (§9.5) ; statique en animations réduites.
+      // Trajet dans la zone (LIV-09) : action à un point, marche vers le suivant, face à la direction de la marche.
       for (const w of walkers) {
-        if (w.acting) {
-          // L'action en boucle, sur place (§9.5) ; figée sur sa première image en animations réduites (pas d'appel).
-          const f = w.frames[Math.floor((elapsed + w.phase * 1000) / 260) % w.frames.length];
-          if (f) w.sprite.texture = f;
-          continue;
-        }
-        const t = elapsed / 1000 + w.phase;
-        w.sprite.x = w.baseX + Math.sin(t / 3) * 12;
-        const f = w.frames[1 + (Math.floor(elapsed / 220) % Math.max(1, w.frames.length - 1))];
+        const m = avatarMoment(w.route, w.tileCm, elapsed);
+        const kind = m.mode === 'walk' ? 'walk' : w.avatar.action ? 'act' : 'idle';
+        const frames = w.frames.get(`${m.dir}|${kind}`) ?? w.frames.get(`bas|${kind}`);
+        const f = frames?.[Math.floor(m.elapsedMs / (kind === 'walk' ? 180 : 260)) % frames.length];
         if (f) w.sprite.texture = f;
+        w.sprite.position.set(px(m.at.x), px(m.at.y));
+        w.sprite.zIndex = m.at.y + 1;
       }
     },
     render() {

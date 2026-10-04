@@ -62,6 +62,8 @@ export const sceneAvatarSchema = z.object({
   configHash: z.string(),
   zoneId: z.uuid(),
   position: z.object({ x: z.number(), y: z.number() }),
+  /** Emprise de la zone (ou de l'ancêtre placé) où l'avatar se déplace (LIV-09), en centimètres. */
+  area: z.object({ x: z.number(), y: z.number(), w: z.number().positive(), h: z.number().positive() }),
   action: z.enum(SCENE_ACTIONS).nullable(),
   /** Ancienneté de la dernière action en minutes, pour la liste textuelle (« il y a 1 h », LIV-06). */
   ageMinutes: z.number().int().min(0),

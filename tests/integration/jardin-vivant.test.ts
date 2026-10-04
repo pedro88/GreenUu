@@ -148,6 +148,8 @@ describe('avatars en action', () => {
       expect(snap.avatars[0]).toMatchObject({ userId: lucie.id, zoneId: planche, action: 'arroser', ageMinutes: 60, isViewer: true });
       // Au pied de la planche.
       expect(snap.avatars[0]?.position.y).toBe(400);
+      // Il se déplace dans l'emprise de la planche (LIV-09).
+      expect(snap.avatars[0]?.area).toEqual({ x: 100, y: 100, w: 200, h: 300 });
       // Deux jours plus tard : toujours affichée (utilisatrice courante), mais sans action rejouée.
       const later = await sceneSnapshot(tx, (await scopedCtx(tx, lucie, gardenId)).scope, { userId: lucie.id, sceneZoneId: null, now: new Date(NOW.getTime() + 48 * 3_600_000) });
       expect(later.avatars[0]).toMatchObject({ userId: lucie.id, action: null });
