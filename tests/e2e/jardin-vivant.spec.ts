@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { freshGarden, terrainCells } from './db';
+import { decorAtPosition, freshGarden, terrainCells } from './db';
 import { gardenId, userId } from './ids';
 import { login } from './helpers';
 
@@ -77,6 +77,67 @@ test.describe('terrain peint', () => {
     const cells = await terrainCells(id);
     expect(cells.filter((c) => c.kind === 'gravel_path')).toHaveLength(3);
     expect(cells.filter((c) => c.kind === 'water')).toHaveLength(2);
+  });
+});
+
+test.describe('terrain peint : gestes et refus (audit e2e jardin vivant)', () => {
+  test('rectangle, gomme de terrain et pipette : les cases enregistrées suivent les gestes (E2E-PNT-08)', async ({ page }) => {
+    const { gardenId: id } = await freshGarden('hugo');
+    await login(page, 'hugo');
+    await page.goto(`/app/jardins/${id}/plan`);
+    await sceneReady(page, 'plan-editor');
+    const editor = page.getByTestId('plan-editor');
+    await page.getByTestId('tool-terrain').click();
+    await page.getByRole('button', { name: 'Allée de gravier' }).click();
+    await page.getByTestId('terrain-mode-rect').click();
+    await strokeTiles(page, [{ x: 0, y: 12 }, { x: 2, y: 13 }]);
+    await expect(editor).toHaveAttribute('data-status', 'saved', { timeout: 15_000 });
+    await expect.poll(() => terrainCells(id)).toHaveLength(6);
+    await page.getByTestId('terrain-mode-erase').click();
+    await strokeTiles(page, [{ x: 1, y: 12 }]);
+    await expect.poll(() => terrainCells(id)).toHaveLength(5);
+    // La pipette reprend le type de la case touchée, puis rend la main au pinceau.
+    await page.getByRole('button', { name: 'Eau (mare, bassin)' }).click();
+    await page.getByTestId('terrain-mode-pick').click();
+    await strokeTiles(page, [{ x: 0, y: 13 }]);
+    await expect(page.getByTestId('terrain-mode-brush')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('button', { name: 'Allée de gravier' })).toHaveAttribute('aria-pressed', 'true');
+    await strokeTiles(page, [{ x: 4, y: 12 }]);
+    await expect.poll(async () => (await terrainCells(id)).map((c) => `${c.kind}:${c.x},${c.y}`)).toEqual(
+      ['gravel_path:0,12', 'gravel_path:2,12', 'gravel_path:4,12', 'gravel_path:0,13', 'gravel_path:1,13', 'gravel_path:2,13']);
+  });
+
+  test('un membre sans plan:edit ne peut pas poser un récupérateur d\'eau : vignette désactivée, aucun geste envoyé, requête forgée refusée (E2E-PNT-07b)', async ({ page }) => {
+    const canal = gardenId('canal');
+    // Case (22, 12) du Canal, échelle de 50 cm : pied de l'objet en (1125, 650).
+    const tile = { x: 22, y: 12 };
+    const foot = { x: 1125, y: 650 };
+    await login(page, 'david');
+    await page.goto(`/app/jardins/${canal}/plan`);
+    await sceneReady(page, 'plan-editor');
+    await page.getByTestId('tool-decor').click();
+    const barrel = page.getByTestId('decor-item-rain_barrel');
+    await expect(barrel).toHaveAttribute('aria-disabled', 'true');
+    // `aria-disabled` n'empêche pas de toucher la vignette (Playwright, lui, attend qu'elle soit activée) : le message doit l'expliquer.
+    await barrel.click({ force: true });
+    await expect(page.getByTestId('decor-hint')).toHaveText('Réservé aux rôles qui peuvent modifier le plan.');
+    const actions: string[] = [];
+    page.on('request', (r) => { if (r.method() === 'POST' && r.headers()['next-action']) actions.push(r.postData() ?? ''); });
+    await strokeTiles(page, [tile]);
+    await page.waitForLoadState('networkidle');
+    expect(actions).toEqual([]);
+    // Requête forgée : le banc (permis) est remplacé par le récupérateur dans le corps de l'action.
+    await page.route('**/*', async (route) => {
+      const r = route.request();
+      if (r.method() === 'POST' && r.headers()['next-action'] && (r.postData() ?? '').includes('"itemCode":"bench"')) {
+        await route.continue({ postData: (r.postData() ?? '').replace('"itemCode":"bench"', '"itemCode":"rain_barrel"') });
+      } else await route.continue();
+    });
+    await page.getByTestId('decor-item-bench').click();
+    await strokeTiles(page, [tile]);
+    await expect(page.getByTestId('plan-editor')).toHaveAttribute('data-status', 'error', { timeout: 15_000 });
+    expect(await decorAtPosition(canal, 'rain_barrel', foot.x, foot.y)).toBeNull();
+    expect(await decorAtPosition(canal, 'bench', foot.x, foot.y)).toBeNull();
   });
 });
 
