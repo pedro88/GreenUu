@@ -9,7 +9,8 @@ export function contentSecurityPolicy(nonce: string, isDev: boolean): string {
     "font-src 'self'",
     "connect-src 'self'",
     // Service worker et manifeste de la PWA (lot 9) : sans `worker-src`, la `script-src` à nonce bloquerait /sw.js.
-    "worker-src 'self'",
+    // `blob:` : PixiJS décode ses textures dans des workers créés à partir d'URL blob (vue jardin).
+    "worker-src 'self' blob:",
     "manifest-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
