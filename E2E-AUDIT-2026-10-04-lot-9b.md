@@ -118,3 +118,14 @@ Test de mutation e2e : `ensureSeason` ne chargeant plus l'atlas d'automne → `[
 Mutation d'intégration (audit général) : permission des aménagements → `[PNT-07]` rouge.
 Limites : l'horloge serveur des e2e est unique (14 octobre) : les autres saisons ne se testent pas en e2e ; rendu visuel
 vérifié par capture d'écran manuelle, pas par comparaison d'images ; pas d'appareil de référence pour les performances.
+
+## Suivi des corrections (2026-10-04, passe 2 de `/audit-corrections`)
+
+| Spec | État | Commit |
+|---|---|---|
+| E2E-PNT-07b — refus des aménagements ponctuels | ✅ implémentée | `c78160c` |
+| E2E-PNT-08 — rectangle, gomme de terrain, pipette | ✅ implémentée | `c78160c` |
+| Délégués (jour local de l'instantané, bascule de saison) | non traités : couches unitaire et intégration, hors passe e2e | — |
+| m1 — `strokeTiles` / `dragTiles` dupliqués | non traité (mineur) | — |
+
+Suite après corrections : 90/90 en 12 min, aucun test instable.
