@@ -80,6 +80,8 @@ export type TerrainKind = (typeof TERRAIN_KINDS)[number];
  * Terrain peint case par case (lot 9, §4.2.6). Les surfaces sont listées dans l'ordre de leurs couches de rendu (§9.2),
  * les linéaires (haie, clôture) ensuite.
  */
+/** Type de zone « Rang » : il découpe sa planche en bandes, sans géométrie propre (SPEC §9.5, lot 10). */
+export const ROW_ZONE_TYPE = 'row';
 /** Densité de plantation (lot 9) : plants par m² (plantation), graines par mètre de rang (semis en place). */
 export const DENSITY_UNITS = ['plants_per_m2', 'seeds_per_m'] as const;
 export type DensityUnit = (typeof DENSITY_UNITS)[number];

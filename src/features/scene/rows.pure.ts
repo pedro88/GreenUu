@@ -8,7 +8,8 @@ import { plantableRect, type Rect } from './fill.pure';
  * sien. Fonctions pures, partagées par l'instantané, l'histoire du jardin, le moteur et l'éditeur.
  */
 
-export const ROW_TYPE = 'row';
+export { ROW_ZONE_TYPE as ROW_TYPE } from '@/lib/enums';
+import { ROW_ZONE_TYPE as ROW_TYPE } from '@/lib/enums';
 
 type RowZone = { id: string; name: string; typeCode: string; parentId: string | null; geometry: Rect | null };
 

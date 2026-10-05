@@ -1,10 +1,10 @@
 import { and, asc, eq, inArray, isNull, like, ne, or, sql } from 'drizzle-orm';
+import { ROW_ZONE_TYPE } from '@/lib/enums';
 import { notFound } from '@/lib/errors';
 import type { Scope } from '@/server/authz/scope';
 import type { ZoneRestriction } from '@/server/authz/zone-access';
 import type { Executor } from '@/server/db/client';
 import { zone, zoneGroupPermission, zoneType } from '@/server/db/schema';
-import { ROW_TYPE } from '@/features/scene/rows.pure';
 import { ancestorIds, childPath } from './tree';
 
 /** Dépôt scopé : toute requête est filtrée par le jardin du scope (SPEC §3.3). */
@@ -116,7 +116,7 @@ export async function siblingGeometries(tx: Executor, scope: Scope, parentId: st
         eq(zone.gardenId, scope.gardenId),
         parentId === null ? isNull(zone.parentId) : eq(zone.parentId, parentId),
         isNull(zone.archivedAt),
-        ne(zoneType.code, ROW_TYPE),
+        ne(zoneType.code, ROW_ZONE_TYPE),
       ),
     );
   return rows.filter((r) => r.id !== excludeId && r.geometry !== null).flatMap((r) => (r.geometry ? [r.geometry] : []));

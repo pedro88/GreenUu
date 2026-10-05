@@ -1,4 +1,5 @@
 import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { ROW_ZONE_TYPE } from '@/lib/enums';
 import { DomainError, forbidden, validation } from '@/lib/errors';
 import type { ScopedCtx } from '@/server/action-core';
 import { can, type Scope } from '@/server/authz/scope';
@@ -8,7 +9,6 @@ import { culture, cultureStage, garden, gardenEnvironment, gardenGroup, zone, zo
 import { localDate } from '@/lib/dates';
 import { emit } from '@/server/events/emit';
 import { planChanged } from '../scene/history';
-import { ROW_TYPE } from '../scene/rows.pure';
 import * as repo from './repo';
 import type { ZoneCreateInput, ZoneUpdateInput } from './schema';
 import {
@@ -65,8 +65,8 @@ export function chainOf(z: { id: string; path: string }): string[] {
 }
 
 async function assertGeometry(tx: Executor, scope: Scope, geometry: RectGeometry | null, parent: repo.ZoneRow | null, selfId: string | null, typeCode: string | null) {
-  // Un rang n'a pas de géométrie propre : il découpe sa planche (rows.pure), sans contrainte de place.
-  if (!geometry || typeCode === ROW_TYPE) return;
+  // Un rang n'a pas de géométrie propre : il découpe sa planche (rows.pure), sans contrainte de place (FIL-08).
+  if (!geometry || typeCode === ROW_ZONE_TYPE) return;
   const siblings = await repo.siblingGeometries(tx, scope, parent?.id ?? null, selfId);
   // Un enfant d'une zone « avec intérieur » est dessiné dans la scène intérieure : pas de contrainte de contenance.
   const parentGeom = parent && !parent.hasInterior ? parent.geometry : null;
