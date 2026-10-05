@@ -11,7 +11,8 @@ export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: false,
   workers: 1,
-  retries: process.env.CI ? 1 : 0,
+  // Aucune relance, CI comprise : un test qui ne passe qu'au second essai est un test instable à corriger, pas un test vert.
+  retries: 0,
   timeout: 60_000,
   expect: { timeout: 10_000 },
   reporter: [['list'], ['json', { outputFile: 'reports/playwright.json' }], ['html', { open: 'never' }]],
