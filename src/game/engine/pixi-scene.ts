@@ -6,11 +6,11 @@ import { decorFrame } from '@/features/decor/catalog';
 import { plantSpots } from '@/features/scene/fill.pure';
 import { avatarPlan, CHAT_MS, chatPairs, chatPicto, planMoment, walkDir, type Segment, type WalkDir } from '@/features/scene/avatar-route.pure';
 import { findPath, walkGrid } from '@/features/scene/path.pure';
-import { existingTreeFrame, linearLayer, seasonal, SURFACE_ORDER, surfaceLayer, zonePieces, type Season, type TileDraw } from '@/features/scene/tiles.pure';
+import { existingTreeFrame, linearLayer, seasonal, variantAt, SURFACE_ORDER, surfaceLayer, zonePieces, type Season, type TileDraw } from '@/features/scene/tiles.pure';
 import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
 import { TILE_PX } from '@/features/scene/grid.pure';
-import { fetchAtlas, resolvePlantFrame, seasonAtlasUrl, STATE_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
+import { fetchAtlas, grassFrame, resolvePlantFrame, seasonAtlasUrl, STATE_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
 
 /*
  * Rendu PixiJS de la scène (SPEC §9.1, §9.2). Seul ce module (et `GardenCanvas`) importe PixiJS. Il lit les stores et ne
@@ -65,6 +65,8 @@ async function loadAtlas(url?: string, into = new Map<string, Texture>()): Promi
 
 /** Fond d'herbe uni de la scène extérieure, par saison (tons relevés sur les tuiles d'herbe livrées, adoucis). */
 const GRASS_COLORS: Record<Season, number> = { spring: 0x8fbb5c, summer: 0x86b257, autumn: 0x9caa58, winter: 0xb9c7ae };
+/** Opacité des tuiles d'herbe sur la teinte de fond : la texture reste visible, le contraste baisse. */
+const GRASS_TEXTURE_ALPHA = 0.5;
 
 /** Couleurs des assets de substitution (palette des maquettes). */
 const ZONE_COLORS: Record<string, number> = {
@@ -168,11 +170,25 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     clearLayer(ground);
     const w = px(s.bounds.w);
     const h = px(s.bounds.h);
-    // Dehors, un fond d'herbe uni selon la saison : les tuiles d'herbe texturées chargeaient trop la scène (décision de
-    // l'utilisateur du 2026-10-05). Dedans (serre), le carrelage.
+    // Dedans (serre), le carrelage. Dehors, l'herbe : une teinte de fond par saison, puis les 3 variantes de tuile
+    // d'herbe alternées case par case (tirage fixe par position) et atténuées, pour garder la texture sans charger la
+    // scène (demande de l'utilisateur du 2026-10-05).
     const floor = s.sceneZoneId ? tex('tuiles/sol-serre-carrelage-1.png') : undefined;
-    if (floor) ground.addChild(new TilingSprite({ texture: floor, width: w, height: h }));
-    else ground.addChild(new Graphics().rect(0, 0, w, h).fill(s.sceneZoneId ? 0xe9e4da : GRASS_COLORS[s.ambient.season]));
+    if (floor) {
+      ground.addChild(new TilingSprite({ texture: floor, width: w, height: h }));
+      return;
+    }
+    ground.addChild(new Graphics().rect(0, 0, w, h).fill(s.sceneZoneId ? 0xe9e4da : GRASS_COLORS[s.ambient.season]));
+    if (s.sceneZoneId || !atlas) return;
+    const tiles = new Container();
+    for (let y = 0; y * TILE_PX < h; y += 1) {
+      for (let x = 0; x * TILE_PX < w; x += 1) {
+        const t = tex(grassFrame(s.ambient.season, variantAt(x, y, 3) as 1 | 2 | 3)); // as: variantAt(…, 3) ∈ {1, 2, 3}
+        if (t) tiles.addChild(Object.assign(new Sprite(t), { x: x * TILE_PX, y: y * TILE_PX, width: TILE_PX, height: TILE_PX }));
+      }
+    }
+    tiles.alpha = GRASS_TEXTURE_ALPHA;
+    ground.addChild(tiles);
   }
 
   /** Frame de fond d'une zone, dans sa variante saisonnière si elle existe (`tuiles/terre-1` → `tuiles/terre-hiver-1`). */
