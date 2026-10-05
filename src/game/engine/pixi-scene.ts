@@ -115,9 +115,8 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   const grid = new Graphics();
   const selection = new Graphics();
   const draft = new Graphics();
-  const tint = new Graphics();
   world.addChild(ground, terrainLayer, zoneLayer, grid, plantLayer, bubbleLayer, selection, draft);
-  app.stage.addChild(world, overlay, tint);
+  app.stage.addChild(world, overlay);
 
   let snapshot: SceneSnapshot | null = null;
   let scale = 1;
@@ -361,11 +360,7 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     grid.stroke({ width: 1, color: 0x2e222f, alpha: 0.35 });
   }
 
-  function drawTint(s: SceneSnapshot) {
-    tint.clear();
-    // Filtre jour / nuit et saison : un voile de couleur sur toute la scène (§9.1).
-    if (s.ambient.alpha > 0) tint.rect(0, 0, app.screen.width, app.screen.height).fill({ color: s.ambient.tint, alpha: s.ambient.alpha });
-  }
+
 
   function redraw(s: SceneSnapshot) {
     const prev = snapshot;
@@ -379,7 +374,6 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
         drawGrid(s);
       }
       if (prev.terrain !== s.terrain) drawTerrain(s);
-      drawTint(s);
       return;
     }
     snapshot = s;
@@ -393,7 +387,6 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     drawDecor(s);
     generation += 1;
     drawAvatars(s);
-    drawTint(s);
   }
 
   return {
@@ -403,7 +396,6 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     setCamera(c) {
       world.position.set(c.x, c.y);
       world.scale.set(c.zoom);
-      if (snapshot) drawTint(snapshot);
     },
     setSelection(id) {
       selection.clear();
