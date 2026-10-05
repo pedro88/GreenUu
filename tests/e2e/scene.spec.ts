@@ -1,20 +1,11 @@
 import { devices, expect, test, type Page } from '@playwright/test';
 import { cultureOfTicket, decorAtPosition, placedEntities, practiceDeclarations, zoneAt } from './db';
 import { gardenId, userId, zoneId } from './ids';
-import { login } from './helpers';
+import { dragTiles, login, sceneReady } from './helpers';
 
 const TILLEULS = gardenId('tilleuls');
 const CANAL = gardenId('canal');
 const PIXI_SIGNATURE = '__PIXI_APP_INIT__';
-
-/**
- * Le canvas WebGL est prêt. Chromium fournit WebGL : le rendu de repli (`unavailable`) n'est pas un succès ici. C'est
- * lui qui masquait le blocage de PixiJS par la CSP de production (E2E-MAP-01b, audit lot 7 M1).
- */
-async function sceneReady(page: Page, testId = 'garden-view') {
-  await expect(page.getByTestId(testId)).toHaveAttribute('data-canvas', 'ready');
-  await expect(page.getByTestId(testId).locator('canvas')).toHaveCount(1);
-}
 
 test.describe('vue jardin', () => {
   test('[MAP-01] la vue classique d\'un jardin ne télécharge aucun bundle PixiJS ; la vue jardin, si', async ({ page }) => {
@@ -211,22 +202,6 @@ test.describe('vue jardin, animations réduites', () => {
 });
 
 test.describe('éditeur de plan', () => {
-  /** Glisser sur la grille, d'une tuile à une autre, à partir des attributs exposés par la couche (§9.6). */
-  async function dragTiles(page: Page, from: { x: number; y: number }, to: { x: number; y: number }) {
-    const grid = page.getByTestId('plan-grid');
-    await grid.scrollIntoViewIfNeeded();
-    const box = await grid.boundingBox();
-    if (!box) throw new Error('grille absente');
-    const tile = Number(await grid.getAttribute('data-tile-px'));
-    const ox = Number(await grid.getAttribute('data-origin-x'));
-    const oy = Number(await grid.getAttribute('data-origin-y'));
-    const at = (t: { x: number; y: number }) => ({ x: box.x + ox + (t.x + 0.5) * tile, y: box.y + oy + (t.y + 0.5) * tile });
-    await page.mouse.move(at(from).x, at(from).y);
-    await page.mouse.down();
-    await page.mouse.move(at(to).x, at(to).y, { steps: 6 });
-    await page.mouse.up();
-  }
-
   test('[PLN-01] [PLN-02] dessiner une planche de (2, 2) à (5, 4) dans le Potager crée une zone de 200 × 150 cm ; le formulaire par dimensions donne le même résultat', async ({ page }) => {
     const geometry = { x: 100, y: 100, w: 200, h: 150 };
     await login(page, 'alice');

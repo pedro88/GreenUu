@@ -1,7 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import type { Actor } from '../../src/server/action-core';
 import type { Tx } from '../../src/server/db/client';
-import { gardenGroup, gardenMember, groupMember } from '../../src/server/db/schema';
+import { garden, gardenGroup, gardenMember, groupMember } from '../../src/server/db/schema';
 import { createGarden } from '../../src/features/garden/service';
 import type { GardenRole, OrgType } from '../../src/lib/enums';
 import { ctxFor } from './helpers';
@@ -51,4 +51,9 @@ export async function makeZone(tx: Tx, owner: Actor, gardenId: string, name: str
   const ctx = await scopedCtx(tx, owner, gardenId);
   const { zoneId } = await createZone(ctx, { gardenId, parentId, name, zoneTypeId: await zoneTypeId(tx, code), environment: null, geometry, hasInterior: false });
   return zoneId;
+}
+
+/** Version courante du plan d'un jardin (`baseVersion` des commandes de l'éditeur). */
+export async function planVersion(tx: Tx, gardenId: string): Promise<number> {
+  return (await tx.select({ v: garden.planVersion }).from(garden).where(eq(garden.id, gardenId)))[0]?.v ?? -1;
 }

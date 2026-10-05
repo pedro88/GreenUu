@@ -8,10 +8,10 @@ import { loadScope } from '../../src/server/authz/scope';
 import { fixedClock } from '../../src/server/clock';
 import { makeGarden, makeZone, speciesRefId } from './fixtures';
 import { inTx, makeUser, scopedCtx } from './helpers';
+import { rect } from '../geometry';
 
 /* Histoire du jardin (SPEC §12.11) : données lues en base, images calculées. */
 
-const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
 const day = (iso: string) => new Date(`${iso}T10:00:00Z`);
 
 describe('histoire du jardin', () => {

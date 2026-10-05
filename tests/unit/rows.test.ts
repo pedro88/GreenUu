@@ -4,10 +4,10 @@ import { validateLocal, type EditorScene, type ZoneTypeInfo } from '@/features/s
 import { anchorRect, rowStrips, withRowGeometry } from '@/features/scene/rows.pure';
 import type { SceneZone } from '@/features/scene/snapshot.schema';
 import { GREENHOUSE_SLICES, greenhousePieces } from '@/features/scene/tiles.pure';
+import { rect } from '../geometry';
 
 /* Rangs d'une planche, serre en pièces (demandes de l'utilisateur du 2026-10-05). */
 
-const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
 const zone = (id: string, typeCode: string, parentId: string | null, geometry: SceneZone['geometry'], name = id): SceneZone => ({
   id, name, typeCode, parentId, depth: parentId ? 1 : 0, geometry, hasInterior: typeCode === 'greenhouse', canHostCultures: true, label: name,
 });

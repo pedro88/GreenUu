@@ -10,9 +10,10 @@ import { garden, zone } from '../../src/server/db/schema';
 import type { Tx } from '../../src/server/db/client';
 import type { Actor } from '../../src/server/action-core';
 import { addMember, makeGarden, makeZone, speciesRefId, zoneTypeId } from './fixtures';
+import { planVersion } from './fixtures';
 import { inTx, makeUser, NOW, scopedCtx } from './helpers';
+import { rect } from '../geometry';
 
-const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
 
 async function plannedGarden(tx: Tx, owner: Actor) {
   const gardenId = await makeGarden(tx, owner);
@@ -21,7 +22,7 @@ async function plannedGarden(tx: Tx, owner: Actor) {
   return { gardenId, potager, ctx, bed: await zoneTypeId(tx, 'bed') };
 }
 
-const version = async (tx: Tx, gardenId: string) => (await tx.select({ v: garden.planVersion }).from(garden).where(eq(garden.id, gardenId)))[0]?.v ?? -1;
+const version = planVersion;
 const create = (clientId: string, zoneTypeId: string, parentId: string, g: ReturnType<typeof rect>): PlanCommand =>
   planCommandSchema.parse({ op: 'createZone', clientId: `tmp:${clientId}`, name: clientId, zoneTypeId, parentId, geometry: g });
 

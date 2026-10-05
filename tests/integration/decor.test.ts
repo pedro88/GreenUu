@@ -8,17 +8,18 @@ import { declareDecorPractice } from '../../src/features/decor/service';
 import { actionRegistry, runAction, type ActionDeps } from '../../src/server/action-core';
 import { createTicket } from '../../src/features/ticket/commands';
 import { fixedClock } from '../../src/server/clock';
-import { culture, decorPlacement, garden, practice, practiceDeclaration, userProgress, zone } from '../../src/server/db/schema';
+import { culture, decorPlacement, practice, practiceDeclaration, userProgress, zone } from '../../src/server/db/schema';
 import type { Tx } from '../../src/server/db/client';
 import type { Actor } from '../../src/server/action-core';
 import { addMember, makeGarden, makeZone } from './fixtures';
+import { planVersion } from './fixtures';
 import { inTx, makeUser, NOW, recordingQueue, scopedCtx } from './helpers';
+import { rect } from '../geometry';
 
 const deps = (tx: Tx): ActionDeps => ({ db: tx, clock: fixedClock(NOW), appUrl: 'http://localhost:3000', jobs: () => recordingQueue() });
 
-const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
 const cmd = (c: PlanCommandInput) => planCommandSchema.parse(c);
-const version = async (tx: Tx, gardenId: string) => (await tx.select({ v: garden.planVersion }).from(garden).where(eq(garden.id, gardenId)))[0]?.v ?? -1;
+const version = planVersion;
 
 async function setup(tx: Tx, owner: Actor, orgType: 'family' | 'collective' = 'family') {
   const gardenId = await makeGarden(tx, owner, { orgType });
