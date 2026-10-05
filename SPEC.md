@@ -2188,7 +2188,7 @@ export vidéo du timelapse (décision 5), saison forcée dans `/affichage`.
 | TLP-02 | une planche créée le 1er avril et des tomates semées le 10 avril, récoltées en août | images d'avril à septembre | la planche apparaît à partir d'avril, les tomates passent de graine à récolte dans l'ordre des phases réelles | U |
 | TLP-03 | une date antérieure au premier instantané du plan | image | le plan actuel est utilisé et un bandeau le dit | E |
 | TLP-04 | une zone archivée en juin | images | elle disparaît à partir de juin, avec ses cultures terminées | I |
-| TLP-05 | un utilisateur qui n'est pas membre du jardin | `/histoire` | 404, comme la vue jardin | I |
+| TLP-05 | un utilisateur qui n'est pas membre du jardin | `/histoire` | 403 sans aucune donnée du jardin, comme la vue jardin (§5.4) | I |
 | TLP-06 | `prefers-reduced-motion` | ouverture | pas de lecture automatique ; navigation image par image au clavier | E |
 | TLP-07 | l'histoire d'un jardin | lecture | une image par semaine (réglable : jour, semaine, mois), la date et la saison affichées, au plus 160 images et 3 ans par lecture | E |
 

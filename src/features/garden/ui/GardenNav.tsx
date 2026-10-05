@@ -9,13 +9,14 @@ export function GardenNav({ gardenId, showSettings }: { gardenId: string; showSe
   const t = useTranslations('gardenNav');
   const pathname = usePathname();
   const base = `/app/jardins/${gardenId}`;
-  const items: { href: string; key: 'overview' | 'zones' | 'cultures' | 'tickets' | 'seasons' | 'stats' | 'reco' | 'members' | 'progression' | 'settings'; exact: boolean }[] = [
+  const items: { href: string; key: 'overview' | 'zones' | 'cultures' | 'tickets' | 'seasons' | 'stats' | 'history' | 'reco' | 'members' | 'progression' | 'settings'; exact: boolean }[] = [
     { href: base, key: 'overview', exact: true },
     { href: `${base}/cultures`, key: 'cultures', exact: false },
     { href: `${base}/tickets`, key: 'tickets', exact: false },
     { href: `${base}/zones`, key: 'zones', exact: false },
     { href: `${base}/saisons`, key: 'seasons', exact: false },
     { href: `${base}/statistiques`, key: 'stats', exact: false },
+    { href: `${base}/histoire`, key: 'history', exact: false },
     { href: `${base}/recommandations`, key: 'reco', exact: false },
     { href: `${base}/membres`, key: 'members', exact: false },
     { href: `${base}/progression`, key: 'progression', exact: false },

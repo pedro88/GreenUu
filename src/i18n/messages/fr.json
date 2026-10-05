@@ -358,7 +358,8 @@
     "tickets": "Tâches",
     "reco": "Que planter ?",
     "progression": "Progression",
-    "stats": "Statistiques"
+    "stats": "Statistiques",
+    "history": "Histoire"
   },
   "garden": {
     "season": {
@@ -1870,5 +1871,20 @@
     "pageBack": "Réessayer",
     "label_journal": "Observation — {title}",
     "label_harvest": "Récolte — {title}"
+  },
+  "history": {
+    "title": "Histoire du jardin",
+    "controls": "Lecture de l’histoire",
+    "previous": "Image précédente",
+    "next": "Image suivante",
+    "play": "Lecture",
+    "pause": "Pause",
+    "step": "Une image par",
+    "step_day": "jour",
+    "step_week": "semaine",
+    "step_month": "mois",
+    "timeline": "Frise du temps",
+    "reconstructed": "Plan reconstitué à partir du plan actuel : son historique n’était pas encore enregistré.",
+    "reconstructedBefore": "Plan reconstitué à partir du plan actuel avant le {date}."
   }
 }

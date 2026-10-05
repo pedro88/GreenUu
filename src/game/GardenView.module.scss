@@ -422,3 +422,14 @@
 .decorItem[aria-disabled="true"] {
   opacity: 0.6;
 }
+
+/* Histoire du jardin (TLP) : date en grand, frise sous la scène. */
+.historyDate {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.timeline {
+  width: 100%;
+  accent-color: var(--color-primary);
+}

@@ -12,7 +12,7 @@ import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
 import { sceneAvatars } from './avatars';
 import { decorRect, sceneBounds } from './grid.pure';
-import { bands, drawnCounts, fillCount, plantCountOf } from './fill.pure';
+import { layoutCultures } from './fill.pure';
 import { cellsRect, MAX_SCENE_CELLS } from './terrain.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
@@ -97,7 +97,6 @@ async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]
     .from(cultureStage).where(inArray(cultureStage.cultureId, ids));
   const states = await statesOf(tx, scope, { cultures: rows.map((r) => ({ id: r.id, zoneId: r.zoneId })), today: o.today, userId: o.userId, byId: o.byId });
 
-  const placed = new Map<string, string[]>();
   const facts = new Map(rows.map((r) => [r.id, { plantCount: r.plantCount, areaM2: r.areaM2, spacingPlantCm: r.spacingPlantCm, spacingRowCm: r.spacingRowCm, density: r.density, densityUnit: r.densityUnit }]));
   const out: (SceneCulture & { anchorZone: string | null })[] = [];
   for (const r of rows) {
@@ -112,33 +111,20 @@ async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]
     const z = o.byId.get(r.zoneId);
     const chain = z ? [z.id, ...(z.path ? z.path.split('/').reverse() : [])] : [];
     const anchor = chain.map((id) => o.byId.get(id)).find((a) => a?.geometry && a.sceneZoneId === z?.sceneZoneId) ?? null;
-    if (anchor) placed.set(anchor.id, [...(placed.get(anchor.id) ?? []), r.id]);
     out.push({
       id: r.id, zoneId: r.zoneId, label: r.label, spriteKeys: [r.varietyKey, r.speciesKey, familyKey(r.family)].filter((k): k is string => !!k),
       phase: p.phase, progress: p.progress, states: orderStates(s), position: null, footprint: null, plants: { count: 1, drawn: 0, source: 'default' }, anchorZone: anchor?.id ?? null,
     });
   }
-  // Remplissage (FIL-01 à 06) : chaque culture prend une bande de sa zone, proportionnelle à sa surface (sinon à son
-  // nombre de plants), et y dessine ses plants, bornés par culture et par scène.
-  for (const [zoneId, cultureIds] of placed) {
-    const rect = o.byId.get(zoneId)?.geometry;
-    if (!rect) continue;
-    const weights = cultureIds.map((id) => {
-      const f = facts.get(id);
-      return f?.areaM2 ?? f?.plantCount ?? 1;
-    });
-    bands(rect, weights).forEach((band, i) => {
-      const c = out.find((x) => x.id === cultureIds[i]);
-      const f = facts.get(cultureIds[i] ?? '');
-      if (!c || !f) return;
-      c.footprint = { x: Math.round(band.x), y: Math.round(band.y), w: Math.max(1, Math.round(band.w)), h: Math.max(1, Math.round(band.h)) };
-      c.position = { x: Math.round(band.x + band.w / 2), y: Math.round(band.y + band.h / 2) };
-      const n = plantCountOf(f, (band.w * band.h) / 10_000);
-      c.plants = { count: n.count, drawn: 0, source: n.source };
-    });
+  // Remplissage (FIL-01 à 06) : bandes de la zone ancre, plants qui les remplissent, plafond de la scène.
+  const layout = layoutCultures(out.map((c) => {
+    const rect = c.anchorZone ? o.byId.get(c.anchorZone)?.geometry : null;
+    return { id: c.id, anchor: c.anchorZone && rect ? { id: c.anchorZone, rect } : null, facts: facts.get(c.id) ?? { plantCount: null, areaM2: null, spacingPlantCm: null, spacingRowCm: null, density: null, densityUnit: null } };
+  }), o.tileCm);
+  for (const c of out) {
+    const l = layout.get(c.id);
+    if (l) Object.assign(c, l);
   }
-  const shown = out.filter((c) => c.footprint);
-  drawnCounts(shown.map((c) => (c.footprint ? fillCount(c.footprint, o.tileCm) : 1))).forEach((d, i) => { const c = shown[i]; if (c) c.plants.drawn = d; });
   return out.map(({ anchorZone: _anchor, ...c }) => c);
 }
 

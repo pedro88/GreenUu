@@ -24,7 +24,7 @@ import styles from './GardenView.module.scss';
 // §9.1 : PixiJS n'est chargé que par la vue jardin, sans SSR ; la couche accessible s'affiche avant le canvas.
 const GardenCanvas = dynamic(() => import('./GardenCanvas'), { ssr: false });
 
-function usePrefersReducedMotion() {
+export function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');

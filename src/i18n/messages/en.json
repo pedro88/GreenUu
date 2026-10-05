@@ -358,7 +358,8 @@
     "tickets": "Tâches",
     "reco": "Que planter ?",
     "progression": "Progress",
-    "stats": "Statistics"
+    "stats": "Statistics",
+    "history": "History"
   },
   "garden": {
     "season": {
@@ -1870,5 +1871,20 @@
     "pageBack": "Retry",
     "label_journal": "Observation — {title}",
     "label_harvest": "Harvest — {title}"
+  },
+  "history": {
+    "title": "Garden history",
+    "controls": "History playback",
+    "previous": "Previous frame",
+    "next": "Next frame",
+    "play": "Play",
+    "pause": "Pause",
+    "step": "One frame per",
+    "step_day": "day",
+    "step_week": "week",
+    "step_month": "month",
+    "timeline": "Timeline",
+    "reconstructed": "Plan rebuilt from the current plan: its history was not recorded yet.",
+    "reconstructedBefore": "Plan rebuilt from the current plan before {date}."
   }
 }

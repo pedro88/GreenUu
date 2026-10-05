@@ -25,8 +25,19 @@ export async function planChanged(tx: Executor, gardenId: string, now: Date): Pr
 }
 
 export async function recordPlanSnapshot(tx: Executor, gardenId: string, now: Date): Promise<void> {
-  const [g] = await tx.select({ timezone: garden.timezone, tileSizeCm: garden.tileSizeCm, planVersion: garden.planVersion }).from(garden).where(eq(garden.id, gardenId)).limit(1);
+  const [g] = await tx.select({ timezone: garden.timezone, planVersion: garden.planVersion }).from(garden).where(eq(garden.id, gardenId)).limit(1);
   if (!g) return;
+  const payload = await planState(tx, gardenId);
+  if (!payload) return;
+  const takenOn = localDate(now, g.timezone);
+  await tx.insert(planSnapshot).values({ gardenId, takenOn, planVersion: g.planVersion, payload })
+    .onConflictDoUpdate({ target: [planSnapshot.gardenId, planSnapshot.takenOn], set: { planVersion: g.planVersion, payload } });
+}
+
+/** État complet du plan d'un jardin, au format des instantanés (aussi le « plan actuel » de l'histoire, TLP-03). */
+export async function planState(tx: Executor, gardenId: string): Promise<PlanSnapshotV1 | null> {
+  const [g] = await tx.select({ tileSizeCm: garden.tileSizeCm }).from(garden).where(eq(garden.id, gardenId)).limit(1);
+  if (!g) return null;
   const zones = await tx.select({
     id: zone.id, name: zone.name, typeCode: zoneType.code, parentId: zone.parentId, sceneZoneId: zone.sceneZoneId, geometry: zone.geometry, archivedAt: zone.archivedAt,
   }).from(zone).innerJoin(zoneType, eq(zoneType.id, zone.zoneTypeId)).where(and(eq(zone.gardenId, gardenId), isNotNull(zone.geometry))).orderBy(zone.id);
@@ -41,10 +52,7 @@ export async function recordPlanSnapshot(tx: Executor, gardenId: string, now: Da
     group.cells.push([c.x, c.y]);
     groups.set(key, group);
   }
-  const payload = planSnapshotV1Schema.parse({
+  return planSnapshotV1Schema.parse({
     v: 1, tileSizeCm: g.tileSizeCm, zones: zones.map((z) => ({ ...z, archivedAt: z.archivedAt?.toISOString() ?? null })), terrain: [...groups.values()], objects,
   });
-  const takenOn = localDate(now, g.timezone);
-  await tx.insert(planSnapshot).values({ gardenId, takenOn, planVersion: g.planVersion, payload })
-    .onConflictDoUpdate({ target: [planSnapshot.gardenId, planSnapshot.takenOn], set: { planVersion: g.planVersion, payload } });
 }

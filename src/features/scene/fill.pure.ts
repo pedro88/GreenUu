@@ -123,3 +123,33 @@ export function plantSpots(seed: string, rect: Rect, n: number, tileCm: number):
   }
   return out;
 }
+
+export type CulturePlacement = { footprint: Rect; position: { x: number; y: number }; plants: { count: number; drawn: number; source: 'input' | 'estimated' | 'default' } };
+
+/**
+ * Place les cultures d'une scène (FIL-01 à 06) : les cultures d'une même zone ancre se partagent ses bandes, chacune
+ * remplit la sienne de plants, et le total dessiné reste sous le plafond de la scène. Partagé par l'instantané de la vue
+ * jardin et par l'histoire du jardin.
+ */
+export function layoutCultures(items: { id: string; anchor: { id: string; rect: Rect } | null; facts: PlantingFacts }[], tileCm: number): Map<string, CulturePlacement> {
+  const byAnchor = new Map<string, { rect: Rect; items: typeof items }>();
+  for (const it of items) {
+    if (!it.anchor) continue;
+    const g = byAnchor.get(it.anchor.id) ?? { rect: it.anchor.rect, items: [] };
+    g.items.push(it);
+    byAnchor.set(it.anchor.id, g);
+  }
+  const out = new Map<string, CulturePlacement>();
+  for (const { rect, items: group } of byAnchor.values()) {
+    bands(rect, group.map((it) => it.facts.areaM2 ?? it.facts.plantCount ?? 1)).forEach((band, i) => {
+      const it = group[i];
+      if (!it) return;
+      const footprint = { x: Math.round(band.x), y: Math.round(band.y), w: Math.max(1, Math.round(band.w)), h: Math.max(1, Math.round(band.h)) };
+      const n = plantCountOf(it.facts, (band.w * band.h) / 10_000);
+      out.set(it.id, { footprint, position: { x: Math.round(band.x + band.w / 2), y: Math.round(band.y + band.h / 2) }, plants: { count: n.count, drawn: 0, source: n.source } });
+    });
+  }
+  const placed = [...out.values()];
+  drawnCounts(placed.map((p) => fillCount(p.footprint, tileCm))).forEach((d, i) => { const p = placed[i]; if (p) p.plants.drawn = d; });
+  return out;
+}
