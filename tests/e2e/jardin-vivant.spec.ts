@@ -222,3 +222,21 @@ test.describe('avatars en action', () => {
     await expect(avatar).toHaveAttribute('data-avatar-animated', 'false');
   });
 });
+
+test.describe('avatars entre les zones', () => {
+  test('[LIV-05] 20 s sans interaction : la boucle s\'arrête et l\'avatar reste à sa place', async ({ page }) => {
+    const { gardenId: id } = await freshGarden('hugo', { watered: true });
+    // Horloge de la page en marche (pour le chargement), puis avancée d'un coup : `performance.now` et les images d'animation suivent.
+    await page.clock.install();
+    await login(page, 'hugo');
+    await page.goto(`/app/jardins/${id}?vue=jardin`);
+    await sceneReady(page);
+    const view = page.getByTestId('garden-view');
+    await expect(view).toHaveAttribute('data-ticker', 'running');
+    const avatar = page.getByTestId(`avatar-${userId('hugo')}`);
+    const before = await avatar.boundingBox();
+    await page.clock.runFor(21_000);
+    await expect(view).toHaveAttribute('data-ticker', 'stopped');
+    expect(await avatar.boundingBox()).toEqual(before);
+  });
+});
