@@ -10,7 +10,7 @@ const APP = [
   `/app/jardins/${gardenId('canal')}`, `/app/jardins/${gardenId('canal')}/zones`,
   `/app/jardins/${gardenId('canal')}/zones/${zoneId('canal', 'serre')}`,
   `/app/jardins/${gardenId('canal')}/membres`, `/app/jardins/${gardenId('canal')}/parametres`,
-  `/app/jardins/${gardenId('canal')}/cultures`, `/app/jardins/${gardenId('canal')}/cultures/nouvelle`, `/app/jardins/${gardenId('canal')}/saisons`,
+  `/app/jardins/${gardenId('canal')}/cultures`, `/app/jardins/${gardenId('canal')}/cultures/nouvelle`, `/app/jardins/${gardenId('canal')}/saisons`, `/app/jardins/${gardenId('canal')}/histoire`,
   '/app/plantes', '/app/plantes/proposer', `/app/plantes/${seedId('species:tomate')}`,
   `/app/jardins/${gardenId('canal')}/tickets`, `/app/jardins/${gardenId('canal')}/tickets?vue=kanban`, `/app/jardins/${gardenId('canal')}/tickets?vue=calendrier`,
   `/app/jardins/${gardenId('canal')}/tickets/nouveau`, '/app/taches', '/app/notifications', '/app/parametres/notifications',
