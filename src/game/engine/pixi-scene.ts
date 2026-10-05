@@ -69,6 +69,8 @@ async function loadAtlas(url?: string, into = new Map<string, Texture>()): Promi
 const GRASS_COLORS: Record<Season, number> = { spring: 0x8fbb5c, summer: 0x86b257, autumn: 0x9caa58, winter: 0xb9c7ae };
 /** Opacité des tuiles d'herbe sur la teinte de fond : la texture reste visible, le contraste baisse. */
 const GRASS_TEXTURE_ALPHA = 0.5;
+/** Côté d'un bloc précalculé du fond, en tuiles (§9.1). */
+const GROUND_BLOCK = 16;
 
 /** Couleurs des assets de substitution (palette des maquettes). */
 const ZONE_COLORS: Record<string, number> = {
@@ -177,7 +179,12 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     });
   }
 
+  /** Fond déjà dessiné pour cette saison, cette emprise et cette scène : rien à refaire. */
+  let groundKey = '';
   function drawGround(s: SceneSnapshot) {
+    const key = `${s.sceneZoneId ?? ''}|${s.ambient.season}|${s.bounds.w}x${s.bounds.h}|${s.tileSizeCm}|${atlas ? loadedSeason : 'none'}`;
+    if (key === groundKey) return;
+    groundKey = key;
     clearLayer(ground);
     const w = px(s.bounds.w);
     const h = px(s.bounds.h);
@@ -191,11 +198,22 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     }
     ground.addChild(new Graphics().rect(0, 0, w, h).fill(s.sceneZoneId ? 0xe9e4da : GRASS_COLORS[s.ambient.season]));
     if (s.sceneZoneId || !atlas) return;
+    // Précalculé par blocs de 16 × 16 tuiles (§9.1, audit lot 10 M2) : une texture par bloc au lieu d'un sprite par
+    // tuile à chaque image de la boucle d'animation.
     const tiles = new Container();
-    for (let y = 0; y * TILE_PX < h; y += 1) {
-      for (let x = 0; x * TILE_PX < w; x += 1) {
-        const t = tex(grassFrame(s.ambient.season, variantAt(x, y, 3) as 1 | 2 | 3)); // as: variantAt(…, 3) ∈ {1, 2, 3}
-        if (t) tiles.addChild(Object.assign(new Sprite(t), { x: x * TILE_PX, y: y * TILE_PX, width: TILE_PX, height: TILE_PX }));
+    const cols = Math.ceil(w / TILE_PX);
+    const rows = Math.ceil(h / TILE_PX);
+    for (let by = 0; by < rows; by += GROUND_BLOCK) {
+      for (let bx = 0; bx < cols; bx += GROUND_BLOCK) {
+        const block = new Container();
+        for (let y = by; y < Math.min(rows, by + GROUND_BLOCK); y += 1) {
+          for (let x = bx; x < Math.min(cols, bx + GROUND_BLOCK); x += 1) {
+            const t = tex(grassFrame(s.ambient.season, variantAt(x, y, 3) as 1 | 2 | 3)); // as: variantAt(…, 3) ∈ {1, 2, 3}
+            if (t) block.addChild(Object.assign(new Sprite(t), { x: x * TILE_PX, y: y * TILE_PX, width: TILE_PX, height: TILE_PX }));
+          }
+        }
+        block.cacheAsTexture(true);
+        tiles.addChild(block);
       }
     }
     tiles.alpha = GRASS_TEXTURE_ALPHA;
