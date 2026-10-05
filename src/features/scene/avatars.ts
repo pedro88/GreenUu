@@ -69,15 +69,12 @@ type ActionRow = {
   has_photo: boolean | null; stage: string | null; method: string | null; action_tag: string | null;
 };
 
-/** Dernier événement rattaché à une zone, par acteur, parmi les événements qui vérifient `where`. */
-async function lastActions(tx: Executor, where: SQL, limit: number): Promise<ActionRow[]> {
-  const rows = await tx.execute<ActionRow>(sql`
-    select distinct on (e.actor_id) e.actor_id, z.zone_id, p.pseudo, e.type, e.occurred_at, j.kind as journal_kind, j.intervention,
-      (e.payload->>'hasPhoto')::boolean as has_photo, e.payload->>'stage' as stage, c.method, t.action_tag
-    from domain_event e
-    join garden_member m on m.garden_id = e.garden_id and m.user_id = e.actor_id and m.left_at is null
-    join user_profile p on p.user_id = e.actor_id
-    left join journal_entry j on e.subject_type = 'journal_entry' and j.id = e.subject_id
+/**
+ * Zone d'un événement de domaine (`e`) : directement, ou par sa culture, son ticket, son entrée de journal, sa récolte
+ * ou son bilan ; expose aussi `j`, `t` et `c` (entrée de journal, ticket, culture) pour l'action rejouée.
+ */
+// Fragment constant, sans aucune donnée d'entrée : `sql.raw` ne reçoit rien de l'utilisateur.
+const EVENT_ZONE = sql.raw(`left join journal_entry j on e.subject_type = 'journal_entry' and j.id = e.subject_id
     left join ticket t on e.subject_type = 'ticket' and t.id = e.subject_id
     left join culture c on e.subject_type = 'culture' and c.id = e.subject_id
     cross join lateral (select case e.subject_type
@@ -87,7 +84,17 @@ async function lastActions(tx: Executor, where: SQL, limit: number): Promise<Act
       when 'journal_entry' then coalesce(j.zone_id, (select jc.zone_id from culture jc where jc.id = j.culture_id))
       when 'harvest' then (select hc.zone_id from harvest h join culture hc on hc.id = h.culture_id where h.id = e.subject_id)
       when 'result' then (select rc.zone_id from culture_result r join culture rc on rc.id = r.culture_id where r.id = e.subject_id)
-    end as zone_id) z
+    end as zone_id) z`);
+
+/** Dernier événement rattaché à une zone, par acteur, parmi les événements qui vérifient `where`. */
+async function lastActions(tx: Executor, where: SQL, limit: number): Promise<ActionRow[]> {
+  const rows = await tx.execute<ActionRow>(sql`
+    select distinct on (e.actor_id) e.actor_id, z.zone_id, p.pseudo, e.type, e.occurred_at, j.kind as journal_kind, j.intervention,
+      (e.payload->>'hasPhoto')::boolean as has_photo, e.payload->>'stage' as stage, c.method, t.action_tag
+    from domain_event e
+    join garden_member m on m.garden_id = e.garden_id and m.user_id = e.actor_id and m.left_at is null
+    join user_profile p on p.user_id = e.actor_id
+    ${EVENT_ZONE}
     where ${where} and e.actor_id is not null and z.zone_id is not null
     order by e.actor_id, e.occurred_at desc, e.id desc
     limit ${limit}`);
@@ -103,16 +110,7 @@ async function zonesVisited(tx: Executor, gardenId: string, actorIds: string[], 
   const rows = await tx.execute<{ actor_id: string; zone_id: string; at: Date | string }>(sql`
     select e.actor_id, z.zone_id, max(e.occurred_at) as at
     from domain_event e
-    left join journal_entry j on e.subject_type = 'journal_entry' and j.id = e.subject_id
-    left join ticket t on e.subject_type = 'ticket' and t.id = e.subject_id
-    left join culture c on e.subject_type = 'culture' and c.id = e.subject_id
-    cross join lateral (select case e.subject_type
-      when 'zone' then e.subject_id
-      when 'culture' then c.zone_id
-      when 'ticket' then coalesce(t.zone_id, (select tc.zone_id from culture tc where tc.id = t.culture_id))
-      when 'journal_entry' then coalesce(j.zone_id, (select jc.zone_id from culture jc where jc.id = j.culture_id))
-      when 'harvest' then (select hc.zone_id from harvest h join culture hc on hc.id = h.culture_id where h.id = e.subject_id)
-    end as zone_id) z
+    ${EVENT_ZONE}
     where e.garden_id = ${gardenId} and e.occurred_at > ${since.toISOString()}::timestamptz and e.occurred_at <= ${now.toISOString()}::timestamptz
       and e.actor_id in ${sql`(${sql.join(actorIds.map((id) => sql`${id}::uuid`), sql`, `)})`} and z.zone_id is not null
     group by e.actor_id, z.zone_id
