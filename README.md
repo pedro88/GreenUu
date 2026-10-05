@@ -73,16 +73,26 @@ L'XP est calculée de façon synchrone, dans la transaction de chaque action : l
 
 ## Vue jardin et éditeur de plan
 
-La page d'un jardin s'ouvre en vue jardin (PixiJS) ou en vue classique, selon `?vue=jardin|classique` puis la préférence enregistrée (`/app/parametres/affichage`). Le moteur vit dans `src/game/` :
-- `GardenCanvas` est le seul module qui importe PixiJS, chargé par `next/dynamic` sans SSR ;
-- les stores Zustand et la boucle de rendu à la demande sont testés sans navigateur ;
-- la couche DOM accessible porte toute l'interaction (`zone-<id>`, `culture-<id>`, `data-state`).
+La page d'un jardin s'ouvre en vue jardin (PixiJS) ou en vue classique, selon `?vue=jardin|classique` puis la préférence enregistrée (`/app/parametres/affichage`). Le domaine (instantané de scène, phases, terrain, trajets, timelapse) est dans `src/features/scene/`, en fonctions pures (`*.pure.ts`) partagées par le serveur, l'éditeur et le moteur. Le rendu est dans `src/game/` :
 
-Le domaine (instantané de scène, phase visuelle, commandes du plan) est dans `src/features/scene/`.
+| Module | Rôle |
+|---|---|
+| `GardenCanvas.tsx` | Composant client chargé par `next/dynamic` sans SSR ; seul point d'entrée du moteur |
+| `engine/pixi-scene.ts` | Assemble les calques et décide quoi redessiner (seul le terrain quand seules les cases changent) |
+| `engine/ground.ts` | Fond d'herbe et terrain peint, précalculés par blocs de 16 × 16 tuiles |
+| `engine/zones.ts` | Planches et carrés en pièces, serres de face, sillons des rangs |
+| `engine/plants.ts` | Plants (la bande de chaque culture est remplie, environ un par tuile), bulles d'état, objets posés |
+| `engine/avatars.ts` | Trajets des avatars dans leurs zones, chemins entre zones, rencontres ; images composées au premier besoin |
+| `engine/atlas.ts`, `palette.ts`, `loop.ts` | Chargement des atlas, couleurs, boucle de rendu à la demande |
+| `PlanEditor.tsx`, `plan/` | Éditeur de plan : état, gestes et enregistrement ; palettes et formulaire par dimensions |
+| `HistoryPlayer.tsx` | Histoire du jardin (`/histoire`) : chaque image est un instantané de scène calculé côté client |
 
-- **Assets** : on utilise les sprites **HD** (`out_hd/` : tuile de 64 px, avatar de 64 × 96 px). `pnpm assets:sync` copie l'atlas et toutes ses pages (`atlas.json`, `atlas-1.json`…, listées par `related_multi_packs`) dans `public/sprites/atlas/`, les objets de déco dans `public/sprites/decor/`, et la frame de face de chaque élément d'avatar dans `public/sprites/avatar/` (les vignettes ne chargent jamais l'atlas). Le moteur affiche les textures à la résolution des assets : la grille logique reste à 32 px. Sans atlas, il dessine des formes de substitution.
-- **Déco** : outil « Déco » de l'éditeur (permission `decor:place`, souvent plus large que `plan:edit`). Un objet verrouillé est refusé côté serveur (`LOCKED_ITEM`). Un objet ★ (hôtel à insectes, nichoir, mare) peut être déclaré comme pratique depuis sa feuille dans la vue jardin.
-- **Avatars** : dans les jardins collectifs, les membres actifs dans les 24 h apparaissent au pied de la zone de leur dernière action.
+- **Accessibilité** : la couche DOM porte toute l'interaction (`zone-<id>`, `culture-<id>`, `data-state`, `data-plants`, `data-avatar-action`) ; le canvas est `aria-hidden`.
+- **Assets** : sprites **HD** (`out_hd/` : tuile de 64 px, avatar de 64 × 96 px). `pnpm assets:sync` copie l'atlas de la scène, les atlas de saison (`saison-*.json`, seul celui de la saison courante est chargé), l'atlas de l'avatar, les atlas des actions jouées (chargés seulement quand un avatar les joue), les vignettes de l'éditeur, les objets de déco et la frame de face de chaque élément d'avatar. La grille logique reste à 32 px. Sans atlas, le moteur dessine des formes de substitution.
+- **Terrain** : peint case par case (pinceau, rectangle, gomme, pipette), rendu en dual-grid avec des transitions à fond transparent ; haies et clôtures se raccordent seules. Planches, haies et arbres suivent la saison.
+- **Objets** : la déco exige `decor:place` ; les aménagements ponctuels (point d'eau, récupérateur, arbre existant, portail) exigent `plan:edit`. Un objet ★ peut être déclaré comme pratique depuis sa feuille.
+- **Avatars** : dans tous les types de jardin, les membres actifs dans les 24 h (et l'utilisateur courant) font le tour des zones où ils ont agi et y rejouent leur dernière action réelle.
+- **Histoire du jardin** : un instantané du plan est écrit chaque jour de modification, dans la même transaction ; `/histoire` les rejoue en timelapse avec les phases réelles des cultures.
 - **CSP** : la production interdit `eval`. PixiJS est donc chargé avec `pixi.js/unsafe-eval` (shaders précompilés) ; ne pas retirer cet import.
 - **Éditeur** (`/plan`) : les gestes deviennent des commandes, enregistrées par lots tout ou rien avec contrôle de version. En cas de `CONFLICT`, l'éditeur recharge l'instantané et rejoue les commandes non confirmées.
 
@@ -96,6 +106,7 @@ L'éditeur est sur `/app/profil/avatar` (et en première étape de `/bienvenue`)
 - **Un seul « maintenant »** pour les e2e : `E2E_NOW` (`tests/e2e/db.ts`, le 14 octobre 2026 à 10:00 UTC) est passé au serveur (`APP_NOW`) et au seed (`SEED_REFERENCE_DATE`). Les données du seed sont datées relativement à cet instant.
 - **Hors-ligne** : le service worker (`public/sw.js`) met en cache les pages visitées et leurs fichiers ; les saisies rapides hors-ligne vont dans une file IndexedDB rejouée au retour du réseau. Sous `next dev`, Turbopack charge les modules à la demande par son serveur de développement : la vue jardin et la page hors-ligne ne s'hydratent donc pas hors-ligne. Les e2e OFF-01 et OFF-06 n'exigent le canvas, le compteur et la liste qu'en build de production : `pnpm test:e2e:offline`, exigé par la définition de « terminé » d'un lot.
 - **Build séparé** : les e2e compilent dans `.next-e2e` (`NEXT_DIST_DIR`), pour ne pas gêner un `pnpm dev` ouvert. En CI, `next build` puis `next start` ; en local, `next dev`.
+- **Une exécution e2e à la fois** : toutes les exécutions partagent la base `greenu_test` et le port 3100 ; une seconde exécution lancée en même temps refuse de démarrer (verrou `reports/.e2e.lock`).
 - **Traçabilité** : chaque critère d'acceptation du §12 est cité par son ID dans le titre d'au moins un test ; `pnpm test:spec` le vérifie pour le lot courant (`spec.config.json`).
 
 ## Qualité
@@ -105,8 +116,26 @@ L'éditeur est sur `/app/profil/avatar` (et en première étape de `/bienvenue`)
 
 ## Cycle de travail
 
-Chaque lot du §15 suit le même cycle, décrit dans [CLAUDE.md](CLAUDE.md) : branche `lot-N/<slug>`, développement, audit général (`AUDIT-*.md`), audit e2e (`E2E-AUDIT-*.md`), puis corrections sur une branche `audit-fix/…`. Les rapports d'audit restent à la racine, avec l'état de chaque constat.
+Chaque lot du §15 suit le même cycle, décrit dans [CLAUDE.md](CLAUDE.md) : branche `lot-N/<slug>`, développement, audit général (`AUDIT-*.md`), audit e2e (`E2E-AUDIT-*.md`), puis corrections sur une branche `audit-fix/…`. Les rapports du cycle en cours restent à la racine, avec l'état de chaque constat ; ceux des cycles terminés sont archivés dans [docs/audits/](docs/audits/).
+
+## Dépannage
+
+| Symptôme | Cause et remède |
+|---|---|
+| `ECONNREFUSED ::1:5434` au lancement des tests | La base Docker est arrêtée (redémarrage de la machine) : `docker compose up -d` |
+| En dev, la vue jardin plante avec une erreur d'un ancien code (`t.geometry`…) | Un service worker d'avant le correctif sert d'anciens fichiers : outils de développement → Application → « Clear site data », puis recharger |
+| `http://localhost:3100 is already used` au lancement des e2e | Une autre exécution e2e tourne (ou un serveur e2e est resté ouvert) : attendre sa fin, ou arrêter le `next dev --port 3100` restant |
+| `pnpm` introuvable dans un hook Git lancé par un client graphique | Le hook ajoute `~/.local/share/pnpm` et `~/.local/bin` au `PATH` ; sinon, définir `PNPM_HOME` |
 
 ## Architecture
 
 Voir SPEC.md §3 : UI → Server Actions (`defineAction`) → services (logique pure, testable) → dépôts scopés par jardin. Toute lecture ou écriture vérifie l'adhésion au jardin ; la base impose en plus des clés étrangères composites `(garden_id, …)`.
+
+| Dossier | Contenu |
+|---|---|
+| `src/app/` | Routes App Router (pages, layouts, gardes `requireGardenScope`) |
+| `src/features/<domaine>/` | Un dossier par domaine : `schema.ts` (Zod), `service.ts` (règles, écriture), `queries.ts` (lecture), `actions.ts` (Server Actions), `*.pure.ts` (logique sans base), `ui/` |
+| `src/server/` | Base (`db/schema`), autorisation (`authz`), événements de domaine, jobs, sécurité (CSP) |
+| `src/lib/` | Utilitaires sans dépendance au domaine : énumérations, dates (`iso-date.ts` pour les dates calendaires), erreurs, Zod |
+| `src/game/` | Vue jardin, éditeur de plan, histoire (voir plus haut) |
+| `tests/` | `unit/`, `integration/` (base réelle, transaction annulée), `e2e/` (Playwright) ; aides partagées dans `tests/geometry.ts`, `tests/integration/fixtures.ts`, `tests/e2e/helpers.ts` |
