@@ -152,7 +152,9 @@ test.describe('vue jardin', () => {
     await login(page, 'bruno');
     await page.goto(`/app/jardins/${CANAL}?vue=jardin`);
     await sceneReady(page);
-    await page.getByTestId(`zone-${zoneId('canal', 'serre')}`).click();
+    // La feuille de la serre s'ouvre depuis la liste des éléments ; toucher la serre elle-même y entre (MAP-14).
+    await page.getByTestId('scene-list').locator('summary').click();
+    await page.getByTestId('scene-list').getByRole('button', { name: 'Serre', exact: true }).click();
     await page.getByTestId('zone-enter').click();
     await expect(page.getByTestId('scene-breadcrumb')).toContainText('Serre');
     await expect(page.getByTestId(`zone-${zoneId('canal', 't1')}`)).toBeVisible();
@@ -160,6 +162,16 @@ test.describe('vue jardin', () => {
     await expect(page.getByTestId(`zone-${zoneId('canal', 'a')}`)).toHaveCount(0);
     await page.getByTestId('breadcrumb-root').click();
     await expect(page.getByTestId(`zone-${zoneId('canal', 'a')}`)).toHaveCount(1);
+  });
+
+  test('[MAP-14] toucher la serre l\'efface et ouvre sa scène intérieure', async ({ page }) => {
+    await login(page, 'bruno');
+    await page.goto(`/app/jardins/${CANAL}?vue=jardin`);
+    await sceneReady(page);
+    await page.getByTestId(`zone-${zoneId('canal', 'serre')}`).click();
+    await expect(page).toHaveURL(new RegExp(`scene=${zoneId('canal', 'serre')}`));
+    await expect(page.getByTestId('scene-breadcrumb')).toContainText('Serre');
+    await expect(page.getByTestId(`zone-${zoneId('canal', 't1')}`)).toBeVisible();
   });
 
   test('[MAP-12] après une bascule en vue classique, la vue classique s\'ouvre par défaut à la reconnexion', async ({ page, browser }) => {
@@ -242,7 +254,8 @@ test.describe('éditeur de plan', () => {
     const box = await grid.boundingBox();
     const tile = Number(await grid.getAttribute('data-tile-px'));
     await page.mouse.click((box?.x ?? 0) + Number(await grid.getAttribute('data-origin-x')) + 3 * tile, (box?.y ?? 0) + Number(await grid.getAttribute('data-origin-y')) + 3 * tile);
-    await page.getByTestId('erase-confirm').click();
+    // Zone sans culture : la gomme l'archive sans confirmation (PLN-09).
+    await expect(page.getByTestId('erase-confirm')).toHaveCount(0);
     await expect(editor).toHaveAttribute('data-plan-version', String(version + 2));
     expect(await zoneAt(TILLEULS, geometry)).toBeNull();
 
@@ -254,6 +267,47 @@ test.describe('éditeur de plan', () => {
     await expect(editor).toHaveAttribute('data-plan-version', String(version + 3));
     const typed = await zoneAt(TILLEULS, geometry);
     expect(typed).toMatchObject({ name: drawn?.name, type: drawn?.type, parent: drawn?.parent, geometry: drawn?.geometry });
+  });
+
+  /** Position écran du centre d'une tuile de la grille de l'éditeur. */
+  async function tileCenter(page: Page, t: { x: number; y: number }) {
+    const grid = page.getByTestId('plan-grid');
+    await grid.scrollIntoViewIfNeeded();
+    const box = await grid.boundingBox();
+    if (!box) throw new Error('grille absente');
+    const tile = Number(await grid.getAttribute('data-tile-px'));
+    return { x: box.x + Number(await grid.getAttribute('data-origin-x')) + (t.x + 0.5) * tile, y: box.y + Number(await grid.getAttribute('data-origin-y')) + (t.y + 0.5) * tile };
+  }
+
+  test('[PLN-09] la gomme demande confirmation pour une planche qui porte des cultures en cours', async ({ page }) => {
+    await login(page, 'bruno');
+    await page.goto(`/app/jardins/${CANAL}/plan`);
+    await sceneReady(page, 'plan-editor');
+    const version = await page.getByTestId('plan-editor').getAttribute('data-plan-version');
+    await page.getByTestId('tool-eraser').click();
+    // Planche A1 : de (1, 1) à (4, 6), avec des cultures en cours dans le seed.
+    const at = await tileCenter(page, { x: 2, y: 3 });
+    await page.mouse.click(at.x, at.y);
+    await expect(page.getByTestId('erase-confirm')).toBeVisible();
+    await page.getByRole('button', { name: 'Annuler' }).click();
+    await expect(page.getByTestId('plan-status')).toHaveText(/enregistr/i);
+    await expect(page.getByTestId('plan-editor')).toHaveAttribute('data-plan-version', version ?? '');
+  });
+
+  test('[PLN-10] un double-clic sur la serre ouvre l\'éditeur de son intérieur, et le fil d\'Ariane ramène dehors', async ({ page }) => {
+    await login(page, 'bruno');
+    await page.goto(`/app/jardins/${CANAL}/plan`);
+    await sceneReady(page, 'plan-editor');
+    // Serre : de (14, 10) à (21, 15).
+    const at = await tileCenter(page, { x: 17, y: 12 });
+    await page.mouse.dblclick(at.x, at.y);
+    await expect(page).toHaveURL(new RegExp(`/plan\\?scene=${zoneId('canal', 'serre')}`));
+    await expect(page.getByTestId('plan-breadcrumb')).toContainText('Serre');
+    // L'éditeur repart sur la scène intérieure : ses zones sont celles de la serre.
+    await expect(page.getByTestId('dims-parent').locator('option', { hasText: /^Table 1(,|$)/ })).toHaveCount(1);
+    await expect(page.getByTestId('dims-parent').locator('option', { hasText: /^Parcelle A(,|$)/ })).toHaveCount(0);
+    await page.getByTestId('plan-breadcrumb-root').click();
+    await expect(page).toHaveURL(new RegExp(`/jardins/${CANAL}/plan$`));
   });
 
   test('un geste fait pendant un enregistrement lent est enregistré ensuite, sans faux conflit (audit lot 7, M3)', async ({ page }) => {
