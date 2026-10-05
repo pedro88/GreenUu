@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { gardenId } from './ids';
+import { gardenId, zoneId } from './ids';
 import { login } from './helpers';
 
 /* Histoire du jardin (SPEC §12.11) : sur les Tilleuls, trois saisons de cultures du seed. */
@@ -7,6 +7,32 @@ import { login } from './helpers';
 const HISTORY = `/app/jardins/${gardenId('tilleuls')}/histoire`;
 
 test.describe('histoire du jardin', () => {
+  test('un non-membre connecté qui ouvre /histoire reçoit la page 403, sans aucune donnée du jardin dans le HTML (E2E-TLP-05b)', async ({ page }) => {
+    await login(page, 'hugo');
+    const res = await page.goto(HISTORY);
+    await expect(page.getByTestId('page-403')).toBeVisible();
+    // La page transporte tout l'historique dans ses props : rien ne doit partir, même hors du texte visible.
+    const html = (await res?.text()) ?? '';
+    for (const leak of ['Les Tilleuls', 'Planche 1', 'Noire de Crimée', zoneId('tilleuls', 'p1')]) expect(html, leak).not.toContain(leak);
+  });
+
+  test('hors animations réduites, l\'histoire se lit toute seule, et Pause l\'arrête (E2E-TLP-08)', async ({ page }) => {
+    await page.clock.install();
+    await login(page, 'alice');
+    await page.goto(HISTORY);
+    const history = page.getByTestId('history');
+    await expect(history).toHaveAttribute('data-canvas', 'ready');
+    await expect(history).toHaveAttribute('data-playing', 'true');
+    const start = Number(await history.getAttribute('data-index'));
+    await page.clock.runFor(1_000);
+    await expect.poll(async () => Number(await history.getAttribute('data-index'))).toBeGreaterThan(start + 2);
+    await page.getByTestId('history-play').click();
+    await expect(history).toHaveAttribute('data-playing', 'false');
+    const paused = await history.getAttribute('data-index');
+    await page.clock.runFor(1_000);
+    await expect(history).toHaveAttribute('data-index', paused ?? '');
+  });
+
   test('[TLP-07] [TLP-03] une image par semaine, la date et la saison affichées ; au pas d\'un mois, moins d\'images ; avant le premier instantané, un bandeau', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await login(page, 'alice');
