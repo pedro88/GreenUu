@@ -10,8 +10,8 @@ import { domainEvent, harvest, journalEntry, xpLedgerEntry } from '../../src/ser
 import type { Actor } from '../../src/server/action-core';
 import { addMember, makeGarden, makeZone, speciesRefId } from './fixtures';
 import { inTx, makeUser, scopedCtx } from './helpers';
+import { rect } from '../geometry';
 
-const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
 
 async function setup(tx: Tx, owner: Actor) {
   const gardenId = await makeGarden(tx, owner);

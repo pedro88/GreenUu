@@ -1,5 +1,10 @@
 #!/bin/sh
 # Pre-push (audit 2026-10-03, M3) : rien ne part vers le dépôt distant (et donc le CI) sans typecheck, lint et tests au vert.
 set -e
+# Un client Git graphique (VS Code lancé depuis le bureau) ne lit pas
+# ~/.bashrc : pnpm, installé dans ~/.local/bin, manquerait au PATH.
+PATH="${PNPM_HOME:-$HOME/.local/share/pnpm}:$HOME/.local/bin:$PATH"
+export PATH
+command -v pnpm >/dev/null || { echo "hook : pnpm introuvable dans le PATH ($PATH)" >&2; exit 1; }
 echo "pre-push : pnpm verify"
 pnpm verify

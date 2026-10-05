@@ -8,6 +8,7 @@ import { emit } from '@/server/events/emit';
 import { myTasksToday } from '../ticket/queries';
 import { awardQuest } from './service';
 import { astronomicalSeason, pickDaily, pickWeekly, seasonalTemplates, seasonBounds, type SEASONAL_TEMPLATES, weekBounds, type WeeklyCandidate } from './quests.pure';
+import { addDaysIso } from '@/lib/iso-date';
 
 async function todayOf(tx: Executor, userId: string, now: Date) {
   const [p] = await tx.select({ tz: userProfile.timezone }).from(userProfile).where(eq(userProfile.userId, userId)).limit(1);
@@ -28,7 +29,7 @@ export async function generateQuests(tx: Executor, userId: string, now: Date) {
   }
   // Hebdomadaires : étapes prévues dans les 7 jours, bilans en attente.
   const week = weekBounds(today);
-  const inSeven = new Date(new Date(`${today}T12:00:00Z`).getTime() + 7 * 86_400_000).toISOString().slice(0, 10);
+  const inSeven = addDaysIso(today, 7);
   const stages = await tx.select({ stageId: cultureStage.id, cultureId: culture.id, stage: cultureStage.stage, plannedOn: cultureStage.plannedOn, label: sql<string>`${species.commonNames}->'fr'->>0` })
     .from(cultureStage).innerJoin(culture, eq(culture.id, cultureStage.cultureId)).innerJoin(species, eq(species.id, culture.speciesId))
     .where(and(eq(culture.createdBy, userId), isNull(culture.deletedAt), isNull(cultureStage.actualOn), gte(cultureStage.plannedOn, today), lte(cultureStage.plannedOn, inSeven))).limit(10);

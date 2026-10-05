@@ -11,3 +11,9 @@ tests/e2e/.auth/
 *.tsbuildinfo
 reports/
 .next-e2e/
+out/
+out_hd/
+out_md/
+out_nes/
+out_switch/
+out_v2/

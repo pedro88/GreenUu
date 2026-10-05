@@ -80,7 +80,8 @@ git switch -c lot-N/<slug>
 - Fin de cycle, **à faire par l'utilisateur ou sur demande explicite** :
   1. relire le diff `git diff lot-N/<slug>...audit-fix/YYYY-MM-DD` ;
   2. merger `audit-fix/YYYY-MM-DD` dans `lot-N/<slug>` ;
-  3. merger `lot-N/<slug>` dans `main`.
+  3. merger `lot-N/<slug>` dans `main` ;
+  4. archiver les rapports du cycle (`AUDIT-*.md`, `E2E-AUDIT-*.md`) dans `docs/audits/` (`git mv`) : seuls ceux du cycle en cours restent à la racine.
 
 ## Règles générales
 

@@ -10,9 +10,9 @@ import type { Tx } from '../../src/server/db/client';
 import { culture } from '../../src/server/db/schema';
 import { addMember, makeGarden, makeZone, speciesRefId } from './fixtures';
 import { inTx, makeUser, NOW, recordingQueue, scopedCtx } from './helpers';
+import { rect } from '../geometry';
 
 const deps = (tx: Tx): ActionDeps => ({ db: tx, clock: fixedClock(NOW), appUrl: 'http://localhost:3000', jobs: () => recordingQueue() });
-const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
 
 describe('statistiques (§12.10)', () => {
   it('[STAT-06] taux de réussite par espèce et par saison ; les cultures en cours n\'entrent pas dans le calcul', () =>

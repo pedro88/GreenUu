@@ -1,4 +1,5 @@
 import type { CultureStatus, Method, Stage, VisualModel } from '@/lib/enums';
+import { daysBetweenIso } from '@/lib/iso-date';
 
 /* Phase visuelle d'une culture (SPEC §9.3) et états visuels (§9.4). Fonctions pures, sans base ni DOM. */
 
@@ -30,9 +31,7 @@ export type PhaseInput = {
 
 export type PhaseResult = { phase: VisualPhase; progress: number; needsConfirmation: boolean; visible: boolean };
 
-const DAY = 86_400_000;
-const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`);
-const daysBetween = (a: string, b: string) => Math.round((day(b) - day(a)) / DAY);
+const daysBetween = daysBetweenIso;
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 
 /** Saison hivernale de l'hémisphère : décembre à février au nord, juin à août au sud. */
@@ -75,7 +74,7 @@ export function visualPhase(c: PhaseInput, today: string, opts: { south?: boolea
     from = next.plannedOn;
     to = upcoming[1]?.plannedOn ?? null;
   }
-  const progress = from && to && day(to) > day(from) ? clamp01(daysBetween(from, today) / daysBetween(from, to)) : 0;
+  const progress = from && to && to > from ? clamp01(daysBetween(from, today) / daysBetween(from, to)) : 0;
 
   const perennialLike = c.perennial || c.visualModel === 'perennial' || c.visualModel === 'tree';
   if (perennialLike && isWinter(today, opts.south ?? false)) {

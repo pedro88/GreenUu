@@ -1,36 +1,13 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { decorAtPosition, freshGarden, terrainCells } from './db';
 import { gardenId, userId } from './ids';
-import { login } from './helpers';
+import { login, sceneReady, strokeTiles } from './helpers';
 
 /*
  * Jardin vivant (SPEC §9, §12.10) : terrain peint case par case, vocabulaire de l'éditeur, saisons du terrain et avatars
  * qui rejouent leur dernière action. Chaque test d'édition a son propre jardin : les versions du plan ne croisent pas
  * celles des autres tests.
  */
-
-async function sceneReady(page: Page, testId = 'garden-view') {
-  await expect(page.getByTestId(testId)).toHaveAttribute('data-canvas', 'ready');
-  await expect(page.getByTestId(testId).locator('canvas')).toHaveCount(1);
-}
-
-/** Trace un trait sur la grille du plan, de case en case, à partir des attributs exposés par la couche (§9.6). */
-async function strokeTiles(page: Page, path: { x: number; y: number }[]) {
-  const grid = page.getByTestId('plan-grid');
-  await grid.scrollIntoViewIfNeeded();
-  const box = await grid.boundingBox();
-  if (!box) throw new Error('grille absente');
-  const tile = Number(await grid.getAttribute('data-tile-px'));
-  const ox = Number(await grid.getAttribute('data-origin-x'));
-  const oy = Number(await grid.getAttribute('data-origin-y'));
-  const at = (t: { x: number; y: number }) => ({ x: box.x + ox + (t.x + 0.5) * tile, y: box.y + oy + (t.y + 0.5) * tile });
-  const [first, ...rest] = path;
-  if (!first) return;
-  await page.mouse.move(at(first).x, at(first).y);
-  await page.mouse.down();
-  for (const p of rest) await page.mouse.move(at(p).x, at(p).y, { steps: 8 });
-  await page.mouse.up();
-}
 
 test.describe('terrain peint', () => {
   test('[PNT-01] une allée en L de 8 cases peinte au pinceau est enregistrée, et la vue la dessine avec ses transitions', async ({ page }) => {

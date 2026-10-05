@@ -55,13 +55,14 @@ function withTimeout(promise, ms) {
 
 async function page(request) {
   const cache = await caches.open(PAGES);
+  const generation = pagesGeneration;
   try {
     const response = await (DEV ? fetch(request) : withTimeout(fetch(request), NETWORK_TIMEOUT_MS));
     const url = new URL(response.url || request.url);
     // Session terminée (renvoi vers la connexion) : les pages authentifiées en cache ne doivent plus servir.
     if (url.pathname.startsWith('/connexion')) {
       await clearPages();
-    } else if (response.ok && response.type === 'basic' && !response.redirected) {
+    } else if (response.ok && response.type === 'basic' && !response.redirected && generation === pagesGeneration) {
       await cache.put(request, response.clone());
     }
     return response;
@@ -99,7 +100,14 @@ async function asset(event) {
   return refresh;
 }
 
+/**
+ * Génération du cache des pages : chaque vidage l'incrémente. Une mise en cache commencée avant un vidage (navigation
+ * ou préchargement en cours quand la session se perd) ne réécrit plus la page (E2E-OFF-09).
+ */
+let pagesGeneration = 0;
+
 async function clearPages() {
+  pagesGeneration += 1;
   const c = await caches.open(PAGES);
   for (const key of await c.keys()) if (new URL(key.url).pathname !== OFFLINE_URL) await c.delete(key);
 }
@@ -118,6 +126,7 @@ self.addEventListener('message', (event) => {
   // Page vue une seule fois (OFF-01) : le client envoie sa page et les ressources déjà chargées.
   if (data.type === 'warm' && Array.isArray(data.urls)) {
     event.waitUntil((async () => {
+      const generation = pagesGeneration;
       const pages = await caches.open(PAGES);
       const statics = await caches.open(STATIC);
       for (const raw of data.urls.slice(0, 300)) {
@@ -127,7 +136,7 @@ self.addEventListener('message', (event) => {
           if (url.href === data.page) {
             if (!(await pages.match(url.href))) {
               const r = await fetch(url.href, { credentials: 'same-origin' });
-              if (r.ok && !r.redirected) await pages.put(url.href, r);
+              if (r.ok && !r.redirected && generation === pagesGeneration) await pages.put(url.href, r);
             }
           } else if (isStatic(url) && !(await statics.match(url.href))) {
             const r = await fetch(url.href);

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { effectiveRestriction, zoneAllows, zoneGrantsEdit } from '@/server/authz/zone-access';
-import { buildTree, checkGeometry, childPath, depthOf, effectiveEnvironment, effectiveSurface, subtreeHeight, wouldCreateCycle, type RectGeometry } from '@/features/zone/tree';
+import { buildTree, checkGeometry, childPath, depthOf, effectiveEnvironment, effectiveSurface, subtreeHeight, wouldCreateCycle } from '@/features/zone/tree';
+import { rect } from '../geometry';
 
-const rect = (x: number, y: number, w: number, h: number): RectGeometry => ({ v: 1, kind: 'rect', x, y, w, h });
 
 describe('arbre des zones', () => {
   it('[ZON-01] chemins et profondeurs', () => {

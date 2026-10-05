@@ -10,12 +10,13 @@ import { setZoneGeometry } from '../../src/features/zone/service';
 import { decorItem, decorPlacement, garden, planSnapshot, terrainCell, terrainElement } from '../../src/server/db/schema';
 import type { Tx } from '../../src/server/db/client';
 import { addMember, makeGarden, makeZone } from './fixtures';
+import { planVersion } from './fixtures';
 import { inTx, makeUser, NOW, scopedCtx } from './helpers';
+import { rect } from '../geometry';
 
 /* Jardin vivant (SPEC §4.2.6, §9.5, §9.7, §12.10) : terrain peint, instantanés du plan, avatars qui rejouent leur action. */
 
-const rect = (x: number, y: number, w: number, h: number) => ({ v: 1 as const, kind: 'rect' as const, x, y, w, h });
-const version = async (tx: Tx, gardenId: string) => (await tx.select({ v: garden.planVersion }).from(garden).where(eq(garden.id, gardenId)))[0]?.v ?? -1;
+const version = planVersion;
 const cellsOf = (tx: Tx, gardenId: string) => tx.select({ x: terrainCell.x, y: terrainCell.y, kind: terrainCell.kind }).from(terrainCell).where(eq(terrainCell.gardenId, gardenId));
 const snapshotsOf = (tx: Tx, gardenId: string) => tx.select().from(planSnapshot).where(eq(planSnapshot.gardenId, gardenId));
 

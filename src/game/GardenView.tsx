@@ -149,14 +149,19 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
     stores.camera.setState(fitRect(scene, z.geometry, el.clientWidth, el.clientHeight));
   };
 
-  /** Deux touchers sur la même zone à moins de 300 ms : zoom ; sinon le toucher ouvre sa feuille, ou entre dans la serre. */
-  const lastTap = useRef<{ id: string; at: number } | null>(null);
-  const tapZone = (z: SceneZone, now: number) => {
+  /**
+   * Deux touchers sur la même zone à moins de 300 ms : zoom (POL-03) ; un seul : sa feuille s'ouvre une fois ce délai
+   * passé, pour que la feuille ne recouvre pas la zone avant le second toucher. Une serre s'ouvre tout de suite.
+   */
+  const pendingTap = useRef<{ id: string; timer: number } | null>(null);
+  useEffect(() => () => { if (pendingTap.current) window.clearTimeout(pendingTap.current.timer); }, []);
+  const tapZone = (z: SceneZone) => {
     if (z.hasInterior) { enterZone(z); return; }
-    const double = lastTap.current?.id === z.id && now - lastTap.current.at < DOUBLE_TAP_MS;
-    lastTap.current = double ? null : { id: z.id, at: now };
-    if (double) zoomTo(z);
-    else open('zone', z.id);
+    const pending = pendingTap.current;
+    if (pending) window.clearTimeout(pending.timer);
+    pendingTap.current = null;
+    if (pending?.id === z.id) { zoomTo(z); return; }
+    pendingTap.current = { id: z.id, timer: window.setTimeout(() => { pendingTap.current = null; open('zone', z.id); }, DOUBLE_TAP_MS) };
   };
 
   const selectedZone = selected?.kind === 'zone' ? zonesById.get(selected.id) : undefined;
@@ -186,7 +191,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
             <button key={z.id} type="button" ref={(el) => { if (el) entityRefs.current.set(z.id, el); }} className={`${styles.entity} ${styles.zone}`} data-testid={`zone-${z.id}`}
               data-type={z.typeCode} aria-label={z.label} style={{ left: z.geometry.x * k, top: z.geometry.y * k, width: z.geometry.w * k, height: z.geometry.h * k, zIndex: z.depth + 1 }}
               onFocus={() => reveal((z.geometry?.x ?? 0) + (z.geometry?.w ?? 0) / 2, (z.geometry?.y ?? 0) + (z.geometry?.h ?? 0) / 2)}
-              onClick={(e) => tapZone(z, e.timeStamp)} onDoubleClick={() => zoomTo(z)} />
+              onClick={() => tapZone(z)} onDoubleClick={() => zoomTo(z)} />
           ) : null)}
           {placedCultures.map((c) => c.position ? (
             <button key={c.id} type="button" ref={(el) => { if (el) entityRefs.current.set(c.id, el); }} className={`${styles.entity} ${styles.culture}`} data-testid={`culture-${c.id}`}

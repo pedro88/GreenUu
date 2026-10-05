@@ -12,5 +12,5 @@ export async function currentSeasonLabel(tx: Executor, scope: Scope, now: Date, 
   const today = localDate(now, timezone);
   const year = seasonYearOf(today, g.startMonth);
   const [s] = await tx.select({ year: season.year }).from(season).where(and(eq(season.gardenId, scope.gardenId), eq(season.year, year))).limit(1);
-  return { year: s?.year ?? year, astronomical: astronomicalSeason(today, g.lat) };
+  return { year: s?.year ?? year, astronomical: astronomicalSeason(today, g.lat < 0) };
 }

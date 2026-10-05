@@ -1,6 +1,7 @@
 import type { CultureStatus, Method, Stage, VisualModel } from '@/lib/enums';
+import { addDaysIso, addMonthsIso, weekStartIso } from '@/lib/iso-date';
 import { DECOR_BY_CODE } from '../decor/catalog';
-import { astronomicalSeason } from '../progression/quests.pure';
+import { astronomicalSeason } from '../season/season.pure';
 import { layoutCultures, type PlantingFacts } from './fill.pure';
 import { anchorRect, rowStrips } from './rows.pure';
 import { decorRect, sceneBounds } from './grid.pure';
@@ -35,25 +36,17 @@ export type HistoryData = {
   cultures: HistoryCulture[];
 };
 
-const addIsoDays = (iso: string, n: number) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
-const addMonths = (iso: string, n: number) => {
-  const [y = 2000, m = 1, d = 1] = iso.split('-').map(Number);
-  const date = new Date(Date.UTC(y, m - 1 + n, 1));
-  const last = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
-  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(Math.min(d, last)).padStart(2, '0')}`;
-};
-
 /**
  * Dates des images (TLP-07) : de `from` à `to` incluses, au pas choisi, sur 3 ans au plus ; au-delà de 160 images, on
  * garde les plus récentes. Un mois garde le même quantième (borné à la fin du mois).
  */
 export function frameDates(from: string, to: string, step: HistoryStep): string[] {
-  const floor = addMonths(to, -12 * MAX_YEARS);
+  const floor = addMonthsIso(to, -12 * MAX_YEARS);
   let d = from < floor ? floor : from;
   const out: string[] = [];
   for (let i = 0; d <= to && i < 2000; i += 1) {
     out.push(d);
-    d = step === 'day' ? addIsoDays(d, 1) : step === 'week' ? addIsoDays(d, 7) : addMonths(from < floor ? floor : from, i + 1);
+    d = step === 'day' ? addDaysIso(d, 1) : step === 'week' ? addDaysIso(d, 7) : addMonthsIso(from < floor ? floor : from, i + 1);
   }
   return out.slice(-MAX_FRAMES);
 }
@@ -148,12 +141,6 @@ export function sceneAt(data: HistoryData, date: string, o: { bounds: { w: numbe
 /** Poids maximal des instantanés transmis au navigateur (audit lot 10, M1). */
 export const MAX_HISTORY_BYTES = 2 * 1024 * 1024;
 
-/** Lundi de la semaine d'une date ISO (clé de regroupement). */
-const weekOf = (iso: string) => {
-  const d = new Date(`${iso}T12:00:00Z`);
-  return addIsoDays(iso, -((d.getUTCDay() + 6) % 7));
-};
-
 /**
  * Instantanés transmis à l'histoire (audit lot 10, M1) : la scène extérieure seulement (la seule affichée). S'ils
  * dépassent `maxBytes` : le dernier de chaque semaine, puis un sur deux, un sur trois… jusqu'à tenir ; le plus récent
@@ -171,7 +158,7 @@ export function thinSnapshots(list: { takenOn: string; payload: PlanSnapshotV1 }
   }));
   const size = (l: typeof outside) => l.reduce((n, s) => n + JSON.stringify(s.payload).length, 0);
   if (size(outside) <= maxBytes) return outside;
-  const weekly = outside.filter((s, i) => weekOf(outside[i + 1]?.takenOn ?? '9999-12-31') !== weekOf(s.takenOn));
+  const weekly = outside.filter((s, i) => weekStartIso(outside[i + 1]?.takenOn ?? '9999-12-31') !== weekStartIso(s.takenOn));
   for (let k = 1; k <= weekly.length; k += 1) {
     const kept = weekly.filter((_, i) => (weekly.length - 1 - i) % k === 0);
     if (size(kept) <= maxBytes || kept.length <= 1) return kept;

@@ -1,5 +1,5 @@
-import { addDays as addDaysDate, differenceInCalendarDays, format, parseISO } from 'date-fns';
 import { STAGES, type CultureStatus, type DensityUnit, type HarvestUnit, type Method, type Stage, type VisualModel } from '@/lib/enums';
+import { addDaysIso, daysBetweenIso } from '@/lib/iso-date';
 
 /** Fonctions pures sur les étapes d'une culture (RG-CUL-01 à 06, RG-JRN-05). Dates ISO `YYYY-MM-DD`. */
 
@@ -33,9 +33,8 @@ export function anchorStage(method: Method): Stage {
   return method === 'direct_sowing' || method === 'tray_sowing' ? 'sowing' : 'planting';
 }
 
-const iso = (d: Date) => format(d, 'yyyy-MM-dd');
-export const addDaysIso = (date: string, days: number) => iso(addDaysDate(parseISO(date), days));
-export const daysBetween = (a: string, b: string) => differenceInCalendarDays(parseISO(b), parseISO(a));
+export { addDaysIso };
+export const daysBetween = daysBetweenIso;
 
 /**
  * Dates prévues par défaut à partir de la date d'ancrage et de la durée de culture de l'espèce.

@@ -9,7 +9,7 @@ import { useStore } from 'zustand';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogActions, DialogClose } from '@/components/ui/Dialog';
-import { Field, NativeSelect, TextInput } from '@/components/ui/Field';
+import { Field, NativeSelect } from '@/components/ui/Field';
 import { decorRect, deduceParent, sceneBounds, TILE_PX, TILE_SIZES_CM, tileAt, tilesToGeometry, type Tile } from '@/features/scene/grid.pure';
 import { ROW_TYPE, withRowGeometry } from '@/features/scene/rows.pure';
 import { replay, validateLocal, type EditorScene, type LocalIssue, type ZoneTypeInfo } from '@/features/scene/plan.pure';
@@ -17,10 +17,9 @@ import { TMP_PREFIX, type PlanCommand } from '@/features/scene/plan.schema';
 import { applyPlanCommandsAction } from '@/features/scene/actions';
 import type { SceneSnapshot, SceneZone } from '@/features/scene/snapshot.schema';
 import { useZoneTypeLabel } from '@/features/zone/ui/zoneLabels';
-import { TERRAIN_CELL_KINDS, type TerrainCellKind } from '@/lib/enums';
+import type { TerrainCellKind } from '@/lib/enums';
 import { brushCells, cellKey, cellsRect, MAX_CELLS_PER_COMMAND, paintCells, rectCells, eraseCells, type CellPos } from '@/features/scene/terrain.pure';
-import { decorThumb, isFixture } from '@/features/decor/catalog';
-import { CELL_THUMBS, GENERIC_ZONE_THUMB, planThumbUrl, ZONE_THUMBS } from './plan-thumbs';
+import { isFixture } from '@/features/decor/catalog';
 import type { DecorCatalog } from '@/features/decor/service';
 import { useUnlockLabel } from '@/features/progression/ui/unlockLabel';
 import type { SceneDecor } from '@/features/scene/snapshot.schema';
@@ -29,6 +28,8 @@ import type { RectGeometry } from '@/features/zone/tree';
 import type { CanvasStatus } from './GardenCanvas';
 import { createCameraStore, createDraftStore, createHistoryStore, createSceneStore, createSelectionStore, type GameStores, type Tool } from './stores';
 import { fitCamera, useViewportGestures } from './viewport';
+import { DimensionsForm, type ZoneTypeOption } from './plan/DimensionsForm';
+import { ObjectPalette, TerrainPalette, ZoneTypePalette, type TerrainMode } from './plan/palettes';
 import styles from './GardenView.module.scss';
 
 const GardenCanvas = dynamic(() => import('./GardenCanvas'), { ssr: false });
@@ -36,7 +37,6 @@ const GardenCanvas = dynamic(() => import('./GardenCanvas'), { ssr: false });
 /** Enregistrement automatique 1,5 s après le dernier geste (§9.7). */
 const AUTOSAVE_MS = 1500;
 
-type ZoneTypeOption = { id: string; code: string; label: string; isCustom: boolean; hasInteriorDefault: boolean; canHostCultures: boolean };
 type Status = 'saved' | 'pending' | 'saving' | 'conflict' | 'error';
 
 /** Pas de cultures ni d'avatars dans l'éditeur : références stables, pour que le moteur ne redessine que ce qui change. */
@@ -63,7 +63,6 @@ function remap(cmds: PlanCommand[], ids: Record<string, string>): PlanCommand[] 
 /** Éditeur de plan (SPEC §9.7, PAGES.md §4 `/plan`). */
 export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: SceneSnapshot; zoneTypes: ZoneTypeOption[]; decorCatalog: DecorCatalog }) {
   const t = useTranslations('plan');
-  const tTerrain = useTranslations('terrainKinds');
   const tDecor = useTranslations('decor');
   const tPractices = useTranslations('practices');
   const unlockLabel = useUnlockLabel();
@@ -86,7 +85,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
   const [tool, setTool] = useState<Tool>('select');
   const [zoneTypeId, setZoneTypeId] = useState(zoneTypes.find((z) => z.code === 'bed')?.id ?? zoneTypes[0]?.id ?? '');
   const [cellKind, setCellKind] = useState<TerrainCellKind>('path');
-  const [terrainMode, setTerrainMode] = useState<'brush' | 'rect' | 'erase' | 'pick'>('brush');
+  const [terrainMode, setTerrainMode] = useState<TerrainMode>('brush');
   const [brushSize, setBrushSize] = useState<1 | 2 | 3>(1);
   const [status, setStatus] = useState<Status>('saved');
   const [issue, setIssue] = useState<LocalIssue | null>(null);
@@ -459,68 +458,14 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
       <p id="plan-help-decor" className={styles.toolHelp} hidden={tool !== 'decor'} data-testid="plan-help-decor">{t('help_decor')}</p>
       <p id="plan-help-select" className={styles.toolHelp} hidden={tool !== 'select' || !canEdit} data-testid="plan-help-select">{t('help_select')}</p>
       <p id="plan-help-eraser" className={styles.toolHelp} hidden={tool !== 'eraser'} data-testid="plan-help-eraser">{t('help_eraser')}</p>
-      {tool === 'zone' ? (
-        <div className={styles.decorPalette} role="group" aria-label={t('zoneType')} data-testid="zone-types">
-          <ul>
-            {zoneTypes.map((z) => (
-              <li key={z.id}>
-                <button type="button" className={styles.decorItem} aria-pressed={zoneTypeId === z.id} disabled={!canEdit} data-testid={`zone-type-${z.code}`} onClick={() => setZoneTypeId(z.id)}>
-                  <img src={planThumbUrl(ZONE_THUMBS[z.code] ?? GENERIC_ZONE_THUMB)} alt="" width={32} height={32} />
-                  <span>{typeLabel(z)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+      {tool === 'zone' ? <ZoneTypePalette zoneTypes={zoneTypes} typeLabel={typeLabel} selected={zoneTypeId} disabled={!canEdit} onPick={setZoneTypeId} /> : null}
       {tool === 'terrain' ? (
-        <div className={styles.decorPalette} data-testid="terrain-palette">
-          <div role="group" aria-label={t('terrainModes')} className={styles.modes}>
-            {(['brush', 'rect', 'erase', 'pick'] as const).map((m) => (
-              <Button key={m} variant="secondary" className={styles.tool} aria-pressed={terrainMode === m} disabled={!canEdit} onClick={() => setTerrainMode(m)} data-testid={`terrain-mode-${m}`}>{t(`mode_${m}`)}</Button>
-            ))}
-            {terrainMode === 'brush' ? (
-              <span role="group" aria-label={t('brushSize')}>
-                {([1, 2, 3] as const).map((n) => (
-                  <Button key={n} variant="secondary" className={styles.tool} aria-pressed={brushSize === n} disabled={!canEdit} onClick={() => setBrushSize(n)} data-testid={`brush-${n}`}>{t(`brush_${n}`)}</Button>
-                ))}
-              </span>
-            ) : null}
-          </div>
-          <ul role="group" aria-label={t('terrainKind')}>
-            {TERRAIN_CELL_KINDS.map((k) => (
-              <li key={k}>
-                <button type="button" className={styles.decorItem} aria-pressed={cellKind === k} disabled={!canEdit} data-testid={`terrain-kind-${k}`} onClick={() => { setCellKind(k); if (terrainMode === 'erase' || terrainMode === 'pick') setTerrainMode('brush'); }}>
-                  <img src={planThumbUrl(CELL_THUMBS[k])} alt="" width={32} height={32} />
-                  <span>{tTerrain(k)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <TerrainPalette mode={terrainMode} brushSize={brushSize} kind={cellKind} disabled={!canEdit}
+          onMode={setTerrainMode} onBrushSize={setBrushSize} onKind={(k) => { setCellKind(k); if (terrainMode === 'erase' || terrainMode === 'pick') setTerrainMode('brush'); }} />
       ) : null}
       {tool === 'decor' ? (
-        <div className={styles.decorPalette} role="group" aria-label={tDecor('paletteLabel')} data-testid="decor-palette">
-          {[{ key: 'decor', items: decorCatalog.filter((d) => !isFixture(d.code)), allowed: canDecor }, { key: 'fixtures', items: decorCatalog.filter((d) => isFixture(d.code)), allowed: canEdit }].map((group) => (
-            <section key={group.key} aria-label={group.key === 'fixtures' ? t('fixturesTitle') : tDecor('paletteLabel')}>
-              {group.key === 'fixtures' ? <h3>{t('fixturesTitle')}</h3> : null}
-              <ul>
-                {group.items.map((d) => (
-                  <li key={d.code}>
-                    <button type="button" className={styles.decorItem} aria-pressed={decorCode === d.code} aria-disabled={!d.unlocked || !group.allowed} data-locked={d.unlocked && group.allowed ? 'false' : 'true'} data-testid={`decor-item-${d.code}`}
-                      onClick={() => { setDecorCode(d.code); setDecorHint(!group.allowed ? t('fixtureLocked') : d.unlocked ? null : tDecor('lockedHint', { condition: unlockLabel(d.condition) })); }}>
-                      <img src={decorThumb(d.spriteKey)} alt="" width={32} height={32} />
-                      <span>{tDynamic(tDecor, `item_${d.code}`, d.code)}{d.practiceCode ? ' ★' : ''}</span>
-                      {d.unlocked ? null : <small>{unlockLabel(d.condition)}</small>}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-          {decorCode === 'sign' ? <Field label={tDecor('signLabel')}>{(p) => <TextInput {...p} maxLength={40} value={signLabel} onChange={(e) => setSignLabel(e.target.value)} data-testid="decor-sign-label" />}</Field> : null}
-          <p role="status" data-testid="decor-hint">{decorHint ?? tDecor('placeHint')}</p>
-        </div>
+        <ObjectPalette catalog={decorCatalog} selected={decorCode} canDecor={canDecor} canEdit={canEdit} hint={decorHint} signLabel={signLabel} onSignLabel={setSignLabel}
+          onPick={(code, hint) => { setDecorCode(code); setDecorHint(hint); }} />
       ) : null}
       {placing ? <Alert tone="info">{t('placing')}</Alert> : null}
 
@@ -556,41 +501,5 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
         </DialogActions>
       </Dialog>
     </div>
-  );
-}
-
-/** Formulaire alternatif (§9.6, PLN-02) : produit la même commande que le dessin à la souris. */
-function DimensionsForm({ zones, types, typeLabel, defaultType, onSubmit }: {
-  zones: SceneZone[]; types: ZoneTypeOption[]; typeLabel: (z: ZoneTypeOption) => string; defaultType: string;
-  onSubmit: (v: { name: string; zoneTypeId: string; parentId: string | null; geometry: RectGeometry }) => boolean;
-}) {
-  const t = useTranslations('plan');
-  const [v, setV] = useState({ name: '', zoneTypeId: defaultType, parentId: '', x: 0, y: 0, w: 100, h: 100 });
-  const num = (key: 'x' | 'y' | 'w' | 'h', label: string) => (
-    <Field label={label}>{(p) => <TextInput {...p} inputMode="numeric" value={v[key]} onChange={(e) => setV({ ...v, [key]: Number(e.target.value) || 0 })} data-testid={`dims-${key}`} />}</Field>
-  );
-  return (
-    <form method="post" className={styles.drawer} data-testid="zone-form-dims" onSubmit={(e) => {
-      e.preventDefault();
-      if (onSubmit({ name: v.name.trim() || typeLabel(types.find((x) => x.id === v.zoneTypeId) ?? { id: '', code: '', label: '', isCustom: true, hasInteriorDefault: false, canHostCultures: true }), zoneTypeId: v.zoneTypeId, parentId: v.parentId || null, geometry: { v: 1, kind: 'rect', x: v.x, y: v.y, w: v.w, h: v.h } })) setV({ ...v, name: '' });
-    }}>
-      <h2>{t('dimsTitle')}</h2>
-      <div className={styles.dims}>
-        <Field label={t('dimsName')}>{(p) => <TextInput {...p} value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} data-testid="dims-name" />}</Field>
-        <Field label={t('zoneType')}>{(p) => (
-          <NativeSelect {...p} value={v.zoneTypeId} onChange={(e) => setV({ ...v, zoneTypeId: e.target.value })} data-testid="dims-type">
-            {types.map((z) => <option key={z.id} value={z.id}>{typeLabel(z)}</option>)}
-          </NativeSelect>
-        )}</Field>
-        <Field label={t('dimsParent')}>{(p) => (
-          <NativeSelect {...p} value={v.parentId} onChange={(e) => setV({ ...v, parentId: e.target.value })} data-testid="dims-parent">
-            <option value="">{t('dimsNoParent')}</option>
-            {zones.map((z) => <option key={z.id} value={z.id}>{z.label}</option>)}
-          </NativeSelect>
-        )}</Field>
-        {num('x', t('dimsX'))}{num('y', t('dimsY'))}{num('w', t('dimsW'))}{num('h', t('dimsH'))}
-        <Button type="submit" data-testid="dims-submit">{t('dimsSubmit')}</Button>
-      </div>
-    </form>
   );
 }

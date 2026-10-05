@@ -1,14 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 import { E2E_NOW, TEST_DB } from './tests/e2e/db';
+import { acquireE2eLock } from './tests/e2e/lock';
 
 const PORT = 3100;
+
+acquireE2eLock();
 
 /** E2E sur la base `greenu_test`, remise à zéro et seedée au démarrage du serveur (SPEC §13). */
 export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: false,
   workers: 1,
-  retries: process.env.CI ? 1 : 0,
+  // Aucune relance, CI comprise : un test qui ne passe qu'au second essai est un test instable à corriger, pas un test vert.
+  retries: 0,
   timeout: 60_000,
   expect: { timeout: 10_000 },
   reporter: [['list'], ['json', { outputFile: 'reports/playwright.json' }], ['html', { open: 'never' }]],

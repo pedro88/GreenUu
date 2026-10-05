@@ -31,7 +31,8 @@
   },
   "pnpm": {
     "overrides": {
-      "baseline-browser-mapping": "2.11.26"
+      "baseline-browser-mapping": "2.11.26",
+      "@esbuild-kit/core-utils>esbuild": "^0.25.0"
     }
   },
   "dependencies": {

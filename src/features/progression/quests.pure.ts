@@ -21,15 +21,8 @@ export function pickWeekly(candidates: WeeklyCandidate[]): WeeklyCandidate[] {
   return [...candidates].sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'stage' ? -1 : 1)).slice(0, WEEKLY_MAX);
 }
 
-export type AstronomicalSeason = 'spring' | 'summer' | 'autumn' | 'winter';
-
-/** Saison astronomique selon l'hémisphère (QST-04 : mars au sud = automne). Bornes au 21 des mois de solstice et d'équinoxe. */
-export function astronomicalSeason(date: string, south: boolean): AstronomicalSeason {
-  const md = date.slice(5);
-  const north: AstronomicalSeason = md >= '03-20' && md < '06-21' ? 'spring' : md >= '06-21' && md < '09-22' ? 'summer' : md >= '09-22' && md < '12-21' ? 'autumn' : 'winter';
-  if (!south) return north;
-  return ({ spring: 'autumn', summer: 'winter', autumn: 'spring', winter: 'summer' } as const)[north];
-}
+export { astronomicalSeason, type AstronomicalSeason } from '../season/season.pure';
+import { astronomicalSeason, type AstronomicalSeason } from '../season/season.pure';
 
 /** Modèles saisonniers : ne s'appliquent qu'aux jardins qui ont des zones concernées (pas de quête artificielle). */
 export const SEASONAL_TEMPLATES = [
