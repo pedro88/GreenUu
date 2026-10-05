@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogActions, DialogClose } from '@/components/ui/Dialog';
 import { Field, NativeSelect, TextInput } from '@/components/ui/Field';
 import { decorRect, deduceParent, sceneBounds, TILE_PX, TILE_SIZES_CM, tileAt, tilesToGeometry, type Tile } from '@/features/scene/grid.pure';
+import { ROW_TYPE, withRowGeometry } from '@/features/scene/rows.pure';
 import { replay, validateLocal, type EditorScene, type LocalIssue, type ZoneTypeInfo } from '@/features/scene/plan.pure';
 import { TMP_PREFIX, type PlanCommand } from '@/features/scene/plan.schema';
 import { applyPlanCommandsAction } from '@/features/scene/actions';
@@ -134,14 +135,15 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     return stores.camera.subscribe(apply);
   }, [stores]);
 
-  const save = async () => {
+  /** Enregistre les gestes en attente ; vrai si rien ne reste à enregistrer ou si l'enregistrement a réussi. */
+  const save = async (): Promise<boolean> => {
     if (saveTimer.current) window.clearTimeout(saveTimer.current);
     const h = history.getState();
-    if (!h.done.length) return;
+    if (!h.done.length) return true;
     if (inFlight.current) {
       // Un geste pendant un enregistrement : on réenregistre quand la nouvelle base sera arrivée.
       resaveAfter.current = true;
-      return;
+      return false;
     }
     inFlight.current = true;
     const sent = h.done;
@@ -152,6 +154,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
       setStatus(history.getState().done.length > sent.length ? 'pending' : 'saved');
       setConflicts(0);
       router.refresh();
+      return true;
     } else if (res.error.code === 'CONFLICT' && res.error.message === 'planVersionConflict') {
       // PLN-03 : on recharge l'instantané, puis on rejoue les commandes non confirmées (effet ci-dessus).
       conflictPending.current = true;
@@ -161,6 +164,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
       inFlight.current = false;
       setStatus('error');
     }
+    return false;
   };
   const schedule = () => {
     if (saveTimer.current) window.clearTimeout(saveTimer.current);
@@ -170,7 +174,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
 
   /** Un geste validé localement (RG-ZON-05) devient une commande ; sinon on explique pourquoi. */
   const push = (cmd: PlanCommand) => {
-    const problem = validateLocal(history.getState().current, cmd);
+    const problem = validateLocal(history.getState().current, cmd, types);
     setIssue(problem);
     if (problem) return false;
     history.getState().push(cmd);
@@ -205,22 +209,50 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
   }, [snapshot]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sceneZones = current.zones;
+  /** Zones telles qu'affichées : chaque rang sur sa bande de planche. */
+  const shownZones = useMemo(() => withRowGeometry(sceneZones, current.tileSizeCm), [sceneZones, current.tileSizeCm]);
   const createAt = (geometry: RectGeometry, name?: string, parentOverride?: string | null) => {
-    const parent = parentOverride !== undefined ? (parentOverride ? sceneZones.find((z) => z.id === parentOverride) ?? null : null) : deduceParent(geometry, sceneZones);
+    // Un rang n'accueille pas de zone : le parent déduit est la planche qui le porte.
+    const parent = parentOverride !== undefined ? (parentOverride ? sceneZones.find((z) => z.id === parentOverride) ?? null : null) : deduceParent(geometry, sceneZones.filter((z) => z.typeCode !== ROW_TYPE));
     const type = types.get(zoneTypeId);
     const n = sceneZones.filter((z) => z.typeCode === type?.code).length + 1;
     return push({ op: 'createZone', clientId: tmpId(), name: name ?? t('newZoneName', { type: type?.label ?? '', n }), zoneTypeId, parentId: parent?.id ?? null, geometry });
   };
 
   // ---- Gestes sur la grille ----
-  const cmAt = (e: ReactPointerEvent) => {
+  const cmAt = (e: { clientX: number; clientY: number }) => {
     const box = gridRef.current?.getBoundingClientRect();
     const c = stores.camera.getState();
     const s = TILE_PX / current.tileSizeCm;
     return { x: ((e.clientX - (box?.left ?? 0) - c.x) / c.zoom) / s, y: ((e.clientY - (box?.top ?? 0) - c.y) / c.zoom) / s };
   };
-  const zoneAt = (p: { x: number; y: number }) => sceneZones.filter((z) => z.geometry && p.x >= z.geometry.x && p.y >= z.geometry.y && p.x < z.geometry.x + z.geometry.w && p.y < z.geometry.y + z.geometry.h)
+  /** Zone sous le pointeur ; les rangs seulement pour la gomme (sinon un clic sur la planche la sélectionne, rangs compris). */
+  const zoneAt = (p: { x: number; y: number }, rows = false) => shownZones.filter((z) => (rows || z.typeCode !== ROW_TYPE) && z.geometry && p.x >= z.geometry.x && p.y >= z.geometry.y && p.x < z.geometry.x + z.geometry.w && p.y < z.geometry.y + z.geometry.h)
     .sort((a, b) => b.depth - a.depth)[0];
+  /** Sous-arbre d'une zone, elle comprise : la gomme l'archive en entier (RG-ZON-06). */
+  const subtreeOf = (id: string) => {
+    const out = new Set([id]);
+    for (let grew = true; grew;) {
+      grew = false;
+      for (const z of sceneZones) if (z.parentId && out.has(z.parentId) && !out.has(z.id)) { out.add(z.id); grew = true; }
+    }
+    return out;
+  };
+  /**
+   * Gomme sans confirmation (demande de l'utilisateur du 2026-10-05), annulable tant que ce n'est pas enregistré. Elle
+   * ne demande confirmation que si l'archivage terminerait des cultures (RG-ZON-06) ou viderait une serre.
+   */
+  const eraseZone = (z: SceneZone) => {
+    const gone = subtreeOf(z.id);
+    const risky = sceneZones.some((x) => gone.has(x.id) && x.hasInterior && !x.id.startsWith(TMP_PREFIX)) || snapshot.cultures.some((c) => gone.has(c.zoneId));
+    if (risky) setErasing(z);
+    else push({ op: 'archiveZone', zoneId: z.id, finishActiveCultures: true });
+  };
+  /** Entrer dans une serre (double-clic) : les gestes en attente sont enregistrés, puis l'éditeur de son intérieur s'ouvre. */
+  const enterZone = async (z: SceneZone) => {
+    if (!z.hasInterior || z.id.startsWith(TMP_PREFIX)) return;
+    if (await save()) router.push(`/app/jardins/${snapshot.gardenId}/plan?scene=${z.id}`);
+  };
   /** Emprise d'un objet : pied au bas centre, `w` × `h` tuiles à l'échelle courante. */
   const decorAt = (p: { x: number; y: number }) => {
     const k = current.tileSizeCm;
@@ -228,10 +260,12 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
   };
   /** Pied d'un objet posé sur une tuile : bas de la tuile, centré sur son emprise. */
   const footAt = (tile: Tile, w: number) => ({ x: Math.max(0, Math.round(tile.x * current.tileSizeCm + (w * current.tileSizeCm) / 2)), y: (tile.y + 1) * current.tileSizeCm });
+  /** Le trait en cours gomme-t-il des cases (gomme de terrain, ou gomme générale hors zone et objet) ? */
+  const erasingCells = () => tool === 'eraser' || terrainMode === 'erase';
   /** Aperçu du trait en cours : les cases peintes ou gommées s'affichent avant l'enregistrement de la commande. */
   const previewStroke = () => {
     const at = [...stroke.current.values()];
-    const terrain = terrainMode === 'erase' ? eraseCells(current.terrain, at) : paintCells(current.terrain, at, cellKind);
+    const terrain = erasingCells() ? eraseCells(current.terrain, at) : paintCells(current.terrain, at, cellKind);
     stores.scene.getState().setSnapshot({ ...stores.scene.getState().snapshot, terrain });
   };
   /** Le trait devient une commande (découpée par 2 500 cases, PNT-07). */
@@ -240,7 +274,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     stroke.current = new Map();
     for (let i = 0; i < at.length; i += MAX_CELLS_PER_COMMAND) {
       const cells = at.slice(i, i + MAX_CELLS_PER_COMMAND);
-      push(terrainMode === 'erase' ? { op: 'eraseTerrain', cells } : { op: 'paintTerrain', kind: cellKind, cells });
+      push(erasingCells() ? { op: 'eraseTerrain', cells } : { op: 'paintTerrain', kind: cellKind, cells });
     }
   };
   const addToStroke = (cells: CellPos[]) => { for (const c of cells) stroke.current.set(cellKey(c[0], c[1]), c); };
@@ -297,8 +331,15 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
       return;
     }
     if (tool === 'eraser') {
-      const z = zoneAt(p);
-      if (z) setErasing(z);
+      const z = zoneAt(p, true);
+      if (z) { eraseZone(z); return; }
+      // Hors zone et objet, la gomme efface les cases de terrain qu'elle balaie.
+      e.stopPropagation();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      drag.current = { start: tile, mode: 'paint' };
+      stroke.current = new Map();
+      addToStroke(brushCells(tile, 1));
+      previewStroke();
       return;
     }
     const z = zoneAt(p);
@@ -330,7 +371,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     const p = cmAt(e);
     if (d.mode === 'paint') {
       const before = stroke.current.size;
-      addToStroke(brushCells(tileAt(p.x, p.y, current.tileSizeCm), terrainMode === 'erase' ? 1 : brushSize));
+      addToStroke(brushCells(tileAt(p.x, p.y, current.tileSizeCm), erasingCells() ? 1 : brushSize));
       if (stroke.current.size !== before) previewStroke();
       return;
     }
@@ -384,6 +425,13 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
     <div className={styles.root} data-testid="plan-editor" data-canvas={canvas.canvas} data-status={status} data-plan-version={snapshot.planVersion}>
       <div className={styles.toolbar}>
         <Link href={`/app/jardins/${snapshot.gardenId}?vue=jardin${snapshot.sceneZoneId ? `&scene=${snapshot.sceneZoneId}` : ''}`}>{t('backToGarden')}</Link>
+        {snapshot.breadcrumb.length > 1 ? (
+          <nav aria-label={t('breadcrumb')} className={styles.breadcrumb} data-testid="plan-breadcrumb">
+            {snapshot.breadcrumb.map((b, i) => (i === snapshot.breadcrumb.length - 1
+              ? <span key={b.zoneId ?? 'root'} aria-current="page">{b.name}</span>
+              : <Link key={b.zoneId ?? 'root'} href={`/app/jardins/${snapshot.gardenId}/plan${b.zoneId ? `?scene=${b.zoneId}` : ''}`} data-testid={`plan-breadcrumb-${b.zoneId ?? 'root'}`}>{b.name}</Link>))}
+          </nav>
+        ) : null}
         <span className={styles.status} role="status" data-testid="plan-status">{statusText}</span>
       </div>
       {!canEdit ? <Alert tone="info"><span data-testid="plan-readonly">{canDecor ? t('readOnlyDecor') : t('readOnly')}</span></Alert> : null}
@@ -392,7 +440,7 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
 
       <div className={styles.tools} role="toolbar" aria-label={t('toolsLabel')}>
         {(['select', 'zone', 'terrain', 'decor', 'eraser'] as const).map((x) => (
-          <Button key={x} variant="secondary" className={styles.tool} aria-pressed={tool === x} aria-describedby={x === 'zone' || x === 'terrain' || x === 'decor' ? `plan-help-${x}` : undefined}
+          <Button key={x} variant="secondary" className={styles.tool} aria-pressed={tool === x} aria-describedby={`plan-help-${x}`}
             disabled={x === 'select' ? false : x === 'decor' ? !canAny : x === 'eraser' ? !canAny : !canEdit} onClick={() => { setTool(x); setDecorHint(null); }} data-testid={`tool-${x}`}>{t(`tool_${x}`)}</Button>
         ))}
         <Field label={t('scale')}>{(p) => (
@@ -409,6 +457,8 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
       <p id="plan-help-zone" className={styles.toolHelp} hidden={tool !== 'zone'} data-testid="plan-help-zone">{t('help_zone')}</p>
       <p id="plan-help-terrain" className={styles.toolHelp} hidden={tool !== 'terrain'} data-testid="plan-help-terrain">{t('help_terrain')}</p>
       <p id="plan-help-decor" className={styles.toolHelp} hidden={tool !== 'decor'} data-testid="plan-help-decor">{t('help_decor')}</p>
+      <p id="plan-help-select" className={styles.toolHelp} hidden={tool !== 'select' || !canEdit} data-testid="plan-help-select">{t('help_select')}</p>
+      <p id="plan-help-eraser" className={styles.toolHelp} hidden={tool !== 'eraser'} data-testid="plan-help-eraser">{t('help_eraser')}</p>
       {tool === 'zone' ? (
         <div className={styles.decorPalette} role="group" aria-label={t('zoneType')} data-testid="zone-types">
           <ul>
@@ -477,7 +527,8 @@ export function PlanEditor({ snapshot, zoneTypes, decorCatalog }: { snapshot: Sc
       <div ref={viewport} className={styles.viewport} data-testid="plan-viewport">
         <GardenCanvas stores={stores} reducedMotion grid onStatus={setCanvas} />
         <div ref={gridRef} className={styles.planGrid} data-testid="plan-grid" data-tool={tool} data-tile-cm={current.tileSizeCm} role="application" aria-label={t('gridLabel')}
-          onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} />
+          onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp}
+          onDoubleClick={(e) => { if (tool !== 'select') return; const z = zoneAt(cmAt(e)); if (z) void enterZone(z); }} />
       </div>
 
       {canEdit ? <DimensionsForm zones={sceneZones} types={zoneTypes} typeLabel={typeLabel} defaultType={zoneTypeId}

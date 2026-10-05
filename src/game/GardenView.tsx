@@ -16,7 +16,8 @@ import { FormError } from '@/components/ui/FormError';
 import { useAction } from '@/components/ui/useAction';
 import { tDynamic } from '@/i18n/dynamic';
 import type { CanvasStatus, SceneStats } from './GardenCanvas';
-import { createCameraStore, createDraftStore, createSceneStore, createSelectionStore, type GameStores } from './stores';
+import { withRowGeometry } from '@/features/scene/rows.pure';
+import { createCameraStore, createDraftStore, createSceneStore, createSelectionStore, OPENING_MS, type GameStores } from './stores';
 import { ViewToggle } from './ViewToggle';
 import { fitCamera, fitRect, pxPerCm, useViewportGestures, WorldLayer } from './viewport';
 import styles from './GardenView.module.scss';
@@ -62,6 +63,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
   useEffect(() => {
     const prev = stores.scene.getState().snapshot;
     stores.scene.getState().setSnapshot(snapshot);
+    stores.scene.getState().setOpening(null);
     if (prev.sceneZoneId !== snapshot.sceneZoneId || prev.tileSizeCm !== snapshot.tileSizeCm) recenter();
   }, [snapshot]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(recenter, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -69,16 +71,18 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
   useViewportGestures(viewport, stores, { enabled: () => true });
 
   const k = pxPerCm(scene);
-  const zonesById = new Map(scene.zones.map((z) => [z.id, z]));
+  // Les rangs d'une planche sont affichés et touchés sur leur bande (`withRowGeometry`).
+  const sceneZones = useMemo(() => withRowGeometry(scene.zones, scene.tileSizeCm), [scene.zones, scene.tileSizeCm]);
+  const zonesById = new Map(sceneZones.map((z) => [z.id, z]));
   const phaseLabel = (c: SceneCulture) => t(`phase_${c.phase}`);
   // FIL-05 : un seul élément par culture, qui annonce son nombre réel (ou estimé) de plants.
   const plantsLabel = (c: SceneCulture) => (c.plants.source === 'input' ? t('plantsCount', { n: c.plants.count }) : c.plants.source === 'estimated' ? t('plantsEstimated', { n: c.plants.count }) : null);
   const cultureAria = (c: SceneCulture) => [c.label, zonesById.get(c.zoneId)?.name, phaseLabel(c), plantsLabel(c), ...c.states.map((s) => t(`state_${s}`))].filter(Boolean).join(', ');
 
   // Ordre de lecture de la scène (§9.6) : de haut en bas, puis de gauche à droite.
-  const placedZones = scene.zones.filter((z) => z.geometry).sort((a, b) => (a.geometry?.y ?? 0) - (b.geometry?.y ?? 0) || (a.geometry?.x ?? 0) - (b.geometry?.x ?? 0));
+  const placedZones = sceneZones.filter((z) => z.geometry).sort((a, b) => (a.geometry?.y ?? 0) - (b.geometry?.y ?? 0) || (a.geometry?.x ?? 0) - (b.geometry?.x ?? 0));
   const placedCultures = scene.cultures.filter((c) => c.position).sort((a, b) => (a.position?.y ?? 0) - (b.position?.y ?? 0) || (a.position?.x ?? 0) - (b.position?.x ?? 0));
-  const toPlace = { zones: scene.zones.filter((z) => !z.geometry), cultures: scene.cultures.filter((c) => !c.position) };
+  const toPlace = { zones: sceneZones.filter((z) => !z.geometry), cultures: scene.cultures.filter((c) => !c.position) };
   const tDecor = useTranslations('decor');
   const decorName = (d: SceneDecor) => tDynamic(tDecor, `item_${d.itemCode}`, d.itemCode);
   const placedDecor = [...scene.decor].sort((a, b) => a.y - b.y || a.x - b.x);
@@ -102,6 +106,30 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
     setFadeTarget(zoneId);
     window.setTimeout(() => router.push(sceneHref(zoneId)), FADE_MS);
   };
+  /**
+   * Entrer dans une serre d'un toucher (demande de l'utilisateur du 2026-10-05) : la caméra s'approche pendant que sa
+   * structure s'efface et laisse voir son sol, puis la scène intérieure s'ouvre avec ses planches. Instantané en
+   * animations réduites (MAP-09).
+   */
+  const enterZone = (z: SceneZone) => {
+    const el = viewport.current;
+    if (reducedMotion || !z.geometry || !el) { goScene(z.id); return; }
+    stores.selection.getState().select(null);
+    stores.scene.getState().setOpening(z.id);
+    const from = stores.camera.getState();
+    const to = fitRect(scene, z.geometry, el.clientWidth, el.clientHeight);
+    let start: number | null = null;
+    const step = (now: number) => {
+      start ??= now;
+      const p = Math.min(1, (now - start) / OPENING_MS);
+      const e = 1 - (1 - p) ** 3;
+      stores.camera.setState({ x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e, zoom: from.zoom + (to.zoom - from.zoom) * e });
+      if (p < 1) requestAnimationFrame(step);
+      else router.push(sceneHref(z.id));
+    };
+    requestAnimationFrame(step);
+  };
+
   /** Le focus clavier amène l'élément à l'écran (A11Y-03). */
   const reveal = (cx: number, cy: number) => {
     const el = viewport.current;
@@ -121,9 +149,10 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
     stores.camera.setState(fitRect(scene, z.geometry, el.clientWidth, el.clientHeight));
   };
 
-  /** Deux touchers sur la même zone à moins de 300 ms : zoom ; sinon le toucher ouvre sa feuille. */
+  /** Deux touchers sur la même zone à moins de 300 ms : zoom ; sinon le toucher ouvre sa feuille, ou entre dans la serre. */
   const lastTap = useRef<{ id: string; at: number } | null>(null);
   const tapZone = (z: SceneZone, now: number) => {
+    if (z.hasInterior) { enterZone(z); return; }
     const double = lastTap.current?.id === z.id && now - lastTap.current.at < DOUBLE_TAP_MS;
     lastTap.current = double ? null : { id: z.id, at: now };
     if (double) zoomTo(z);

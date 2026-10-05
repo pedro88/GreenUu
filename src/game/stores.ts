@@ -9,12 +9,17 @@ import type { SceneSnapshot } from '@/features/scene/snapshot.schema';
  */
 
 export const UNDO_LEVELS = 50;
+/** Durée de l'entrée dans une serre : sa structure s'efface pendant que la caméra s'approche. */
+export const OPENING_MS = 450;
 
 export type Selection = { kind: 'zone' | 'culture' | 'decor' | 'avatar'; id: string } | null;
 export type Tool = 'select' | 'zone' | 'terrain' | 'decor' | 'eraser';
 
+/** Instantané affiché, et zone à intérieur dans laquelle on est en train d'entrer (fondu de sa structure). */
 export function createSceneStore(snapshot: SceneSnapshot) {
-  return createStore<{ snapshot: SceneSnapshot; setSnapshot: (s: SceneSnapshot) => void }>()((set) => ({ snapshot, setSnapshot: (s) => set({ snapshot: s }) }));
+  return createStore<{ snapshot: SceneSnapshot; opening: string | null; setSnapshot: (s: SceneSnapshot) => void; setOpening: (id: string | null) => void }>()((set) => ({
+    snapshot, opening: null, setSnapshot: (s) => set({ snapshot: s }), setOpening: (opening) => set({ opening }),
+  }));
 }
 
 export function createCameraStore() {

@@ -49,7 +49,14 @@ export default function GardenCanvas({ stores, reducedMotion, grid = false, onSt
       v.setCamera(stores.camera.getState());
       v.setSelection(stores.selection.getState().selected?.id ?? null);
       unsubs.push(
-        stores.scene.subscribe((s) => { v.setSnapshot(s.snapshot); v.setSelection(stores.selection.getState().selected?.id ?? null); loop.requestRender(); }),
+        stores.scene.subscribe((s, prev) => {
+          v.setSnapshot(s.snapshot);
+          v.setSelection(stores.selection.getState().selected?.id ?? null);
+          v.setOpening(s.opening);
+          // Le fondu de la serre demande des images pendant sa durée : la boucle d'animation tourne.
+          if (s.opening !== prev.opening) loop.noteInteraction();
+          loop.requestRender();
+        }),
         stores.camera.subscribe((c) => { v.setCamera(c); loop.noteInteraction(); }),
         stores.selection.subscribe((s) => { v.setSelection(s.selected?.id ?? null); loop.noteInteraction(); }),
         stores.draft.subscribe((d) => { v.setDraft(d.rect); loop.requestRender(); }),

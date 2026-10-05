@@ -6,10 +6,12 @@ import { decorFrame } from '@/features/decor/catalog';
 import { plantSpots } from '@/features/scene/fill.pure';
 import { avatarPlan, CHAT_MS, chatPairs, chatPicto, planMoment, walkDir, type Segment, type WalkDir } from '@/features/scene/avatar-route.pure';
 import { findPath, walkGrid } from '@/features/scene/path.pure';
-import { existingTreeFrame, linearLayer, seasonal, variantAt, SURFACE_ORDER, surfaceLayer, zonePieces, type Season, type TileDraw } from '@/features/scene/tiles.pure';
+import { existingTreeFrame, greenhousePieces, GREENHOUSE_SLICES, linearLayer, seasonal, variantAt, SURFACE_ORDER, surfaceLayer, zonePieces, type Season, type TileDraw } from '@/features/scene/tiles.pure';
+import { rowStrips, withRowGeometry } from '@/features/scene/rows.pure';
 import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
 import { TILE_PX } from '@/features/scene/grid.pure';
+import { OPENING_MS } from '../stores';
 import { fetchAtlas, grassFrame, resolvePlantFrame, seasonAtlasUrl, STATE_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
 
 /*
@@ -81,6 +83,8 @@ const PHASE_SIZE: Record<VisualPhase, number> = { seed: 6, sprout: 10, growing: 
 const PHASE_COLOR: Record<VisualPhase, number> = {
   seed: 0x8b5a3c, sprout: 0x9fcf6a, growing: 0x6f9a4f, flowering: 0xe58fb5, fruiting: 0xd4573b, harvest_ready: 0xf2c14e, seed_set: 0xb08a60, dormant: 0x8a7a6a, finished: 0x9a8f80,
 };
+/** Sillon d'un rang : creux sombre et crête claire, sur la terre de la planche. */
+const FURROW = { groove: 0x4a2f1f, grooveAlpha: 0.55, ridge: 0xd8b07e, ridgeAlpha: 0.4 };
 const STATE_COLORS: Record<string, number> = { overdue_ticket: 0xd4573b, thirsty: 0x4f8fc0, disease: 0x8a5fa8, pest: 0x7a8a2a, harvest_ready: 0xf2c14e, needs_confirmation: 0xffffff, assigned_to_me: 0x2e1f22 };
 
 export type SceneView = {
@@ -90,6 +94,8 @@ export type SceneView = {
   setSelection: (id: string | null) => void;
   setDraft: (r: { x: number; y: number; w: number; h: number } | null) => void;
   setGrid: (on: boolean) => void;
+  /** Entrée dans une zone à intérieur (serre) : sa structure s'efface en fondu et laisse voir son sol. */
+  setOpening: (zoneId: string | null) => void;
   /** Avance les animations ambiantes (ondulation des plantes). */
   animate: (elapsedMs: number) => void;
   render: () => void;
@@ -126,6 +132,11 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   app.stage.addChild(world, overlay);
 
   let snapshot: SceneSnapshot | null = null;
+  /** Structures dessinées par zone (serres), pour le fondu d'entrée. */
+  const structures = new Map<string, Container>();
+  let opening: { id: string; at: number } | null = null;
+  /** Tranches (toit, bande vitrée, mur) des pièces de serre, par frame. */
+  const slices = new Map<string, [Texture, Texture, Texture]>();
   let scale = 1;
   let gridOn = false;
   let elapsed = 0;
@@ -198,15 +209,99 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     return (m?.[1] && m[2] ? seasonal(has, m[1], season, m[2]) : null) ?? base;
   }
 
+  /** Tranches d'une pièce de serre (GREENHOUSE_SLICES), découpées une fois. */
+  function sliceOf(frame: string): [Texture, Texture, Texture] | null {
+    const cached = slices.get(frame);
+    if (cached) return cached;
+    const t = tex(frame);
+    if (!t) return null;
+    const f = t.frame;
+    const top = Math.round(f.height * GREENHOUSE_SLICES.top);
+    const bottom = Math.round(f.height * GREENHOUSE_SLICES.bottom);
+    const part = (from: number, to: number) => new Texture({ source: t.source, frame: new Rectangle(f.x, f.y + from, f.width, to - from) });
+    const out: [Texture, Texture, Texture] = [part(0, top), part(top, bottom), part(bottom, f.height)];
+    slices.set(frame, out);
+    return out;
+  }
+
+  /**
+   * Pièce de serre étirée sur une colonne de la zone : toit en haut, mur et porte en bas à leur taille, la bande vitrée
+   * répétée entre les deux. Une zone trop basse reçoit la pièce entière, tassée.
+   */
+  function drawSliced(into: Container, frame: string, x: number, y: number, w: number, h: number) {
+    const t = tex(frame);
+    const parts = sliceOf(frame);
+    if (!t || !parts) return;
+    const k = w / t.frame.width;
+    const [top, mid, bottom] = parts;
+    const topH = top.frame.height * k;
+    const bottomH = bottom.frame.height * k;
+    if (h < topH + bottomH) {
+      into.addChild(Object.assign(new Sprite(t), { x, y, width: w, height: h }));
+      return;
+    }
+    into.addChild(Object.assign(new Sprite(top), { x, y, width: w, height: topH }));
+    const midH = h - topH - bottomH;
+    if (midH > 0) {
+      const band = new TilingSprite({ texture: mid, width: w, height: midH });
+      band.tileScale.set(k, k);
+      into.addChild(Object.assign(band, { x, y: y + topH }));
+    }
+    into.addChild(Object.assign(new Sprite(bottom), { x, y: y + h - bottomH, width: w, height: bottomH }));
+  }
+
+  /** Serre (demande de l'utilisateur du 2026-10-05) : son sol, puis sa structure de face, qui s'efface quand on y entre. */
+  function drawGreenhouse(id: string, rect: { x: number; y: number; w: number; h: number }, cols: number, season: Season): boolean {
+    const pieces = greenhousePieces(cols, season, has);
+    if (!pieces) return false;
+    const floor = tex('tuiles/sol-serre-carrelage-1.png');
+    if (floor) zoneLayer.addChild(Object.assign(new TilingSprite({ texture: floor, width: rect.w, height: rect.h }), { x: rect.x, y: rect.y }));
+    const node = new Container();
+    const pw = rect.w / cols;
+    pieces.forEach((p, i) => {
+      drawSliced(node, p.frame, rect.x + i * pw, rect.y, pw, rect.h);
+      if (p.snow) drawSliced(node, p.snow, rect.x + i * pw, rect.y, pw, rect.h);
+    });
+    zoneLayer.addChild(node);
+    structures.set(id, node);
+    return true;
+  }
+
+  /** Rang (demande de l'utilisateur du 2026-10-05) : un sillon le long de sa bande, sur la terre de la planche. */
+  function drawFurrow(rect: { x: number; y: number; w: number; h: number }) {
+    const horizontal = rect.w >= rect.h;
+    const across = horizontal ? rect.h : rect.w;
+    const groove = Math.max(2, Math.min(6, across * 0.2));
+    const ridge = Math.max(1, groove / 2);
+    const mid = (horizontal ? rect.y : rect.x) + across / 2;
+    const g = new Graphics();
+    if (horizontal) {
+      g.rect(rect.x + 2, mid - groove / 2 - ridge, rect.w - 4, ridge).fill({ color: FURROW.ridge, alpha: FURROW.ridgeAlpha });
+      g.rect(rect.x + 2, mid - groove / 2, rect.w - 4, groove).fill({ color: FURROW.groove, alpha: FURROW.grooveAlpha });
+    } else {
+      g.rect(mid - groove / 2 - ridge, rect.y + 2, ridge, rect.h - 4).fill({ color: FURROW.ridge, alpha: FURROW.ridgeAlpha });
+      g.rect(mid - groove / 2, rect.y + 2, groove, rect.h - 4).fill({ color: FURROW.groove, alpha: FURROW.grooveAlpha });
+    }
+    zoneLayer.addChild(g);
+  }
+
   function drawZones(s: SceneSnapshot) {
     clearLayer(zoneLayer);
+    structures.clear();
     const season = s.ambient.season;
+    const strips = rowStrips(s.zones, s.tileSizeCm);
     for (const z of [...s.zones].sort((a, b) => a.depth - b.depth)) {
+      const strip = strips.get(z.id);
+      if (strip) {
+        drawFurrow({ x: px(strip.x), y: px(strip.y), w: px(strip.w), h: px(strip.h) });
+        continue;
+      }
       if (!z.geometry) continue;
       const { x, y, w, h } = z.geometry;
       // Planches et carrés en pièces (bords en bois, saisons, neige l'hiver, TER-05) ; les autres types en motif répété.
       const cols = Math.max(1, Math.round(w / s.tileSizeCm));
       const rows = Math.max(1, Math.round(h / s.tileSizeCm));
+      if (z.typeCode === 'greenhouse' && atlas && drawGreenhouse(z.id, { x: px(x), y: px(y), w: px(w), h: px(h) }, cols, season)) continue;
       const pieces = atlas ? zonePieces(z.typeCode, cols, rows, season, has) : null;
       if (pieces) {
         const pw = px(w) / cols;
@@ -447,7 +542,7 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     setSelection(id) {
       selection.clear();
       if (!snapshot || !id) return;
-      const z = snapshot.zones.find((x) => x.id === id);
+      const z = withRowGeometry(snapshot.zones, snapshot.tileSizeCm).find((x) => x.id === id);
       const c = snapshot.cultures.find((x) => x.id === id);
       if (z?.geometry) selection.rect(px(z.geometry.x), px(z.geometry.y), px(z.geometry.w), px(z.geometry.h)).stroke({ width: 3, color: 0xf2c14e });
       else if (c?.footprint) selection.rect(px(c.footprint.x), px(c.footprint.y), px(c.footprint.w), px(c.footprint.h)).stroke({ width: 3, color: 0xf2c14e });
@@ -456,6 +551,11 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     setDraft(r) {
       draft.clear();
       if (r) draft.rect(px(r.x), px(r.y), px(r.w), px(r.h)).fill({ color: 0xf2c14e, alpha: 0.35 }).stroke({ width: 2, color: 0x2e1f22 });
+    },
+    setOpening(id) {
+      if ((opening?.id ?? null) === id) return;
+      opening = id ? { id, at: performance.now() } : null;
+      if (!id) for (const n of structures.values()) n.alpha = 1;
     },
     setGrid(on) {
       gridOn = on;
@@ -511,6 +611,10 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       });
     },
     render() {
+      if (opening) {
+        const node = structures.get(opening.id);
+        if (node) node.alpha = Math.max(0, 1 - (performance.now() - opening.at) / OPENING_MS);
+      }
       app.render();
     },
     destroy() {

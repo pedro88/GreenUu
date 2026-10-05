@@ -35,7 +35,8 @@ export default async function PlanPage({ params, searchParams }: PageProps<'/app
   return (
     <Stack gap="lg">
       <PageHeader title={t('title')} />
-      <PlanEditor snapshot={snapshot} zoneTypes={types.map((z) => ({ id: z.id, code: z.code, label: z.label, isCustom: z.isCustom, hasInteriorDefault: z.hasInteriorDefault, canHostCultures: z.canHostCultures }))} decorCatalog={decorCatalog} />
+      {/* Une scène = un éditeur : entrer dans une serre (PLN-10) repart d'un historique neuf. */}
+      <PlanEditor key={snapshot.sceneZoneId ?? 'root'} snapshot={snapshot} zoneTypes={types.map((z) => ({ id: z.id, code: z.code, label: z.label, isCustom: z.isCustom, hasInteriorDefault: z.hasInteriorDefault, canHostCultures: z.canHostCultures }))} decorCatalog={decorCatalog} />
     </Stack>
   );
 }

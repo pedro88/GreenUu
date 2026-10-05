@@ -137,6 +137,35 @@ export function zonePieces(typeCode: string, cols: number, rows: number, season:
   return out;
 }
 
+/**
+ * Serre vue de face (SPRITES.md, structures modulaires) : une pièce par colonne de tuiles, `serre-debut`, des pièces
+ * `serre-milieu*`, puis `serre-fin` ; la porte au milieu, une aération une pièce sur deux. Une serre d'une seule colonne
+ * est sa porte. L'hiver, la neige du toit (`neige/serre-toit*`). Null si une pièce manque à l'atlas.
+ */
+export function greenhousePieces(cols: number, season: Season, has: Has): { frame: string; snow: string | null }[] | null {
+  const door = Math.floor((cols - 1) / 2);
+  const names = cols === 1 ? ['milieu-porte'] : Array.from({ length: cols }, (_, i) => {
+    if (i === 0) return 'debut';
+    if (i === cols - 1) return 'fin';
+    if (i === door) return 'milieu-porte';
+    return Math.abs(i - door) % 2 === 1 ? 'milieu' : 'milieu-aeration';
+  });
+  const out: { frame: string; snow: string | null }[] = [];
+  for (const n of names) {
+    const frame = `structures/serre-${n}.png`;
+    if (!has(frame)) return null;
+    const roof = n === 'debut' ? 'neige/serre-toit-debut.png' : n === 'fin' ? 'neige/serre-toit-fin.png' : 'neige/serre-toit.png';
+    out.push({ frame, snow: season === 'winter' && has(roof) ? roof : null });
+  }
+  return out;
+}
+
+/**
+ * Découpe verticale des pièces de serre, en fractions de leur hauteur : le toit, une bande vitrée répétée autant que
+ * la profondeur de la serre l'exige, puis le mur avec la porte et le soubassement (lignes 38 et 56 sur 128).
+ */
+export const GREENHOUSE_SLICES = { top: 38 / 128, bottom: 56 / 128 } as const;
+
 /** Arbre existant : les étapes du pommier selon la saison (TER-05), repli sur le feuillage d'été. */
 export function existingTreeFrame(season: Season, has: Has): string {
   const byseason: Record<Season, string> = { winter: 'cultures/pommier-1-hiver.png', spring: 'cultures/pommier-3-floraison.png', summer: 'cultures/pommier-4-feuillage.png', autumn: 'cultures/pommier-6-automne.png' };
