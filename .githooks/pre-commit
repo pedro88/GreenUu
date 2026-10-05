@@ -1,6 +1,11 @@
 #!/bin/sh
 # Pre-commit (audit M4) : lint des fichiers indexés, puis vérification des types.
 set -e
+# Un client Git graphique (VS Code lancé depuis le bureau) ne lit pas
+# ~/.bashrc : pnpm, installé dans ~/.local/bin, manquerait au PATH.
+PATH="${PNPM_HOME:-$HOME/.local/share/pnpm}:$HOME/.local/bin:$PATH"
+export PATH
+command -v pnpm >/dev/null || { echo "hook : pnpm introuvable dans le PATH ($PATH)" >&2; exit 1; }
 staged_ts=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|mjs)$' || true)
 staged_scss=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.scss$' || true)
 if [ -n "$staged_ts" ]; then
