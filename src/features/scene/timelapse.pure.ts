@@ -1,7 +1,8 @@
 import type { CultureStatus, Method, Stage, VisualModel } from '@/lib/enums';
 import { DECOR_BY_CODE } from '../decor/catalog';
 import { astronomicalSeason } from '../progression/quests.pure';
-import { layoutCultures, plantableRect, type PlantingFacts } from './fill.pure';
+import { layoutCultures, type PlantingFacts } from './fill.pure';
+import { anchorRect, rowStrips } from './rows.pure';
 import { decorRect, sceneBounds } from './grid.pure';
 import type { PlanSnapshotV1 } from './history.schema';
 import { orderStates, visualPhase } from './phase.pure';
@@ -102,8 +103,12 @@ export function sceneAt(data: HistoryData, date: string, o: { bounds: { w: numbe
     };
   });
   // Zone ancre : celle de la culture, ou son ancêtre le plus proche placé à cette date.
+  const strips = rowStrips(alive, plan.tileSizeCm);
   const anchorOf = (zoneId: string) => {
-    for (let z = byId.get(zoneId), n = 0; z && n < 20; z = z.parentId ? byId.get(z.parentId) : undefined, n += 1) if (z.geometry) return { id: z.id, rect: plantableRect(z.geometry, z.typeCode, plan.tileSizeCm) };
+    for (let z = byId.get(zoneId), n = 0; z && n < 20; z = z.parentId ? byId.get(z.parentId) : undefined, n += 1) {
+      const rect = anchorRect(z, strips, plan.tileSizeCm);
+      if (rect) return { id: z.id, rect };
+    }
     return null;
   };
   const visible = data.cultures.flatMap((c) => {

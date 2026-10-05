@@ -12,7 +12,8 @@ import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
 import { sceneAvatars } from './avatars';
 import { decorRect, sceneBounds } from './grid.pure';
-import { layoutCultures, plantableRect } from './fill.pure';
+import { layoutCultures, type Rect } from './fill.pure';
+import { anchorRect, rowStrips } from './rows.pure';
 import { cellsRect, MAX_SCENE_CELLS } from './terrain.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
@@ -56,7 +57,8 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
   const terrain = await tx.select({ x: terrainCell.x, y: terrainCell.y, kind: terrainCell.kind }).from(terrainCell)
     .where(and(eq(terrainCell.gardenId, scope.gardenId), opts.sceneZoneId ? eq(terrainCell.sceneZoneId, opts.sceneZoneId) : isNull(terrainCell.sceneZoneId))).limit(MAX_SCENE_CELLS);
 
-  const cultures = await scenesCultures(tx, scope, { zoneIds: inScene.map((z) => z.id), today, userId: opts.userId, byId, south: g.lat < 0, tileCm: g.tileSizeCm });
+  const strips = rowStrips(allZones, g.tileSizeCm);
+  const cultures = await scenesCultures(tx, scope, { zoneIds: inScene.map((z) => z.id), today, userId: opts.userId, byId, strips, south: g.lat < 0, tileCm: g.tileSizeCm });
   const [prof] = await tx.select({ reducedMotion: userProfile.reducedMotion }).from(userProfile).where(eq(userProfile.userId, opts.userId)).limit(1);
   const decor = await sceneDecor(tx, scope.gardenId, opts.sceneZoneId);
   const avatars = await sceneAvatars(tx, { gardenId: scope.gardenId, viewerId: opts.userId, sceneZoneId: opts.sceneZoneId, now: opts.now, byId });
@@ -78,7 +80,7 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
 type ZoneInfo = { id: string; path: string; geometry: RectGeometry | null; sceneZoneId: string | null; typeCode?: string };
 
 /** Cultures visibles dans la scène, avec phase, états (§9.4) et position. */
-async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]; today: string; userId: string; byId: Map<string, ZoneInfo>; south: boolean; tileCm: number }): Promise<SceneCulture[]> {
+async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]; today: string; userId: string; byId: Map<string, ZoneInfo>; strips: Map<string, Rect>; south: boolean; tileCm: number }): Promise<SceneCulture[]> {
   if (!o.zoneIds.length) return [];
   const rows = await tx.select({
     id: culture.id, zoneId: culture.zoneId, method: culture.method, status: culture.status, updatedAt: culture.updatedAt,
@@ -110,7 +112,7 @@ async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]
     // Position : la zone de la culture, ou son ancêtre le plus proche qui est placé dans cette scène.
     const z = o.byId.get(r.zoneId);
     const chain = z ? [z.id, ...(z.path ? z.path.split('/').reverse() : [])] : [];
-    const anchor = chain.map((id) => o.byId.get(id)).find((a) => a?.geometry && a.sceneZoneId === z?.sceneZoneId) ?? null;
+    const anchor = chain.map((id) => o.byId.get(id)).find((a) => (a?.geometry || (a && o.strips.has(a.id))) && a.sceneZoneId === z?.sceneZoneId) ?? null;
     out.push({
       id: r.id, zoneId: r.zoneId, label: r.label, spriteKeys: [r.varietyKey, r.speciesKey, familyKey(r.family)].filter((k): k is string => !!k),
       phase: p.phase, progress: p.progress, states: orderStates(s), position: null, footprint: null, plants: { count: 1, drawn: 0, source: 'default' }, anchorZone: anchor?.id ?? null,
@@ -119,7 +121,7 @@ async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]
   // Remplissage (FIL-01 à 06) : bandes de la zone ancre, plants qui les remplissent, plafond de la scène.
   const layout = layoutCultures(out.map((c) => {
     const z = c.anchorZone ? o.byId.get(c.anchorZone) : undefined;
-    const rect = z?.geometry ? plantableRect(z.geometry, z.typeCode, o.tileCm) : null;
+    const rect = z ? anchorRect(z, o.strips, o.tileCm) : null;
     return { id: c.id, anchor: c.anchorZone && rect ? { id: c.anchorZone, rect } : null, facts: facts.get(c.id) ?? { plantCount: null, areaM2: null, spacingPlantCm: null, spacingRowCm: null, density: null, densityUnit: null } };
   }), o.tileCm);
   for (const c of out) {

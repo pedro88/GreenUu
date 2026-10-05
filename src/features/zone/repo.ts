@@ -1,9 +1,10 @@
-import { and, asc, eq, inArray, isNull, like, or, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull, like, ne, or, sql } from 'drizzle-orm';
 import { notFound } from '@/lib/errors';
 import type { Scope } from '@/server/authz/scope';
 import type { ZoneRestriction } from '@/server/authz/zone-access';
 import type { Executor } from '@/server/db/client';
 import { zone, zoneGroupPermission, zoneType } from '@/server/db/schema';
+import { ROW_TYPE } from '@/features/scene/rows.pure';
 import { ancestorIds, childPath } from './tree';
 
 /** Dépôt scopé : toute requête est filtrée par le jardin du scope (SPEC §3.3). */
@@ -104,16 +105,25 @@ export async function findUsableZoneType(tx: Executor, scope: Scope, zoneTypeId:
 }
 
 /** Zones sœurs actives dessinées dans la même scène (pour RG-ZON-05). */
+/** Géométries des zones sœurs (ou des enfants) ; les rangs n'en ont pas de propre : ils découpent leur planche. */
 export async function siblingGeometries(tx: Executor, scope: Scope, parentId: string | null, excludeId: string | null) {
   const rows = await tx
     .select({ id: zone.id, geometry: zone.geometry })
     .from(zone)
+    .innerJoin(zoneType, eq(zoneType.id, zone.zoneTypeId))
     .where(
       and(
         eq(zone.gardenId, scope.gardenId),
         parentId === null ? isNull(zone.parentId) : eq(zone.parentId, parentId),
         isNull(zone.archivedAt),
+        ne(zoneType.code, ROW_TYPE),
       ),
     );
   return rows.filter((r) => r.id !== excludeId && r.geometry !== null).flatMap((r) => (r.geometry ? [r.geometry] : []));
+}
+
+/** Code du type d'une zone. */
+export async function zoneTypeCode(tx: Executor, zoneTypeId: string): Promise<string | null> {
+  const [t] = await tx.select({ code: zoneType.code }).from(zoneType).where(eq(zoneType.id, zoneTypeId)).limit(1);
+  return t?.code ?? null;
 }

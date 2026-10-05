@@ -2,6 +2,7 @@ import { checkGeometry, type GeometryIssue, type RectGeometry } from '../zone/tr
 import type { PlanCommand } from './plan.schema';
 import { DECOR_BY_CODE } from '../decor/catalog';
 import { eraseCells, MAX_SCENE_CELLS, paintCells, resampleCells } from './terrain.pure';
+import { ROW_TYPE } from './rows.pure';
 import type { SceneDecor, SceneTerrain, SceneZone } from './snapshot.schema';
 
 /*
@@ -13,8 +14,9 @@ export type ZoneTypeInfo = { id: string; code: string; label: string; canHostCul
 export type EditorScene = { tileSizeCm: number; zones: SceneZone[]; terrain: SceneTerrain[]; decor: SceneDecor[] };
 export type LocalIssue = GeometryIssue | 'unknown_zone' | 'unknown_decor' | 'too_many_cells';
 
+/** Zones sœurs placées ; les rangs n'ont pas de géométrie propre (ils découpent leur planche, `rows.pure`). */
 function siblingsOf(scene: EditorScene, parentId: string | null, selfId: string | null): RectGeometry[] {
-  return scene.zones.filter((z) => z.parentId === parentId && z.id !== selfId && z.geometry).map((z) => z.geometry as RectGeometry); // as: filtré sur geometry non nulle
+  return scene.zones.filter((z) => z.parentId === parentId && z.id !== selfId && z.geometry && z.typeCode !== ROW_TYPE).map((z) => z.geometry as RectGeometry); // as: filtré sur geometry non nulle
 }
 
 function parentGeometry(scene: EditorScene, parentId: string | null): RectGeometry | null {
@@ -24,18 +26,20 @@ function parentGeometry(scene: EditorScene, parentId: string | null): RectGeomet
 }
 
 /** RG-ZON-05 pour une commande, contre l'état local ; null si elle est applicable. */
-export function validateLocal(scene: EditorScene, cmd: PlanCommand): LocalIssue | null {
+export function validateLocal(scene: EditorScene, cmd: PlanCommand, types?: Map<string, ZoneTypeInfo>): LocalIssue | null {
   if (cmd.op === 'createZone') {
     if (cmd.parentId && !scene.zones.some((z) => z.id === cmd.parentId)) return 'unknown_zone';
+    if (types?.get(cmd.zoneTypeId)?.code === ROW_TYPE) return null;
     return checkGeometry(cmd.geometry, parentGeometry(scene, cmd.parentId), siblingsOf(scene, cmd.parentId, null));
   }
   if (cmd.op === 'resizeZone' || cmd.op === 'moveZone') {
     const z = scene.zones.find((x) => x.id === cmd.zoneId);
     if (!z) return 'unknown_zone';
+    if (z.typeCode === ROW_TYPE) return null;
     const issue = checkGeometry(cmd.geometry, parentGeometry(scene, z.parentId), siblingsOf(scene, z.parentId, z.id));
     if (issue) return issue;
     // Les enfants placés dans la même scène doivent rester contenus.
-    const children = scene.zones.filter((c) => c.parentId === z.id && c.geometry && !z.hasInterior);
+    const children = scene.zones.filter((c) => c.parentId === z.id && c.geometry && c.typeCode !== ROW_TYPE && !z.hasInterior);
     return children.some((c) => c.geometry && checkGeometry(c.geometry, cmd.geometry, []) !== null) ? 'outside_parent' : null;
   }
   // Plafond de cases par scène (même règle que le serveur, audit jardin vivant M1).
@@ -105,7 +109,7 @@ export function replay(scene: EditorScene, cmds: PlanCommand[], types: Map<strin
   const conflicts: { command: PlanCommand; issue: LocalIssue }[] = [];
   let state = scene;
   for (const cmd of cmds) {
-    const issue = validateLocal(state, cmd);
+    const issue = validateLocal(state, cmd, types);
     if (issue) {
       conflicts.push({ command: cmd, issue });
       continue;

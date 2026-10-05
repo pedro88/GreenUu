@@ -61,9 +61,14 @@ export function plantableRect(rect: Rect, typeCode: string | undefined, tileCm: 
   return rect;
 }
 
-/** Plants à dessiner pour remplir une bande (FIL-01) : environ un par tuile, au moins un. */
+/**
+ * Plants à dessiner pour remplir une bande (FIL-01) : environ un par tuile, au moins un. Une bande plus étroite qu'une
+ * tuile (un rang) en reçoit un par tuile de longueur, pour que la ligne se voie.
+ */
 export function fillCount(band: Rect, tileCm: number): number {
-  return Math.max(1, Math.round(((band.w * band.h) / (tileCm * tileCm)) * PLANTS_PER_TILE));
+  const byArea = Math.round(((band.w * band.h) / (tileCm * tileCm)) * PLANTS_PER_TILE);
+  const byLength = Math.min(band.w, band.h) < tileCm ? Math.round(Math.max(band.w, band.h) / tileCm) : 0;
+  return Math.max(1, byArea, byLength);
 }
 
 /**

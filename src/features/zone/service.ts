@@ -8,6 +8,7 @@ import { culture, cultureStage, garden, gardenEnvironment, gardenGroup, zone, zo
 import { localDate } from '@/lib/dates';
 import { emit } from '@/server/events/emit';
 import { planChanged } from '../scene/history';
+import { ROW_TYPE } from '../scene/rows.pure';
 import * as repo from './repo';
 import type { ZoneCreateInput, ZoneUpdateInput } from './schema';
 import {
@@ -63,8 +64,9 @@ export function chainOf(z: { id: string; path: string }): string[] {
   return [...(z.path ? z.path.split('/') : []), z.id];
 }
 
-async function assertGeometry(tx: Executor, scope: Scope, geometry: RectGeometry | null, parent: repo.ZoneRow | null, selfId: string | null) {
-  if (!geometry) return;
+async function assertGeometry(tx: Executor, scope: Scope, geometry: RectGeometry | null, parent: repo.ZoneRow | null, selfId: string | null, typeCode: string | null) {
+  // Un rang n'a pas de géométrie propre : il découpe sa planche (rows.pure), sans contrainte de place.
+  if (!geometry || typeCode === ROW_TYPE) return;
   const siblings = await repo.siblingGeometries(tx, scope, parent?.id ?? null, selfId);
   // Un enfant d'une zone « avec intérieur » est dessiné dans la scène intérieure : pas de contrainte de contenance.
   const parentGeom = parent && !parent.hasInterior ? parent.geometry : null;
@@ -86,7 +88,7 @@ export async function createZone(ctx: ScopedCtx, input: ZoneCreateInput) {
   const type = await repo.findUsableZoneType(tx, scope, input.zoneTypeId);
   const path = childPath(parent);
   if (depthOf(path) >= MAX_ZONE_DEPTH) throw validation({ parentId: ['maxDepth'] });
-  await assertGeometry(tx, scope, input.geometry, parent, null);
+  await assertGeometry(tx, scope, input.geometry, parent, null, type.code);
   const [z] = await tx
     .insert(zone)
     .values({
@@ -118,7 +120,7 @@ export async function updateZone(ctx: ScopedCtx, input: ZoneUpdateInput) {
   await assertZoneEdit(tx, scope, 'zone:update', chainOf(current));
   const type = await repo.findUsableZoneType(tx, scope, input.zoneTypeId);
   const parent = current.parentId ? await repo.findZone(tx, scope, current.parentId) : null;
-  await assertGeometry(tx, scope, input.geometry, parent, current.id);
+  await assertGeometry(tx, scope, input.geometry, parent, current.id, type.code);
   await tx
     .update(zone)
     .set({
@@ -148,7 +150,7 @@ export async function setZoneGeometry(ctx: ScopedCtx, zoneId: string, geometry: 
   if (current.archivedAt) throw validation({ zoneId: ['zoneArchived'] });
   await assertZoneEdit(tx, scope, 'zone:update', chainOf(current));
   const parent = current.parentId ? await repo.findZone(tx, scope, current.parentId) : null;
-  await assertGeometry(tx, scope, geometry, parent, current.id);
+  await assertGeometry(tx, scope, geometry, parent, current.id, await repo.zoneTypeCode(tx, current.zoneTypeId));
   if (!current.hasInterior) {
     const children = await repo.siblingGeometries(tx, scope, current.id, null);
     if (children.some((c) => checkGeometry(c, geometry, []) !== null)) throw validation({ geometry: ['outside_parent'] });
