@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.24 — validée le 2026-10-01, mise à jour pour le jardin vivant (lot 9). Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.25 — validée le 2026-10-01, mise à jour pour le jardin vivant (lot 9). Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -2353,6 +2353,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.25 | 2026-10-05 | Qualité (audit de suivi) : toucher une zone ouvre sa feuille 300 ms après le toucher, pour qu'un second toucher dans ce délai zoome (POL-03) sans que la feuille recouvre la zone ; moteur de la scène découpé en modules, terrain précalculé par blocs de 16 × 16 tuiles (§9.1, écart du lot 7 résorbé) ; une seule exécution e2e à la fois, sans relance en CI. |
 | 0.24 | 2026-10-05 | Demandes de l'utilisateur sur la vue jardin et l'éditeur : la serre est dessinée avec ses pièces de face (MAP-13) ; la toucher l'efface en fondu et ouvre son intérieur (MAP-14), un double-clic dans l'éditeur ouvre l'éditeur de son intérieur (PLN-10) ; la gomme efface sans confirmation, sauf zone avec cultures en cours ou serre, et efface aussi les cases de terrain (PLN-09) ; les zones « Rang » découpent leur planche en sillons et échappent à RG-ZON-05 (FIL-07, FIL-08). Écart : la géométrie enregistrée des rangs existants est conservée en base mais n'est plus lue ; un effacement enregistré (1,5 s après le geste) ne s'annule plus par Ctrl+Z, comme tout geste enregistré. |
 | 0.23 | 2026-10-05 | Demandes de l'utilisateur sur le rendu : plus d'ondulation des plants (seuls les avatars s'animent) ; la rangée du bas d'une planche ou d'un carré (le bord en bois) ne reçoit pas de plants ; le fond de la scène extérieure est une herbe unie par saison, sans tuiles texturées (les transitions des allées et de l'eau restent). |
 | 0.22 | 2026-10-05 | Précision de l'utilisateur : les plants dessinés remplissent la parcelle (environ un par tuile) au lieu de représenter chaque plant réel ; le nombre réel ou estimé reste annoncé (FIL-01, FIL-02). |
