@@ -2,7 +2,7 @@ import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { ALL_PLAN_THUMBS } from '../src/game/plan-thumbs';
-import { SCENE_ACTIONS } from '../src/features/scene/avatar-action.pure';
+import { SYNCED_ACTIONS } from '../src/features/scene/avatar-action.pure';
 
 /**
  * Copie les assets livrés par la session sprites (dossier `out_hd/` par défaut : version HD, tuile de 64 px pour une
@@ -54,8 +54,8 @@ const atlasFiles = async (name: string) => {
   return files;
 };
 // Saisons : seule la saison courante est chargée par la vue (§9.2). Actions de l'avatar : seulement celles que la vue
-// jardin sait jouer (dernière action réelle, §9.5) ; papoter, s'asseoir et la brouette attendent le lot 10.
-const atlases = ['atlas.json', 'saison-printemps.json', 'saison-automne.json', 'saison-hiver.json', 'avatar-atlas.json', ...SCENE_ACTIONS.map((a) => `avatar-action-${a}.json`)]
+// jardin sait jouer (dernière action réelle, §9.5) et la conversation des rencontres (LIV-02).
+const atlases = ['atlas.json', 'saison-printemps.json', 'saison-automne.json', 'saison-hiver.json', 'avatar-atlas.json', ...SYNCED_ACTIONS.map((a) => `avatar-action-${a}.json`)]
   .filter((n) => existsSync(path.join(SRC, n)));
 const plan = await Promise.all(atlases.map(async (n) => ({ n, files: await atlasFiles(n) })));
 for (const { n, files } of plan) {

@@ -1535,7 +1535,9 @@
     "avatarAction_photo": "took a photo",
     "avatarAction_content": "finished a task",
     "avatarAction_becher": "worked the soil",
-    "avatarAction_porter": "gardened"
+    "avatarAction_porter": "gardened",
+    "plantsCount": "{n, plural, one {# plant} other {# plants}}",
+    "plantsEstimated": "{n, plural, one {about # plant} other {about # plants}}"
   },
   "plan": {
     "title": "Plan editor",

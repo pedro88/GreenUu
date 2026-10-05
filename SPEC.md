@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.21 — validée le 2026-10-01, mise à jour pour le jardin vivant (lot 9). Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.22 — validée le 2026-10-01, mise à jour pour le jardin vivant (lot 9). Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -2165,8 +2165,8 @@ export vidéo du timelapse (décision 5), saison forcée dans `/affichage`.
 
 | ID | Étant donné | Quand | Alors | Test |
 |---|---|---|---|---|
-| FIL-01 | une culture de tomates de 8 plants dans une planche | vue jardin | 8 plants sont dessinés, en rangs dans l'emprise de la culture (`data-plants="8"`) | E |
-| FIL-02 | une culture de carottes de 2 m² sans nombre de plants | calcul | le nombre de plants affiché vient de la surface et des distances (de la culture, sinon de l'espèce, RG-CUL-06), borné à 48 par culture | U |
+| FIL-01 | une culture de tomates de 8 plants seule dans une planche de 2 × 3 m (tuiles de 50 cm) | vue jardin | la planche est remplie de plants, environ un par tuile (`data-plants="24"`), en rangs : les plants dessinés ne représentent pas chaque plant réel ; le vrai nombre (8) est annoncé | E |
+| FIL-02 | une culture de carottes de 2 m² sans nombre de plants | calcul | le nombre de plants annoncé vient de la surface et des distances (de la culture, sinon de l'espèce, RG-CUL-06) ; les plants dessinés remplissent la bande, au plus 48 par culture | U |
 | FIL-03 | deux cultures dans la même planche | calcul | chacune occupe une bande proportionnelle à sa surface (ou à son nombre de plants), sans chevauchement | U |
 | FIL-04 | la même scène rendue deux fois | calcul | positions et miroirs des plants identiques (tirage déterministe par culture et par plant) | U |
 | FIL-05 | une culture de 60 plants | lecteur d'écran | un seul élément accessible pour la culture, qui annonce 60 plants | E |
@@ -2342,6 +2342,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.22 | 2026-10-05 | Précision de l'utilisateur : les plants dessinés remplissent la parcelle (environ un par tuile) au lieu de représenter chaque plant réel ; le nombre réel ou estimé reste annoncé (FIL-01, FIL-02). |
 | 0.21 | 2026-10-05 | Critères du lot 10 détaillés (§12.11) : remplissage des parcelles (FIL-01 à 06, plafonds de 48 plants par culture et 200 par scène), avatars entre les zones (LIV-02, 03, 05, 10), histoire du jardin (TLP-02 à 07, 160 images et 3 ans au plus par lecture). |
 | 0.20 | 2026-10-05 | Décision de l'utilisateur : plus de voile jour / nuit sur la vue jardin (§9.1). La période du jour reste calculée (MAP-11), sans effet visuel. |
 | 0.19 | 2026-10-04 | Demande de l'utilisateur : distances ou densité de plantation et de semis saisies à la création d'une culture (colonnes `culture.spacing_plant_cm`, `spacing_row_cm`, `density`, `density_unit`), nombre de plants estimé, RG-CUL-06 étendue, critères PLA-01 à 03 (§12.10). La modification depuis la fiche reste à faire (pas d'écran d'édition de culture à ce jour). |

@@ -3,7 +3,9 @@ import 'pixi.js/unsafe-eval';
 import { Application, Assets, Container, Graphics, Rectangle, Sprite, Texture, TextureStyle, TilingSprite } from 'pixi.js';
 import { actionFrameCount, avatarCanvas, WALK, type Pose } from '@/features/avatar/compose';
 import { decorFrame } from '@/features/decor/catalog';
-import { avatarMoment, avatarRoute, type Point, type WalkDir } from '@/features/scene/avatar-route.pure';
+import { plantSpots } from '@/features/scene/fill.pure';
+import { avatarPlan, CHAT_MS, chatPairs, chatPicto, planMoment, walkDir, type Segment, type WalkDir } from '@/features/scene/avatar-route.pure';
+import { findPath, walkGrid } from '@/features/scene/path.pure';
 import { existingTreeFrame, linearLayer, seasonal, SURFACE_ORDER, surfaceLayer, zonePieces, type Season, type TileDraw } from '@/features/scene/tiles.pure';
 import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
@@ -124,7 +126,16 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   let elapsed = 0;
   const plants: Sprite[] = [];
   /** Avatars posés : frames de marche composées en Canvas 2D (§10.2), animées seulement par la boucle ambiante. */
-  type Walker = { sprite: Sprite; avatar: SceneAvatar; route: Point[]; tileCm: number; frames: Map<string, Texture[]> };
+  type Walker = {
+    sprite: Sprite; avatar: SceneAvatar; plan: Segment[]; tileCm: number; frames: Map<string, Texture[]>;
+    /** Horloge propre : elle s'arrête pendant une rencontre (LIV-02). */
+    t: number; chat: { until: number; dir: WalkDir; bubble: Sprite | null } | null;
+    /** Images en cours de composition (direction | sorte). */
+    loading: Set<string>;
+  };
+  /** Rencontres récentes (paire → fin du délai avant la suivante) et leur nombre, pour varier les bulles. */
+  const chatCooldown = new Map<string, number>();
+  let chats = 0;
   const walkers: Walker[] = [];
   const avatarTextures = new Map<string, Promise<Texture[]>>();
   let generation = 0;
@@ -226,9 +237,11 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     opts.onStats?.({ season: loadedSeason === s.ambient.season ? s.ambient.season : null, terrainTiles: tiles, terrainTransitions: transitions });
   }
 
-  function plantSprite(c: SceneCulture): Sprite | Graphics {
+  /** Sprite d'un plant ; `alt` choisit la variante `-b` de la frame quand elle existe (casse l'effet clone, FIL-04). */
+  function plantSprite(c: SceneCulture, alt: boolean): Sprite | Graphics {
     const r = atlas ? resolvePlantFrame(atlas.index, c.spriteKeys, c.phase, opts.onMissingSprite) : null;
-    const t = tex(r?.frame);
+    const variant = r?.frame && alt ? r.frame.replace(/\.png$/, '-b.png') : null;
+    const t = tex(variant && has(variant) ? variant : r?.frame);
     if (t) {
       const sp = new Sprite(t);
       sp.anchor.set(0.5, 1);
@@ -239,22 +252,28 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     return new Graphics().rect(-1, -size, 2, size).fill(0x4f6f35).circle(0, -size, size / 2).fill(PHASE_COLOR[c.phase]).stroke({ width: 1, color: 0x2e222f });
   }
 
+  /** Cultures (FIL-01 à 06) : leurs plants en rangs dans leur bande ; les bulles d'état au-dessus du centre de la culture. */
   function drawPlants(s: SceneSnapshot) {
     clearLayer(plantLayer);
     clearLayer(bubbleLayer);
     plants.length = 0;
     for (const c of s.cultures) {
       if (!c.position) continue;
-      const node = plantSprite(c);
-      node.position.set(px(c.position.x), px(c.position.y));
-      // Tri de profondeur par le bas des sprites (§9.1).
-      node.zIndex = c.position.y;
-      plantLayer.addChild(node);
-      if (node instanceof Sprite) plants.push(node);
+      const spots = c.footprint ? plantSpots(c.id, c.footprint, c.plants.drawn, s.tileSizeCm) : [{ ...c.position, mirror: false, alt: false }];
+      for (const spot of spots) {
+        const node = plantSprite(c, spot.alt);
+        node.position.set(px(spot.x), px(spot.y));
+        if (spot.mirror) node.scale.x = -1;
+        // Tri de profondeur par le bas des sprites (§9.1).
+        node.zIndex = spot.y;
+        plantLayer.addChild(node);
+        if (node instanceof Sprite) plants.push(node);
+      }
+      const top = Math.min(...spots.map((p) => p.y));
       c.states.slice(0, MAX_VISIBLE_STATES).forEach((state, i) => {
         const bt = tex(STATE_FRAMES[state]);
         const bx = px(c.position?.x ?? 0) + (i - (Math.min(c.states.length, MAX_VISIBLE_STATES) - 1) / 2) * 18;
-        const by = px(c.position?.y ?? 0) - 40;
+        const by = px(top) - 40;
         if (bt) bubbleLayer.addChild(Object.assign(new Sprite(bt), { x: bx - 8, y: by - 8 }));
         else bubbleLayer.addChild(new Graphics().circle(bx, by, 7).fill(STATE_COLORS[state] ?? 0xffffff).stroke({ width: 1, color: 0x2e222f }));
       });
@@ -292,18 +311,19 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     return [t];
   };
 
-  type AvatarKind = 'act' | 'walk' | 'idle';
+  type AvatarKind = 'act' | 'walk' | 'idle' | 'chat';
   /**
    * Images d'un avatar pour une direction, en cache par (`configHash`, direction, sorte, action), à la résolution des
    * sprites HD : son action (atlas de l'action chargé à cette occasion, LIV-01), sa marche ou sa pose à l'arrêt.
    */
   function avatarFrames(a: SceneAvatar, dir: WalkDir, kind: AvatarKind): Promise<Texture[]> {
     const key = `${a.configHash}|${dir}|${kind}|${kind === 'act' ? a.action ?? '' : ''}`;
+    const playing = kind === 'chat' ? 'papoter' : kind === 'act' ? a.action : null;
     let p = avatarTextures.get(key);
     if (!p) {
       p = (async () => {
-        if (kind === 'act' && a.action) {
-          const action = a.action;
+        if (playing) {
+          const action = playing;
           const n = await actionFrameCount(action);
           const poses = Array.from({ length: n }, (_, i): Pose => `${action}-f${i + 1}`);
           const frames = (await Promise.all(poses.map((pose) => avatarCanvas(a.config, dir, pose, 'atlas', action)))).flatMap(toTexture);
@@ -323,11 +343,15 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
    * directions se composent ensuite, sans bloquer l'affichage.
    */
   function drawAvatars(s: SceneSnapshot) {
+    for (const w of walkers) w.chat?.bubble?.destroy();
     walkers.length = 0;
     const gen = generation;
+    const obstacles = s.zones.flatMap((z) => (z.geometry ? [{ rect: z.geometry, typeCode: z.typeCode }] : []));
     for (const a of s.avatars) {
-      const route = avatarRoute(a.userId, a.area, s.tileSizeCm);
-      const start = avatarMoment(route, s.tileSizeCm, 0);
+      // Plan (LIV-09, LIV-10) : tour de chaque zone où il a agi, chemins entre elles (LIV-03) ; ses zones restent ouvertes.
+      const grid = a.areas.length > 1 ? walkGrid({ bounds: s.bounds, tileCm: s.tileSizeCm, zones: obstacles, cells: s.terrain, open: a.areas }) : null;
+      const plan = avatarPlan(a.userId, a.areas, s.tileSizeCm, (from, to) => findPath(grid, from, to));
+      const start = planMoment(plan, s.tileSizeCm, 0);
       const firstKind: AvatarKind = a.action ? 'act' : 'idle';
       void avatarFrames(a, start.dir, firstKind).then((frames) => {
         const first = frames[0];
@@ -337,16 +361,24 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
         sp.position.set(px(start.at.x), px(start.at.y));
         sp.zIndex = start.at.y + 1;
         plantLayer.addChild(sp);
-        const w: Walker = { sprite: sp, avatar: a, route, tileCm: s.tileSizeCm, frames: new Map([[`${start.dir}|${firstKind}`, frames]]) };
+        const w: Walker = { sprite: sp, avatar: a, plan, tileCm: s.tileSizeCm, frames: new Map([[`${start.dir}|${firstKind}`, frames]]), t: 0, chat: null, loading: new Set() };
         walkers.push(w);
         onAvatarReady?.();
-        for (const dir of ['bas', 'gauche', 'haut', 'droite'] as const) {
-          for (const kind of ['walk', firstKind] as const) {
-            void avatarFrames(a, dir, kind).then((f) => { if (f.length) w.frames.set(`${dir}|${kind}`, f); });
-          }
-        }
       });
     }
+  }
+
+  /** Bulle à pictogramme au-dessus d'un avatar (LIV-02) : pointe de la queue en (4, 29), en miroir vers la gauche. */
+  function chatBubble(w: Walker, picto: string, dir: WalkDir): Sprite | null {
+    const t = tex(`conversation/${picto}.png`);
+    if (!t) return null;
+    const b = new Sprite(t);
+    b.anchor.set(4 / 32, 29 / 32);
+    if (dir === 'gauche' && picto !== 'rire') b.scale.x = -1;
+    b.position.set(w.sprite.x + 6, w.sprite.y - 40);
+    b.zIndex = 100_000;
+    plantLayer.addChild(b);
+    return b;
   }
 
   function drawGrid(s: SceneSnapshot) {
@@ -403,6 +435,7 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       const z = snapshot.zones.find((x) => x.id === id);
       const c = snapshot.cultures.find((x) => x.id === id);
       if (z?.geometry) selection.rect(px(z.geometry.x), px(z.geometry.y), px(z.geometry.w), px(z.geometry.h)).stroke({ width: 3, color: 0xf2c14e });
+      else if (c?.footprint) selection.rect(px(c.footprint.x), px(c.footprint.y), px(c.footprint.w), px(c.footprint.h)).stroke({ width: 3, color: 0xf2c14e });
       else if (c?.position) selection.circle(px(c.position.x), px(c.position.y) - 12, 18).stroke({ width: 3, color: 0xf2c14e });
     },
     setDraft(r) {
@@ -417,16 +450,52 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
       elapsed += ms;
       // Ondulation légère, seulement quand la boucle ambiante tourne (jamais en animations réduites).
       plants.forEach((p, i) => { p.skew.x = Math.sin(elapsed / 700 + i) * 0.04; });
-      // Trajet dans la zone (LIV-09) : action à un point, marche vers le suivant, face à la direction de la marche.
-      for (const w of walkers) {
-        const m = avatarMoment(w.route, w.tileCm, elapsed);
-        const kind = m.mode === 'walk' ? 'walk' : w.avatar.action ? 'act' : 'idle';
-        const frames = w.frames.get(`${m.dir}|${kind}`) ?? w.frames.get(`bas|${kind}`);
-        const f = frames?.[Math.floor(m.elapsedMs / (kind === 'walk' ? 180 : 260)) % frames.length];
-        if (f) w.sprite.texture = f;
-        w.sprite.position.set(px(m.at.x), px(m.at.y));
-        w.sprite.zIndex = m.at.y + 1;
+      // Trajet (LIV-09, LIV-10) : action à chaque point de ses zones, marche entre elles, face à la direction de la marche.
+      const moments = walkers.map((w) => {
+        if (!w.chat) w.t += ms;
+        return planMoment(w.plan, w.tileCm, w.t);
+      });
+      // Rencontres (LIV-02) : deux avatars proches s'arrêtent, se font face et échangent une bulle à pictogramme.
+      const free = walkers.flatMap((w, i) => (w.chat ? [] : [{ id: String(i), at: moments[i]?.at ?? { x: 0, y: 0 } }]));
+      for (const [ia, ib] of chatPairs(free, walkers[0]?.tileCm ?? 50)) {
+        const a = walkers[Number(ia)];
+        const b = walkers[Number(ib)];
+        const ma = moments[Number(ia)];
+        const mb = moments[Number(ib)];
+        if (!a || !b || !ma || !mb) continue;
+        const pair = [a.avatar.userId, b.avatar.userId].sort().join('|');
+        if ((chatCooldown.get(pair) ?? 0) > elapsed) continue;
+        chatCooldown.set(pair, elapsed + CHAT_MS + 15_000);
+        const picto = chatPicto(a.avatar.userId, b.avatar.userId, (chats += 1));
+        for (const [w, from, to] of [[a, ma.at, mb.at], [b, mb.at, ma.at]] as const) {
+          const dir = walkDir(from, to);
+          w.chat = { until: elapsed + CHAT_MS, dir, bubble: chatBubble(w, w === a ? picto : chatPicto(b.avatar.userId, a.avatar.userId, chats), dir) };
+        }
       }
+      walkers.forEach((w, i) => {
+        const m = moments[i];
+        if (!m) return;
+        if (w.chat && w.chat.until <= elapsed) {
+          w.chat.bubble?.destroy();
+          w.chat = null;
+        }
+        const kind: AvatarKind = w.chat ? 'chat' : m.mode === 'walk' ? 'walk' : w.avatar.action ? 'act' : 'idle';
+        const dir = w.chat?.dir ?? m.dir;
+        // Images composées au premier besoin seulement : rien de lourd au chargement de la vue.
+        const key = `${dir}|${kind}`;
+        if (!w.frames.has(key) && !w.loading.has(key)) {
+          w.loading.add(key);
+          void avatarFrames(w.avatar, dir, kind).then((f) => { if (f.length) w.frames.set(key, f); });
+        }
+        const frames = w.frames.get(`${dir}|${kind}`) ?? (kind === 'chat' ? w.frames.get(`${dir}|idle`) ?? w.frames.get(`${dir}|${w.avatar.action ? 'act' : 'idle'}`) : w.frames.get(`bas|${kind}`));
+        const step = kind === 'walk' ? 180 : 260;
+        const f = frames?.[Math.floor((w.chat ? elapsed : m.elapsedMs) / step) % frames.length];
+        if (f) w.sprite.texture = f;
+        if (!w.chat) {
+          w.sprite.position.set(px(m.at.x), px(m.at.y));
+          w.sprite.zIndex = m.at.y + 1;
+        }
+      });
     },
     render() {
       app.render();

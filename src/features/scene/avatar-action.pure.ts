@@ -7,6 +7,8 @@
 /** Actions que la vue jardin sait jouer ; chacune a son atlas `avatar-action-<action>.json`. */
 export const SCENE_ACTIONS = ['arroser', 'semer', 'planter', 'recolter', 'observer', 'photo', 'content', 'becher', 'porter'] as const;
 export type SceneAction = (typeof SCENE_ACTIONS)[number];
+/** Atlas d'action copiés par `assets:sync` : les actions rejouées, plus la conversation des rencontres (LIV-02). */
+export const SYNCED_ACTIONS = [...SCENE_ACTIONS, 'papoter'] as const;
 
 /** Fenêtre de l'action rejouée. */
 export const ACTION_WINDOW_MS = 24 * 3_600_000;

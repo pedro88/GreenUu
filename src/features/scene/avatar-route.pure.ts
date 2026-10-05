@@ -85,3 +85,101 @@ export function avatarMoment(route: Point[], tileCm: number, t: number): AvatarM
   }
   return { at: first, dir: 'bas', mode: 'act', elapsedMs: 0 };
 }
+
+/*
+ * Plusieurs zones (LIV-10) : l'avatar fait le tour de chaque zone où il a agi dans les 24 h (action à chaque point),
+ * puis va à la suivante par un chemin (LIV-03), et revient à la première. Un plan est une suite d'étapes : agir à un
+ * point, ou marcher le long d'une ligne brisée.
+ */
+export type Segment = { kind: 'act'; at: Point } | { kind: 'walk'; path: Point[] };
+export type PathFinder = (from: Point, to: Point, fromZone: number, toZone: number) => Point[];
+
+export function avatarPlan(seed: string, zones: Rect[], tileCm: number, between: PathFinder): Segment[] {
+  if (!zones.length) return [];
+  const routes = zones.map((z, i) => avatarRoute(`${seed}#${i}`, z, tileCm, zones.length > 1 ? 3 : ROUTE_POINTS));
+  const out: Segment[] = [];
+  routes.forEach((route, i) => {
+    route.forEach((p, k) => {
+      out.push({ kind: 'act', at: p });
+      const next = route[k + 1];
+      if (next) out.push({ kind: 'walk', path: [p, next] });
+    });
+    const last = route.at(-1);
+    const nextZone = (i + 1) % routes.length;
+    const target = routes[nextZone]?.[0];
+    if (!last || !target) return;
+    // Une seule zone : on referme le tour à l'intérieur ; sinon, le chemin vers la zone suivante.
+    out.push({ kind: 'walk', path: routes.length === 1 ? [last, target] : between(last, target, i, nextZone) });
+  });
+  return out;
+}
+
+const pathLength = (path: Point[]) => path.slice(1).reduce((s, p, i) => s + Math.hypot(p.x - (path[i]?.x ?? 0), p.y - (path[i]?.y ?? 0)), 0);
+
+/** État de l'avatar à l'instant `t` d'un plan (même contrat qu'`avatarMoment`). */
+export function planMoment(plan: Segment[], tileCm: number, t: number): AvatarMoment {
+  const first = plan[0]?.kind === 'act' ? plan[0].at : { x: 0, y: 0 };
+  const speed = (WALK_TILES_PER_S * tileCm) / 1000;
+  const durations = plan.map((s) => (s.kind === 'act' ? ACT_MS : pathLength(s.path) / speed));
+  const cycle = durations.reduce((s, d) => s + d, 0);
+  if (!cycle) return { at: first, dir: 'bas', mode: 'act', elapsedMs: 0 };
+  let rest = ((t % cycle) + cycle) % cycle;
+  let dir: WalkDir = 'bas';
+  for (const [i, s] of plan.entries()) {
+    const d = durations[i] ?? 0;
+    if (s.kind === 'walk') {
+      if (rest < d) {
+        // Position sur la ligne brisée, et direction du tronçon en cours.
+        let along = rest * speed;
+        for (const [k, p] of s.path.slice(1).entries()) {
+          const a = s.path[k] ?? p;
+          const len = Math.hypot(p.x - a.x, p.y - a.y);
+          if (along <= len || k === s.path.length - 2) {
+            const r = len ? Math.min(1, along / len) : 1;
+            return { at: { x: a.x + (p.x - a.x) * r, y: a.y + (p.y - a.y) * r }, dir: walkDir(a, p), mode: 'walk', elapsedMs: rest };
+          }
+          along -= len;
+        }
+      }
+      const a = s.path.at(-2);
+      const b = s.path.at(-1);
+      if (a && b) dir = walkDir(a, b);
+    } else if (rest < d) {
+      return { at: s.at, dir: i === 0 && t < cycle ? 'bas' : dir, mode: 'act', elapsedMs: rest };
+    }
+    rest -= d;
+  }
+  return { at: first, dir: 'bas', mode: 'act', elapsedMs: 0 };
+}
+
+/*
+ * Rencontres (LIV-02) : deux avatars à moins de 2 tuiles se tournent l'un vers l'autre et échangent des bulles à
+ * pictogramme, jamais de texte.
+ */
+export const CHAT_PICTOS = ['points', 'coeur', 'plante', 'soleil', 'goutte', 'rire'] as const;
+export const CHAT_MS = 3000;
+
+export function chatPairs(avatars: { id: string; at: Point }[], tileCm: number): [string, string][] {
+  const out: [string, string][] = [];
+  const busy = new Set<string>();
+  const sorted = [...avatars].sort((a, b) => (a.id < b.id ? -1 : 1));
+  for (const [i, a] of sorted.entries()) {
+    if (busy.has(a.id)) continue;
+    for (const b of sorted.slice(i + 1)) {
+      if (busy.has(b.id)) continue;
+      if (Math.hypot(a.at.x - b.at.x, a.at.y - b.at.y) < 2 * tileCm) {
+        out.push([a.id, b.id]);
+        busy.add(a.id).add(b.id);
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+/** Pictogramme d'une bulle : tiré de la paire et du numéro de la rencontre. */
+export function chatPicto(a: string, b: string, n: number): (typeof CHAT_PICTOS)[number] {
+  let h = n;
+  for (const c of `${a}|${b}`) h = (Math.imul(h, 31) + c.charCodeAt(0)) | 0;
+  return CHAT_PICTOS[Math.abs(h) % CHAT_PICTOS.length] ?? 'points';
+}

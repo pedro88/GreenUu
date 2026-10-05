@@ -31,6 +31,10 @@ export const sceneCultureSchema = z.object({
   states: z.array(z.enum(VISUAL_STATES)),
   /** Position du pied dans la scène, en centimètres ; null si aucune zone ancêtre n'est placée (« À placer »). */
   position: z.object({ x: z.number(), y: z.number() }).nullable(),
+  /** Bande de la zone occupée par la culture (FIL-03), en centimètres ; null si non placée. */
+  footprint: z.object({ x: z.number(), y: z.number(), w: z.number().positive(), h: z.number().positive() }).nullable(),
+  /** Nombre de plants : réel ou estimé (annoncé), et dessiné (borné, FIL-02, FIL-06). */
+  plants: z.object({ count: z.number().int().positive(), drawn: z.number().int().min(0), source: z.enum(['input', 'estimated', 'default']) }),
 });
 
 /** Case de terrain peinte (§4.2.6), en tuiles de l'échelle courante. */
@@ -64,6 +68,8 @@ export const sceneAvatarSchema = z.object({
   position: z.object({ x: z.number(), y: z.number() }),
   /** Emprise de la zone (ou de l'ancêtre placé) où l'avatar se déplace (LIV-09), en centimètres. */
   area: z.object({ x: z.number(), y: z.number(), w: z.number().positive(), h: z.number().positive() }),
+  /** Zones où il a agi dans les 24 h, la plus récente d'abord (`area` comprise, LIV-10). */
+  areas: z.array(z.object({ x: z.number(), y: z.number(), w: z.number().positive(), h: z.number().positive() })).min(1).max(3),
   action: z.enum(SCENE_ACTIONS).nullable(),
   /** Ancienneté de la dernière action en minutes, pour la liste textuelle (« il y a 1 h », LIV-06). */
   ageMinutes: z.number().int().min(0),

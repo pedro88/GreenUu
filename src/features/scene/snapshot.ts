@@ -11,7 +11,8 @@ import type { RectGeometry } from '../zone/tree';
 import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
 import { sceneAvatars } from './avatars';
-import { decorRect, layoutInRect, sceneBounds } from './grid.pure';
+import { decorRect, sceneBounds } from './grid.pure';
+import { bands, drawnCounts, fillCount, plantCountOf } from './fill.pure';
 import { cellsRect, MAX_SCENE_CELLS } from './terrain.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
@@ -55,7 +56,7 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
   const terrain = await tx.select({ x: terrainCell.x, y: terrainCell.y, kind: terrainCell.kind }).from(terrainCell)
     .where(and(eq(terrainCell.gardenId, scope.gardenId), opts.sceneZoneId ? eq(terrainCell.sceneZoneId, opts.sceneZoneId) : isNull(terrainCell.sceneZoneId))).limit(MAX_SCENE_CELLS);
 
-  const cultures = await scenesCultures(tx, scope, { zoneIds: inScene.map((z) => z.id), today, userId: opts.userId, byId, south: g.lat < 0 });
+  const cultures = await scenesCultures(tx, scope, { zoneIds: inScene.map((z) => z.id), today, userId: opts.userId, byId, south: g.lat < 0, tileCm: g.tileSizeCm });
   const [prof] = await tx.select({ reducedMotion: userProfile.reducedMotion }).from(userProfile).where(eq(userProfile.userId, opts.userId)).limit(1);
   const decor = await sceneDecor(tx, scope.gardenId, opts.sceneZoneId);
   const avatars = await sceneAvatars(tx, { gardenId: scope.gardenId, viewerId: opts.userId, sceneZoneId: opts.sceneZoneId, now: opts.now, byId });
@@ -77,11 +78,13 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
 type ZoneInfo = { id: string; path: string; geometry: RectGeometry | null; sceneZoneId: string | null };
 
 /** Cultures visibles dans la scène, avec phase, états (§9.4) et position. */
-async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]; today: string; userId: string; byId: Map<string, ZoneInfo>; south: boolean }): Promise<SceneCulture[]> {
+async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]; today: string; userId: string; byId: Map<string, ZoneInfo>; south: boolean; tileCm: number }): Promise<SceneCulture[]> {
   if (!o.zoneIds.length) return [];
   const rows = await tx.select({
     id: culture.id, zoneId: culture.zoneId, method: culture.method, status: culture.status, updatedAt: culture.updatedAt,
     speciesKey: species.spriteKey, varietyKey: variety.spriteKey, family: botanicalFamily.code, visualModel: species.visualModel, perennial: species.perennial,
+    plantCount: culture.plantCount, areaM2: culture.areaM2, density: culture.density, densityUnit: culture.densityUnit,
+    spacingPlantCm: sql<number | null>`coalesce(${culture.spacingPlantCm}, ${species.spacingPlantCm})`, spacingRowCm: sql<number | null>`coalesce(${culture.spacingRowCm}, ${species.spacingRowCm})`,
     label: sql<string>`concat_ws(' ', ${species.commonNames}->'fr'->>0, ${variety.name})`,
   }).from(culture).innerJoin(species, eq(species.id, culture.speciesId)).innerJoin(botanicalFamily, eq(botanicalFamily.id, species.familyId))
     .leftJoin(variety, eq(variety.id, culture.varietyId))
@@ -95,6 +98,7 @@ async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]
   const states = await statesOf(tx, scope, { cultures: rows.map((r) => ({ id: r.id, zoneId: r.zoneId })), today: o.today, userId: o.userId, byId: o.byId });
 
   const placed = new Map<string, string[]>();
+  const facts = new Map(rows.map((r) => [r.id, { plantCount: r.plantCount, areaM2: r.areaM2, spacingPlantCm: r.spacingPlantCm, spacingRowCm: r.spacingRowCm, density: r.density, densityUnit: r.densityUnit }]));
   const out: (SceneCulture & { anchorZone: string | null })[] = [];
   for (const r of rows) {
     const mine = stages.filter((s) => s.cultureId === r.id);
@@ -111,18 +115,30 @@ async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]
     if (anchor) placed.set(anchor.id, [...(placed.get(anchor.id) ?? []), r.id]);
     out.push({
       id: r.id, zoneId: r.zoneId, label: r.label, spriteKeys: [r.varietyKey, r.speciesKey, familyKey(r.family)].filter((k): k is string => !!k),
-      phase: p.phase, progress: p.progress, states: orderStates(s), position: null, anchorZone: anchor?.id ?? null,
+      phase: p.phase, progress: p.progress, states: orderStates(s), position: null, footprint: null, plants: { count: 1, drawn: 0, source: 'default' }, anchorZone: anchor?.id ?? null,
     });
   }
+  // Remplissage (FIL-01 à 06) : chaque culture prend une bande de sa zone, proportionnelle à sa surface (sinon à son
+  // nombre de plants), et y dessine ses plants, bornés par culture et par scène.
   for (const [zoneId, cultureIds] of placed) {
     const rect = o.byId.get(zoneId)?.geometry;
     if (!rect) continue;
-    const pts = layoutInRect(rect, cultureIds.length);
-    cultureIds.forEach((id, i) => {
-      const c = out.find((x) => x.id === id);
-      if (c && pts[i]) c.position = pts[i];
+    const weights = cultureIds.map((id) => {
+      const f = facts.get(id);
+      return f?.areaM2 ?? f?.plantCount ?? 1;
+    });
+    bands(rect, weights).forEach((band, i) => {
+      const c = out.find((x) => x.id === cultureIds[i]);
+      const f = facts.get(cultureIds[i] ?? '');
+      if (!c || !f) return;
+      c.footprint = { x: Math.round(band.x), y: Math.round(band.y), w: Math.max(1, Math.round(band.w)), h: Math.max(1, Math.round(band.h)) };
+      c.position = { x: Math.round(band.x + band.w / 2), y: Math.round(band.y + band.h / 2) };
+      const n = plantCountOf(f, (band.w * band.h) / 10_000);
+      c.plants = { count: n.count, drawn: 0, source: n.source };
     });
   }
+  const shown = out.filter((c) => c.footprint);
+  drawnCounts(shown.map((c) => (c.footprint ? fillCount(c.footprint, o.tileCm) : 1))).forEach((d, i) => { const c = shown[i]; if (c) c.plants.drawn = d; });
   return out.map(({ anchorZone: _anchor, ...c }) => c);
 }
 

@@ -71,7 +71,9 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
   const k = pxPerCm(scene);
   const zonesById = new Map(scene.zones.map((z) => [z.id, z]));
   const phaseLabel = (c: SceneCulture) => t(`phase_${c.phase}`);
-  const cultureAria = (c: SceneCulture) => [c.label, zonesById.get(c.zoneId)?.name, phaseLabel(c), ...c.states.map((s) => t(`state_${s}`))].filter(Boolean).join(', ');
+  // FIL-05 : un seul élément par culture, qui annonce son nombre réel (ou estimé) de plants.
+  const plantsLabel = (c: SceneCulture) => (c.plants.source === 'input' ? t('plantsCount', { n: c.plants.count }) : c.plants.source === 'estimated' ? t('plantsEstimated', { n: c.plants.count }) : null);
+  const cultureAria = (c: SceneCulture) => [c.label, zonesById.get(c.zoneId)?.name, phaseLabel(c), plantsLabel(c), ...c.states.map((s) => t(`state_${s}`))].filter(Boolean).join(', ');
 
   // Ordre de lecture de la scène (§9.6) : de haut en bas, puis de gauche à droite.
   const placedZones = scene.zones.filter((z) => z.geometry).sort((a, b) => (a.geometry?.y ?? 0) - (b.geometry?.y ?? 0) || (a.geometry?.x ?? 0) - (b.geometry?.x ?? 0));
@@ -159,7 +161,7 @@ export function GardenView({ snapshot, problems }: { snapshot: SceneSnapshot; pr
           ) : null)}
           {placedCultures.map((c) => c.position ? (
             <button key={c.id} type="button" ref={(el) => { if (el) entityRefs.current.set(c.id, el); }} className={`${styles.entity} ${styles.culture}`} data-testid={`culture-${c.id}`}
-              data-phase={c.phase} data-state={c.states.join(' ')} aria-label={cultureAria(c)}
+              data-phase={c.phase} data-state={c.states.join(' ')} data-plants={c.plants.drawn} aria-label={cultureAria(c)}
               style={{ left: `calc(${c.position.x * k}px - var(--touch-min) / 2)`, top: `calc(${c.position.y * k}px - var(--touch-min))` }} onFocus={() => reveal(c.position?.x ?? 0, c.position?.y ?? 0)} onClick={() => open('culture', c.id)} />
           ) : null)}
           {placedDecor.map((d) => (

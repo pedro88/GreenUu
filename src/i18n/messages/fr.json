@@ -1535,7 +1535,9 @@
     "avatarAction_photo": "pris une photo",
     "avatarAction_content": "terminé une tâche",
     "avatarAction_becher": "travaillé le sol",
-    "avatarAction_porter": "jardiné"
+    "avatarAction_porter": "jardiné",
+    "plantsCount": "{n, plural, one {# plant} other {# plants}}",
+    "plantsEstimated": "{n, plural, one {environ # plant} other {environ # plants}}"
   },
   "plan": {
     "title": "Éditeur de plan",
