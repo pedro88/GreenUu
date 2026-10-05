@@ -1,6 +1,6 @@
 # SPEC — GreenU, gestion de jardins et de cultures
 
-> **Statut** : v0.20 — validée le 2026-10-01, mise à jour pour le jardin vivant (lot 9). Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
+> **Statut** : v0.21 — validée le 2026-10-01, mise à jour pour le jardin vivant (lot 9). Les propositions du §17 sont retenues comme décisions provisoires, révisables avant le lot concerné.
 > **Date** : 2026-10-01
 > **Documents liés** : [PROMPT-app-jardin.md](PROMPT-app-jardin.md) (cahier des charges), [PAGES.md](PAGES.md) (inventaire des routes).
 > **Hors périmètre de cette spec** : la production des assets visuels (sprites, tuiles, atlas, icônes pixel art) est traitée séparément. Cette spec définit seulement le **contrat** que le moteur de rendu attend de ces assets (§9.2).
@@ -2154,6 +2154,44 @@ mentions légales). Recherche en trigrammes (`pg_trgm`, comme les espèces). Auc
 | OFF-02 | hors-ligne | on saisit une observation et une récolte | elles sont mises en file (IndexedDB) et envoyées au retour du réseau, sans doublon grâce aux IDs client | E |
 | STAT-01 | 3 saisons d'historique | on ouvre `/statistiques` | les rendements par espèce et par zone sont comparés d'une année à l'autre | E |
 
+
+### 12.11 Lot 10 — Jardin vivant
+
+Suite du jardin vivant (`PREPARATION-JARDIN-VIVANT.md` §2 à §4, décisions du 2026-10-03) : parcelles remplies de plants,
+avatars qui vont d'une zone à l'autre et se croisent, histoire du jardin en timelapse. Hors périmètre : partage public et
+export vidéo du timelapse (décision 5), saison forcée dans `/affichage`.
+
+#### Remplissage des parcelles (§9.2, §9.5)
+
+| ID | Étant donné | Quand | Alors | Test |
+|---|---|---|---|---|
+| FIL-01 | une culture de tomates de 8 plants dans une planche | vue jardin | 8 plants sont dessinés, en rangs dans l'emprise de la culture (`data-plants="8"`) | E |
+| FIL-02 | une culture de carottes de 2 m² sans nombre de plants | calcul | le nombre de plants affiché vient de la surface et des distances (de la culture, sinon de l'espèce, RG-CUL-06), borné à 48 par culture | U |
+| FIL-03 | deux cultures dans la même planche | calcul | chacune occupe une bande proportionnelle à sa surface (ou à son nombre de plants), sans chevauchement | U |
+| FIL-04 | la même scène rendue deux fois | calcul | positions et miroirs des plants identiques (tirage déterministe par culture et par plant) | U |
+| FIL-05 | une culture de 60 plants | lecteur d'écran | un seul élément accessible pour la culture, qui annonce 60 plants | E |
+| FIL-06 | une scène de plus de 200 plants | calcul | chaque culture garde au moins un plant et le total dessiné ne dépasse pas 200 ; le vrai nombre reste annoncé | U |
+
+#### Avatars qui vont d'une zone à l'autre (§9.5)
+
+| ID | Étant donné | Quand | Alors | Test |
+|---|---|---|---|---|
+| LIV-02 | deux avatars à moins de 2 tuiles l'un de l'autre | boucle d'animation | ils se font face et affichent une bulle à pictogramme (`conversation/<picto>`), jamais de texte | U |
+| LIV-03 | un trajet entre deux zones | calcul | le chemin évite les planches et les structures, et emprunte les allées peintes s'il en existe | U |
+| LIV-05 | 20 s sans interaction | vue jardin | la boucle s'arrête (`data-ticker="stopped"`) et les avatars restent à leur place | E |
+| LIV-10 | un membre qui a agi sur deux zones dans les 24 h | boucle d'animation | son avatar fait le tour de la première, va à la seconde par un chemin (LIV-03), en fait le tour, puis revient | U |
+
+#### Histoire du jardin (`/app/jardins/[jardinId]/histoire`, §4.2.6)
+
+| ID | Étant donné | Quand | Alors | Test |
+|---|---|---|---|---|
+| TLP-02 | une planche créée le 1er avril et des tomates semées le 10 avril, récoltées en août | images d'avril à septembre | la planche apparaît à partir d'avril, les tomates passent de graine à récolte dans l'ordre des phases réelles | U |
+| TLP-03 | une date antérieure au premier instantané du plan | image | le plan actuel est utilisé et un bandeau le dit | E |
+| TLP-04 | une zone archivée en juin | images | elle disparaît à partir de juin, avec ses cultures terminées | I |
+| TLP-05 | un utilisateur qui n'est pas membre du jardin | `/histoire` | 404, comme la vue jardin | I |
+| TLP-06 | `prefers-reduced-motion` | ouverture | pas de lecture automatique ; navigation image par image au clavier | E |
+| TLP-07 | l'histoire d'un jardin | lecture | une image par semaine (réglable : jour, semaine, mois), la date et la saison affichées, au plus 160 images et 3 ans par lecture | E |
+
 ---
 
 ## 13. Stratégie de tests et traçabilité
@@ -2218,7 +2256,7 @@ Contenu :
 | 7 Vue jardin | Moteur PixiJS, instantané de scène, phase visuelle, états, couche accessible, éditeur de plan | MAP, PLN | §4 `/`, `/plan`, §7 `/affichage` |
 | 8 Déco et avatar | Déco, déblocages, avatar, vignettes, avatars dans la vue, page de progression collective | DEC, AVT, COL-04 | §6 `/app/profil/avatar`, §2 étape avatar, §4 `/progression` |
 | 9 Finitions | PWA et hors-ligne, statistiques pluriannuelles, localisation par commune, finitions issues des audits ; jardin vivant (partie 1, branche `lot-9b/jardin-vivant`) : terrain peint en cases, vocabulaire de l'éditeur, saisons du terrain, instantanés du plan, avatars qui jouent leur dernière action | OFF, STAT, LOC, POL, PNT, VOC, TER, TLP-01, LIV-01, LIV-04, LIV-06 à LIV-09, PLA | §4 `/statistiques`, page hors-ligne, §2 étape localisation, §4 `/plan` et `/` |
-| 10 Jardin vivant (prévu) | Remplissage des parcelles, avatars qui se déplacent et papotent, timelapse « Histoire du jardin » (`PREPARATION-JARDIN-VIVANT.md` §2 à §4) | FIL, LIV-02, LIV-03, LIV-05, TLP-02 à TLP-06 (à détailler) | §4 `/histoire` |
+| 10 Jardin vivant | Remplissage des parcelles, avatars qui vont d'une zone à l'autre et se croisent, timelapse « Histoire du jardin » (`PREPARATION-JARDIN-VIVANT.md` §2 à §4) | FIL, LIV-02, LIV-03, LIV-05, LIV-10, TLP-02 à TLP-07 | §4 `/histoire`, `/` (vue jardin) |
 
 **Définition de « terminé » pour chaque lot** :
 
@@ -2304,6 +2342,7 @@ Questions qui demandent ton arbitrage. Les choix provisoires sont en §16.
 | Version | Date | Changement |
 |---|---|---|
 | 0.1 | 2026-10-01 | Première rédaction, soumise à validation |
+| 0.21 | 2026-10-05 | Critères du lot 10 détaillés (§12.11) : remplissage des parcelles (FIL-01 à 06, plafonds de 48 plants par culture et 200 par scène), avatars entre les zones (LIV-02, 03, 05, 10), histoire du jardin (TLP-02 à 07, 160 images et 3 ans au plus par lecture). |
 | 0.20 | 2026-10-05 | Décision de l'utilisateur : plus de voile jour / nuit sur la vue jardin (§9.1). La période du jour reste calculée (MAP-11), sans effet visuel. |
 | 0.19 | 2026-10-04 | Demande de l'utilisateur : distances ou densité de plantation et de semis saisies à la création d'une culture (colonnes `culture.spacing_plant_cm`, `spacing_row_cm`, `density`, `density_unit`), nombre de plants estimé, RG-CUL-06 étendue, critères PLA-01 à 03 (§12.10). La modification depuis la fiche reste à faire (pas d'écran d'édition de culture à ce jour). |
 | 0.18 | 2026-10-04 | Demande de l'utilisateur : les avatars se déplacent dans la zone de leur dernière action, d'un point à l'autre, et rejouent leur action à chaque point (LIV-09, §9.5). Les déplacements entre zones, les conversations et le repos restent au lot 10. |
