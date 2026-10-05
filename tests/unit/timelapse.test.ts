@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PlanSnapshotV1 } from '@/features/scene/history.schema';
-import { frameDates, MAX_FRAMES, sceneAt, type HistoryData } from '@/features/scene/timelapse.pure';
+import { frameDates, MAX_FRAMES, sceneAt, thinSnapshots, type HistoryData } from '@/features/scene/timelapse.pure';
 
 /* Histoire du jardin (SPEC §12.11) : images calculées à partir des instantanés et des étapes réelles. */
 
@@ -54,5 +54,24 @@ describe('histoire du jardin', () => {
     expect(days).toHaveLength(MAX_FRAMES);
     expect(days.at(-1)).toBe('2026-12-31');
     expect(frameDates('2015-01-01', '2026-10-14', 'month')[0]).toBe('2023-10-14');
+  });
+});
+
+describe('poids de l\'histoire', () => {
+  it('scène extérieure seulement, un instantané par semaine, puis espacés sous le plafond ; le plus récent toujours gardé (audit lot 10, M1)', () => {
+    const inside = { ...planche, id: '00000000-0000-4000-8000-000000000003', sceneZoneId: PLANCHE };
+    const days = Array.from({ length: 28 }, (_, i) => `2026-03-${String(i + 1).padStart(2, '0')}`);
+    const list = days.map((takenOn) => ({ takenOn, payload: plan([planche, inside]) }));
+    // Sous le plafond : tous, réduits à la scène extérieure.
+    const all = thinSnapshots(list, Number.POSITIVE_INFINITY);
+    expect(all).toHaveLength(28);
+    expect(all.every((s) => s.payload.zones.every((z) => z.sceneZoneId === null))).toBe(true);
+    const one = JSON.stringify(all[0]?.payload).length;
+    // Au-delà : le dernier de chaque semaine (semaines du lundi), plus le 1er mars (un dimanche).
+    const weekly = thinSnapshots(list, one * 5);
+    expect(weekly.map((s) => s.takenOn)).toEqual(['2026-03-01', '2026-03-08', '2026-03-15', '2026-03-22', '2026-03-28']);
+    const tight = thinSnapshots(list, one * 2);
+    expect(tight.length).toBeLessThanOrEqual(2);
+    expect(tight.at(-1)?.takenOn).toBe('2026-03-28');
   });
 });

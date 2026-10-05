@@ -8,7 +8,7 @@ import { familyKey } from '@/game/manifest';
 import { planState } from './history';
 import { planSnapshotV1Schema } from './history.schema';
 import type { HistoryData } from './timelapse.pure';
-import { MAX_YEARS } from './timelapse.pure';
+import { MAX_YEARS, thinSnapshots } from './timelapse.pure';
 
 /*
  * Données de l'histoire du jardin (SPEC §12.11, TLP) : instantanés du plan des 3 dernières années (et le dernier pris
@@ -33,10 +33,11 @@ export async function gardenHistory(tx: Executor, scope: Scope, now: Date): Prom
   const rows = await tx.select({ takenOn: planSnapshot.takenOn, payload: planSnapshot.payload }).from(planSnapshot)
     .where(and(eq(planSnapshot.gardenId, scope.gardenId), gte(planSnapshot.takenOn, before?.takenOn ?? from), lte(planSnapshot.takenOn, today)))
     .orderBy(asc(planSnapshot.takenOn)).limit(MAX_SNAPSHOTS);
-  const snapshots = rows.flatMap((r) => {
+  // Scène extérieure, un instantané par semaine, sous un plafond de poids (audit lot 10, M1).
+  const snapshots = thinSnapshots(rows.flatMap((r) => {
     const p = planSnapshotV1Schema.safeParse(r.payload);
     return p.success ? [{ takenOn: r.takenOn, payload: p.data }] : [];
-  });
+  }));
 
   const list = await tx.select({
     id: culture.id, zoneId: culture.zoneId, method: culture.method, perennial: species.perennial, visualModel: species.visualModel,

@@ -144,3 +144,37 @@ export function sceneAt(data: HistoryData, date: string, o: { bounds: { w: numbe
     },
   };
 }
+
+/** Poids maximal des instantanés transmis au navigateur (audit lot 10, M1). */
+export const MAX_HISTORY_BYTES = 2 * 1024 * 1024;
+
+/** Lundi de la semaine d'une date ISO (clé de regroupement). */
+const weekOf = (iso: string) => {
+  const d = new Date(`${iso}T12:00:00Z`);
+  return addIsoDays(iso, -((d.getUTCDay() + 6) % 7));
+};
+
+/**
+ * Instantanés transmis à l'histoire (audit lot 10, M1) : la scène extérieure seulement (la seule affichée). S'ils
+ * dépassent `maxBytes` : le dernier de chaque semaine, puis un sur deux, un sur trois… jusqu'à tenir ; le plus récent
+ * est toujours gardé.
+ */
+export function thinSnapshots(list: { takenOn: string; payload: PlanSnapshotV1 }[], maxBytes = MAX_HISTORY_BYTES): { takenOn: string; payload: PlanSnapshotV1 }[] {
+  const outside = list.map((s) => ({
+    takenOn: s.takenOn,
+    payload: {
+      ...s.payload,
+      zones: s.payload.zones.filter((z) => z.sceneZoneId === null),
+      terrain: s.payload.terrain.filter((t) => t.sceneZoneId === null),
+      objects: s.payload.objects.filter((o) => o.sceneZoneId === null),
+    },
+  }));
+  const size = (l: typeof outside) => l.reduce((n, s) => n + JSON.stringify(s.payload).length, 0);
+  if (size(outside) <= maxBytes) return outside;
+  const weekly = outside.filter((s, i) => weekOf(outside[i + 1]?.takenOn ?? '9999-12-31') !== weekOf(s.takenOn));
+  for (let k = 1; k <= weekly.length; k += 1) {
+    const kept = weekly.filter((_, i) => (weekly.length - 1 - i) % k === 0);
+    if (size(kept) <= maxBytes || kept.length <= 1) return kept;
+  }
+  return weekly.slice(-1);
+}
