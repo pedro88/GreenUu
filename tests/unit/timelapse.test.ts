@@ -38,8 +38,8 @@ describe('histoire du jardin', () => {
       const i = order.indexOf(tomates?.phase ?? '');
       expect(i).toBeGreaterThanOrEqual(last);
       last = i;
-      // La planche est remplie de plants (environ un par tuile).
-      expect(tomates?.plants.drawn).toBe(8);
+      // La planche est remplie de plants (environ un par tuile), sauf sa rangée du bas.
+      expect(tomates?.plants.drawn).toBe(4);
     }
     expect(last).toBe(order.indexOf('harvest_ready'));
     // Avant le premier instantané : le plan actuel, signalé.

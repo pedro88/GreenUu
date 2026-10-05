@@ -10,7 +10,7 @@ import { existingTreeFrame, linearLayer, seasonal, SURFACE_ORDER, surfaceLayer, 
 import type { SceneAvatar, SceneCulture, SceneDecor, SceneSnapshot } from '@/features/scene/snapshot.schema';
 import { MAX_VISIBLE_STATES, type VisualPhase } from '@/features/scene/phase.pure';
 import { TILE_PX } from '@/features/scene/grid.pure';
-import { fetchAtlas, grassFrame, resolvePlantFrame, seasonAtlasUrl, STATE_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
+import { fetchAtlas, resolvePlantFrame, seasonAtlasUrl, STATE_FRAMES, ZONE_FRAMES, type PhaseIndex } from '../manifest';
 
 /*
  * Rendu PixiJS de la scène (SPEC §9.1, §9.2). Seul ce module (et `GardenCanvas`) importe PixiJS. Il lit les stores et ne
@@ -62,6 +62,9 @@ async function loadAtlas(url?: string, into = new Map<string, Texture>()): Promi
     return null;
   }
 }
+
+/** Fond d'herbe uni de la scène extérieure, par saison (tons relevés sur les tuiles d'herbe livrées, adoucis). */
+const GRASS_COLORS: Record<Season, number> = { spring: 0x8fbb5c, summer: 0x86b257, autumn: 0x9caa58, winter: 0xb9c7ae };
 
 /** Couleurs des assets de substitution (palette des maquettes). */
 const ZONE_COLORS: Record<string, number> = {
@@ -124,7 +127,6 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   let scale = 1;
   let gridOn = false;
   let elapsed = 0;
-  const plants: Sprite[] = [];
   /** Avatars posés : frames de marche composées en Canvas 2D (§10.2), animées seulement par la boucle ambiante. */
   type Walker = {
     sprite: Sprite; avatar: SceneAvatar; plan: Segment[]; tileCm: number; frames: Map<string, Texture[]>;
@@ -166,12 +168,11 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     clearLayer(ground);
     const w = px(s.bounds.w);
     const h = px(s.bounds.h);
-    const grass = s.sceneZoneId ? tex('tuiles/sol-serre-carrelage-1.png') : tex(grassFrame(s.ambient.season, 1));
-    if (grass) {
-      ground.addChild(new TilingSprite({ texture: grass, width: w, height: h }));
-    } else {
-      ground.addChild(new Graphics().rect(0, 0, w, h).fill(s.sceneZoneId ? 0xe9e4da : 0x9cc56b));
-    }
+    // Dehors, un fond d'herbe uni selon la saison : les tuiles d'herbe texturées chargeaient trop la scène (décision de
+    // l'utilisateur du 2026-10-05). Dedans (serre), le carrelage.
+    const floor = s.sceneZoneId ? tex('tuiles/sol-serre-carrelage-1.png') : undefined;
+    if (floor) ground.addChild(new TilingSprite({ texture: floor, width: w, height: h }));
+    else ground.addChild(new Graphics().rect(0, 0, w, h).fill(s.sceneZoneId ? 0xe9e4da : GRASS_COLORS[s.ambient.season]));
   }
 
   /** Frame de fond d'une zone, dans sa variante saisonnière si elle existe (`tuiles/terre-1` → `tuiles/terre-hiver-1`). */
@@ -256,7 +257,6 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
   function drawPlants(s: SceneSnapshot) {
     clearLayer(plantLayer);
     clearLayer(bubbleLayer);
-    plants.length = 0;
     for (const c of s.cultures) {
       if (!c.position) continue;
       const spots = c.footprint ? plantSpots(c.id, c.footprint, c.plants.drawn, s.tileSizeCm) : [{ ...c.position, mirror: false, alt: false }];
@@ -267,7 +267,6 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
         // Tri de profondeur par le bas des sprites (§9.1).
         node.zIndex = spot.y;
         plantLayer.addChild(node);
-        if (node instanceof Sprite) plants.push(node);
       }
       const top = Math.min(...spots.map((p) => p.y));
       c.states.slice(0, MAX_VISIBLE_STATES).forEach((state, i) => {
@@ -448,8 +447,6 @@ export async function createSceneView(host: HTMLElement, opts: { onMissingSprite
     },
     animate(ms) {
       elapsed += ms;
-      // Ondulation légère, seulement quand la boucle ambiante tourne (jamais en animations réduites).
-      plants.forEach((p, i) => { p.skew.x = Math.sin(elapsed / 700 + i) * 0.04; });
       // Trajet (LIV-09, LIV-10) : action à chaque point de ses zones, marche entre elles, face à la direction de la marche.
       const moments = walkers.map((w) => {
         if (!w.chat) w.t += ms;

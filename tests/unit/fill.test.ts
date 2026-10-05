@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bands, DEFAULT_PLANTS, drawnCounts, fillCount, MAX_PLANTS_PER_CULTURE, MAX_PLANTS_PER_SCENE, plantCountOf, plantSpots } from '@/features/scene/fill.pure';
+import { bands, DEFAULT_PLANTS, drawnCounts, fillCount, plantableRect, MAX_PLANTS_PER_CULTURE, MAX_PLANTS_PER_SCENE, plantCountOf, plantSpots } from '@/features/scene/fill.pure';
 
 /* Remplissage des parcelles (SPEC §12.11) : nombre de plants, bandes, positions. */
 
@@ -12,6 +12,10 @@ describe('remplissage des parcelles', () => {
     // Les plants dessinés remplissent la bande (un par tuile), sans dépasser 48 par culture.
     expect(fillCount({ x: 0, y: 0, w: 200, h: 300 }, 50)).toBe(24);
     expect(fillCount({ x: 0, y: 0, w: 10, h: 10 }, 50)).toBe(1);
+    // La rangée du bas d'une planche ou d'un carré (le bord en bois) ne reçoit pas de plants ; les autres zones, si.
+    expect(plantableRect({ x: 0, y: 0, w: 200, h: 300 }, 'bed', 50)).toEqual({ x: 0, y: 0, w: 200, h: 250 });
+    expect(plantableRect({ x: 0, y: 0, w: 200, h: 300 }, 'plot', 50)).toEqual({ x: 0, y: 0, w: 200, h: 300 });
+    expect(plantableRect({ x: 0, y: 0, w: 50, h: 50 }, 'square_bed', 50)).toEqual({ x: 0, y: 0, w: 50, h: 50 });
     expect(drawnCounts([fillCount({ x: 0, y: 0, w: 500, h: 500 }, 50)])).toEqual([MAX_PLANTS_PER_CULTURE]);
     // Sans surface saisie : celle de la bande occupée ; sans distances : un défaut.
     expect(plantCountOf({ ...none, spacingPlantCm: 50, spacingRowCm: 80 }, 2)).toEqual({ count: 5, source: 'estimated' });

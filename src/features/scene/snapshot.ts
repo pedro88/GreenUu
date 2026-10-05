@@ -12,7 +12,7 @@ import { sceneDecor } from '../decor/service';
 import { ambientFilter } from './ambient.pure';
 import { sceneAvatars } from './avatars';
 import { decorRect, sceneBounds } from './grid.pure';
-import { layoutCultures } from './fill.pure';
+import { layoutCultures, plantableRect } from './fill.pure';
 import { cellsRect, MAX_SCENE_CELLS } from './terrain.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
@@ -75,7 +75,7 @@ export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: 
   });
 }
 
-type ZoneInfo = { id: string; path: string; geometry: RectGeometry | null; sceneZoneId: string | null };
+type ZoneInfo = { id: string; path: string; geometry: RectGeometry | null; sceneZoneId: string | null; typeCode?: string };
 
 /** Cultures visibles dans la scène, avec phase, états (§9.4) et position. */
 async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]; today: string; userId: string; byId: Map<string, ZoneInfo>; south: boolean; tileCm: number }): Promise<SceneCulture[]> {
@@ -118,7 +118,8 @@ async function scenesCultures(tx: Executor, scope: Scope, o: { zoneIds: string[]
   }
   // Remplissage (FIL-01 à 06) : bandes de la zone ancre, plants qui les remplissent, plafond de la scène.
   const layout = layoutCultures(out.map((c) => {
-    const rect = c.anchorZone ? o.byId.get(c.anchorZone)?.geometry : null;
+    const z = c.anchorZone ? o.byId.get(c.anchorZone) : undefined;
+    const rect = z?.geometry ? plantableRect(z.geometry, z.typeCode, o.tileCm) : null;
     return { id: c.id, anchor: c.anchorZone && rect ? { id: c.anchorZone, rect } : null, facts: facts.get(c.id) ?? { plantCount: null, areaM2: null, spacingPlantCm: null, spacingRowCm: null, density: null, densityUnit: null } };
   }), o.tileCm);
   for (const c of out) {

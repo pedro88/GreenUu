@@ -52,6 +52,15 @@ export function bands(rect: Rect, weights: number[]): Rect[] {
   });
 }
 
+/**
+ * Surface plantable d'une zone : planches et carrés ont un bord en bois sur leur rangée du bas, qui ne reçoit pas de
+ * plants (décision de l'utilisateur du 2026-10-05).
+ */
+export function plantableRect(rect: Rect, typeCode: string | undefined, tileCm: number): Rect {
+  if ((typeCode === 'bed' || typeCode === 'square_bed') && rect.h > tileCm) return { ...rect, h: rect.h - tileCm };
+  return rect;
+}
+
 /** Plants à dessiner pour remplir une bande (FIL-01) : environ un par tuile, au moins un. */
 export function fillCount(band: Rect, tileCm: number): number {
   return Math.max(1, Math.round(((band.w * band.h) / (tileCm * tileCm)) * PLANTS_PER_TILE));
