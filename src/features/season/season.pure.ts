@@ -25,12 +25,12 @@ export function defaultSeasonStartMonth(lat: number): number {
 
 export type AstronomicalSeason = 'spring' | 'summer' | 'autumn' | 'winter';
 
-/** Saison astronomique approximative (équinoxes et solstices au 21), inversée dans l'hémisphère sud. */
-export function astronomicalSeason(isoDate: string, lat: number): AstronomicalSeason {
+/** Saison astronomique (équinoxes et solstices au 20-22, QST-04), inversée dans l'hémisphère sud. Seule implémentation du code. */
+export function astronomicalSeason(isoDate: string, south: boolean): AstronomicalSeason {
   const [, m = 1, d = 1] = isoDate.split('-').map(Number);
   const md = m * 100 + d;
   const north: AstronomicalSeason = md >= 1221 || md < 320 ? 'winter' : md < 621 ? 'spring' : md < 922 ? 'summer' : 'autumn';
-  if (lat >= 0) return north;
+  if (!south) return north;
   const flip: Record<AstronomicalSeason, AstronomicalSeason> = { winter: 'summer', summer: 'winter', spring: 'autumn', autumn: 'spring' };
   return flip[north];
 }

@@ -33,7 +33,7 @@ describe('saisons', () => {
   it('hémisphère et saison astronomique', () => {
     expect(defaultSeasonStartMonth(-33)).toBe(7);
     expect(defaultSeasonStartMonth(50)).toBe(1);
-    expect(astronomicalSeason('2026-10-01', 50)).toBe('autumn');
-    expect(astronomicalSeason('2026-10-01', -33)).toBe('spring');
+    expect(astronomicalSeason('2026-10-01', false)).toBe('autumn');
+    expect(astronomicalSeason('2026-10-01', true)).toBe('spring');
   });
 });

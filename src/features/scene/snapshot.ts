@@ -18,12 +18,12 @@ import { cellsRect, MAX_SCENE_CELLS } from './terrain.pure';
 import { orderStates, visualPhase, type VisualState } from './phase.pure';
 import { sceneSnapshotSchema, type SceneCulture, type SceneSnapshot, type SceneZone } from './snapshot.schema';
 import { familyKey } from '@/game/manifest';
+import { addDaysIso } from '@/lib/iso-date';
 
 /* Instantané de scène (SPEC §9.1) : tout ce que le moteur affiche, calculé côté serveur et validé par Zod. */
 
 const OPEN = ['todo', 'in_progress', 'blocked'] as const;
 const DAY = 86_400_000;
-const shiftDay = (iso: string, days: number) => new Date(Date.parse(`${iso}T12:00:00Z`) + days * DAY).toISOString().slice(0, 10);
 
 export async function sceneSnapshot(tx: Executor, scope: Scope, opts: { userId: string; sceneZoneId: string | null; now: Date }): Promise<SceneSnapshot> {
   const [g] = await tx.select({ name: garden.name, orgType: garden.orgType, tileSizeCm: garden.tileSizeCm, planVersion: garden.planVersion, lat: garden.lat, lng: garden.lng, timezone: garden.timezone })
@@ -159,7 +159,7 @@ async function statesOf(tx: Executor, scope: Scope, o: { cultures: { id: string;
       if (onCulture && mine.has(t.id)) add(c.id, 'assigned_to_me');
     }
   }
-  const since = new Date(Date.parse(`${shiftDay(o.today, -30)}T00:00:00Z`));
+  const since = new Date(Date.parse(`${addDaysIso(o.today, -30)}T00:00:00Z`));
   const problems = await tx.select({ cultureId: journalEntry.cultureId, kind: journalEntry.kind }).from(journalEntry)
     .where(and(eq(journalEntry.gardenId, scope.gardenId), inArray(journalEntry.cultureId, cultureIds), inArray(journalEntry.kind, ['disease', 'pest']),
       eq(journalEntry.resolved, false), isNull(journalEntry.deletedAt), gte(journalEntry.observedAt, since)));
