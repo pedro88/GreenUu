@@ -1,7 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import { E2E_NOW, TEST_DB } from './tests/e2e/db';
+import { acquireE2eLock } from './tests/e2e/lock';
 
 const PORT = 3100;
+
+acquireE2eLock();
 
 /** E2E sur la base `greenu_test`, remise à zéro et seedée au démarrage du serveur (SPEC §13). */
 export default defineConfig({
